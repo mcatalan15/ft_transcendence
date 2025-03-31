@@ -6,18 +6,20 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:04:03 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/31 19:09:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/31 20:20:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 class PongGame {
     constructor() {
-        this.width = 800;
-        this.height = 600;
-        this.backgroundColor = 0x000000;
+        this.width = 1920;
+        this.height = 1080;
         this.app = null;
 
-        // Paddles and Ball (already initialized before)
+        // Border
+		this.border = null;
+		
+		// Paddles and Ball (already initialized before)
         this.paddleL = null;
         this.paddleR = null;
         this.ball = null;
@@ -34,16 +36,9 @@ class PongGame {
 
     async init() {
         console.log("Initializing PongGame...");
-        this.app = new PIXI.Application({
-            width: this.width,
-            height: this.height,
-            backgroundColor: this.backgroundColor,
-            resolution: window.devicePixelRatio || 1,
-            antialias: true,
-            autoDensity: true
-        });
+        this.app = new PIXI.Application();
 
-        await this.app.init();
+        await this.app.init({ background: 'black', width: 1920, height: 1080 });
 
         const gameContainer = document.getElementById('game-container');
         if (!gameContainer) {
@@ -54,28 +49,37 @@ class PongGame {
 
         console.log("Canvas added to game container");
 
-        this.createPaddles();
+		this.createPaddles();
         this.createBall();
+		this.drawBorder();
 
         this.app.ticker.add(this.gameLoop.bind(this));
 
         this.setupKeyboard();
     }
 
+	drawBorder() {
+		console.log("Drawing border...");
+		this.border = new PIXI.Graphics();
+		this.border.rect(0, 0, 1920, 1080);
+		this.border.stroke({ color: "white", width: 10 });
+		this.border.x = 0;
+		this.border.y = 0;
+		this.app.stage.addChild(this.border);
+	}
+
     createPaddles() {
         console.log("Creating paddles...");
         this.paddleL = new PIXI.Graphics();
-        this.paddleL.beginFill(0xFFFFFF);
         this.paddleL.rect(0, 0, 10, 50);
-        this.paddleL.endFill();
+		this.paddleL.fill('white');
         this.paddleL.x = 20;
         this.paddleL.y = this.height / 2 - 25;
         this.app.stage.addChild(this.paddleL);
 
         this.paddleR = new PIXI.Graphics();
-        this.paddleR.beginFill(0xFFFFFF);
         this.paddleR.rect(0, 0, 10, 50);
-        this.paddleR.endFill();
+        this.paddleR.fill('white');
         this.paddleR.x = this.width - 20 - 10;
         this.paddleR.y = this.height / 2 - 25;
         this.app.stage.addChild(this.paddleR);
@@ -86,9 +90,8 @@ class PongGame {
     createBall() {
         console.log("Creating ball...");
         this.ball = new PIXI.Graphics();
-        this.ball.beginFill(0xFFFFFF);
         this.ball.rect(0, 0, 10, 10);
-        this.ball.endFill();
+		this.ball.fill(0xFFAC1C);
         this.ball.x = this.width / 2;
         this.ball.y = this.height / 2;
 		this.ball.pivot.set(this.ball.width / 2, this.ball.height / 2);
@@ -106,10 +109,10 @@ class PongGame {
 		const prevX = this.ball.x;
 		
 		if (this.direction) {
-			this.ball.x += 5;
+			this.ball.x += 15;
 			this.ball.rotation += 0.1;
 		} else {
-			this.ball.x -= 5;
+			this.ball.x -= 15;
 			this.ball.rotation -= 0.1;
 		}
 	
