@@ -7,6 +7,8 @@ volumes:
     driver: local
   userbase:
     driver: local
+  sqlitebrowser_data:
+    driver: local
 
 services:
   nginx:
@@ -17,7 +19,7 @@ services:
     restart: always
     depends_on:
       staticpage:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - content:/usr/share/nginx/html
     networks:
@@ -31,6 +33,30 @@ services:
     volumes:
       - content:/content
       - userbase:/db
+    restart: always
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD", "sqlite3", "db/database.db", "SELECT 1"]
+      interval: 10s  # Run the health check every 10 seconds
+      retries: 5     # Retry 5 times before marking the container as unhealthy
+      timeout: 5s
+
+  sqlitebrowser:
+    image: lscr.io/linuxserver/sqlitebrowser:latest
+    container_name: sqlitebrowser
+    depends_on:
+      staticpage:
+        condition: service_healthy
+    environment:
+      - PUID=1000  # Adjust to match your user ID (UID) if needed
+      - PGID=1000  # Adjust to match your group ID (GID) if needed
+      - TZ=Etc/UTC  # Set timezone
+    volumes:
+      - sqlitebrowser_data:/config    # Persistent configuration data for SQLite Browser
+      - userbase:/db                  # Mount your database volume
+    ports:
+      - "3000:3000"
     restart: always
     networks:
       - transcendence
