@@ -1,6 +1,32 @@
-version: "3.8"
-
 networks:
   transcendence:
-    driver:bridge
+    driver: bridge
 
+volumes:
+  content:
+    driver: local
+
+services:
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "1080:1080"
+    restart: always
+    depends_on:
+      - staticpage
+    volumes:
+      - content:/usr/share/nginx/html
+    networks:
+      - transcendence
+
+  staticpage:
+    build: ./staticpage
+    container_name: staticpage
+    ports:
+      - "8080:8080"
+    volumes:
+      - content:/content
+    restart: always
+    networks:
+      - transcendence
