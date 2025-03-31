@@ -5,6 +5,8 @@ networks:
 volumes:
   content:
     driver: local
+  userbase:
+    driver: local
 
 services:
   nginx:
@@ -14,7 +16,8 @@ services:
       - "1080:1080"
     restart: always
     depends_on:
-      - staticpage
+      staticpage:
+        condition: service_started
     volumes:
       - content:/usr/share/nginx/html
     networks:
@@ -27,6 +30,7 @@ services:
       - "8080:8080"
     volumes:
       - content:/content
+      - userbase:/db
     restart: always
     networks:
       - transcendence
