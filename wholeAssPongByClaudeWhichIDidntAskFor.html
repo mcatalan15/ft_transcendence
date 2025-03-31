@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game - Transcendence</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #FFF;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        // Game variables
+        let canvas, ctx;
+        let ballX, ballY, ballRadius, ballSpeedX, ballSpeedY;
+        let paddle1Y, paddle2Y, paddleHeight, paddleWidth;
+        let score1, score2;
+        let showStartScreen = true;
+
+        // Constants
+        const PADDLE_SPEED = 8;
+        const BALL_SPEED = 5;
+        
+        // Initialize the game
+        function init() {
+            // Get canvas and context
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set initial positions
+            resetGame();
+            
+            // Start with welcome screen
+            drawWelcomeScreen();
+            
+            // Set up event listeners
+            document.addEventListener('keydown', handleKeyDown);
+            canvas.addEventListener('click', handleClick);
+        }
+        
+        // Reset game state
+        function resetGame() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballRadius = 10;
+            ballSpeedX = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
+            ballSpeedY = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
+            
+            paddleHeight = 100;
+            paddleWidth = 15;
+            paddle1Y = (canvas.height - paddleHeight) / 2;
+            paddle2Y = (canvas.height - paddleHeight) / 2;
+            
+            score1 = 0;
+            score2 = 0;
+        }
+        
+        // Handle keyboard input
+        function handleKeyDown(e) {
+            if (showStartScreen) {
+                showStartScreen = false;
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            // Player 1 controls (W/S)
+            if (e.key === 'w' || e.key === 'W') {
+                paddle1Y = Math.max(0, paddle1Y - PADDLE_SPEED);
+            } else if (e.key === 's' || e.key === 'S') {
+                paddle1Y = Math.min(canvas.height - paddleHeight, paddle1Y + PADDLE_SPEED);
+            }
+            
+            // Player 2 controls (Arrow Up/Down)
+            if (e.key === 'ArrowUp') {
+                paddle2Y = Math.max(0, paddle2Y - PADDLE_SPEED);
+            } else if (e.key === 'ArrowDown') {
+                paddle2Y = Math.min(canvas.height - paddleHeight, paddle2Y + PADDLE_SPEED);
+            }
+        }
+        
+        // Handle mouse/touch input
+        function handleClick() {
+            if (showStartScreen) {
+                showStartScreen = false;
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Draw welcome screen
+        function drawWelcomeScreen() {
+            // Clear canvas
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw title
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Hello Transcendence', canvas.width / 2, canvas.height / 2 - 50);
+            
+            // Draw instructions
+            ctx.font = '24px Arial';
+            ctx.fillText('Click or press any key to start', canvas.width / 2, canvas.height / 2 + 30);
+            ctx.font = '18px Arial';
+            ctx.fillText('Player 1: W/S keys', canvas.width / 2, canvas.height / 2 + 70);
+            ctx.fillText('Player 2: Arrow Up/Down', canvas.width / 2, canvas.height / 2 + 100);
+        }
+        
+        // Main game loop
+        function gameLoop() {
+            if (showStartScreen) return;
+            
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Update game state
+        function update() {
+            // Move the ball
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+            
+            // Ball collision with top and bottom walls
+            if (ballY < ballRadius || ballY > canvas.height - ballRadius) {
+                ballSpeedY = -ballSpeedY;
+            }
+            
+            // Ball collision with paddles
+            if (ballX < paddleWidth + ballRadius) {
+                if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
+                    ballSpeedX = -ballSpeedX;
+                    // Add a little randomness to the bounce
+                    ballSpeedY += (Math.random() * 4 - 2);
+                } else if (ballX < 0) {
+                    // Player 2 scores
+                    score2++;
+                    resetBall();
+                }
+            }
+            
+            if (ballX > canvas.width - paddleWidth - ballRadius) {
+                if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+                    ballSpeedX = -ballSpeedX;
+                    // Add a little randomness to the bounce
+                    ballSpeedY += (Math.random() * 4 - 2);
+                } else if (ballX > canvas.width) {
+                    // Player 1 scores
+                    score1++;
+                    resetBall();
+                }
+            }
+            
+            // Simple AI for player 2 (right paddle)
+            if (Math.random() > 0.5) { // Makes the AI miss sometimes
+                if (paddle2Y + paddleHeight / 2 < ballY) {
+                    paddle2Y = Math.min(canvas.height - paddleHeight, paddle2Y + PADDLE_SPEED / 2);
+                } else {
+                    paddle2Y = Math.max(0, paddle2Y - PADDLE_SPEED / 2);
+                }
+            }
+        }
+        
+        // Reset the ball to the center
+        function resetBall() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
+            ballSpeedY = BALL_SPEED * (Math.random() * 2 - 1);
+        }
+        
+        // Draw game elements
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw center line
+            ctx.setLineDash([10, 15]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw paddles
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight);
+            ctx.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight);
+            
+            // Draw ball
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw scores
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(score1, canvas.width / 4, 60);
+            ctx.fillText(score2, canvas.width * 3 / 4, 60);
+        }
+        
+        // Initialize the game when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

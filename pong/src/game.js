@@ -1,16 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   game.js                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/31 18:04:03 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/31 19:09:45 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 class PongGame {
     constructor() {
         this.width = 800;
         this.height = 600;
         this.backgroundColor = 0x000000;
         this.app = null;
+
+        // Paddles and Ball (already initialized before)
+        this.paddleL = null;
+        this.paddleR = null;
+        this.ball = null;
+
+        // Movement states
+        this.paddleLUp = false;
+        this.paddleLDown = false;
+        this.paddleRUp = false;
+        this.paddleRDown = false;
+
+		// Direction of the ball
+		this.direction = true;
     }
 
     async init() {
         console.log("Initializing PongGame...");
-
-        this.app = new PIXI.Application();
-        await this.app.init({
+        this.app = new PIXI.Application({
             width: this.width,
             height: this.height,
             backgroundColor: this.backgroundColor,
@@ -19,35 +43,155 @@ class PongGame {
             autoDensity: true
         });
 
-        console.log("PIXI Application initialized:", this.app);
+        await this.app.init();
 
         const gameContainer = document.getElementById('game-container');
         if (!gameContainer) {
             throw new Error("Game container not found!");
         }
 
-        gameContainer.appendChild(this.app.canvas); // ✅ USE `canvas`
+        gameContainer.appendChild(this.app.canvas);
 
         console.log("Canvas added to game container");
 
-        this.createWelcomeText();
+        this.createPaddles();
+        this.createBall();
+
+        this.app.ticker.add(this.gameLoop.bind(this));
+
+        this.setupKeyboard();
     }
 
-    createWelcomeText() {
-        console.log("Creating welcome text...");
+    createPaddles() {
+        console.log("Creating paddles...");
+        this.paddleL = new PIXI.Graphics();
+        this.paddleL.beginFill(0xFFFFFF);
+        this.paddleL.rect(0, 0, 10, 50);
+        this.paddleL.endFill();
+        this.paddleL.x = 20;
+        this.paddleL.y = this.height / 2 - 25;
+        this.app.stage.addChild(this.paddleL);
 
-        const welcomeText = new PIXI.Text("Hello Npooooooonchon", new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 48,
-            fill: 0xFFFFFF,
-            align: 'center',
-            fontWeight: 'bold'
-        }));
+        this.paddleR = new PIXI.Graphics();
+        this.paddleR.beginFill(0xFFFFFF);
+        this.paddleR.rect(0, 0, 10, 50);
+        this.paddleR.endFill();
+        this.paddleR.x = this.width - 20 - 10;
+        this.paddleR.y = this.height / 2 - 25;
+        this.app.stage.addChild(this.paddleR);
 
-        welcomeText.anchor.set(0.5);
-        welcomeText.x = this.width / 2;
-        welcomeText.y = this.height / 2;
+        console.log("Paddles added");
+    }
 
-        this.app.stage.addChild(welcomeText);
+    createBall() {
+        console.log("Creating ball...");
+        this.ball = new PIXI.Graphics();
+        this.ball.beginFill(0xFFFFFF);
+        this.ball.rect(0, 0, 10, 10);
+        this.ball.endFill();
+        this.ball.x = this.width / 2;
+        this.ball.y = this.height / 2;
+		this.ball.pivot.set(this.ball.width / 2, this.ball.height / 2);
+        this.app.stage.addChild(this.ball);
+
+        console.log("Ball added");
+    }
+
+    gameLoop(delta) {
+        this.updateBall();
+        this.updatePaddles();
+    }
+
+    updateBall() {
+		const prevX = this.ball.x;
+		
+		if (this.direction) {
+			this.ball.x += 5;
+			this.ball.rotation += 0.1;
+		} else {
+			this.ball.x -= 5;
+			this.ball.rotation -= 0.1;
+		}
+	
+		const ballLeft = this.ball.x - this.ball.width / 2;
+		const ballRight = this.ball.x + this.ball.width / 2;
+		const ballTop = this.ball.y - this.ball.height / 2;
+		const ballBottom = this.ball.y + this.ball.height / 2;
+		
+		if (
+			prevX + this.ball.width / 2 < this.paddleR.x &&
+			ballRight >= this.paddleR.x &&
+			ballBottom >= this.paddleR.y &&
+			ballTop <= this.paddleR.y + this.paddleR.height
+		) {
+			this.direction = false;
+			this.ball.x = this.paddleR.x - this.ball.width / 2;
+		}
+		
+		if (
+			prevX - this.ball.width / 2 > this.paddleL.x + this.paddleL.width &&
+			ballLeft <= this.paddleL.x + this.paddleL.width &&
+			ballBottom >= this.paddleL.y &&
+			ballTop <= this.paddleL.y + this.paddleL.height
+		) {
+			this.direction = true; // Reverse direction
+			this.ball.x = this.paddleL.x + this.paddleL.width + this.ball.width / 2;
+		}
+		
+		if (ballTop <= 0 || ballBottom >= this.height) {
+			// Bounce off top or bottom by reversing vertical movement
+		}
+		
+		if (ballRight > this.width || ballLeft < 0) {
+			this.ball.x = this.width / 2;
+			this.ball.y = this.height / 2;
+		}
+	}
+
+    updatePaddles() {
+        if (this.paddleLUp && this.paddleL.y > 0) {
+            this.paddleL.y -= 5;
+        }
+        if (this.paddleLDown && this.paddleL.y < this.height - 50) {
+            this.paddleL.y += 5;
+        }
+        if (this.paddleRUp && this.paddleR.y > 0) {
+            this.paddleR.y -= 5;
+        }
+        if (this.paddleRDown && this.paddleR.y < this.height - 50) {
+            this.paddleR.y += 5;
+        }
+    }
+
+    setupKeyboard() {
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'w' || e.key === 'W') {
+                this.paddleLUp = true;
+            }
+            if (e.key === 's' || e.key === 'S') {
+                this.paddleLDown = true;
+            }
+            if (e.key === 'ArrowUp') {
+                this.paddleRUp = true;
+            }
+            if (e.key === 'ArrowDown') {
+                this.paddleRDown = true;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'w' || e.key === 'W') {
+                this.paddleLUp = false;
+            }
+            if (e.key === 's' || e.key === 'S') {
+                this.paddleLDown = false;
+            }
+            if (e.key === 'ArrowUp') {
+                this.paddleRUp = false;
+            }
+            if (e.key === 'ArrowDown') {
+                this.paddleRDown = false;
+            }
+        });
     }
 }
