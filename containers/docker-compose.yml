@@ -1,0 +1,59 @@
+networks:
+  transcendence:
+    driver: bridge
+
+volumes:
+  content:
+    driver: local
+  userbase:
+    driver: local
+
+services:
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "1080:1080"
+    restart: always
+    depends_on:
+      fastify:
+        condition: service_healthy
+    volumes:
+      - content:/usr/share/nginx/html:ro
+    networks:
+      - transcendence
+
+  fastify:
+    build: ./fastify
+    container_name: fastify
+    ports:
+      - "3000:3000"
+    volumes:
+      - content:/usr/src/app/content
+      - userbase:/usr/src/app/db
+    restart: always
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD", "sqlite3", "db/mydatabase.db", "SELECT 1"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  adminer:
+    build: ./adminer
+    container_name: adminer
+    depends_on:
+      fastify:
+        condition: service_healthy
+    environment:
+      - PUID=1000  # Adjust to match your user ID (UID) if needed
+      - PGID=1000  # Adjust to match your group ID (GID) if needed
+      - TZ=Etc/UTC  # Set timezone
+    volumes:
+      - userbase:/db
+    ports:
+      - "1090:1090"
+    restart: always
+    networks:
+      - transcendence
