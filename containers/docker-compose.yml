@@ -7,8 +7,6 @@ volumes:
     driver: local
   userbase:
     driver: local
-  sqlitebrowser_data:
-    driver: local
 
 services:
   nginx:
@@ -38,8 +36,8 @@ services:
       - transcendence
     healthcheck:
       test: ["CMD", "sqlite3", "db/mydatabase.db", "SELECT 1"]
-      interval: 10s  # Run the health check every 10 seconds
-      retries: 5     # Retry 5 times before marking the container as unhealthy
+      interval: 10s
+      retries: 5
       timeout: 5s
 
   sqlitebrowser:
@@ -53,8 +51,7 @@ services:
       - PGID=1000  # Adjust to match your group ID (GID) if needed
       - TZ=Etc/UTC  # Set timezone
     volumes:
-      - sqlitebrowser_data:/config    # Persistent configuration data for SQLite Browser
-      - userbase:/db                  # Mount your database volume
+      - userbase:/db
     ports:
       - "3000:3000"
     restart: always
