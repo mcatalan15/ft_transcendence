@@ -33,9 +33,35 @@
 
     <!-- Load PixiJS v8 -->
     <script src="libs/pixi.js"></script>
-    
-    <!-- Load game scripts -->
-    <script src="src/game.js"></script>
-    <script src="src/main.js"></script>
+
+    <!-- Load utilities -->
+    <script type="module" src="src/utils/Constants.js"></script>
+    <script type="module" src="src/utils/MathUtils.js"></script>
+
+    <!-- Load engine-related components -->
+    <script type="module" src="src/engine/Entity.js"></script>
+    <script type="module" src="src/engine/Game.js"></script>
+
+    <!-- Load components -->
+    <script type="module" src="src/components/RenderComponent.js"></script>
+    <script type="module" src="src/components/PhysicsComponent.js"></script>
+    <script type="module" src="src/components/InputComponent.js"></script>
+    <script type="module" src="src/components/PowerupComponent.js"></script>
+
+    <!-- Load systems -->
+    <script type="module" src="src/systems/RenderSystem.js"></script>
+    <script type="module" src="src/systems/PhysicsSystem.js"></script>
+    <script type="module" src="src/systems/InputSystem.js"></script>
+    <script type="module" src="src/systems/PowerupSystem.js"></script>
+    <script type="module" src="src/systems/AudioSystem.js"></script>
+
+    <!-- Load entities -->
+    <script type="module" src="src/entities/Paddle.js"></script>
+    <script type="module" src="src/entities/Ball.js"></script>
+    <script type="module" src="src/entities/Border.js"></script>
+    <script type="module" src="src/entities/Powerup.js"></script>
+
+    <!-- Load main game initialization -->
+    <script type="module" src="src/index.js"></script>
 </body>
 </html>
