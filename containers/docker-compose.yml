@@ -19,7 +19,7 @@ services:
       webpage:
         condition: service_healthy
     volumes:
-      - content:/usr/src/app/content
+      - content:/usr/share/nginx/html:ro
     networks:
       - transcendence
 
