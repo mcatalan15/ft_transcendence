@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Path to the SQLite database file
-DB_PATH="./db/mydatabase.db"
+DB_PATH="/usr/src/app/db/mydatabase.db"
 
 # Check if the database already exists
 if [ ! -f "$DB_PATH" ]; then
@@ -12,7 +12,10 @@ if [ ! -f "$DB_PATH" ]; then
     sqlite3 "$DB_PATH" <<EOF
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL
+        name TEXT NOT NULL,
+        password TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     -- Add more initialization logic as needed
 EOF

@@ -18,26 +18,26 @@ services:
       - "1080:1080"
     restart: always
     depends_on:
-      staticpage:
+      webpage:
         condition: service_healthy
     volumes:
       - content:/usr/share/nginx/html
     networks:
       - transcendence
 
-  staticpage:
-    build: ./staticpage
-    container_name: staticpage
+  webpage:
+    build: ./webpage
+    container_name: webpage
     ports:
       - "8080:8080"
     volumes:
       - content:/content
-      - userbase:/db
+      - userbase:/usr/src/app/db
     restart: always
     networks:
       - transcendence
     healthcheck:
-      test: ["CMD", "sqlite3", "db/database.db", "SELECT 1"]
+      test: ["CMD", "sqlite3", "db/mydatabase.db", "SELECT 1"]
       interval: 10s  # Run the health check every 10 seconds
       retries: 5     # Retry 5 times before marking the container as unhealthy
       timeout: 5s
@@ -46,7 +46,7 @@ services:
     image: lscr.io/linuxserver/sqlitebrowser:latest
     container_name: sqlitebrowser
     depends_on:
-      staticpage:
+      webpage:
         condition: service_healthy
     environment:
       - PUID=1000  # Adjust to match your user ID (UID) if needed
