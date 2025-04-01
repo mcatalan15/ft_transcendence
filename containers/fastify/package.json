@@ -1,0 +1,17 @@
+{
+	"name": "transcendence-fastify",
+	"version": "1.0.0",
+	"description": "Fastify server to host the 42 transcendence project",
+	"main": "server.js",
+	"scripts": {
+	  "start": "node server.js"
+	},
+	"dependencies": {
+	  "fastify": "^4.0.0",
+	  "sqlite3": "^5.0.0"
+	},
+	"devDependencies": {},
+	"author": "",
+	"license": "ISC"
+  }
+  

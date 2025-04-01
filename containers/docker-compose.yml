@@ -16,18 +16,18 @@ services:
       - "1080:1080"
     restart: always
     depends_on:
-      webpage:
+      fastify:
         condition: service_healthy
     volumes:
       - content:/usr/share/nginx/html:ro
     networks:
       - transcendence
 
-  webpage:
-    build: ./webpage
-    container_name: webpage
+  fastify:
+    build: ./fastify
+    container_name: fastify
     ports:
-      - "8080:8080"
+      - "3000:3000"
     volumes:
       - content:/usr/src/app/content
       - userbase:/usr/src/app/db
@@ -44,7 +44,7 @@ services:
     build: ./adminer
     container_name: adminer
     depends_on:
-      webpage:
+      fastify:
         condition: service_healthy
     environment:
       - PUID=1000  # Adjust to match your user ID (UID) if needed

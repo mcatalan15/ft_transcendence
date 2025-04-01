@@ -28,6 +28,7 @@ clean:
 	docker system prune -f --volumes
 
 fclean:
+	@read -p "Are you sure? This will take down the whole network and you will lose the database. [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
 	$(MAKE) down
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans --rmi all --volumes
 	docker volume prune -f

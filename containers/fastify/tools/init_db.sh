@@ -25,4 +25,4 @@ else
     echo "Database already exists at $DB_PATH"
 fi
 
-exec ./main
+exec node server.js
