@@ -20,6 +20,9 @@ re:
 	$(MAKE) down
 	$(MAKE) up
 
+stop:	# stops ALL containers running on the host, not just the ones in the compose file
+	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
+
 clean:
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans
 	docker system prune -f --volumes
