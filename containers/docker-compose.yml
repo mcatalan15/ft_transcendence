@@ -21,7 +21,7 @@ services:
       webpage:
         condition: service_healthy
     volumes:
-      - content:/usr/share/nginx/html
+      - content:/usr/src/app/content
     networks:
       - transcendence
 
@@ -31,7 +31,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - content:/content
+      - content:/usr/src/app/content
       - userbase:/usr/src/app/db
     restart: always
     networks:

@@ -1,28 +1,41 @@
-<link rel="stylesheet" href="/static/style.css">
-
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello World</title>
-    <!-- Add TailwindCSS CDN link -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-black text-white">
-    <div class="container mx-auto">
-      <div id="first" class="firstletter">
-        <div class="common one">H</div>
-        <div class="common two">E</div>
-        <div class="common three">L</div>
-        <div class="common four">L</div>
-        <div class="common five">O</div>
-        <div class="common six">W</div>
-        <div class="common seven">O</div>
-        <div class="common eight">R</div>
-        <div class="common nine">L</div>
-        <div class="common ten">D</div>
-        <div class="common eleven">!</div>
-      </div>
-    </div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PongGame - Transcendence</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #e55353;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+        }
+        #error {
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <div id="error" style="display: none;"></div>
+
+    <!-- Load PixiJS v8 -->
+    <script src="libs/pixi.js"></script>
+    
+    <!-- Load game scripts -->
+    <script src="src/game.js"></script>
+    <script src="src/main.js"></script>
+</body>
 </html>
