@@ -1,7 +1,17 @@
 // server.js (Fastify backend)
 const Fastify = require('fastify');
-const fastify = Fastify();
-
+const fastify = Fastify({
+  logger: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true, // Adds colors to the logs
+        translateTime: 'SYS:standard', // Formats the timestamp
+        ignore: 'pid,hostname' // Removes unnecessary fields
+      }
+    }
+  }
+});
 // Example of API route
 fastify.get('/api/player/:id', (request, reply) => {
   const { id } = request.params;

@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json first to leverage Docker's caching
 COPY package*.json ./
 
-RUN npm cache clean --force && npm install
+RUN npm cache clean --force && npm install && npm install pino-pretty
 
 COPY . .
 
