@@ -9,6 +9,7 @@ volumes:
     driver: local
   portainer_data:
     driver: local
+  avalanche-data: #Empty volume, Avalanche will automatically add the files needed.
 
 services:
   nginx:
@@ -71,3 +72,38 @@ services:
     restart: always
     networks:
       - transcendence
+
+  avalanche-node:
+    image: avaplatform/avalanchego:v1.10.2  # Official image
+    container_name: avalanche-node
+    ports:
+      - "9650:9650" # Avalanche API port
+      - "9651:9651" # Staking port
+    entrypoint: ["/avalanchego/build/avalanchego"]
+    command: [
+      "--network-id=fuji",
+      "--http-host=0.0.0.0",
+      "--http-port=9650",
+      "--staking-port=9651",
+      "--log-level=info"
+    ]
+    volumes:
+      - avalanche-data:/root/.avalanchego # Persistent blockchain data
+    restart: always
+    networks:
+      - transcendence  
+
+  #blockchain:
+    #build: ./blockchain
+    #container_name: blockchain
+    #ports:
+      # - "3001:3001"
+    #environment:
+      #     - AVALANCHE_NODE_URL=http://avalanche-node:9650
+      # - FASTIFY_URL=http://fastify:3000
+    #depends_on:
+      # - avalanche-node
+      #  - fastify
+    #networks:
+      #        - transcendence
+
