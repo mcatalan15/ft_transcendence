@@ -96,3 +96,12 @@ services:
     restart: always
     networks:
       - transcendence
+      
+  grafana:
+    build: ./monitoring/grafana
+    container_name: grafana
+    ports:
+      - "127.0.0.1:9080:9080"
+    restart: always
+    networks:
+      - transcendence
