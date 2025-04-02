@@ -7,6 +7,8 @@ volumes:
     driver: local
   userbase:
     driver: local
+  portainer_data:
+    driver: local
 
 services:
   nginx:
@@ -54,6 +56,18 @@ services:
       - userbase:/db
     ports:
       - "1090:1090"
+    restart: always
+    networks:
+      - transcendence
+
+  portainer:
+    build: ./portainer
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     networks:
       - transcendence
