@@ -1,0 +1,6 @@
+{
+	"players": [
+	  { "id": "paddleL", "name": "caca" },
+	  { "id": "paddleR", "name": "coco" }
+	]
+  }
