@@ -2,9 +2,9 @@ name: Docker Compose Build Check
 
 on:
   push:
-    branches: [ main, develop1, marc-develop1 ]
+    branches: [ main, develop1, marc-develop1, nico-develop1 ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop1 ]
 
 jobs:
   build:
@@ -35,6 +35,7 @@ jobs:
     - name: Verify containers are running
       run: |
         docker ps --format "{{.Names}}" | grep fastify
+        docker ps --format "{{.Names}}" | grep portainer 
         docker ps --format "{{.Names}}" | grep nginx
         docker ps --format "{{.Names}}" | grep adminer
         
