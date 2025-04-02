@@ -29,7 +29,7 @@ services:
     build: ./fastify
     container_name: fastify
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - content:/usr/src/app/content
       - userbase:/usr/src/app/db
@@ -55,7 +55,7 @@ services:
     volumes:
       - userbase:/db
     ports:
-      - "1090:1090"
+      - "127.0.0.1:1090:1090"
     restart: always
     networks:
       - transcendence
@@ -64,7 +64,7 @@ services:
     build: ./portainer
     container_name: portainer
     ports:
-      - "9000:9000"
+      - "127.0.0.1:9000:9000"
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
