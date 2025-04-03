@@ -22,7 +22,7 @@ EOF
 
     echo "Database created at $DB_PATH"
 else
-    echo "Database already exists at $DB_PATH"
+    echo "Database found at $DB_PATH"
 fi
 
 exec node server.js
