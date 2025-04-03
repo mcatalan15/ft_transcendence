@@ -32,3 +32,7 @@ scrape_configs:
 
     static_configs:
       - targets: ["host.docker.internal:9323"]
+  
+  - job_name: fastify
+    static_configs:
+      - targets: ['fastify:1080']
