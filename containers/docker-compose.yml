@@ -41,7 +41,7 @@ services:
     build: ./fastify
     container_name: fastify
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3100:3100"
     volumes:
       - content:/usr/src/app/content
       - userbase:/usr/src/app/db
@@ -101,7 +101,7 @@ services:
     build: ./monitoring/grafana
     container_name: grafana
     ports:
-      - "127.0.0.1:9080:9080"
+      - "127.0.0.1:3000:3000"
     restart: always
     networks:
       - transcendence
