@@ -13,6 +13,6 @@ COPY . .
 
 RUN chmod +x tools/init_db.sh
 
-EXPOSE 3000
+EXPOSE 3100
 
 ENTRYPOINT ["sh", "tools/init_db.sh"]
