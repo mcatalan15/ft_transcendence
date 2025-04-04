@@ -1,4 +1,3 @@
-// server.js (Fastify backend)
 // import all the required modules
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
