@@ -1,6 +1,12 @@
 #!/bin/sh
 
-# Path to the SQLite database file
+# example of what mydatabase.db could look like
+# mydatabase.db
+#  ├── users
+#  ├── game_sessions
+#  ├── scores
+#  └── statistics
+
 DB_PATH="/usr/src/app/db/mydatabase.db"
 
 # Check if the database already exists
@@ -8,13 +14,13 @@ if [ ! -f "$DB_PATH" ]; then
     echo "Database not found. Creating a new database..."
 
 	mkdir -p ./db
-    # Initialize the SQLite database and create the tables (if necessary)
+
     sqlite3 "$DB_PATH" <<EOF
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        password TEXT NOT NULL,
+        username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     -- Add more initialization logic as needed
