@@ -9,7 +9,7 @@ COPY package*.json ./
 
 RUN npm cache clean --force \
 	&& npm install fastify@^5.0.0 pino-pretty sqlite3 \
-	&& npm install fastify-multipart bcrypt @fastify/cors
+	&& npm install fastify-multipart bcrypt @fastify/cors @fastify/under-pressure
 
 COPY . .
 

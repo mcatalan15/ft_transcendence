@@ -6,6 +6,7 @@ const fastifyMultipart = require('fastify-multipart');
 const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const underPressure = require('@fastify/under-pressure');
 
 // Make logs pretty and readable
 const fastify = Fastify({
@@ -20,6 +21,8 @@ const fastify = Fastify({
     }
   }
 });
+
+
 
 fastify.register(cors, {
     origin: true, // !Allow requests from any origin, NOT SECURE!
@@ -39,6 +42,29 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
+
+
+// Ensure database connection is established before registering underPressure
+db.serialize(() => {
+  fastify.register(underPressure, {
+    exposeStatusRoute: {
+      routeOpts: {
+        url: '/metrics',
+      },
+    },
+    healthCheck: async () => {
+      // Example: Check if the database is connected
+      return new Promise((resolve) => {
+        db.get('SELECT 1', (err) => {
+          resolve(!err);
+        });
+      });
+    },
+  });
+});
+
+
+
 // Helper function to insert a user into the database
 async function saveUserToDatabase(username, email, hashedPassword) {
   return new Promise((resolve, reject) => {
@@ -47,11 +73,12 @@ async function saveUserToDatabase(username, email, hashedPassword) {
       if (err) {
         reject(err);
       } else {
-        resolve(this.lastID); // Return the ID of the inserted user
+        resolve(this.lastID);
       }
     });
   });
 }
+
 // POST /signup for user registration
 fastify.post('/api/signup', async (request, reply) => {
     const { username, email, password } = request.body;
@@ -77,7 +104,6 @@ fastify.post('/api/signup', async (request, reply) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // Save the user to the database
         await saveUserToDatabase(username, email, hashedPassword);
 
         return reply.status(201).send({ success: true, message: 'User registered successfully' });
