@@ -6,12 +6,12 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/04/02 10:24:30 by nponchon         ###   ########.fr        #
+#    Updated: 2025/04/02 14:44:32 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 up:
-	docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml up -d --build
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml up -d --build
 
 down:
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans
