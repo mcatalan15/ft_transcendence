@@ -73,37 +73,40 @@ services:
     networks:
       - transcendence
 
-  avalanche-node:
-    image: avaplatform/avalanchego:v1.10.2  # Official image
-    container_name: avalanche-node
-    ports:
-      - "9650:9650" # Avalanche API port
-      - "9651:9651" # Staking port
-    entrypoint: ["/avalanchego/build/avalanchego"]
-    command: [
-      "--network-id=fuji",
-      "--http-host=0.0.0.0",
-      "--http-port=9650",
-      "--staking-port=9651",
-      "--log-level=info"
-    ]
-    volumes:
-      - avalanche-data:/root/.avalanchego # Persistent blockchain data
-    restart: always
-    networks:
-      - transcendence  
-
-  #blockchain:
-    #build: ./blockchain
-    #container_name: blockchain
+  #avalanche-node:
+    #image: avaplatform/avalanchego:v1.10.2  # Official image
+    #container_name: avalanche-node
     #ports:
-      # - "3001:3001"
-    #environment:
-      #     - AVALANCHE_NODE_URL=http://avalanche-node:9650
-      # - FASTIFY_URL=http://fastify:3000
-    #depends_on:
-      # - avalanche-node
-      #  - fastify
+      #- "9650:9650" # Avalanche API port
+      #  - "9651:9651" # Staking port
+    #entrypoint: ["/avalanchego/build/avalanchego"]
+    #command: [
+    #  "--network-id=fuji",
+    #  "--http-host=0.0.0.0",
+    #  "--http-port=9650",
+    #  "--staking-port=9651",
+    #  "--log-level=info"
+    #]
+    #volumes:
+      #  - avalanche-data:/root/.avalanchego # Persistent blockchain data
+    #restart: always
     #networks:
-      #        - transcendence
+      #     - transcendence  
+
+  blockchain:
+    build: ./blockchain
+    container_name: blockchain
+    ports:
+      - "3002:3002"
+    environment:
+      AVALANCHE_RPC_URL: "https://api.avax-test.network/ext/bc/C/rpc"
+      PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY}  # Will be loaded from .env
+      FASTIFY_PORT: 3002
+      FASTIFY_ADDRESS: "0.0.0.0"
+    volumes:
+      - ./blockchain:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    networks:
+      - transcendence
 
