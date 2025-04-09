@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/01 11:40:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:32:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ export class Entity {
     }
 
     hasComponent(type) {
-        return !!this.components[type];
+        return this.components[type] !== undefined;
     }
 }
