@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 11:31:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/09 09:53:01 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/10 18:29:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,222 +15,190 @@ export class PhysicsSystem {
         this.width = width;
         this.height = height;
     }
-    
-    update(entities, delta) {
-        const ball = entities.find(e => e.id === 'ball');
-        const paddleL = entities.find(e => e.id === 'paddleL');
-        const paddleR = entities.find(e => e.id === 'paddleR');
+
+    update(entities) {
+        const entitiesMap = this._createEntitiesMap(entities);
         
-        if (ball && paddleL && paddleR) {
-            this.updateBall(ball, paddleL, paddleR, entities);
-        }
-        
-        // Update paddle positions based on their physics components
-        entities.forEach(entity => {
-            if (entity.hasComponent('physics') && entity.id.includes('paddle')) {
-                const physics = entity.getComponent('physics');
-                const input = entity.getComponent('input');
-                
-                if (input) {
-                    const speed = physics.speed || 20;
-                    
-                    if (input.upPressed && physics.y > 0) {
-                        physics.y -= speed;
-                    }
-                    if (input.downPressed && physics.y < this.height - physics.height) {
-                        physics.y += speed;
-                    }
-                    
-                    // Track velocity for paddle impact on ball
-                    physics.velocityY = physics.y - (physics.previousY || physics.y);
-                    physics.previousY = physics.y;
-                }
+        for (const entity of entities) {
+            if (entity.id === 'paddleL' || entity.id === 'paddleR') {
+                this._updatePaddle(entity, entitiesMap);
+            } else if (entity.id === 'ball') {
+                this._updateBall(entity, entitiesMap);
             }
-        });
+        }
     }
-    
-    updateBall(ball, paddleL, paddleR, allEntities) {
+
+    _createEntitiesMap(entities) {
+        const map = {};
+        for (const entity of entities) {
+            map[entity.id] = entity;
+        }
+        return map;
+    }
+
+    _updatePaddle(paddle, entitiesMap) {
+        const input = paddle.getComponent('input');
+        const physics = paddle.getComponent('physics');
+        
+        if (!input || !physics) return;
+
+        // Update paddle position based on input
+        this._applyInputToPaddle(input, physics);
+        
+        // Handle wall collisions
+        this._constrainPaddleToWalls(physics, entitiesMap);
+    }
+
+    _applyInputToPaddle(input, physics) {
+        const speed = physics.speed || 5;
+
+        if (input.upPressed) {
+            physics.velocityY = -speed;
+        } else if (input.downPressed) {
+            physics.velocityY = speed;
+        } else {
+            physics.velocityY = 0;
+        }
+
+        physics.y += physics.velocityY;
+    }
+
+    _constrainPaddleToWalls(physics, entitiesMap) {
+        // Top wall collision
+        if (entitiesMap.wallT) {
+            const wallPhysics = entitiesMap.wallT.getComponent('physics');
+            const wallBottom = wallPhysics.y + wallPhysics.height;
+            const paddleTop = physics.y - (physics.height / 2);
+
+            if (paddleTop < wallBottom) {
+                physics.y = wallBottom + (physics.height / 2);
+                physics.velocityY = 0;
+            }
+        }
+
+        // Bottom wall collision
+        if (entitiesMap.wallB) {
+            const wallPhysics = entitiesMap.wallB.getComponent('physics');
+            const wallTop = wallPhysics.y;
+            const paddleBottom = physics.y + (physics.height / 2);
+
+            if (paddleBottom > wallTop) {
+                physics.y = wallTop - (physics.height / 2);
+                physics.velocityY = 0;
+            }
+        }
+    }
+
+    _updateBall(ball, entitiesMap) {
         const physics = ball.getComponent('physics');
-        const prevX = physics.x;
-        const prevY = physics.y;
-        
-        // Initialize rotation if it doesn't exist
-        if (physics.rotation === undefined) {
-            physics.rotation = 0;
-        }
-        if (physics.rotationSpeed === undefined) {
-            physics.rotationSpeed = 0.1;
-        }
-        
-        // Track which side last scored for ball direction
-        if (physics.lastScoredSide === undefined) {
-            physics.lastScoredSide = 0; // 0 for none, -1 for left, 1 for right
-        }
-        
-        // Ball movement
+		const vfx = ball.getComponent('vfx');
+        if (!physics || ! vfx) return;
+
+        // Move the ball
         physics.x += physics.velocityX;
         physics.y += physics.velocityY;
+
+        // Handle collisions
+        this._handleBallWallCollisions(physics, entitiesMap);
+        this._handleBallPaddleCollisions(physics, entitiesMap);
         
-        // Set rotation based on horizontal direction
-        const rotationMagnitude = Math.abs(physics.rotationSpeed);
-        physics.rotationSpeed = physics.velocityX > 0 ? rotationMagnitude : -rotationMagnitude;
-        
-        // Apply rotation
-        physics.rotation += physics.rotationSpeed;
-        
-        // Ball Bounds
-        const ballLeft = physics.x - physics.width / 2;
-        const ballRight = physics.x + physics.width / 2;
-        const ballTop = physics.y - physics.height / 2;
-        const ballBottom = physics.y + physics.height / 2;
-        
-        // Get paddle physics components
-        const paddleLPhysics = paddleL.getComponent('physics');
-        const paddleRPhysics = paddleR.getComponent('physics');
-        
-        // Find border entities for collision detection
-        const borders = allEntities.filter(entity => 
-            entity.id === "top-wall" || entity.id === "bottom-wall");
-        
-        // Check for collision with borders
-        for (const border of borders) {
-            const borderPhysics = border.getComponent('physics');
-            if (!borderPhysics) continue;
+        // Check if ball is out of bounds
+        this._checkBallOutOfBounds(physics);
+    }
+
+    _handleBallWallCollisions(physics, entitiesMap) {
+        // Top wall collision
+        if (entitiesMap.wallT) {
+            const wallPhysics = entitiesMap.wallT.getComponent('physics');
+            const wallBottom = wallPhysics.y + wallPhysics.height;
+            const ballTop = physics.y - (physics.height / 2);
+
+            if (ballTop < wallBottom) {
+                physics.y = wallBottom + (physics.height / 2);
+                physics.velocityY *= -1;
+            }
+        }
+
+        // Bottom wall collision
+        if (entitiesMap.wallB) {
+            const wallPhysics = entitiesMap.wallB.getComponent('physics');
+            const wallTop = wallPhysics.y;
+            const ballBottom = physics.y + (physics.height / 2);
+
+            if (ballBottom > wallTop) {
+                physics.y = wallTop - (physics.height / 2);
+                physics.velocityY *= -1;
+            }
+        }
+    }
+
+    _handleBallPaddleCollisions(physics, entitiesMap) {
+        const ballLeft = physics.x - (physics.width / 2);
+        const ballRight = physics.x + (physics.width / 2);
+		const ball = entitiesMap.ball;
+
+        // Left Paddle collision
+        if (entitiesMap.paddleL) {
+            const paddlePhysics = entitiesMap.paddleL.getComponent('physics');
+            const paddleRight = paddlePhysics.x + (paddlePhysics.width / 2);
+            const paddleTop = paddlePhysics.y - (paddlePhysics.height / 2);
+            const paddleBottom = paddlePhysics.y + (paddlePhysics.height / 2);
             
-            const isTopWall = border.id === "top-wall";
-            const borderLeft = borderPhysics.x;
-            const borderRight = borderPhysics.x + borderPhysics.width;
-            const borderTop = borderPhysics.y;
-            const borderBottom = borderPhysics.y + borderPhysics.height;
-            
-            // Check for collision with this border
-            if (ballRight >= borderLeft && ballLeft <= borderRight &&
-                ballBottom >= borderTop && ballTop <= borderBottom) {
-                
-                // Determine if we hit from top or bottom
-                if (prevY + physics.height/2 < borderTop || prevY - physics.height/2 > borderBottom) {
-                    // Vertical collision - reverse Y velocity
-                    physics.velocityY = -physics.velocityY;
-                    
-                    // Reposition the ball to avoid getting stuck in the border
-                    if (isTopWall) {
-                        physics.y = borderBottom + physics.height/2;
-                    } else {
-                        physics.y = borderTop - physics.height/2;
-                    }
-                    
-                    console.log(`Collision with ${border.id}`);
-                }
+            if (physics.y >= paddleTop && physics.y <= paddleBottom && 
+                ballLeft <= paddleRight && ballLeft >= paddleRight - Math.abs(physics.velocityX)) {
+                physics.x = paddleRight + (physics.width / 2);
+                physics.velocityX *= -1;
+				
+				if (ball && ball.hasComponent('vfx')) {
+					const vfx = ball.getComponent('vfx');
+					vfx.startFlash(0x1CFFAC, 10); // Blue flash for left paddle
+				}
             }
         }
         
-        // Right Paddle Collision
-        if (
-            prevX + physics.width / 2 < paddleRPhysics.x &&
-            ballRight >= paddleRPhysics.x &&
-            ballBottom >= paddleRPhysics.y &&
-            ballTop <= paddleRPhysics.y + paddleRPhysics.height
-        ) {
-            // Calculate angle based on where it hits the paddle
-            const paddleCenterY = paddleRPhysics.y + paddleRPhysics.height / 2;
-            const ballDistanceFromCenter = physics.y - paddleCenterY;
-            const normalizedDistance = ballDistanceFromCenter / (paddleRPhysics.height / 2);
-            const maxBounceAngle = Math.PI / 4; // 45 degrees
-            const bounceAngle = normalizedDistance * maxBounceAngle;
-        
-            // Constant horizontal speed
-            const speed = Math.sqrt(physics.velocityX * physics.velocityX + 
-                                physics.velocityY * physics.velocityY);
+        // Right Paddle collision
+        if (entitiesMap.paddleR) {
+            const paddlePhysics = entitiesMap.paddleR.getComponent('physics');
+            const paddleLeft = paddlePhysics.x - (paddlePhysics.width / 2);
+            const paddleTop = paddlePhysics.y - (paddlePhysics.height / 2);
+            const paddleBottom = paddlePhysics.y + (paddlePhysics.height / 2);
             
-            // Speed clamp
-            const minSpeed = 5;
-            const actualSpeed = Math.max(speed, minSpeed);
-            
-            // Calculate new velocities
-            physics.velocityX = -Math.cos(bounceAngle) * actualSpeed;
-            physics.velocityY = Math.sin(bounceAngle) * actualSpeed;
-            
-            // Add some of the paddle's movement to the ball
-            if (Math.abs(paddleRPhysics.velocityY) > 0.5) {
-                physics.velocityY += paddleRPhysics.velocityY * 0.2;
+            if (physics.y >= paddleTop && physics.y <= paddleBottom && 
+                ballRight >= paddleLeft && ballRight <= paddleLeft + Math.abs(physics.velocityX)) {
+                physics.x = paddleLeft - (physics.width / 2);
+                physics.velocityX *= -1;
+				
+				if (ball && ball.hasComponent('vfx')) {
+					const vfx = ball.getComponent('vfx');
+					vfx.startFlash(0xAC1CFF, 10); // Red flash for right paddle
+				}
             }
-            
-            physics.x = paddleRPhysics.x - physics.width / 2;
-            
-            console.log("Right paddle collision:", physics.velocityX, physics.velocityY);
         }
-        
-        // Left Paddle Collision
-        if (
-            prevX - physics.width / 2 > paddleLPhysics.x + paddleLPhysics.width &&
-            ballLeft <= paddleLPhysics.x + paddleLPhysics.width &&
-            ballBottom >= paddleLPhysics.y &&
-            ballTop <= paddleLPhysics.y + paddleLPhysics.height
-        ) {
-            const paddleCenterY = paddleLPhysics.y + paddleLPhysics.height / 2;
-            const ballDistanceFromCenter = physics.y - paddleCenterY;
-            const normalizedDistance = ballDistanceFromCenter / (paddleLPhysics.height / 2);
-            const maxBounceAngle = Math.PI / 4; // 45 degrees
-            const bounceAngle = normalizedDistance * maxBounceAngle;
-        
-            const speed = Math.sqrt(physics.velocityX * physics.velocityX + 
-                                  physics.velocityY * physics.velocityY);
-            
-            const minSpeed = 5;
-            const actualSpeed = Math.max(speed, minSpeed);
-            
-            physics.velocityX = Math.cos(bounceAngle) * actualSpeed;
-            physics.velocityY = Math.sin(bounceAngle) * actualSpeed;
-            
-            if (Math.abs(paddleLPhysics.velocityY) > 0.5) {
-                physics.velocityY += paddleLPhysics.velocityY * 0.2;
-            }
-            
-            physics.x = paddleLPhysics.x + paddleLPhysics.width + physics.width / 2;
-            
-            console.log("Left paddle collision:", physics.velocityX, physics.velocityY);
+    }
+
+    _checkBallOutOfBounds(physics) {
+        const ballLeft = physics.x - (physics.width / 2);
+        const ballRight = physics.x + (physics.width / 2);
+
+        // Ball exits right side
+        if (ballLeft > this.width) {
+            this._resetBall(physics, 1);
         }
-        
-        // Goal detection
-        if (ballRight > this.width) {
-            physics.lastScoredSide = -1;
-            this.resetBall(physics, physics.lastScoredSide);
-            console.log("Ball out on right, left scores");
-        } else if (ballLeft < 0) {
-            physics.lastScoredSide = 1;
-            this.resetBall(physics, physics.lastScoredSide);
-            console.log("Ball out on left, right scores");
-        }
-        
-        // Error detection
-        if (isNaN(physics.x) || isNaN(physics.y) || 
-            Math.abs(physics.velocityX) < 0.1 || Math.abs(physics.velocityX) > 20) {
-            console.log("Ball velocity error detected, resetting:", 
-                    physics.velocityX, physics.velocityY);
-            this.resetBall(physics, 0);
+
+        // Ball exits left side
+        if (ballRight < 0) {
+            this._resetBall(physics, -1);
         }
     }
     
-    resetBall(physics, direction) {
+    _resetBall(physics, direction) {
         physics.x = this.width / 2;
         physics.y = this.height / 2;
     
-        let launchDirection;
-        if (direction === 0) {
-            launchDirection = Math.random() < 0.5 ? -1 : 1;
-        } else {
-            launchDirection = direction;
-        }
-        
         const angle = (Math.random() * 60 - 30) * (Math.PI / 180);
         const speed = 10;
         
-        physics.velocityX = Math.cos(angle) * speed * launchDirection;
+        physics.velocityX = Math.cos(angle) * speed * direction;
         physics.velocityY = Math.sin(angle) * speed;
-        
-        physics.rotation = 0;
-        physics.rotationSpeed = Math.abs(physics.rotationSpeed) * (physics.velocityX > 0 ? 1 : -1);
-        
-        console.log("Ball reset with direction:", launchDirection, physics.velocityX, physics.velocityY);
     }
 }

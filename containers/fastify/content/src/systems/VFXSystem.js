@@ -5,30 +5,35 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/08 17:06:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/08 17:22:48 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/10 16:22:19 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/10 18:24:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export class VFXSystem {
     update(entities, delta) {
         for (const entity of entities) {
-            const render = entity.getComponent('render');
+            if (!entity.hasComponent('vfx') || !entity.hasComponent('render')) continue;
+
             const vfx = entity.getComponent('vfx');
-
-            if (!render || !vfx)
-                continue;
-
-            // Update current scale with smooth transition
-            vfx.currentScale.x += (vfx.targetScale.x - vfx.currentScale.x) * vfx.damping;
-            vfx.currentScale.y += (vfx.targetScale.y - vfx.currentScale.y) * vfx.damping;
-
-            // Apply the scale to the rendered graphic
-            render.graphic.scale.set(vfx.currentScale.x, vfx.currentScale.y);
-
-            // Gradually return target scale to base scale
-            vfx.targetScale.x += (vfx.baseScale.x - vfx.targetScale.x) * vfx.returnSpeed;
-            vfx.targetScale.y += (vfx.baseScale.y - vfx.targetScale.y) * vfx.returnSpeed;
+            const render = entity.getComponent('render');
+            
+            vfx.entity = entity;
+            
+            if (vfx.isFlashing) {
+                vfx.flashTimeLeft -= delta.deltaTime;
+                if (vfx.flashTimeLeft > 0) {
+                    if (render.graphic) {
+                        render.graphic.tint = vfx.flashColor;
+                    }
+                } else {
+                    if (render.graphic) {
+                        render.graphic.tint = vfx.originalTint;
+                    }
+                    vfx.isFlashing = false;
+                }
+            } else 
+                render.graphic.tint = vfx.originalTint;
         }
     }
 }
