@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 15:51:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:56:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { Entity } from "../engine/Entity.js";
 import { RenderComponent } from "../components/RenderComponent.js";
 import { PhysicsComponent } from "../components/PhysicsComponent.js";
 import { InputComponent } from '../components/InputComponent.js';
+import { TextComponent } from '../components/TextComponent.js'
 
 export class Paddle extends Entity {
 	constructor (id, x, y, isLeftPaddle) {
@@ -31,7 +32,10 @@ export class Paddle extends Entity {
 		const inputComponent = new InputComponent(keys);
 		inputComponent.side = isLeftPaddle ? 'left' : 'right';
 		this.addComponent(inputComponent);
-		console.log(`Paddle has component ${this.getComponent('input').type}`);
+		
+		const paddleName = this.setPaddleName(isLeftPaddle);
+		const textComponent = new TextComponent(paddleName);
+		this.addComponent(textComponent);
 	}
 
 	createPaddleGraphic() {
@@ -65,5 +69,20 @@ export class Paddle extends Entity {
 			return ({ up: ['w'], down: ['s'] }) ;
 		}
 		return ({ up: ['ArrowUp'], down: ['ArrowDown'] });
+	}
+
+	setPaddleName(isLeftPaddle) {
+		return {
+			text: isLeftPaddle ? 'Player 1' : 'Player 2',
+			x: 0,
+			y: 0,
+			style: {
+				fill: 0xFFFFFF,
+				fontSize: 10,
+				fontWeight: 'bold',
+			},
+			rotation: isLeftPaddle ? -Math.PI/2 : Math.PI/2,
+			anchor: { x: 0.5, y: 0.5 },
+		};
 	}
 }

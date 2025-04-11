@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 18:26:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/11 17:48:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { RenderSystem } from '../systems/RenderSystem.js';
 import { PhysicsSystem } from '../systems/PhysicsSystem.js';
 import { InputSystem } from '../systems/InputSystem.js';
 import { VFXSystem } from '../systems/VFXSystem.js';
+import { Background } from '../entities/Background.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
 import { Wall } from '../entities/Wall.js'
@@ -69,7 +70,13 @@ export class PongGame {
 	}
 
 	async createEntities() {
-		//Create Top Wall
+		// Create Background
+		const background = new Background('background', this.width, this.height);
+		this.app.stage.addChild(background.getComponent('render').graphic);
+		this.entities.push(background);
+		console.log("Background created.");
+
+		// Create Top Wall
 		const wallT = new Wall('wallT', this.width, this.height, 15, 60);
 		this.app.stage.addChild(wallT.getComponent('render').graphic);
 		this.entities.push(wallT);
@@ -90,12 +97,18 @@ export class PongGame {
 		//Create left paddle
 		const paddleL = new Paddle('paddleL', 40, this.height / 2, true);
 		this.app.stage.addChild(paddleL.getComponent('render'). graphic);
+		if (paddleL.getComponent('text')) {
+			this.app.stage.addChild(paddleL.getComponent('text').getRenderable());
+		}
 		this.entities.push(paddleL);
 		console.log("PaddleL created.");
 
 		//Create right paddle
 		const paddleR = new Paddle('paddleR', this.width - 40, this.height / 2, false);
 		this.app.stage.addChild(paddleR.getComponent('render'). graphic);
+		if (paddleR.getComponent('text')) {
+			this.app.stage.addChild(paddleR.getComponent('text').getRenderable());
+		}
 		this.entities.push(paddleR);
 		console.log("PaddleR created.");
 	}
