@@ -21,8 +21,6 @@ const fastify = Fastify({
   }
 });
 
-
-
 fastify.register(cors, {
     origin: true, // !Allow requests from any origin, NOT SECURE!
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -124,88 +122,28 @@ fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, (err, address) => {
   console.log(`Server listening at ${address}`)
 })
 
-// Fastify try of config for blockchain
-
-// Root endpoint
-fastify.get('/', async (request, reply) => {
-  return { 
-    service: 'Blockchain Score Service',
-    version: '1.0',
-    endpoints: {
-      health: '/health',
-      recordScore: {
-        method: 'POST',
-        path: '/scores',
-        body: {
-          tournamentId: 'string',
-          player: 'string',
-          score: 'number'
-        }
-      },
-      getScores: {
-        method: 'GET',
-        path: '/scores/:tournamentId'
-      }
-    }
-  };
-});
-
-// Health check endpoint (keep your existing one)
-fastify.get('/health', async () => {
-  try {
-    const blockNumber = await provider.getBlockNumber();
-    return { 
-      status: 'healthy',
-      network: 'Avalanche Fuji',
-      latestBlock: blockNumber 
-    };
-  } catch (error) {
-    return { status: 'unhealthy', error: error.message };
-  }
-});
-
-// Add this error handler for better error messages
-fastify.setErrorHandler((error, request, reply) => {
-  fastify.log.error(error);
-  reply.status(500).send({
-    error: error.message,
-    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-  });
-});
-
-// Add these near your other route definitions
-fastify.get('/blockchain', async (request, reply) => {
-  return reply.sendFile('blockchain.html');
-});
-
-fastify.get('/blockchain/deploy', async (request, reply) => {
-  // Forward to blockchain service
-  const response = await fetch('http://blockchain:3002/deploy');
-  return reply.send(await response.json());
-});
-
-fastify.post('/blockchain/scores', async (request, reply) => {
-  // Forward to blockchain service
-  const response = await fetch('http://blockchain:3002/scores', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request.body)
-  });
-  return reply.send(await response.json());
-});
-
+//
+//
+// Blockchain
+//
+//
 fastify.post('/blockchain/deploy-contract', async (request, reply) => {
-  const { teamAScore, teamBScore } = request.body;
-  
   try {
-    // Forward to blockchain service
     const response = await fetch('http://blockchain:3002/deploy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamA: teamAScore, teamB: teamBScore })
+      body: JSON.stringify(request.body)
     });
     
-    return reply.send(await response.json());
+    const data = await response.json();
+    
+    // Add Snowtrace URL for easy verification
+    if (data.success) {
+      data.explorerUrl = `https://testnet.snowtrace.io/address/${data.contractAddress}`;
+    }
+    
+    return reply.send(data);
+    
   } catch (error) {
     return reply.status(500).send({ 
       success: false, 
@@ -213,4 +151,8 @@ fastify.post('/blockchain/deploy-contract', async (request, reply) => {
     });
   }
 });
-// End of blockchain config
+//
+//
+// Blockchain
+//
+//

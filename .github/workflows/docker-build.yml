@@ -38,8 +38,7 @@ jobs:
         docker ps --format "{{.Names}}" | grep portainer 
         docker ps --format "{{.Names}}" | grep nginx
         docker ps --format "{{.Names}}" | grep adminer
-        docker ps --format "{{.Names}}" | grep avalanche-node
-        
+
     - name: Clean up containers
       if: always()
       run: |
