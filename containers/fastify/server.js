@@ -42,7 +42,7 @@ db.serialize(() => {
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
 
-fastify.get('/metrics', async (request, reply) => {
+fastify.get('/metrics', async (_, reply) => {
   reply.type('text/plain');
   return client.register.metrics();
 });
