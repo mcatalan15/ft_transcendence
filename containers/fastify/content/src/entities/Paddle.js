@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/11 16:56:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:04:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ export class Paddle extends Entity {
 	createPaddleGraphic() {
 		const paddleGraphic = new PIXI.Graphics();
 		paddleGraphic.rect(0, 0, 10, 80);
-		paddleGraphic.fill('white');
+		paddleGraphic.fill('#FAF3E0');
 		paddleGraphic.pivot.set(5, 40);
 		return (paddleGraphic);
 	}

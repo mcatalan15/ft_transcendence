@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:58:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 10:30:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:04:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ export class Wall extends Entity {
 	createWallGraphic(width, thickness) {
 		const wallGraphic = new PIXI.Graphics();
 		wallGraphic.rect(0, 0, width, thickness);
-		wallGraphic.fill('white');
+		wallGraphic.fill('#FAF3E0');
 		wallGraphic.pivot.set(0, 0, width / 2, thickness / 2);
 		return (wallGraphic);
 	}

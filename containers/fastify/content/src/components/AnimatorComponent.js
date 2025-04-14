@@ -1,20 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParticleBehaviorComponent.js                       :+:      :+:    :+:   */
+/*   AnimatorComponent.js                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/14 10:02:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 16:47:38 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/14 17:40:39 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/14 17:53:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-export class ParticleBehaviorComponent {
-	constructor (options = {}) {
-		this.type = 'particleBehavior';
-		this.rotate = options.rotate || false;
-		this.shrink = options.shrink || false;
-		this.rotationSpeed = 0.1
-	}
-}

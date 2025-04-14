@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 16:33:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:03:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ import { Wall } from '../entities/Wall.js'
 export class PongGame {
 	constructor (){
 		this.width = 1500; //1500
-		this.height = 800; //800
+		this.height = 500; //800
 		this.app = null;
 		this.entities = [];
 		this.systems = [];
@@ -34,7 +34,7 @@ export class PongGame {
 		console.log("Initilizing PongGame...");
 		this.app = new PIXI.Application();
 		await this.app.init({
-			background: 'black',
+			background: '#121212',
 			width: this.width,
 			height: this.height,
 			antialias: true,
@@ -62,7 +62,7 @@ export class PongGame {
 		const renderSystem = new RenderSystem(this.app);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const inputSystem = new InputSystem();
-		const vfxSystem = new VFXSystem(this);
+		const vfxSystem = new VFXSystem(this, this.width, this.height);
 		const particleSystem = new ParticleSystem(this);
 
 		this.systems.push(renderSystem);
@@ -73,20 +73,23 @@ export class PongGame {
 	}
 
 	async createEntities() {
+		const topWallOffset = 40;
+		const bottomWallOffset = 60;
+		
 		// Create Background
-		const background = new Background('background', this.width, this.height);
+		const background = new Background('background', this.width, this.height, topWallOffset, bottomWallOffset);
 		this.app.stage.addChild(background.getComponent('render').graphic);
 		this.entities.push(background);
 		console.log("Background created.");
 
 		// Create Top Wall
-		const wallT = new Wall('wallT', this.width, this.height, 15, 60);
+		const wallT = new Wall('wallT', this.width, this.height, 15, topWallOffset);
 		this.app.stage.addChild(wallT.getComponent('render').graphic);
 		this.entities.push(wallT);
 		console.log("wallT created.");
 
 		//Create Bottom Wall
-		const wallB = new Wall('wallB', this.width, this.height, 15, this.height - 80);
+		const wallB = new Wall('wallB', this.width, this.height, 15, this.height - bottomWallOffset);
 		this.app.stage.addChild(wallB.getComponent('render').graphic);
 		this.entities.push(wallB);
 		console.log("wallB created.");

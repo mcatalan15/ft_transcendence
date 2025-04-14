@@ -6,13 +6,19 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 16:22:19 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 10:27:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 17:10:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { ParticleSpawner } from '../spawners/ParticleSpawner.js'
+
 export class VFXSystem {
-    constructor(game) {
+    constructor(game, width, height) {
         this.game = game;
+        this.dustSpawnInterval = 1;
+        this.lastDustSpawnTime = 0;
+        this.width = width;
+        this.height = height;
     }
     
     update(entities, delta) {
