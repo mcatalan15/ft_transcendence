@@ -6,14 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 18:29:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 16:13:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { ParticleSpawner } from '../spawners/ParticleSpawner.js'
+
 export class PhysicsSystem {
-    constructor(width, height) {
+    constructor(game, width, height) {
         this.width = width;
         this.height = height;
+        this.game = game;
     }
 
     update(entities) {
@@ -149,6 +152,8 @@ export class PhysicsSystem {
                 physics.x = paddleRight + (physics.width / 2);
                 physics.velocityX *= -1;
 				
+                ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y);
+
 				if (ball && ball.hasComponent('vfx')) {
 					const vfx = ball.getComponent('vfx');
 					vfx.startFlash(0x1CFFAC, 10); // Blue flash for left paddle
@@ -167,6 +172,8 @@ export class PhysicsSystem {
                 ballRight >= paddleLeft && ballRight <= paddleLeft + Math.abs(physics.velocityX)) {
                 physics.x = paddleLeft - (physics.width / 2);
                 physics.velocityX *= -1;
+
+                ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y);
 				
 				if (ball && ball.hasComponent('vfx')) {
 					const vfx = ball.getComponent('vfx');
@@ -182,11 +189,27 @@ export class PhysicsSystem {
 
         // Ball exits right side
         if (ballLeft > this.width) {
+            ParticleSpawner.spawnBurst(
+                this.game,
+                physics.x - physics.width / 4,
+                physics.y,
+                10,
+                physics.velocityX,
+                physics.velocityY
+            );
             this._resetBall(physics, 1);
         }
 
         // Ball exits left side
         if (ballRight < 0) {
+            ParticleSpawner.spawnBurst(
+                this.game,
+                physics.x + physics.width / 4,
+                physics.y,
+                10,
+                physics.velocityX,
+                physics.velocityY
+            );
             this._resetBall(physics, -1);
         }
     }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/11 17:48:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 16:33:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { RenderSystem } from '../systems/RenderSystem.js';
 import { PhysicsSystem } from '../systems/PhysicsSystem.js';
 import { InputSystem } from '../systems/InputSystem.js';
 import { VFXSystem } from '../systems/VFXSystem.js';
+import { ParticleSystem } from '../systems/ParticleSystem.js';
 import { Background } from '../entities/Background.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
@@ -21,8 +22,8 @@ import { Wall } from '../entities/Wall.js'
 
 export class PongGame {
 	constructor (){
-		this.width = 1500;
-		this.height = 800;
+		this.width = 1500; //1500
+		this.height = 800; //800
 		this.app = null;
 		this.entities = [];
 		this.systems = [];
@@ -59,14 +60,16 @@ export class PongGame {
 	// Helper function to initialize all existing game systems
 	initSystems() {
 		const renderSystem = new RenderSystem(this.app);
-		const physicsSystem = new PhysicsSystem(this.width, this.height);
+		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const inputSystem = new InputSystem();
-		const vfxSystem = new VFXSystem();
+		const vfxSystem = new VFXSystem(this);
+		const particleSystem = new ParticleSystem(this);
 
 		this.systems.push(renderSystem);
 		this.systems.push(physicsSystem);
 		this.systems.push(inputSystem);
 		this.systems.push(vfxSystem);
+		this.systems.push(particleSystem);
 	}
 
 	async createEntities() {
@@ -111,6 +114,35 @@ export class PongGame {
 		}
 		this.entities.push(paddleR);
 		console.log("PaddleR created.");
+	}
+
+	addEntity(entity) {
+		this.entities.push(entity);
+		const render = entity.getComponent?.('render');
+		if (render?.graphic) {
+			this.app.stage.addChild(render.graphic);
+		}
+	
+		const text = entity.getComponent?.('text');
+		if (text?.getRenderable) {
+			this.app.stage.addChild(text.getRenderable());
+		}
+	}
+	
+	removeEntity(entityId) {
+		const index = this.entities.findIndex(e => e.id === entityId);
+		if (index !== -1) {
+			const entity = this.entities[index];
+			const render = entity.getComponent?.('render');
+			if (render?.graphic?.destroy) {
+				render.graphic.destroy();
+			}
+			const text = entity.getComponent?.('text');
+			if (text?.getRenderable()?.destroy) {
+				text.getRenderable().destroy();
+			}
+			this.entities.splice(index, 1);
+		}
 	}
 
 	gameLoop(delta) {

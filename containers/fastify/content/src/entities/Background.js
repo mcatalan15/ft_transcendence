@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:13:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/11 17:53:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 09:53:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export class Background extends Entity {
 	createLines(width, height, topOffset, spacing) {
         const backgroundContainer = new PIXI.Container();
 		
-		const totalLines = 5;
+		const totalLines = 8;
 		const startAlpha = 0.7;
 		const endAlpha = 0.1;
 

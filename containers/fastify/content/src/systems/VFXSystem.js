@@ -6,11 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 16:22:19 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 18:24:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/14 10:27:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export class VFXSystem {
+    constructor(game) {
+        this.game = game;
+    }
+    
     update(entities, delta) {
         for (const entity of entities) {
             if (!entity.hasComponent('vfx') || !entity.hasComponent('render')) continue;
