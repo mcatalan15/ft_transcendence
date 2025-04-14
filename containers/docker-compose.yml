@@ -45,7 +45,7 @@ services:
     build: ./fastify
     container_name: fastify
     ports:
-      - "127.0.0.1:3100:3100"
+      - "3100:3100"
     volumes:
       - content:/usr/src/app/content
       - userbase:/usr/src/app/db
@@ -84,6 +84,9 @@ services:
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      nginx:
+        condition: service_started
     restart: always
     networks:
       - transcendence

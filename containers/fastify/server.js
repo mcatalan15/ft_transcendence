@@ -1,8 +1,10 @@
+const client = require('prom-client');
+
 // import all the required modules
 const Fastify = require('fastify');							//	
 const cors = require('@fastify/cors');						//	manage API requests
 const fastifyMultipart = require('fastify-multipart');		//	parse multipart contents
-const underPressure = require('@fastify/under-pressure');	//	
+const underPressure = require('@fastify/under-pressure');	//	status/healthcheck
 const { db, isDatabaseHealthy } = require('./db/database')
 
 // Make logs pretty and readable
@@ -37,6 +39,13 @@ db.serialize(() => {
 	});
   });
 
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
+
+fastify.get('/metrics', async (request, reply) => {
+  reply.type('text/plain');
+  return client.register.metrics();
+});
 
 const { ADDRESS = '0.0.0.0', PORT = '3100' } = process.env;
 
