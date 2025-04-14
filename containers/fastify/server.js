@@ -24,7 +24,6 @@ fastify.register(cors, {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 });
-
 fastify.register(fastifyMultipart);
 fastify.register(require('./routes/registration'));	// user registration
 
