@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tournament Scores</title>
+  <style>
+    body { font-family: Arial; max-width: 500px; margin: 0 auto; padding: 20px; }
+    .score-input { margin: 10px 0; }
+    button { padding: 10px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+    #result { margin-top: 20px; padding: 10px; border-radius: 4px; }
+    .success { background: #dff0d8; color: #3c763d; }
+    .error { background: #f2dede; color: #a94442; }
+  </style>
+</head>
+<body>
+  <h1>Create Tournament Contract</h1>
+  
+  <div class="score-input">
+    <label>Team A Score:</label>
+    <input type="number" id="teamA">
+  </div>
+  
+  <div class="score-input">
+    <label>Team B Score:</label>
+    <input type="number" id="teamB">
+  </div>
+  
+  <button onclick="deployContract()">Generate Smart Contract</button>
+  
+  <div id="result"></div>
+
+  <script>
+    async function deployContract() {
+      const teamA = document.getElementById('teamA').value;
+      const teamB = document.getElementById('teamB').value;
+      
+      try {
+        const response = await fetch('/blockchain/deploy-contract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            teamAScore: teamA, 
+            teamBScore: teamB 
+          })
+        });
+        
+        const data = await response.json();
+        
+        const resultDiv = document.getElementById('result');
+        if (data.success) {
+          resultDiv.className = 'success';
+          resultDiv.innerHTML = `
+            <p>Contract deployed successfully!</p>
+            <p>Address: ${data.contractAddress}</p>
+            <p>TX Hash: ${data.transactionHash}</p>
+          `;
+        } else {
+          resultDiv.className = 'error';
+          resultDiv.innerHTML = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        document.getElementById('result').innerHTML = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>

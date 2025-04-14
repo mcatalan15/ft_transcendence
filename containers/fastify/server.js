@@ -172,4 +172,45 @@ fastify.setErrorHandler((error, request, reply) => {
     stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
   });
 });
+
+// Add these near your other route definitions
+fastify.get('/blockchain', async (request, reply) => {
+  return reply.sendFile('blockchain.html');
+});
+
+fastify.get('/blockchain/deploy', async (request, reply) => {
+  // Forward to blockchain service
+  const response = await fetch('http://blockchain:3002/deploy');
+  return reply.send(await response.json());
+});
+
+fastify.post('/blockchain/scores', async (request, reply) => {
+  // Forward to blockchain service
+  const response = await fetch('http://blockchain:3002/scores', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request.body)
+  });
+  return reply.send(await response.json());
+});
+
+fastify.post('/blockchain/deploy-contract', async (request, reply) => {
+  const { teamAScore, teamBScore } = request.body;
+  
+  try {
+    // Forward to blockchain service
+    const response = await fetch('http://blockchain:3002/deploy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teamA: teamAScore, teamB: teamBScore })
+    });
+    
+    return reply.send(await response.json());
+  } catch (error) {
+    return reply.status(500).send({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
 // End of blockchain config
