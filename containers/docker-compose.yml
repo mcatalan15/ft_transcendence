@@ -21,6 +21,8 @@ volumes:
     driver: local
   grafana_data:
     driver: local
+  certs:  # SSL certificates
+    driver: local
 
 #########################################################
 #                       SERVICES                        #
@@ -31,13 +33,15 @@ services:
     build: ./nginx
     container_name: nginx
     ports:
-      - "1080:1080"
+      - "80:80"
+      - "443:443"
     restart: always
     depends_on:
       fastify:
         condition: service_healthy
     volumes:
       - content:/usr/share/nginx/html:ro
+      - certs:/etc/letsencrypt
     networks:
       - transcendence
 
