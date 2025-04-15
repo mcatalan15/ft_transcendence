@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:03:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 16:04:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 17:48:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,16 @@ export class ParticleSystem {
             if (lifetime.remaining <= 0) {
                 particlesToRemove.push(entity.id);
                 continue; // Skip further processing for expired particles
+            }
+
+            // Manage alpha variations
+            render.graphic.alpha = entity.alpha;
+            console.log(entity.fadeOut);
+            if (entity.fadeOut) {
+                entity.alpha -= entity.alphaDecay * delta.deltaTime;
+                console.log(entity.alphaDecay * delta.deltaTime);
+                if (entity.alpha < 0)
+                    entity.alpha = 0;
             }
 
             // Update position

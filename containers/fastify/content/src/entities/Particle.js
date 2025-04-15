@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 09:56:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 15:52:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 17:49:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,14 @@ export class Particle extends Entity {
 			color = 0xFFFFFF,
 			shrink = false,
 			rotate = false,
+			alpha = 1,
+			alphaDecay = 0,
+			fadeOut = false,
 		} = options;
+
+		this.alpha = alpha;
+		this.fadeOut = fadeOut;
+		this.alphaDecay = alphaDecay;
 
 		// Basic particle: white square
 		const graphic = this.generateParticleGraphic(type, size, color, x, y);

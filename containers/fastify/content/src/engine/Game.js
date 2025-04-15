@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 10:44:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 17:52:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ import { PhysicsSystem } from '../systems/PhysicsSystem.js';
 import { InputSystem } from '../systems/InputSystem.js';
 import { VFXSystem } from '../systems/VFXSystem.js';
 import { ParticleSystem } from '../systems/ParticleSystem.js';
+import { UISystem } from '../systems/UISystem.js';
 import { Background } from '../entities/Background.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
@@ -24,10 +25,11 @@ import { UI } from '../entities/UI.js'
 export class PongGame {
 	constructor (){
 		this.width = 1500; //1500
-		this.height = 500; //800
+		this.height = 500; //500
 		this.app = null;
 		this.entities = [];
 		this.systems = [];
+		this.eventQueue = [];
 	}
 
 	async init() {
@@ -62,22 +64,25 @@ export class PongGame {
 
 	// Helper function to initialize all existing game systems
 	initSystems() {
-		const renderSystem = new RenderSystem(this.app);
+		const renderSystem = new RenderSystem(this, this.app);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const inputSystem = new InputSystem();
 		const vfxSystem = new VFXSystem(this, this.width, this.height);
 		const particleSystem = new ParticleSystem(this);
+		const uiSystem = new UISystem(this, this.app);
 
 		this.systems.push(renderSystem);
 		this.systems.push(physicsSystem);
 		this.systems.push(inputSystem);
 		this.systems.push(vfxSystem);
 		this.systems.push(particleSystem);
+		this.systems.push(uiSystem);
 	}
 
 	async createEntities() {
 		const topWallOffset = 40;
 		const bottomWallOffset = 60;
+		const wallThickness = 15;
 		
 		// Create Background
 		const background = new Background('background', this.width, this.height, topWallOffset, bottomWallOffset);
@@ -86,13 +91,13 @@ export class PongGame {
 		console.log("Background created.");
 
 		// Create Top Wall
-		const wallT = new Wall('wallT', this.width, this.height, 15, topWallOffset);
+		const wallT = new Wall('wallT', this.width, this.height, wallThickness, topWallOffset);
 		this.app.stage.addChild(wallT.getComponent('render').graphic);
 		this.entities.push(wallT);
 		console.log("wallT created.");
 
 		//Create Bottom Wall
-		const wallB = new Wall('wallB', this.width, this.height, 15, this.height - bottomWallOffset);
+		const wallB = new Wall('wallB', this.width, this.height, wallThickness, this.height - bottomWallOffset);
 		this.app.stage.addChild(wallB.getComponent('render').graphic);
 		this.entities.push(wallB);
 		console.log("wallB created.");
@@ -122,7 +127,7 @@ export class PongGame {
 		console.log("PaddleR created.");
 
 		// Create UI
-		const overlay = new UI('UI', this.width, this.height);
+		const overlay = new UI('UI', this.width, this.height, topWallOffset - wallThickness);
 		this.app.stage.addChild(overlay.getComponent('text').getRenderable());
 		this.entities.push(overlay);
 		console.log("UI created.");

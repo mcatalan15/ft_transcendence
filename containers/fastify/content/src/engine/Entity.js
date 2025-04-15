@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 17:49:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 11:12:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,86 @@ export class Entity {
         this.components = new Map();
     }
 
-    addComponent(component) {
-        this.components.set(component.type, component);
+    addComponent(component, instanceId = null) {
+        const type = component.type;
+        
+        // Generate a default instanceId if none provided
+        if (!instanceId) {
+            instanceId = `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        }
+        
+        // Format for storage: [componentType, instanceId]
+        const key = this._formatKey(type, instanceId);
+        
+        // If this is the first component of this type, also store it with just the type
+        // for backward compatibility with getComponent(type)
+        if (!this.components.has(type)) {
+            this.components.set(type, component);
+        }
+        
+        // Store the component with its full key
+        this.components.set(key, component);
+        
+        // Add instanceId to the component for easy reference
+        component.instanceId = instanceId;
+        
+        return instanceId;
     }
 
-    getComponent(type) {
-        return this.components.get(type);
+    getComponent(type, instanceId = null) {
+        if (instanceId) {
+            // Get specific instance of component
+            const key = this._formatKey(type, instanceId);
+            return this.components.get(key) || null;
+        } else {
+            // Get the first/main component of this type (backward compatibility)
+            return this.components.get(type) || null;
+        }
     }
 
-    hasComponent(type) {
-        //!DEBUG
-        /*if (this.id === 'paddleL' && !this.components.has(type)){
-            console.log(`Entity ${this.id} has no component ${type}.`)
-        }*/
+    getComponentsByType(type) {
+        const result = [];
+        
+        for (const [key, component] of this.components.entries()) {
+            // Check if the key is either the type itself or starts with type:
+            if (key === type || (typeof key === 'string' && key.startsWith(`${type}:`))) {
+                result.push(component);
+            }
+        }
+        
+        return result;
+    }
 
+    hasComponent(type, instanceId = null) {
+        if (instanceId) {
+            const key = this._formatKey(type, instanceId);
+            return this.components.has(key);
+        }
         return this.components.has(type);
+    }
+
+    removeComponent(type, instanceId = null) {
+        if (instanceId) {
+            // Remove specific instance
+            const key = this._formatKey(type, instanceId);
+            return this.components.delete(key);
+        } else {
+            // Remove all components of this type
+            let removed = this.components.delete(type);
+            
+            // Find and remove all instances of this type
+            for (const key of this.components.keys()) {
+                if (typeof key === 'string' && key.startsWith(`${type}:`)) {
+                    this.components.delete(key);
+                    removed = true;
+                }
+            }
+            
+            return removed;
+        }
+    }
+
+    _formatKey(type, instanceId) {
+        return `${type}:${instanceId}`;
     }
 }

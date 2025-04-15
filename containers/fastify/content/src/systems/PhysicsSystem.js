@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 16:53:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 15:40:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ export class PhysicsSystem {
                 physics.x = paddleRight + (physics.width / 2);
                 physics.velocityX *= -1;
 				
-                ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y);
+                ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
 
 				if (ball && ball.hasComponent('vfx')) {
 					const vfx = ball.getComponent('vfx');
@@ -173,7 +173,7 @@ export class PhysicsSystem {
                 physics.x = paddleLeft - (physics.width / 2);
                 physics.velocityX *= -1;
 
-                ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y);
+                ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
 				
 				if (ball && ball.hasComponent('vfx')) {
 					const vfx = ball.getComponent('vfx');
@@ -195,8 +195,10 @@ export class PhysicsSystem {
                 physics.y,
                 10,
                 physics.velocityX,
-                physics.velocityY
+                physics.velocityY,
+                0xFFAC1C,
             );
+            this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
             this._resetBall(physics, 1);
         }
 
@@ -208,8 +210,10 @@ export class PhysicsSystem {
                 physics.y,
                 10,
                 physics.velocityX,
-                physics.velocityY
+                physics.velocityY,
+                0xFFAC1C,
             );
+            this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
             this._resetBall(physics, -1);
         }
     }

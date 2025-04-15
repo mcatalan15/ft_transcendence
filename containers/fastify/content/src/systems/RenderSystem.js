@@ -6,54 +6,42 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 17:23:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 10:45:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 14:08:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export class RenderSystem {
-	constructor(app) {
+    constructor(game, app) {
+        this.game = game;
 		this.app = app;
-	}
+        this.renderedTextComponents = new Set();
+    }
 
-	update(entities, delta){
-		entities.forEach(entity => {
-			const renderComponent = entity.getComponent('render');
-			const physicsComponent = entity.getComponent('physics');
-			const textComponent = entity.getComponent('text');
+    update(entities, delta) {
+        entities.forEach(entity => {
+            const renderComponent = entity.getComponent('render');
+            const physicsComponent = entity.getComponent('physics');
 
-			if (renderComponent && physicsComponent) {
-				renderComponent.graphic.x = physicsComponent.x;
-				renderComponent.graphic.y = physicsComponent.y;
-			}
+            // Handle rendering for physics objects
+            if (renderComponent && physicsComponent) {
+                renderComponent.graphic.x = physicsComponent.x;
+                renderComponent.graphic.y = physicsComponent.y;
+            }
 
-			if (textComponent && physicsComponent) {
-				const textObject = textComponent.getRenderable();
-				const isLeftPaddle = entity.id === 'paddleL';
-				
-				if (isLeftPaddle) {
-					// For left paddle, position text between paddle and left wall
-					textObject.x = physicsComponent.x - 25; // Adjust this value as needed
-					textObject.y = physicsComponent.y; // Same vertical position as paddle
-				} else {
-					// For right paddle, position text between paddle and right wall
-					textObject.x = physicsComponent.x + 25; // Adjust this value as needed
-					textObject.y = physicsComponent.y; // Same vertical position as paddle
-				}
-			}
-
-			if (textComponent && entity.id === 'UI'){
-				const textObject = textComponent.getRenderable();
-
-				console.log(`Tag:${textComponent.getTag()}`);
-
-				if (textComponent.tag == 'leftScore'){
-					textObject.x = 500;
-					textObject.y = 50;
-				} else if (textComponent.tag == 'rightScore') {
-					textObject.x = 750;
-					textObject.y = 20;
-				}
-			}
-		})
-	}
+            // Handle text components for paddles
+            if (entity.hasComponent('text') && physicsComponent && (entity.id === 'paddleL' || entity.id === 'paddleR')) {
+                const textComponent = entity.getComponent('text');
+                const textObject = textComponent.getRenderable();
+                const isLeftPaddle = entity.id === 'paddleL';
+                
+                if (isLeftPaddle) {
+                    textObject.x = physicsComponent.x - 25;
+                    textObject.y = physicsComponent.y;
+                } else {
+                    textObject.x = physicsComponent.x + 25;
+                    textObject.y = physicsComponent.y;
+                }
+            }
+        });
+    }
 }
