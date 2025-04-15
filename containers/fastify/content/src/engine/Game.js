@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 18:03:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 10:44:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import { Background } from '../entities/Background.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
 import { Wall } from '../entities/Wall.js'
+import { UI } from '../entities/UI.js'
 
 export class PongGame {
 	constructor (){
@@ -38,6 +39,8 @@ export class PongGame {
 			width: this.width,
 			height: this.height,
 			antialias: true,
+			resolution: window.devicePixelRatio,
+			autoDensity: true,
 		});
 
 		const gameContainer = document.getElementById('game-container');
@@ -117,6 +120,12 @@ export class PongGame {
 		}
 		this.entities.push(paddleR);
 		console.log("PaddleR created.");
+
+		// Create UI
+		const overlay = new UI('UI', this.width, this.height);
+		this.app.stage.addChild(overlay.getComponent('text').getRenderable());
+		this.entities.push(overlay);
+		console.log("UI created.");
 	}
 
 	addEntity(entity) {

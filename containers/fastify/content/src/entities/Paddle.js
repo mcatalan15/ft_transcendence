@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 18:04:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/15 10:35:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ export class Paddle extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFFFF,
+				fill: 0xFAF3E0,
 				fontSize: 10,
 				fontWeight: 'bold',
 			},
