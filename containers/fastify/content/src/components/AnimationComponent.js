@@ -1,12 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AnimatorComponent.js                               :+:      :+:    :+:   */
+/*   AnimationComponent.js                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:40:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 17:53:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/16 13:59:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+export class AnimationComponent {
+	constructor (){
+		this.type = 'animation';
+	}
+}

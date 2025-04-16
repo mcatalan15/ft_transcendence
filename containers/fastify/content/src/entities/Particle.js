@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 09:56:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 17:49:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:50:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ export class Particle extends Entity {
 			alpha = 1,
 			alphaDecay = 0,
 			fadeOut = false,
+			despawn = 'time',
 		} = options;
 
 		this.alpha = alpha;
@@ -52,7 +53,7 @@ export class Particle extends Entity {
 		});
 		this.addComponent(physics);
 
-		const lifetimeComp = new LifetimeComponent(lifetime);
+		const lifetimeComp = new LifetimeComponent(lifetime, despawn);
 		this.addComponent(lifetimeComp);
 
 		const behaviour = new ParticleBehaviorComponent({
@@ -79,7 +80,7 @@ export class Particle extends Entity {
 				break;
 			
 			case 'triangle':
-				graphic.regularPoly(0, 0, size, 3, 0);;
+				graphic.regularPoly(0, 0, size * 2, 3, 0);;
 				graphic.fill(color);
 				graphic.pivot.set(0, 0);
 				break ;
