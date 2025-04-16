@@ -2,7 +2,7 @@
 	"name": "frontend",
 	"version": "1.0.0",
 	"scripts": {
-	  "build": "tsc && postcss src/tailwind.css -o dist/styles.css",
+	  "build": "tsc && cp public/index",
 	  "start": "echo 'Frontend is served via Nginx'; exit 0"
 	},
 	"dependencies": {
