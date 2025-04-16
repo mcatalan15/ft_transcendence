@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:34:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 16:38:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/16 17:36:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ export class DepthLine extends Entity {
 		
 		// Draw line centered on its position
 		line.rect(-width/2, 0, width, 0.5);  // Center the line horizontally
-		line.fill({color: 0xFFAC1C, alpha: 1});
+		line.fill({color: 0xFF1C5A, alpha: 1});
 		
 		return line;
 	}
