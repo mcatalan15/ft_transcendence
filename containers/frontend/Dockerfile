@@ -10,6 +10,7 @@ COPY . .
 
 RUN npm run build
 
-VOLUME /app/static
+VOLUME /public
+RUN cp -r public/* /public
 
-CMD ["echo", "Frontend build complete. Static files are in the volume."]
+CMD ["echo", "Frontend built"]

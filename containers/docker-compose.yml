@@ -11,7 +11,7 @@ networks:
 #########################################################
 
 volumes:
-  static_content:
+  public:
     driver: local
   userbase:
     driver: local
@@ -43,7 +43,7 @@ services:
       backend:
         condition: service_healthy
     volumes:
-      - static_content:/usr/share/nginx/html:ro
+      - public:/usr/share/nginx/html:ro
       - certs:/etc/letsencrypt
     networks:
       - transcendence
@@ -54,7 +54,7 @@ services:
     build: ./frontend
     container_name: frontend
     volumes:
-      - static_content:/app/static
+      - public:/app/public
     restart: on-failure    
     networks:
       - transcendence
