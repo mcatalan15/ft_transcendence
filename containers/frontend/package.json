@@ -1,0 +1,18 @@
+{
+	"name": "frontend",
+	"version": "1.0.0",
+	"scripts": {
+	  "build": "tsc && postcss src/tailwind.css -o dist/styles.css",
+	  "start": "echo 'Frontend is served via Nginx'; exit 0"
+	},
+	"dependencies": {
+	  "tailwindcss": "^3.0.0",
+	  "autoprefixer": "^10.0.0",
+	  "postcss": "^8.0.0"
+	},
+	"devDependencies": {
+	  "typescript": "^4.0.0",
+	  "postcss-cli": "^9.0.0"
+	}
+  }
+  
