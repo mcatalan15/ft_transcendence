@@ -2,7 +2,7 @@
 	"name": "frontend",
 	"version": "1.0.0",
 	"scripts": {
-	  "build": "tsc && cp public/index",
+	  "build": "tsc",
 	  "start": "echo 'Frontend is served via Nginx'; exit 0"
 	},
 	"dependencies": {

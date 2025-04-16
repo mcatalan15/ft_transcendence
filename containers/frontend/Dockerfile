@@ -10,7 +10,4 @@ COPY . .
 
 RUN npm run build
 
-VOLUME /public
-RUN cp -r public/* /public
-
 CMD ["echo", "Frontend built"]
