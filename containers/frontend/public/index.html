@@ -1,14 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TypeScript Frontend</title>
-  <link href="styles.css" rel="stylesheet">
-  <h1 class="text-4xl text-center text-blue-500">Hello from Tailwind CSS!</h1>
+  <title>ft_transcendence</title>
+  <style>
+    body {
+      background-color: #221c17;
+      color: #feeee2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .zone {
+      position: relative;
+      width: 700px;
+      height: 300px;
+      border: 10px solid #feeee2;
+      margin-top: 20px;
+    }
+
+    .ball {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #c57c22;
+    }
+
+    .paddle {
+      position: absolute;
+      width: 100px;
+      height: 10px;
+      background-color: #feeee2;
+      border: 10px solid #221c17;
+      z-index: 2;
+      left: 320px; /* centradas horizontalmente */
+    }
+
+    .paddle.top {
+      top: -20px;
+      right: 120px;
+      border-bottom: 1px solid #221c17;
+    }
+
+    .paddle.bottom {
+      bottom: -20px;
+      left: 420px;
+      border-top: 1px solid #221c17;
+    }
+
+    .label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: monospace;
+      font-size: 120px;
+      color: #feeee2;
+      letter-spacing: 10px;
+      z-index: 1;
+      pointer-events: none;
+      /*text-shadow:
+    -4px -4px 0 #feeee2,
+    4px -4px 0 #feeee2,
+    -4px 4px 0 #feeee2,
+    4px 4px 0 #feeee2;*/
+    }
+  </style>
 </head>
 <body>
-  <noscript>You need JavaScript enabled to see this page.</noscript>
-  <script src="index.js"></script>
+  <h1> coming soon... </h1>
+  <div class="zone">
+    <div id="ball" class="ball"></div>
+    <div class="paddle top"></div>
+    <div class="paddle bottom"></div>
+    <div class="label">P NG</div>
+  </div>
+
+  <script>
+    const ball = document.getElementById("ball");
+    const paddleTop = document.getElementById("paddleTop");
+    const paddleBottom = document.getElementById("paddleBottom");
+
+    let x = 100;
+    let y = 100;
+    let dx = 1;
+    let dy = 1;
+
+    let paddleYTop = 120;
+    let paddleYBottom = 420;
+    let v = 1;
+
+    const max = 230;
+    const min = 20;
+    const paddleLimit = 640; // 300 - 60
+
+    function move() {
+      // Mover pelota
+      x += dx;
+      y += dy;
+
+      if (x <= 0 || x >= max) dx = -dx;
+      if (y <= 0 || y >= max) dy = -dy;
+
+      //ball.style.transform = `translate(${x}px, ${y}px)`;
+      ball.style.transform = `translate(265px, ${y}px)`;
+
+    
+    let posicion = 0;
+    const anchoPaleta = paddleTop.offsetWidth;
+    const anchoContenedor = container.clientWidth;
+
+    // Función de animación para mover las paletas
+    function animarPaletas() {
+      // Actualizar posición
+      posicion += v;
+      // Verificar límites y rebotar si es necesario
+      if (posicion <= 0) {
+        posicion = 0;
+        v = Math.abs(v);  // cambia dirección hacia la derecha
+      } else if (posicion + anchoPaleta >= anchoContenedor) {
+        posicion = anchoContenedor - anchoPaleta;
+        v = -Math.abs(v); // cambia dirección hacia la izquierda
+      }
+      // Aplicar la nueva posición a ambas paletas
+      paddleTop.style.left = posicion + 'px';
+      paddleBottom.style.left = posicion + 'px';
+
+      // Solicitar el próximo cuadro de animación
+      requestAnimationFrame(animarPaletas);
+    }
+
+    // Iniciar la animación de las paletas
+    requestAnimationFrame(animarPaletas);
+
+
+
+      /*
+      // Mover paleta izquierda
+      paddleYTop += paddleDirTop;
+      if (paddleYTop >= 0 || paddleYTop <= paddleLimit) paddleDirTop *= -1;
+      paddleLTop.style.transform = `translateY(${paddleYTop}px)`;
+
+      // Mover paleta derecha
+      /*paddleYBottom += paddleDirBottom;*/
+      /*if (paddleYBottom <= 0 || paddleYBottom>= paddleLimit) paddleDiBottom *= -1;*/
+      /*paddleBottom.style.transform = `translateY(-50px)`;*/
+    }
+
+    setInterval(move, 10);
+  </script>
 </body>
 </html>

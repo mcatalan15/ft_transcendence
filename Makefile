@@ -34,3 +34,6 @@ fclean:
 	docker volume prune -f
 	docker network prune -f
 	docker image prune -a -f
+
+certs:
+	docker exec -it nginx certbot --nginx -d mrlouf.studio -d www.mrlouf.studio

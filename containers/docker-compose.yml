@@ -65,7 +65,7 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     volumes:
       - userbase:/usr/src/app/db
     restart: always
@@ -103,7 +103,7 @@ services:
     build: ./portainer
     container_name: portainer
     ports:
-      - "9000:9000"
+      - "127.0.0.1:9000:9000"
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
