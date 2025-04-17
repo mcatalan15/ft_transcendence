@@ -17,7 +17,8 @@ down:
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans
 
 re:
-	$(MAKE) down
+	$(MAKE) stop
+	$(MAKE) clean
 	$(MAKE) up
 
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
