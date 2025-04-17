@@ -39,6 +39,9 @@ db.serialize(() => {
 	});
   });
 
+// Write-Ahead Logging to allow simultaneous writing
+db.run("PRAGMA journal_mode=WAL;");
+
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
 
