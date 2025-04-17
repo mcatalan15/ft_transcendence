@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 11:12:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:12:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@ Its a basic block which will act as inheritance base, and needs just to track co
 Hence, it has an id and a container of components, with functions to add/get to/from it.
 */
 export class Entity {
-    constructor(id) {
+    constructor(id, layer) {
         this.id = id;
+        this.layer = layer;
         this.components = new Map();
     }
 

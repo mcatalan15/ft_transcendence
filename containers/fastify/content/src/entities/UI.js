@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 09:50:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 16:02:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:13:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@ import { Entity } from "../engine/Entity.js";
 import { TextComponent } from '../components/TextComponent.js'
 
 export class UI extends Entity {
-    constructor(id, width, height,topWallOffset) {
-        super(id);
+    constructor(id, layer, width, height,topWallOffset) {
+        super(id, layer);
 
 		this.topOffset = topWallOffset;
 		this.width = width;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 10:35:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:12:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ import { InputComponent } from '../components/InputComponent.js';
 import { TextComponent } from '../components/TextComponent.js'
 
 export class Paddle extends Entity {
-	constructor (id, x, y, isLeftPaddle) {
-		super(id);
+	constructor (id, layer, x, y, isLeftPaddle) {
+		super(id, layer);
 
 		const paddleGraphic = this.createPaddleGraphic();
 		const renderComponent = new RenderComponent(paddleGraphic);

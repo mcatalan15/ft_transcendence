@@ -6,17 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:18:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 10:10:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:35:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Particle } from '../entities/Particle.js'
 
 export class ParticleSpawner {
-	static spawnBasicExplosion(game, x, y, color) {
-		// Define some particle colors
-		//const colors = [0xFFAC1C, 0xAC1CFF, 0x1CFFAC];
-		
+	static spawnBasicExplosion(game, x, y, color) {		
 		for (let i = 0; i < 5; i++) {
 			const angle = Math.random() * Math.PI * 2;
 			const speed = Math.random() * 5 + 3;
@@ -26,7 +23,7 @@ export class ParticleSpawner {
 
 			const alpha = Math.random() * 0.8 + 0.2;
 
-			const particle = new Particle(`explosionParticle-${i}`, startX, startY, {
+			const particle = new Particle(`explosionParticle-${i}`, 'foreground', startX, startY, {
 				type: 'square',
 				velocityX: Math.cos(angle) * speed,
 				velocityY: Math.sin(angle) * speed,
@@ -42,7 +39,7 @@ export class ParticleSpawner {
 			});
 			
 			game.addEntity(particle);
-			game.app.stage.addChild(particle.getComponent('render').graphic);
+			game.renderLayers.foreground.addChild(particle.getComponent('render').graphic);
 		}
 	}
 
@@ -60,12 +57,12 @@ export class ParticleSpawner {
 
 			const alpha = Math.random() * 0.8 + 0.2;
 	
-			const particle = new Particle(`burstParticle-${i}`, startX, startY, {
+			const particle = new Particle(`burstParticle-${i}`, 'background', startX, startY, {
 				type: 'triangle',
 				velocityX: Math.cos(angle) * distance / 1.5,
 				velocityY: Math.sin(angle) * distance / 1.5,
-				lifetime: Math.random() * 10 + 25,
-				size: Math.random() * 3 + 2,
+				lifetime: Math.random() * 10 + 35,
+				size: Math.random() * 3 + 3,
 				shrink: true,
 				rotate: true,
 				color: color,
@@ -76,7 +73,7 @@ export class ParticleSpawner {
 			});
 	
 			game.addEntity(particle);
-			game.renderLayers.foreground.addChild(particle.getComponent('render').graphic);
+			game.renderLayers.background.addChild(particle.getComponent('render').graphic);
 		}
 	}
 

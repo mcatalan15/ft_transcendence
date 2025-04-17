@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 10:35:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 18:27:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@ import { VFXSystem } from '../systems/VFXSystem.js';
 import { ParticleSystem } from '../systems/ParticleSystem.js';
 import { UISystem } from '../systems/UISystem.js';
 import { AnimationSystem} from '../systems/AnimationSystem.js'
+import { PostProcessingSystem} from '../systems/PostProcessingSystem.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
 import { Wall } from '../entities/Wall.js'
 import { UI } from '../entities/UI.js'
+import { PostProcessingLayer } from '../entities/PostProcessingLayer.js'
 
 export class PongGame {
 	constructor (){
@@ -60,14 +62,27 @@ export class PongGame {
 			background: new PIXI.Container(),
 			midground: new PIXI.Container(),
 			foreground: new PIXI.Container(),
-			ui: new PIXI.Container()
+			ui: new PIXI.Container(),
+			pp: new PIXI.Container(),
 		};
 
-		// zIndex sorting
-		for (const layer in this.renderLayers) {
-			this.renderLayers[layer].sortableChildren = true;
-			this.app.stage.addChild(this.renderLayers[layer]);
-		}
+		// Create parent container for postProcessing
+		this.visualRoot = new PIXI.Container();
+		this.visualRoot.sortableChildren = true;
+		
+		// zIndex sorted
+		//this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.visualRoot);
+
+		//this.visualRoot.addChild(this.renderLayers.background); //Off because the depth lines with scanlines is giving me a headache
+		this.visualRoot.addChild(this.renderLayers.midground);
+		this.visualRoot.addChild(this.renderLayers.foreground);
+		this.visualRoot.addChild(this.renderLayers.ui);
+		this.visualRoot.addChild(this.renderLayers.pp);
+
+		//this.app.stage.addChild(this.renderLayers.ui);
+		this.app.stage.addChild(this.renderLayers.background);
+		
 
 		// Initialize systems
 		this.initSystems();
@@ -88,6 +103,7 @@ export class PongGame {
 		const particleSystem = new ParticleSystem(this);
 		const uiSystem = new UISystem(this, this.app);
 		const animationSystem = new AnimationSystem(this, this.app, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
+		const postProcessingSystem = new PostProcessingSystem();
 
 		this.systems.push(renderSystem);
 		this.systems.push(physicsSystem);
@@ -96,29 +112,30 @@ export class PongGame {
 		this.systems.push(particleSystem);
 		this.systems.push(uiSystem);
 		this.systems.push(animationSystem);
+		this.systems.push(postProcessingSystem);
 	}
 
 	async createEntities() {
 		// Create Top Wall
-		const wallT = new Wall('wallT', this.width, this.height, this.wallThickness, this.topWallOffset);
+		const wallT = new Wall('wallT', 'foreground', this.width, this.height, this.wallThickness, this.topWallOffset);
 		this.renderLayers.foreground.addChild(wallT.getComponent('render').graphic);
 		this.entities.push(wallT);
 		console.log("wallT created.");
 
 		//Create Bottom Wall
-		const wallB = new Wall('wallB', this.width, this.height, this.wallThickness, this.height - this.bottomWallOffset);
+		const wallB = new Wall('wallB', 'foreground', this.width, this.height, this.wallThickness, this.height - this.bottomWallOffset);
 		this.renderLayers.foreground.addChild(wallB.getComponent('render').graphic);
 		this.entities.push(wallB);
 		console.log("wallB created.");
 		
 		// Create Ball
-		const ball = new Ball('ball', this.width / 2, this.height / 2);
+		const ball = new Ball('ball', 'foreground', this.width / 2, this.height / 2);
 		this.renderLayers.foreground.addChild(ball.getComponent('render').graphic);
 		this.entities.push(ball);
 		console.log("Ball created.");
 
 		//Create left paddle
-		const paddleL = new Paddle('paddleL', 40, this.height / 2, true);
+		const paddleL = new Paddle('paddleL', 'foreground', 40, this.height / 2, true);
 		this.renderLayers.foreground.addChild(paddleL.getComponent('render'). graphic);
 		if (paddleL.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleL.getComponent('text').getRenderable());
@@ -127,7 +144,7 @@ export class PongGame {
 		console.log("PaddleL created.");
 
 		//Create right paddle
-		const paddleR = new Paddle('paddleR', this.width - 40, this.height / 2, false);
+		const paddleR = new Paddle('paddleR', 'foreground', this.width - 40, this.height / 2, false);
 		this.renderLayers.foreground.addChild(paddleR.getComponent('render'). graphic);
 		if (paddleR.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleR.getComponent('text').getRenderable());
@@ -136,22 +153,49 @@ export class PongGame {
 		console.log("PaddleR created.");
 
 		// Create UI
-		const overlay = new UI('UI', this.width, this.height, this.topWallOffset - this.wallThickness);
+		const overlay = new UI('UI', 'ui', this.width, this.height, this.topWallOffset - this.wallThickness);
 		this.renderLayers.ui.addChild(overlay.getComponent('text').getRenderable());
 		this.entities.push(overlay);
 		console.log("UI created.");
+
+		// Create Postprocessing Layer
+		const postProcessingLayer = new PostProcessingLayer('postProcessing', 'pp', this, this.app, this.renderLayers);
+		this.renderLayers.pp.addChild(postProcessingLayer.getComponent('render').graphic);
+		this.entities.push(postProcessingLayer);
+		console.log("PostProcessingLayer created.");
 	}
 
 	addEntity(entity) {
 		this.entities.push(entity);
+		let targetLayer = this.renderLayers.midground;
+
+		if (entity.layer) {
+			switch(entity.layer) {
+				case 'background': 
+					targetLayer = this.renderLayers.background; 
+					break;
+				case 'foreground': 
+					targetLayer = this.renderLayers.foreground; 
+					break;
+				case 'ui': 
+					targetLayer = this.renderLayers.ui; 
+					break;
+				case 'pp': 
+					targetLayer = this.renderLayers.pp; 
+					break;
+			}
+		}
+
+		console.log(`${entity.id}: ${entity.layer}`);
+
 		const render = entity.getComponent?.('render');
 		if (render?.graphic) {
-			this.app.stage.addChild(render.graphic);
+			targetLayer.addChild(render.graphic);
 		}
 	
 		const text = entity.getComponent?.('text');
 		if (text?.getRenderable) {
-			this.app.stage.addChild(text.getRenderable());
+			targetLayer.addChild(text.getRenderable());
 		}
 	}
 	

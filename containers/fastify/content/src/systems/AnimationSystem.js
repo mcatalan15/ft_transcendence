@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 13:44:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 10:26:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 16:54:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ export class AnimationSystem {
         
         // Animation control properties
         this.frameCounter = 0;
-        this.depthLineUpdateRate = 2; // Update every X frames
+        this.depthLineUpdateRate = 1; // Update every X frames
         
         // Track the last line spawn time to identify new lines
         this.lastLineSpawnTime = 0;

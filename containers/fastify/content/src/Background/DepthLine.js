@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:34:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 17:36:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:15:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ import { LifetimeComponent } from "../components/LifetimeComponent.js";
 import { AnimationComponent } from "../components/AnimationComponent.js";
 
 export class DepthLine extends Entity {
-	constructor(id, options = {}) {
-		super(id);
+	constructor(id, layer, options = {}) {
+		super(id, layer);
 	
 		const {
 			velocityX = 0,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:18:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/10 18:23:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:13:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ import { PhysicsComponent } from '../components/PhysicsComponent.js';
 import { VFXComponent } from '../components/VFXComponent.js';
 
 export class Ball extends Entity {
-	constructor(id, x, y) {
-		super(id);
+	constructor(id, layer, x, y) {
+		super(id, layer);
 		
 		const ballGraphic = this.createBallGraphic();
 

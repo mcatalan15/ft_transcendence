@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:58:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/14 18:04:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:13:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@ import { RenderComponent } from '../components/RenderComponent.js';
 import { PhysicsComponent } from '../components/PhysicsComponent.js';
 
 export class Wall extends Entity {
-	constructor (id, width, height, thickness, offset) {
-		super(id);
+	constructor (id, layer, width, height, thickness, offset) {
+		super(id, layer);
 
 		const wallGraphic = this.createWallGraphic(width, thickness);
 		

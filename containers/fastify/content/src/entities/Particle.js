@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 09:56:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 15:50:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:20:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ import { LifetimeComponent } from "../components/LifetimeComponent.js";
 import { ParticleBehaviorComponent } from "../components/ParticleBehaviorComponent.js";
 
 export class Particle extends Entity {
-	constructor(id, x, y, options = {}) {
-		super(id);
+	constructor(id, layer, x, y, options = {}) {
+		super(id, layer);
 
 		const {
 			velocityX = 0,

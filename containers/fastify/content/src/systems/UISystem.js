@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:00:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 16:14:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:28:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ export class UISystem {
 		this.game = game;
 		this.app = app;
 		this.renderedTextComponents = new Set();
+		this.uiLayer = game.renderLayers.ui;
 	}
 
 	update(entities, delta) {
@@ -66,7 +67,7 @@ export class UISystem {
 
 	ensureTextIsRendered(textComponent, textObject) {
         if (!this.renderedTextComponents.has(textComponent)) {
-            this.app.stage.addChild(textObject);
+            this.uiLayer.addChild(textObject);
             this.renderedTextComponents.add(textComponent);
         }
 
