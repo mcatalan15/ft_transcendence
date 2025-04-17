@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:18:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 18:00:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 10:10:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ export class ParticleSpawner {
 			});
 	
 			game.addEntity(particle);
-			game.app.stage.addChild(particle.getComponent('render').graphic);
+			game.renderLayers.foreground.addChild(particle.getComponent('render').graphic);
 		}
 	}
 

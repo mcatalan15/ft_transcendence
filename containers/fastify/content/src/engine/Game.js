@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 17:26:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 10:35:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,20 @@ export class PongGame {
 		gameContainer.appendChild(this.app.canvas);
 		console.log("Canvas added to game container.");
 
+		// Setup render layers
+		this.renderLayers = {
+			background: new PIXI.Container(),
+			midground: new PIXI.Container(),
+			foreground: new PIXI.Container(),
+			ui: new PIXI.Container()
+		};
+
+		// zIndex sorting
+		for (const layer in this.renderLayers) {
+			this.renderLayers[layer].sortableChildren = true;
+			this.app.stage.addChild(this.renderLayers[layer]);
+		}
+
 		// Initialize systems
 		this.initSystems();
 
@@ -87,43 +101,43 @@ export class PongGame {
 	async createEntities() {
 		// Create Top Wall
 		const wallT = new Wall('wallT', this.width, this.height, this.wallThickness, this.topWallOffset);
-		this.app.stage.addChild(wallT.getComponent('render').graphic);
+		this.renderLayers.foreground.addChild(wallT.getComponent('render').graphic);
 		this.entities.push(wallT);
 		console.log("wallT created.");
 
 		//Create Bottom Wall
 		const wallB = new Wall('wallB', this.width, this.height, this.wallThickness, this.height - this.bottomWallOffset);
-		this.app.stage.addChild(wallB.getComponent('render').graphic);
+		this.renderLayers.foreground.addChild(wallB.getComponent('render').graphic);
 		this.entities.push(wallB);
 		console.log("wallB created.");
 		
 		// Create Ball
 		const ball = new Ball('ball', this.width / 2, this.height / 2);
-		this.app.stage.addChild(ball.getComponent('render').graphic);
+		this.renderLayers.foreground.addChild(ball.getComponent('render').graphic);
 		this.entities.push(ball);
 		console.log("Ball created.");
 
 		//Create left paddle
 		const paddleL = new Paddle('paddleL', 40, this.height / 2, true);
-		this.app.stage.addChild(paddleL.getComponent('render'). graphic);
+		this.renderLayers.foreground.addChild(paddleL.getComponent('render'). graphic);
 		if (paddleL.getComponent('text')) {
-			this.app.stage.addChild(paddleL.getComponent('text').getRenderable());
+			this.renderLayers.foreground.addChild(paddleL.getComponent('text').getRenderable());
 		}
 		this.entities.push(paddleL);
 		console.log("PaddleL created.");
 
 		//Create right paddle
 		const paddleR = new Paddle('paddleR', this.width - 40, this.height / 2, false);
-		this.app.stage.addChild(paddleR.getComponent('render'). graphic);
+		this.renderLayers.foreground.addChild(paddleR.getComponent('render'). graphic);
 		if (paddleR.getComponent('text')) {
-			this.app.stage.addChild(paddleR.getComponent('text').getRenderable());
+			this.renderLayers.foreground.addChild(paddleR.getComponent('text').getRenderable());
 		}
 		this.entities.push(paddleR);
 		console.log("PaddleR created.");
 
 		// Create UI
 		const overlay = new UI('UI', this.width, this.height, this.topWallOffset - this.wallThickness);
-		this.app.stage.addChild(overlay.getComponent('text').getRenderable());
+		this.renderLayers.ui.addChild(overlay.getComponent('text').getRenderable());
 		this.entities.push(overlay);
 		console.log("UI created.");
 	}

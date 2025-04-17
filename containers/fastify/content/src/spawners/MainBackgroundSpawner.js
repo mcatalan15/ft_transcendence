@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:31:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 16:45:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 10:09:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,6 @@ export class MainBackgroundSpawner {
 		});
 		
 		game.addEntity(depthLine);
-		game.app.stage.addChild(depthLine.getComponent('render').graphic);
+		game.renderLayers.background.addChild(depthLine.getComponent('render').graphic);
 	}
 }
