@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostProcessingLayer.js                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 11:12:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 18:25:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 23:46:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ export class PostProcessingLayer extends Entity {
 		});
         
         const crtFilter = new PIXI.filters.CRTFilter({
-            curvature: 1.5,         // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
+            curvature: 1.3,         // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
             lineWidth: 0.1,         // Thickness of scanlines (default: 1.0)
-            lineContrast: 0.5,      // Contrast between scanlines and base image (default: 0.25)
+            lineContrast: 0.2,      // Contrast between scanlines and base image (default: 0.25)
             verticalLine: false,    // false = horizontal lines, true = vertical scanlines
             noise: 0.1,             // Noise overlay intensity (default: 0.3)
-            noiseSize: 1.0,         // Size of noise grain (default: 1.0)
+            noiseSize: 0.5,         // Size of noise grain (default: 1.0)
             seed: Math.random(),    // Seed for the noise randomness
             vignetting: 0.4,        // Vignette size (smaller = tighter vignette, default: 0.3)
             vignettingAlpha: 0.4,   // Opacity of vignette (default: 1.0)
-            vignettingBlur: 0.4,    // Blur intensity of the vignette (default: 0.3)
+            vignettingBlur: 0.1,    // Blur intensity of the vignette (default: 0.3)
             time: 0                 // For animating scanlines; increase over time in your game loop
         });
 
@@ -58,7 +58,7 @@ export class PostProcessingLayer extends Entity {
         );
         
         // Apply filters to the game's visualRoot
-        game.visualRoot.filters = [bulgePinch, crtFilter, rgbSplit];
+        game.visualRoot.filters = [advancedBloom, bulgePinch, crtFilter, rgbSplit];
         
         // Store everything we need in the component
         this.addComponent(new PostProcessingComponent(null, {

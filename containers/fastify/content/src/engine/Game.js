@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 18:27:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 23:47:05 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ export class PongGame {
 		this.eventQueue = [];
 		this.topWallOffset = 40;
 		this.bottomWallOffset = 60;
-		this.wallThickness = 15;
+		this.wallThickness = 20;
 	}
 
 	async init() {
@@ -71,17 +71,17 @@ export class PongGame {
 		this.visualRoot.sortableChildren = true;
 		
 		// zIndex sorted
-		//this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.renderLayers.background);
 		this.app.stage.addChild(this.visualRoot);
 
 		//this.visualRoot.addChild(this.renderLayers.background); //Off because the depth lines with scanlines is giving me a headache
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.foreground);
-		this.visualRoot.addChild(this.renderLayers.ui);
+		//this.visualRoot.addChild(this.renderLayers.ui);
 		this.visualRoot.addChild(this.renderLayers.pp);
 
-		//this.app.stage.addChild(this.renderLayers.ui);
-		this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.renderLayers.ui);
+		//this.app.stage.addChild(this.renderLayers.background);
 		
 
 		// Initialize systems

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UI.js                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 09:50:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:13:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/17 23:42:02 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ export class UI extends Entity {
     constructor(id, layer, width, height,topWallOffset) {
         super(id, layer);
 
-		this.topOffset = topWallOffset;
+		this.topOffset = topWallOffset + 5;
 		this.width = width;
 		this.height = height;
 
