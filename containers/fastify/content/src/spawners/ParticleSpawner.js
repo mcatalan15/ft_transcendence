@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParticleSpawner.js                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:18:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:35:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/18 09:14:58 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ export class ParticleSpawner {
 
 			const alpha = Math.random() * 0.8 + 0.2;
 	
-			const particle = new Particle(`burstParticle-${i}`, 'background', startX, startY, {
+			const particle = new Particle(`burstParticle-${i}`, 'midground', startX, startY, {
 				type: 'triangle',
 				velocityX: Math.cos(angle) * distance / 1.5,
 				velocityY: Math.sin(angle) * distance / 1.5,

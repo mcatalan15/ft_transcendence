@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsSystem.js                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 15:40:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/20 14:39:05 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,10 @@ export class PhysicsSystem {
         // Handle collisions
         this._handleBallWallCollisions(physics, entitiesMap);
         this._handleBallPaddleCollisions(physics, entitiesMap);
+        this._handlePowerupCollisions(physics, entitiesMap);
         
         // Check if ball is out of bounds
-        this._checkBallOutOfBounds(physics);
+        this._checkBallOutOfBounds(ball, physics);
     }
 
     _handleBallWallCollisions(physics, entitiesMap) {
@@ -152,6 +153,8 @@ export class PhysicsSystem {
                 physics.x = paddleRight + (physics.width / 2);
                 physics.velocityX *= -1;
 				
+                ball.lastHit = 'left';
+
                 ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
 
 				if (ball && ball.hasComponent('vfx')) {
@@ -173,6 +176,8 @@ export class PhysicsSystem {
                 physics.x = paddleLeft - (physics.width / 2);
                 physics.velocityX *= -1;
 
+                ball.lastHit = 'right';
+
                 ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
 				
 				if (ball && ball.hasComponent('vfx')) {
@@ -183,7 +188,29 @@ export class PhysicsSystem {
         }
     }
 
-    _checkBallOutOfBounds(physics) {
+    _handlePowerupCollisions(physics, entitiesMap) {
+		const ball = entitiesMap.ball;
+        const ballBox = this.getBoundingBox(ball.getComponent('physics'));
+
+        for (const entity of Object.values(entitiesMap)) {
+            if (entity.id.startsWith('powerup')) {
+                const powerupBox = this.getBoundingBox(entity.getComponent('physics'));
+                if (this.isAABBOverlap(ballBox, powerupBox)) {
+                    console.log(`Triggered powerup: ${entity.id}`);
+                    const lifetime = entity.getComponent('lifetime');
+                    const powerupComp = entity.getComponent('powerup');
+                    if (ball.lastHit === 'left')
+                    {  
+                        powerupComp.enlargePaddle(entitiesMap.paddleL);
+                    } else if (ball.lastHit === 'right')
+                        powerupComp.enlargePaddle(entitiesMap.paddleR);
+                    lifetime.remaining = 0;
+                }
+            }
+        }
+    }
+
+    _checkBallOutOfBounds(ball, physics) {
         const ballLeft = physics.x - (physics.width / 2);
         const ballRight = physics.x + (physics.width / 2);
 
@@ -199,7 +226,7 @@ export class PhysicsSystem {
                 0xFFAC1C,
             );
             this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
-            this._resetBall(physics, 1);
+            this._resetBall(ball, physics, 1);
         }
 
         // Ball exits left side
@@ -214,11 +241,11 @@ export class PhysicsSystem {
                 0xFFAC1C,
             );
             this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
-            this._resetBall(physics, -1);
+            this._resetBall(ball, physics, -1);
         }
     }
     
-    _resetBall(physics, direction) {
+    _resetBall(ball, physics, direction) {
         physics.x = this.width / 2;
         physics.y = this.height / 2;
     
@@ -227,5 +254,25 @@ export class PhysicsSystem {
         
         physics.velocityX = Math.cos(angle) * speed * direction;
         physics.velocityY = Math.sin(angle) * speed;
+        ball.lastHit = '';
+    }
+
+    // Utils
+    getBoundingBox(physics) {
+        return {
+            left: physics.x - physics.width / 2,
+            right: physics.x + physics.width / 2,
+            top: physics.y - physics.height / 2,
+            bottom: physics.y + physics.height / 2
+        };
+    }
+    
+    isAABBOverlap(a, b) {
+        return (
+            a.left < b.right &&
+            a.right > b.left &&
+            a.top < b.bottom &&
+            a.bottom > b.top
+        );
     }
 }

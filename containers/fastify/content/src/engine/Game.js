@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 23:47:05 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/20 12:46:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { VFXSystem } from '../systems/VFXSystem.js';
 import { ParticleSystem } from '../systems/ParticleSystem.js';
 import { UISystem } from '../systems/UISystem.js';
 import { AnimationSystem} from '../systems/AnimationSystem.js'
+import { PowerupSystem} from '../systems/PowerupSystem.js'
 import { PostProcessingSystem} from '../systems/PostProcessingSystem.js'
 import { Ball } from '../entities/Ball.js'
 import { Paddle } from '../entities/Paddle.js'
@@ -42,7 +43,7 @@ export class PongGame {
 		console.log("Initilizing PongGame...");
 		this.app = new PIXI.Application();
 		await this.app.init({
-			background: '#121212',
+			background: '#131010',
 			width: this.width,
 			height: this.height,
 			antialias: true,
@@ -104,6 +105,7 @@ export class PongGame {
 		const uiSystem = new UISystem(this, this.app);
 		const animationSystem = new AnimationSystem(this, this.app, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
 		const postProcessingSystem = new PostProcessingSystem();
+		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height)
 
 		this.systems.push(renderSystem);
 		this.systems.push(physicsSystem);
@@ -113,6 +115,7 @@ export class PongGame {
 		this.systems.push(uiSystem);
 		this.systems.push(animationSystem);
 		this.systems.push(postProcessingSystem);
+		this.systems.push(powerupSystem);
 	}
 
 	async createEntities() {
@@ -185,8 +188,6 @@ export class PongGame {
 					break;
 			}
 		}
-
-		console.log(`${entity.id}: ${entity.layer}`);
 
 		const render = entity.getComponent?.('render');
 		if (render?.graphic) {

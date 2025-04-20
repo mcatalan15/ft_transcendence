@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Ball.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:18:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:13:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/20 12:06:41 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ import { VFXComponent } from '../components/VFXComponent.js';
 export class Ball extends Entity {
 	constructor(id, layer, x, y) {
 		super(id, layer);
+
+		this.lastHit = '';
 		
 		const ballGraphic = this.createBallGraphic();
 

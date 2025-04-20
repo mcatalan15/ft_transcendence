@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Paddle.js                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:12:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/20 14:34:36 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@ import { TextComponent } from '../components/TextComponent.js'
 export class Paddle extends Entity {
 	constructor (id, layer, x, y, isLeftPaddle) {
 		super(id, layer);
+
+		this.isEnlarged = false;
+		this.enlargeTimer = 0;
 
 		const paddleGraphic = this.createPaddleGraphic();
 		const renderComponent = new RenderComponent(paddleGraphic);
@@ -84,5 +87,19 @@ export class Paddle extends Entity {
 			rotation: isLeftPaddle ? -Math.PI/2 : Math.PI/2,
 			anchor: { x: 0.5, y: 0.5 },
 		};
+	}
+
+	resetShape(paddle, scaleFactor){
+		const render = paddle.getComponent('render');
+        const physics = paddle.getComponent('physics');
+
+		physics.height *= 0.5;
+		paddle.isEnlarged = false;
+
+		const graphic = render.graphic;
+		graphic.clear();
+		graphic.rect(0, 0, physics.width, physics.height);
+		graphic.fill('#FAF3E0');
+		graphic.pivot.set(physics.width / 2, physics.height / 2);
 	}
 }
