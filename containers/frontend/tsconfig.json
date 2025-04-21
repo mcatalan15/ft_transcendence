@@ -1,11 +1,13 @@
 {
 	"compilerOptions": {
-	  "target": "ES6",
-	  "module": "ES6",
-	  "moduleResolution": "node",
-	  "outDir": "public",
-	  "esModuleInterop": true,
-	  "strict": true
+	"target": "ES6",
+	"module": "ES6",
+	"moduleResolution": "node",
+	"outDir": "public",
+	"esModuleInterop": true,
+	"strict": true,
+	"allowJs": true
+
 	},
 	"include": ["src/**/*"]
   }
