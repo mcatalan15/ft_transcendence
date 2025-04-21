@@ -2,3 +2,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: #221c17;
+  color: #feeee2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.zone {
+  position: relative;
+  width: 700px;
+  height: 300px;
+  border: 10px solid #feeee2;
+  margin-top: 20px;
+}
+
+.ball {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #c57c22;
+}
+
+.paddle {
+  position: absolute;
+  width: 100px;
+  height: 10px;
+  background-color: #feeee2;
+  border: 10px solid #221c17;
+  z-index: 2;
+  left: 320px; /* centradas horizontalmente */
+}
+
+.paddle.top {
+  top: -20px;
+  right: 120px;
+  border-bottom: 1px solid #221c17;
+}
+
+.paddle.bottom {
+  bottom: -20px;
+  left: 420px;
+  border-top: 1px solid #221c17;
+}
+
+.label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: monospace;
+  font-size: 120px;
+  color: #feeee2;
+  letter-spacing: 10px;
+  z-index: 1;
+  pointer-events: none;
+  /*text-shadow:
+-4px -4px 0 #feeee2,
+4px -4px 0 #feeee2,
+-4px 4px 0 #feeee2,
+4px 4px 0 #feeee2;*/
+}
