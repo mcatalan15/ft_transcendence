@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/21 18:01:06 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/21 21:24:03 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,7 +263,7 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
         for (const entity of Object.values(entitiesMap)) {
             if (entity.id.startsWith('powerup')) {
                 const powerupBox = this.getBoundingBox(entity.getComponent('physics'));
-                if (this.isAABBOverlap(ballBox, powerupBox)) {
+                if (ball.lastHit && this.isAABBOverlap(ballBox, powerupBox)) {
                     console.log(`Triggered powerup: ${entity.id}`);
                     this.game.sounds.powerup.play();
                     const lifetime = entity.getComponent('lifetime');
