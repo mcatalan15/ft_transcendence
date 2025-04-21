@@ -1,4 +1,4 @@
-import { initializeGoogleSignIn } from "./auth/googleSignIn.js";
+import * as GoogleSignInModule from "./auth/googleSignIn.js";
 
 const ball = document.getElementById("ball") as HTMLElement;
 const paddleTop = document.getElementById("paddleTop") as HTMLElement;
@@ -48,7 +48,7 @@ function animatePaddles() {
 setInterval(moveBall, 10);
 requestAnimationFrame(animatePaddles);
 
-initializeGoogleSignIn((credential: string) => {
+GoogleSignInModule.initializeGoogleSignIn((credential: string) => {
   fetch("/api/auth/google", {
     method: "POST",
     headers: {

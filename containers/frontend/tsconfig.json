@@ -5,6 +5,7 @@
 	"moduleResolution": "node",
 	"outDir": "public",
 	"esModuleInterop": true,
+	"verbatimModuleSyntax": true,
 	"strict": true,
 	"allowJs": true
 
