@@ -1,4 +1,8 @@
-import type { CredentialResponse } from "google.accounts.id";
+export type CredentialResponse = {
+	clientId: string;
+	credential: string;
+	select_by: string;
+  };  
 
 export function initializeGoogleSignIn(onSuccess: (token: string) => void) {
 	window.onload = () => {
