@@ -27,7 +27,8 @@ fastify.register(cors, {
     allowedHeaders: ['Content-Type'],
 });
 fastify.register(fastifyMultipart);
-fastify.register(require('./routes/registration'));	// user registration
+fastify.register(require('./routes/registration'));	//	user registration
+fastify.register(require('./routes/google-auth'));	//	Google authentication
 
 // Ensure database connection is established
 db.serialize(() => {

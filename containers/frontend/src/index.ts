@@ -1,3 +1,5 @@
+import { initializeGoogleSignIn } from "./auth/googleSignIn";
+
 const ball = document.getElementById("ball") as HTMLElement;
 const paddleTop = document.getElementById("paddleTop") as HTMLElement;
 const paddleBottom = document.getElementById("paddleBottom") as HTMLElement;
@@ -45,3 +47,21 @@ function animatePaddles() {
 
 setInterval(moveBall, 10);
 requestAnimationFrame(animatePaddles);
+
+initializeGoogleSignIn((credential: string) => {
+  fetch("/api/auth/google", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ credential })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Google Sign-In successful:", data);
+      // Redirect or store token if needed
+    })
+    .catch(err => {
+      console.error("Error signing in with Google:", err);
+    });
+});
