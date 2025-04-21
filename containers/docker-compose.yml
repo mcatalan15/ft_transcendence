@@ -11,15 +11,19 @@ networks:
 #########################################################
 
 volumes:
-  content:
+  public:
     driver: local
   userbase:
     driver: local
-  portainer_data:
+  certs:  # SSL certificates
     driver: local
+
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+
+  portainer_data:
     driver: local
 
 #########################################################
@@ -27,27 +31,46 @@ volumes:
 #########################################################
 
 services:
+
+#                       NGINX                           #
+
   nginx:
     build: ./nginx
     container_name: nginx
     ports:
-      - "1080:1080"
+      - "80:80"
+      - "443:443"
     restart: always
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
     depends_on:
-      fastify:
+      backend:
         condition: service_healthy
     volumes:
-      - content:/usr/share/nginx/html:ro
+      - public:/usr/share/nginx/html:ro
+      - certs:/etc/letsencrypt
     networks:
       - transcendence
 
-  fastify:
-    build: ./fastify
-    container_name: fastify
+#                       FRONTEND                        #
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    volumes:
+      - public:/app/public
+    restart: on-failure    
+    networks:
+      - transcendence
+
+#                       BACKEND                         #
+
+  backend:
+    build: ./backend
+    container_name: backend
     ports:
       - "127.0.0.1:3100:3100"
     volumes:
-      - content:/usr/src/app/content
       - userbase:/usr/src/app/db
     restart: always
     networks:
@@ -58,11 +81,13 @@ services:
       retries: 5
       timeout: 5s
 
+#                       ADMINER                         #
+
   adminer:
     build: ./adminer
     container_name: adminer
     depends_on:
-      fastify:
+      backend:
         condition: service_healthy
     environment:
       - PUID=1000  # Adjust to match your user ID (UID) if needed
@@ -76,6 +101,8 @@ services:
     networks:
       - transcendence
 
+#                       PORTAINER                        #
+
   portainer:
     build: ./portainer
     container_name: portainer
@@ -84,6 +111,9 @@ services:
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      nginx:
+        condition: service_started
     restart: always
     networks:
       - transcendence

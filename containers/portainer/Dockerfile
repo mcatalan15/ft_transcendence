@@ -8,7 +8,7 @@ RUN mkdir -p /app \
     && tar xvzf portainer-2.27.1-linux-amd64.tar.gz --strip-components=1 \
     && rm portainer-2.27.1-linux-amd64.tar.gz
 
-EXPOSE 8000 9000
+EXPOSE 9000
 
 RUN mkdir -p /data
 
