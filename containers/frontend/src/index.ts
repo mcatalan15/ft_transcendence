@@ -1,4 +1,4 @@
-import { initializeGoogleSignIn } from "./auth/googleSignIn";
+import { initializeGoogleSignIn } from "./auth/googleSignIn.js";
 
 const ball = document.getElementById("ball") as HTMLElement;
 const paddleTop = document.getElementById("paddleTop") as HTMLElement;
