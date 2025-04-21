@@ -15,13 +15,15 @@ volumes:
     driver: local
   userbase:
     driver: local
-  portainer_data:
+  certs:  # SSL certificates
     driver: local
+
   prometheus_data:
     driver: local
   grafana_data:
     driver: local
-  certs:  # SSL certificates
+
+  portainer_data:
     driver: local
 
 #########################################################
