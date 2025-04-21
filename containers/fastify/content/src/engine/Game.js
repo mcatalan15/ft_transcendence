@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/20 12:46:10 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/21 17:58:40 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,9 @@ export class PongGame {
 		// Initialize systems
 		this.initSystems();
 
+		// Init sounds
+		this.initSounds(); 
+
 		// Create entities
 		await this.createEntities();
 
@@ -118,6 +121,14 @@ export class PongGame {
 		this.systems.push(powerupSystem);
 	}
 
+	initSounds() {
+		this.sounds = {
+			pong: new Howl({ src: ['src/assets/sfx/pong.wav'] }),
+			powerup: new Howl({ src: ['src/assets/sfx/powerup.wav'] }),
+		};
+		console.log('Howler sounds initialized.');
+	}
+
 	async createEntities() {
 		// Create Top Wall
 		const wallT = new Wall('wallT', 'foreground', this.width, this.height, this.wallThickness, this.topWallOffset);
@@ -138,7 +149,7 @@ export class PongGame {
 		console.log("Ball created.");
 
 		//Create left paddle
-		const paddleL = new Paddle('paddleL', 'foreground', 40, this.height / 2, true);
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true);
 		this.renderLayers.foreground.addChild(paddleL.getComponent('render'). graphic);
 		if (paddleL.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleL.getComponent('text').getRenderable());
@@ -147,7 +158,7 @@ export class PongGame {
 		console.log("PaddleL created.");
 
 		//Create right paddle
-		const paddleR = new Paddle('paddleR', 'foreground', this.width - 40, this.height / 2, false);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false);
 		this.renderLayers.foreground.addChild(paddleR.getComponent('render'). graphic);
 		if (paddleR.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleR.getComponent('text').getRenderable());

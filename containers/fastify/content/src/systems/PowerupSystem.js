@@ -34,7 +34,7 @@ export class PowerupSystem {
 
             PowerupSpawner.spawnPowerup(this.game, this.width, this.height);
             console.log('Powerup Spawned');
-            this.cooldown = 500;   
+            this.cooldown = 1000;   
         }
 
         for (const entity of entities) {
@@ -61,7 +61,8 @@ export class PowerupSystem {
                 }
 
                 if (entity.isEnlarged && entity.enlargeTimer <= 0) {
-                    entity.resetShape(entity, 2);
+                    console.log('Reseting paddle height');
+                    entity.resetPaddleSize(entity);
                 }
             }
         }

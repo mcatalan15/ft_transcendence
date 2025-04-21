@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 09:24:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/20 14:34:36 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/21 16:35:08 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@ import { InputComponent } from '../components/InputComponent.js';
 import { TextComponent } from '../components/TextComponent.js'
 
 export class Paddle extends Entity {
-	constructor (id, layer, x, y, isLeftPaddle) {
+	constructor (id, layer, game, x, y, isLeftPaddle) {
 		super(id, layer);
 
+		this.game = game;
+		
 		this.isEnlarged = false;
 		this.enlargeTimer = 0;
 
@@ -29,6 +31,10 @@ export class Paddle extends Entity {
 
 		const physicsData = this.initPaddlePhysicsData(x, y);
 		const physicsComponent = new PhysicsComponent(physicsData);
+		this.baseWidth = physicsComponent.width;
+		this.originalWidth = this.baseWidth;
+		this.baseHeight = physicsComponent.height;
+		this.originalHeight = this.baseHeight; 
 		this.addComponent(physicsComponent);
 
 		const keys = this.setUpPaddleKeys(isLeftPaddle);
@@ -89,17 +95,38 @@ export class Paddle extends Entity {
 		};
 	}
 
-	resetShape(paddle, scaleFactor){
+	/*resetPaddleSize(paddle) {
+		if (!paddle._originalHeight) return;
+		
 		const render = paddle.getComponent('render');
-        const physics = paddle.getComponent('physics');
-
-		physics.height *= 0.5;
+		const physics = paddle.getComponent('physics');
+		
+		if (!render || !physics) return;
+		
+		// Reset physics height
+		physics.height = paddle._originalHeight;
+		
+		// Reset graphic
+		render.graphic.clear();
+		render.graphic.rect(0, 0, physics.width, paddle._originalHeight);
+		render.graphic.fill('#FAF3E0');
+		render.graphic.pivot.set(physics.width / 2, paddle._originalHeight / 2);
+		
+		// Reset animation tracking properties
 		paddle.isEnlarged = false;
+		paddle._enlargeProgress = null;
+		paddle._targetHeight = null;
+	}*/
 
-		const graphic = render.graphic;
-		graphic.clear();
-		graphic.rect(0, 0, physics.width, physics.height);
-		graphic.fill('#FAF3E0');
-		graphic.pivot.set(physics.width / 2, physics.height / 2);
+	resetPaddleSize(paddle) {
+		if (!paddle.isEnlarged) return;
+
+		paddle.isEnlarged = false;
+		paddle.enlargeProgress = 0;
+
+		this.game.eventQueue.push({
+			type: 'RESET_PADDLE',
+			target: paddle,
+		})
 	}
 }

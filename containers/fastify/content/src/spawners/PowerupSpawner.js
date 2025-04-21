@@ -16,7 +16,7 @@ export class PowerupSpawner {
     static spawnPowerup(game, width, height) {
         const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const powerup = new TestPowerup(uniqueId, 'foreground', width / 2, height / 2, {});
+        const powerup = new TestPowerup(uniqueId, 'foreground', game, width / 2, height / 2, {});
 
         game.addEntity(powerup);
 

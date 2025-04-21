@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   MainBackgroundSpawner.js                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:31:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:15:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/20 15:01:31 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { DepthLine } from '../Background/DepthLine.js';
+import { DepthLine } from '../background/DepthLine.js';
 
 export class MainBackgroundSpawner {
 	static spawnDepthLine(game, width, height, topWallOffset, bottomWallOffset, wallThickness, type, behavior) {

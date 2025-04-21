@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UISystem.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:00:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/17 17:28:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/21 13:01:45 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,19 @@ export class UISystem {
                     const textObject = textComponent.getRenderable();
                     const tag = textComponent.getTag();
 
+					const unhandledEvents = [];
+
 					while (this.game.eventQueue.length > 0) {
 						const event = this.game.eventQueue.shift();
 					
 						if (event.type === 'SCORE') {
 							this.updateScore(entities, event);
+						} else {
+							unhandledEvents.push(event);
 						}
 					}
+
+					this.game.eventQueue.push(...unhandledEvents);
 
                     if (tag === 'score' || textComponent.instanceId === 'score') {
                         textObject.x = this.game.width / 2;

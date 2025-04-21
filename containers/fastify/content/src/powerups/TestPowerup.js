@@ -18,7 +18,7 @@ import { LifetimeComponent } from '../components/LifetimeComponent.js';
 import { PowerupComponent } from '../components/PowerupComponent.js';
 
 export class TestPowerup extends Entity {
-    constructor (id, layer, x, y, options = {}) {
+    constructor (id, layer, game, x, y, options = {}) {
         super(id, layer);
 
         const {
@@ -41,7 +41,7 @@ export class TestPowerup extends Entity {
         const lifetimeComp = new LifetimeComponent(lifetime, 'time');
         this.addComponent(lifetimeComp);
 
-        const powerupComp = new PowerupComponent();
+        const powerupComp = new PowerupComponent(game);
         this.addComponent(powerupComp);
         }
 

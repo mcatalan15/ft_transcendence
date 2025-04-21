@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 13:44:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/19 18:35:37 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/21 16:35:15 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,90 @@ export class AnimationSystem {
         
         // Increment frame counter
         this.frameCounter = (this.frameCounter + 1) % this.depthLineUpdateRate;
+
+        const unhandledEvents = [];
+        
+        while (this.game.eventQueue.length > 0) {
+            const event = this.game.eventQueue.shift();
+
+            if (event.type === 'ENLARGE_PADDLE' || event.type === 'RESET_PADDLE') {
+                const paddle = event.target;
+                const render = paddle.getComponent('render');
+                const physics = paddle.getComponent('physics');
+            
+                if (!render || !physics) continue;
+            
+                if (event.type === 'ENLARGE_PADDLE') {
+                    console.log('Received ENLARGE_PADDLE event', event);
+                    
+                    paddle.originalHeight = physics.height; // current visible height
+                    paddle.targetHeight = paddle.baseHeight * 2;
+                    paddle.overshootTarget = paddle.targetHeight * 1.2;
+                    paddle.overshootPhase = 'expand';
+                    
+                } else if (event.type === 'RESET_PADDLE') {
+                    console.log('Received RESET_PADDLE event', event);
+                    
+                    paddle.originalHeight = physics.height; // current visible height
+                    paddle.targetHeight = paddle.baseHeight;
+                    paddle.overshootTarget = paddle.targetHeight * 0.9;
+                    paddle.overshootPhase = 'expand';
+                }
+
+                paddle.enlargeProgress = 0;
+                
+            } else {
+                unhandledEvents.push(event);
+            }
+        }
+
+        this.game.eventQueue.push(...unhandledEvents);
+    
+        // Now animate paddles that are being enlarged
+        for (const entity of entities) {
+            const render = entity.getComponent('render');
+            const physics = entity.getComponent('physics');
+            if (!render || !physics) continue;
+    
+            if (entity.targetHeight && entity.enlargeProgress < 1) {
+                entity.enlargeProgress += delta.deltaTime * 0.1;
+                let t = Math.min(entity.enlargeProgress, 1);
+            
+                let targetHeight;
+            
+                if (entity.overshootPhase === 'expand') {
+                    // EASE OUT to overshoot target
+                    let easeT = 1 - Math.pow(2, -10 * t); // strong ease-out
+                    targetHeight = this.lerp(entity.originalHeight, entity.overshootTarget, easeT);
+            
+                    if (t >= 1) {
+                        // Start settling phase
+                        entity.overshootPhase = 'settle';
+                        entity.enlargeProgress = 0;
+                        entity.originalHeight = entity.overshootTarget;
+                    }
+                } else if (entity.overshootPhase === 'settle') {
+                    // EASE IN to final target
+                    let easeT = 1 - Math.pow(2, -10 * t); // cubic ease-in
+                    targetHeight = this.lerp(entity.originalHeight, entity.targetHeight, easeT);
+            
+                    if (t >= 1) {
+                        // Done!
+                        entity.overshootPhase = null;
+                    }
+                }
+            
+                if (targetHeight) {
+                    physics.height = targetHeight;
+            
+                    render.graphic.clear();
+                    render.graphic.rect(0, 0, physics.width, targetHeight);
+                    render.graphic.fill('#FAF3E0');
+                    render.graphic.pivot.set(physics.width / 2, targetHeight / 2);
+                }
+            }
+        }
+    
         
         this.depthLineCooldown -= delta.deltaTime;
     
@@ -143,5 +227,9 @@ export class AnimationSystem {
         for (const entityId of entitiesToRemove) {
             this.game.removeEntity(entityId);
         }
+    }
+
+    lerp(a, b, t) {
+        return a + (b - a) * t;
     }
 }
