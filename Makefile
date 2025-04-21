@@ -17,7 +17,8 @@ down:
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans
 
 re:
-	$(MAKE) down
+	$(MAKE) stop
+	$(MAKE) clean
 	$(MAKE) up
 
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
@@ -34,3 +35,6 @@ fclean:
 	docker volume prune -f
 	docker network prune -f
 	docker image prune -a -f
+
+certs:
+	docker exec -it nginx certbot --nginx -d mrlouf.studio -d www.mrlouf.studio
