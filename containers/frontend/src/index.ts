@@ -49,7 +49,10 @@ setInterval(moveBall, 10);
 requestAnimationFrame(animatePaddles);
 
 GoogleSignInModule.initializeGoogleSignIn((credential: string) => {
-  fetch("/api/auth/google", {
+    console.log("Token format correct:", /^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/.test(credential));
+    console.log("Token length:", credential.length);
+      
+    fetch("/api/auth/google", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
