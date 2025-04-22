@@ -1,7 +1,7 @@
 FROM nginx
 
 RUN apt-get update \
-    && apt-get install -y certbot python3-certbot-nginx iputils-ping \
+    && apt-get install -y nano certbot python3-certbot-nginx iputils-ping \
     && apt-get clean
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
