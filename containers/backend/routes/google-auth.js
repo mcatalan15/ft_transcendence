@@ -19,21 +19,14 @@ async function googleAuthRoutes(fastify, options) {
 
       const payload = ticket.getPayload();
 
-//      return reply.send({
-//      success: true,
-//      user: {
-//        name: payload.name,
-//        email: payload.email,
-//        picture: payload.picture,
-//      },
-//    });
+      const name = payload.name;
+      const email = payload.email;
 
-     const name = payload.name;
-     const email = payload.email;
+	  // TODO: Check if user exists before saving it in DB
 
-     await saveUserToDatabase(name, email, null, 'google');
+      await saveUserToDatabase(name, email, null, 'google');
 
-     return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
+      return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
     } catch (error) {
       fastify.log.error(error);
       return reply.status(401).send({ success: false, message: 'Invalid token' });
