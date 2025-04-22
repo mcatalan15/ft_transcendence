@@ -59,7 +59,7 @@ GoogleSignInModule.initializeGoogleSignIn((credential: string) => {
   })
     .then(res => res.json())
     .then(data => {
-      console.log("Google Sign-In successful:", data);
+      console.log("Results of Google Sign-In:", data);
     })
     .catch(err => {
       console.error("Error signing in with Google:", err);
