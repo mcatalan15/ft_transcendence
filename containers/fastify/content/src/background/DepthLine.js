@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DepthLine.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:34:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/19 18:50:42 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 09:12:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,7 @@ export class DepthLine extends Entity {
 		this.width = width;
 		this.height = height;
 		
-		// Set initial position (CENTERED horizontally, offset from center vertically)
-		this.x = width / 2;  // Center horizontally
+		this.x = width / 2;
 		this.y = type === 'top' ? height / 2 - height / 10 : height / 2 + height / 10;
 		
 		this.upperLimit = upperLimit;
@@ -52,12 +51,10 @@ export class DepthLine extends Entity {
 		this.targetAlpha = options.alpha || 1;
 		this.alphaIncrease = this.targetAlpha / 50;
 		
-		// Create line at 0,0 (we'll position it after)
 		const graphic = this.generateLine(width);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 		
-		// Set the position of the graphic to match the entity
 		render.graphic.position.set(this.x, this.y);
 	
 		const lifetimeComp = new LifetimeComponent(lifetime, despawn);
@@ -70,8 +67,7 @@ export class DepthLine extends Entity {
 	generateLine(width) {
 		const line = new PIXI.Graphics();
 		
-		// Draw line centered on its position
-		line.rect(-width/2, 0, width, 0.5);  // Center the line horizontally
+		line.rect(-width/2, 0, width, 0.5);
 		line.fill({color: 0xFF1C5A, alpha: 1});
 		
 		return line;
@@ -81,7 +77,6 @@ export class DepthLine extends Entity {
 		this.x = x;
 		this.y = y;
 		
-		// Update graphic position
 		const render = this.getComponent('render');
 		if (render && render.graphic) {
 			render.graphic.position.set(this.x, this.y);

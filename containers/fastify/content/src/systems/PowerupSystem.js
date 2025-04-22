@@ -52,7 +52,6 @@ export class PowerupSystem {
                         continue;
                     }
                 }
-
             }
 
             if (entity.id.startsWith('paddle')) {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:03:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/16 15:53:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 09:26:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ export class ParticleSystem {
 	}
 
 	update(entities, delta) {
-        // Create a copy of entities to safely remove items during iteration
         const particlesToRemove = [];
 
         // First pass: process all particles and identify ones to remove
@@ -29,13 +28,12 @@ export class ParticleSystem {
                 const physics = entity.getComponent('physics');
                 const render = entity.getComponent('render');
 
-                // Update lifetime
                 if (lifetime.despawn === 'time') {
-                    lifetime.remaining -= delta.deltaTime; // Using delta time for smooth timing
+                    lifetime.remaining -= delta.deltaTime;
                     
                     if (lifetime.remaining <= 0) {
                         particlesToRemove.push(entity.id);
-                        continue; // Skip further processing for expired particles
+                        continue;
                     }
                 }
 
@@ -49,7 +47,7 @@ export class ParticleSystem {
 
                 // Update position
                 if (physics && render) {
-                    physics.x += physics.velocityX * delta.deltaTime * 0.1; // Use delta for smooth movement
+                    physics.x += physics.velocityX * delta.deltaTime * 0.1;
                     physics.y += physics.velocityY * delta.deltaTime* 0.1;
                     render.graphic.x = physics.x;
                     render.graphic.y = physics.y;

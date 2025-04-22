@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsSystem.js                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 08:12:36 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 09:25:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,8 @@ export class PhysicsSystem {
         
         if (!input || !physics) return;
 
-        // Update paddle position based on input
         this._applyInputToPaddle(input, physics);
         
-        // Handle wall collisions
         this._constrainPaddleToWalls(physics, entitiesMap);
     }
 
@@ -136,8 +134,6 @@ export class PhysicsSystem {
         }
     }
 
-// Enhanced collision system that considers both paddle speed and hit position
-// Enhanced collision system with clamped angles to prevent overly vertical trajectories
 _handleBallPaddleCollisions(physics, entitiesMap) {
     const ballLeft = physics.x - (physics.width / 2);
     const ballRight = physics.x + (physics.width / 2);
@@ -157,36 +153,28 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
         
         if (physics.y >= paddleTop && physics.y <= paddleBottom &&
             ballLeft <= paddleRight && ballLeft >= paddleRight - Math.abs(physics.velocityX)) {
-            // Position the ball properly after collision
+
             physics.x = paddleRight + (physics.width / 2);
             
-            // Calculate relative position of hit on paddle (0 = center, -1 = top edge, 1 = bottom edge)
             const relativeHitPosition = ((physics.y - paddlePhysics.y) / (paddlePhysics.height / 2));
-            
-            // Calculate bounce angle based on hit position, but limit the range
+
             const clampedHitPosition = Math.max(-0.8, Math.min(0.8, relativeHitPosition)); // clamp to 80% of edge
             const bounceAngle = clampedHitPosition * MAX_BOUNCE_ANGLE;
-            
-            // Calculate new velocity components based on the bounce angle
+
             const speed = Math.sqrt(physics.velocityX * physics.velocityX + physics.velocityY * physics.velocityY);
             physics.velocityX = Math.cos(bounceAngle) * speed;
             physics.velocityY = Math.sin(bounceAngle) * speed;
-            
-            // Add influence from paddle's motion (if paddle is moving), but limit the effect
+
             if (paddlePhysics.velocityY !== 0) {
-                // Clamp paddle velocity influence
                 const paddleInfluence = Math.min(Math.abs(paddlePhysics.velocityY), 5) * Math.sign(paddlePhysics.velocityY);
                 physics.velocityY += paddleInfluence * PADDLE_INFLUENCE;
             }
             
-            // Ensure the ball maintains significant horizontal velocity by adjusting components
             const horizontalComponent = Math.abs(physics.velocityX) / speed;
             if (horizontalComponent < MIN_HORIZONTAL_COMPONENT) {
-                // Recalculate velocities to ensure minimum horizontal component
                 const currentDirection = Math.sign(physics.velocityX);
                 physics.velocityX = currentDirection * MIN_HORIZONTAL_COMPONENT * speed;
                 
-                // Adjust Y to maintain the same overall speed
                 const maxVerticalComponent = Math.sqrt(1 - (MIN_HORIZONTAL_COMPONENT * MIN_HORIZONTAL_COMPONENT));
                 physics.velocityY = Math.sign(physics.velocityY) * maxVerticalComponent * speed;
             }
@@ -196,7 +184,7 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
             ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
             if (ball && ball.hasComponent('vfx')) {
                 const vfx = ball.getComponent('vfx');
-                vfx.startFlash(0x1CFFAC, 10); // Blue flash for left paddle
+                vfx.startFlash(0x1CFFAC, 10); // Green flash for left paddle
             }
         }
     }
@@ -210,36 +198,28 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
         
         if (physics.y >= paddleTop && physics.y <= paddleBottom &&
             ballRight >= paddleLeft && ballRight <= paddleLeft + Math.abs(physics.velocityX)) {
-            // Position the ball properly after collision
+
             physics.x = paddleLeft - (physics.width / 2);
-            
-            // Calculate relative position of hit on paddle (0 = center, -1 = top edge, 1 = bottom edge)
+
             const relativeHitPosition = ((physics.y - paddlePhysics.y) / (paddlePhysics.height / 2));
             
-            // Calculate bounce angle based on hit position, but limit the range
             const clampedHitPosition = Math.max(-0.8, Math.min(0.8, relativeHitPosition)); // clamp to 80% of edge
             const bounceAngle = clampedHitPosition * MAX_BOUNCE_ANGLE;
             
-            // Calculate new velocity components based on the bounce angle
             const speed = Math.sqrt(physics.velocityX * physics.velocityX + physics.velocityY * physics.velocityY);
-            physics.velocityX = -Math.cos(bounceAngle) * speed; // Negative for right paddle
+            physics.velocityX = -Math.cos(bounceAngle) * speed;
             physics.velocityY = Math.sin(bounceAngle) * speed;
-            
-            // Add influence from paddle's motion (if paddle is moving), but limit the effect
+
             if (paddlePhysics.velocityY !== 0) {
-                // Clamp paddle velocity influence
                 const paddleInfluence = Math.min(Math.abs(paddlePhysics.velocityY), 5) * Math.sign(paddlePhysics.velocityY);
                 physics.velocityY += paddleInfluence * PADDLE_INFLUENCE;
             }
             
-            // Ensure the ball maintains significant horizontal velocity
             const horizontalComponent = Math.abs(physics.velocityX) / speed;
             if (horizontalComponent < MIN_HORIZONTAL_COMPONENT) {
-                // Recalculate velocities to ensure minimum horizontal component
                 const currentDirection = Math.sign(physics.velocityX);
                 physics.velocityX = currentDirection * MIN_HORIZONTAL_COMPONENT * speed;
-                
-                // Adjust Y to maintain the same overall speed
+
                 const maxVerticalComponent = Math.sqrt(1 - (MIN_HORIZONTAL_COMPONENT * MIN_HORIZONTAL_COMPONENT));
                 physics.velocityY = Math.sign(physics.velocityY) * maxVerticalComponent * speed;
             }
@@ -250,7 +230,7 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
             
             if (ball && ball.hasComponent('vfx')) {
                 const vfx = ball.getComponent('vfx');
-                vfx.startFlash(0xAC1CFF, 10); // Red flash for right paddle
+                vfx.startFlash(0xAC1CFF, 10); // Purple flash for right paddle
             }
         }
     }

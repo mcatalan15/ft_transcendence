@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParticleSpawner.js                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 10:18:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/18 09:14:58 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ export class ParticleSpawner {
 	}
 
 	static spawnBurst(game, x, y, size = 5, velocityX = 0, velocityY = 0, color) {
-		// Calculate inverse direction of ball movement
 		const baseAngle = Math.atan2(-velocityY, -velocityX);  // Opposite direction of movement
 	
 		for (let i = 0; i < size; i++) {

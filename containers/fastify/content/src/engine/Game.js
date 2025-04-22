@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 08:16:29 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ export class PongGame {
 	}
 
 	async init() {
-		// Initialize PIXI app and Canvas
 		console.log("Initilizing PongGame...");
 		this.app = new PIXI.Application();
 		await this.app.init({
@@ -58,7 +57,6 @@ export class PongGame {
 		gameContainer.appendChild(this.app.canvas);
 		console.log("Canvas added to game container.");
 
-		// Setup render layers
 		this.renderLayers = {
 			background: new PIXI.Container(),
 			midground: new PIXI.Container(),
@@ -67,11 +65,9 @@ export class PongGame {
 			pp: new PIXI.Container(),
 		};
 
-		// Create parent container for postProcessing
 		this.visualRoot = new PIXI.Container();
 		this.visualRoot.sortableChildren = true;
 		
-		// zIndex sorted
 		this.app.stage.addChild(this.renderLayers.background);
 		this.app.stage.addChild(this.visualRoot);
 
@@ -85,20 +81,16 @@ export class PongGame {
 		//this.app.stage.addChild(this.renderLayers.background);
 		
 
-		// Initialize systems
 		this.initSystems();
 
-		// Init sounds
 		this.initSounds(); 
 
-		// Create entities
 		await this.createEntities();
 
-		// Start game loop
 		this.app.ticker.add(this.gameLoop.bind(this));
 	}
 
-	// Helper function to initialize all existing game systems
+	// Helper functions to initialize all existing game systems
 	initSystems() {
 		const renderSystem = new RenderSystem(this, this.app);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);

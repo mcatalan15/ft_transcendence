@@ -23,7 +23,7 @@ export class PowerupComponent {
 		}
     
         paddle.isEnlarged = true;
-        paddle.enlargeTimer = 500; // or however long the powerup lasts
+        paddle.enlargeTimer = 500;
 		paddle.overshootTarget = paddle._targetHeight * 1.2;
 		paddle.overshootPhase = 'settle';
 		paddle.enlargeProgress = 0

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 14:21:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/15 12:22:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ export class TextComponent {
 		this.textObject.rotation = rotation;
 
         if (rotation === Math.PI/2 || rotation === -Math.PI/2) {
-            // Adjust anchor for vertical text if needed
             this.textObject.anchor.set(0.5, 0);
         }
 	}
