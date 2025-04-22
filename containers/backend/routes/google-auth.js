@@ -22,7 +22,6 @@ async function googleAuthRoutes(fastify, options) {
       const name = payload.name;
       const email = payload.email;
 
-	  // TODO: Check if user exists before saving it in DB
 	  	try {
        	 await checkUserExists(name, email);
 
@@ -32,7 +31,7 @@ async function googleAuthRoutes(fastify, options) {
 			success: true,
 			message: 'Google sign-in successful',
 			user: { name, email } });
-			
+
 		} catch (error) {
 		// If user already exists
 		return reply.status(400).send({
