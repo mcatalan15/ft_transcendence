@@ -25,6 +25,7 @@ fastify.register(cors, {
     origin: ['https://mrlouf.studio'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
+	// deactivate preconfigured routes:
     preflight: false,
     hook: 'preHandler'
 });
