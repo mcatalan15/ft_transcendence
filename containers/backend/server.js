@@ -53,11 +53,6 @@ fastify.get('/metrics', async (_, reply) => {
 
 const { ADDRESS = '0.0.0.0', PORT = '3100' } = process.env;
 
-fastify.all('*', async (request, reply) => {
-	fastify.log.warn(`Unmatched route: ${request.method} ${request.url}`);
-	reply.status(404).send({ message: 'Not found' });
-  });  
-
 fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, (err, address) => {
   if (err) {
     console.error(err)
