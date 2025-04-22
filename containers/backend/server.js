@@ -22,7 +22,7 @@ const fastify = Fastify({
 });
 
 fastify.register(cors, {
-    origin: true, // !Allows requests from any origin, NOT SECURE!
+    origin: ['https://mrlouf.studio'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 });
@@ -52,6 +52,11 @@ fastify.get('/metrics', async (_, reply) => {
 });
 
 const { ADDRESS = '0.0.0.0', PORT = '3100' } = process.env;
+
+fastify.all('*', async (request, reply) => {
+	fastify.log.warn(`Unmatched route: ${request.method} ${request.url}`);
+	reply.status(404).send({ message: 'Not found' });
+  });  
 
 fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, (err, address) => {
   if (err) {
