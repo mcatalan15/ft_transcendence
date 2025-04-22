@@ -25,6 +25,8 @@ fastify.register(cors, {
     origin: ['https://mrlouf.studio'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
+    preflight: false,
+    hook: 'preHandler'
 });
 fastify.register(fastifyMultipart);
 fastify.register(require('./routes/registration'));	//	user registration
