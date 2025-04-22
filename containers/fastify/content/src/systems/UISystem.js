@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UISystem.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:00:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/21 13:01:45 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 10:12:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ export class UISystem {
 						const event = this.game.eventQueue.shift();
 					
 						if (event.type === 'SCORE') {
+							console.log('Received SCORE event', event);
 							this.updateScore(entities, event);
 						} else {
 							unhandledEvents.push(event);

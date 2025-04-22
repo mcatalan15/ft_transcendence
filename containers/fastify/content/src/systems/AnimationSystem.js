@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 13:44:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 09:23:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 11:39:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ export class AnimationSystem {
         
         // Animation control properties
         this.frameCounter = 0;
-        this.depthLineUpdateRate = 1; // Update every X frames
+        this.depthLineUpdateRate = 3; // Update every X frames
         
         this.lastLineSpawnTime = 0;
     }
@@ -50,7 +50,6 @@ export class AnimationSystem {
             
                 if (event.type === 'ENLARGE_PADDLE') {
                     console.log('Received ENLARGE_PADDLE event', event);
-                    
                     paddle.originalHeight = physics.height;
                     paddle.targetHeight = paddle.baseHeight * 2;
                     paddle.overshootTarget = paddle.targetHeight * 1.2;
@@ -58,7 +57,6 @@ export class AnimationSystem {
                     
                 } else if (event.type === 'RESET_PADDLE') {
                     console.log('Received RESET_PADDLE event', event);
-                    
                     paddle.originalHeight = physics.height;
                     paddle.targetHeight = paddle.baseHeight;
                     paddle.overshootTarget = paddle.targetHeight * 0.9;

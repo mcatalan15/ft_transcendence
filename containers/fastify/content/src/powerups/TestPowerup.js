@@ -22,7 +22,7 @@ export class TestPowerup extends Entity {
         super(id, layer);
 
         const {
-            lifetime = 300,
+            lifetime = 500,
             despawn = 'time',
             effect = 'enlargePadle',
         } = options;

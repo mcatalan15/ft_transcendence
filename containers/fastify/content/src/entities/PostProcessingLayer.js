@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 11:12:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 09:42:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ export class PostProcessingLayer extends Entity {
         });
 
         // Chromatic aberration
-        const rgbSplit = new PIXI.filters.RGBSplitFilter(
-            new PIXI.Point(-0.3, 0), // Red channel offset
-            new PIXI.Point(0, 0.3),  // Green channel offset
-            new PIXI.Point(0.3, -0.3) // Blue channel offset
-        );
+        const rgbSplit = new PIXI.filters.RGBSplitFilter({
+            red:   new PIXI.Point(-0.3, 0),
+            green: new PIXI.Point(0, 0.3),
+            blue:  new PIXI.Point(0.3, -0.3),
+        });
         
         game.visualRoot.filters = [advancedBloom, bulgePinch, crtFilter, rgbSplit];
         

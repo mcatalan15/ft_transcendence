@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 10:01:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ import { PostProcessingLayer } from '../entities/PostProcessingLayer.js'
 
 export class PongGame {
 	constructor (){
-		this.width = 1500; //1500
-		this.height = 500; //500
+		this.width = 1920; //1500
+		this.height = 800; //500
 		this.app = null;
 		this.entities = [];
 		this.systems = [];
@@ -124,6 +124,21 @@ export class PongGame {
 	}
 
 	async createEntities() {
+		// Fetch player info from jsons
+		let playerData;
+		try {
+			const response = await fetch('../../data/players.json'); // If using an actual JSON file
+			playerData = await response.json();
+		} catch (error) {
+			console.error("Failed to fetch player data, using mock data:", error);
+			playerData = mockPlayerData; // Fallback to local mock data
+		}
+
+		const leftPlayer = playerData.players.find(p => p.id === "paddleL") || { name: "Player 1" };
+		const rightPlayer = playerData.players.find(p => p.id === "paddleR") || { name: "Player 2" };
+
+		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`);
+
 		// Create Top Wall
 		const wallT = new Wall('wallT', 'foreground', this.width, this.height, this.wallThickness, this.topWallOffset);
 		this.renderLayers.foreground.addChild(wallT.getComponent('render').graphic);
@@ -143,7 +158,7 @@ export class PongGame {
 		console.log("Ball created.");
 
 		//Create left paddle
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true);
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, leftPlayer.name);
 		this.renderLayers.foreground.addChild(paddleL.getComponent('render'). graphic);
 		if (paddleL.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleL.getComponent('text').getRenderable());
@@ -152,7 +167,7 @@ export class PongGame {
 		console.log("PaddleL created.");
 
 		//Create right paddle
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, rightPlayer.name);
 		this.renderLayers.foreground.addChild(paddleR.getComponent('render'). graphic);
 		if (paddleR.getComponent('text')) {
 			this.renderLayers.foreground.addChild(paddleR.getComponent('text').getRenderable());

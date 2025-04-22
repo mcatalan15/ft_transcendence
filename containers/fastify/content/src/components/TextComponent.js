@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 14:21:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/22 09:19:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/22 09:54:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ export class TextComponent {
 			stroke: 0xFAF3E0,
 		};
 
-		this.textObject = new PIXI.Text(text, { ...styleOne, ...style });
+		this.textObject = new PIXI.Text({text: text, style: style || styleOne,});
 
 		this.textObject.anchor.set(anchor.x, anchor.y);
 		this.textObject.x = Math.round(x);
