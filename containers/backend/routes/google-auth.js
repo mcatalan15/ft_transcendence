@@ -19,25 +19,27 @@ async function googleAuthRoutes(fastify, options) {
 
       const payload = ticket.getPayload();
 
-      return reply.send({
-      success: true,
-      user: {
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-      },
-    });
-    //  const { email, name, sub } = payload;
+//      return reply.send({
+//      success: true,
+//      user: {
+//        name: payload.name,
+//        email: payload.email,
+//        picture: payload.picture,
+//      },
+//    });
+
+     const name = payload.name;
+     const email = payload.email;
 
      // const userExists = await checkUserExists(null, email);
 
      // if (!userExists) {
         // Save user with null password or flag as Google user
-     //   await saveUserToDatabase(name || email.split('@')[0], email, null);
+     await saveUserToDatabase(name, email, null);
      // }
 
       // You can generate a token here if you use JWT sessions
-     // return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
+     return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
     } catch (error) {
       fastify.log.error(error);
       return reply.status(401).send({ success: false, message: 'Invalid token' });
