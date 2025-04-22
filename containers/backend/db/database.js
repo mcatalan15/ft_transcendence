@@ -28,7 +28,11 @@ async function checkUserExists(username, email) {
 	  const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
 	  db.get(query, [username, email], (err, row) => {
 		if (err) reject(err);
-		else resolve(row);
+		if (row) {
+			reject(new Error('User already exists'));  // Reject if user exists
+		  } else {
+			resolve(null);
+		  }
 	  });
 	});
   }

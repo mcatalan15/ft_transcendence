@@ -23,13 +23,29 @@ async function googleAuthRoutes(fastify, options) {
       const email = payload.email;
 
 	  // TODO: Check if user exists before saving it in DB
+	  	try {
+       	 await checkUserExists(name, email);
 
-      await saveUserToDatabase(name, email, null, 'google');
+     	 await saveUserToDatabase(name, email, null, 'google');
 
-      return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
-    } catch (error) {
+    	 return reply.status(200).send({
+			success: true,
+			message: 'Google sign-in successful',
+			user: { name, email } });
+			
+		} catch (error) {
+		// If user already exists
+		return reply.status(400).send({
+			success: false,
+			message: 'User already exists',
+		});
+		}
+
+	} catch (error) {
       fastify.log.error(error);
-      return reply.status(401).send({ success: false, message: 'Invalid token' });
+      return reply.status(401).send({
+		success: false,
+		message: 'Invalid Token' });
     }
   });
 }
