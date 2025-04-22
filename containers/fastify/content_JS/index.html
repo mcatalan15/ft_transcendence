@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PongGame - Transcendence</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #171717;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+        }
+        #error {
+            color: #FFFBEB;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <div id="error" style="display: none;"></div>
+
+    <!-- Load PixiJS v8 -->
+    <script src="libs/pixi.js"></script>
+    <script src="libs/pixi-filters.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script type="module" src="src/index.js"></script>
+
+    <!-- Load utilities -->
+    <script type="module" src="src/utils/Constants.js"></script>
+    <script type="module" src="src/utils/MathUtils.js"></script>
+
+    <!-- Load engine-related components -->
+    <script type="module" src="src/engine/Entity.js"></script>
+    <script type="module" src="src/engine/Game.js"></script>
+
+    <!-- Load components -->
+    <script type="module" src="src/components/RenderComponent.js"></script>
+    <script type="module" src="src/components/PhysicsComponent.js"></script>
+    <script type="module" src="src/components/VFXComponent.js"></script>
+    <script type="module" src="src/components/InputComponent.js"></script>
+    <script type="module" src="src/components/TextComponent.js"></script>
+    <script type="module" src="src/components/LifetimeComponent.js"></script>
+    <script type="module" src="src/components/ParticleBehaviorComponent.js"></script>
+    <script type="module" src="src/components/PostProcessingComponent.js"></script>
+    <script type="module" src="src/components/PowerupComponent.js"></script>
+
+    <!-- Load systems -->
+    <script type="module" src="src/systems/RenderSystem.js"></script>
+    <script type="module" src="src/systems/PhysicsSystem.js"></script>
+    <script type="module" src="src/systems/InputSystem.js"></script>
+    <script type="module" src="src/systems/VFXSystem.js"></script>
+    <script type="module" src="src/systems/ParticleSystem.js"></script>
+    <script type="module" src="src/systems/UISystem.js"></script>
+    <script type="module" src="src/systems/PostProcessingSystem.js"></script>
+    <script type="module" src="src/systems/PowerupSystem.js"></script>
+    <!--
+    <script type="module" src="src/systems/AudioSystem.js"></script>-->
+
+    <!-- Load entities -->
+    <script type="module" src="src/entities/Ball.js"></script>
+    <script type="module" src="src/entities/Paddle.js"></script>
+    <script type="module" src="src/entities/Wall.js"></script>
+    <script type="module" src="src/entities/Particle.js"></script>
+    <script type="module" src="src/entities/UI.js"></script>
+    <script type="module" src="src/entities/PostProcessingLayer.js"></script>
+    <script type="module" src="src/background/DepthLine.js"></script>
+    <script type="module" src="src/powerups/TestPowerup.js"></script>
+
+    <!-- Load main game initialization -->
+    <script type="module" src="src/index.js"></script>
+</body>
+</html>
