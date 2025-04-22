@@ -31,14 +31,8 @@ async function googleAuthRoutes(fastify, options) {
      const name = payload.name;
      const email = payload.email;
 
-     // const userExists = await checkUserExists(null, email);
+     await saveUserToDatabase(name, email, null, 'google');
 
-     // if (!userExists) {
-        // Save user with null password or flag as Google user
-     await saveUserToDatabase(name, email, null);
-     // }
-
-      // You can generate a token here if you use JWT sessions
      return reply.status(200).send({ success: true, message: 'Google sign-in successful', user: { name, email } });
     } catch (error) {
       fastify.log.error(error);
