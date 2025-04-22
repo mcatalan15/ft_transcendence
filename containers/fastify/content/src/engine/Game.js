@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:16:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/21 17:58:40 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 08:16:29 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,8 @@ export class PongGame {
 		this.sounds = {
 			pong: new Howl({ src: ['src/assets/sfx/pong.wav'] }),
 			powerup: new Howl({ src: ['src/assets/sfx/powerup.wav'] }),
+			death: new Howl({ src: ['src/assets/sfx/death.wav'] }),
+			paddleReset: new Howl({ src: ['src/assets/sfx/paddleReset.wav'] }),
 		};
 		console.log('Howler sounds initialized.');
 	}

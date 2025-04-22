@@ -62,6 +62,7 @@ export class PowerupSystem {
 
                 if (entity.isEnlarged && entity.enlargeTimer <= 0) {
                     console.log('Reseting paddle height');
+                    this.game.sounds.paddleReset.play();
                     entity.resetPaddleSize(entity);
                 }
             }

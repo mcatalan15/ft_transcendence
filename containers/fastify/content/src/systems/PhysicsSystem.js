@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:28:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/21 21:24:03 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/22 08:12:36 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,6 +294,7 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
                 physics.velocityY,
                 0xFFAC1C,
             );
+            this.game.sounds.death.play();
             this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
             this._resetBall(ball, physics, 1);
         }
@@ -309,6 +310,7 @@ _handleBallPaddleCollisions(physics, entitiesMap) {
                 physics.velocityY,
                 0xFFAC1C,
             );
+            this.game.sounds.death.play();
             this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
             this._resetBall(ball, physics, -1);
         }
