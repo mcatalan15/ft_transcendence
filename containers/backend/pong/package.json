@@ -10,10 +10,12 @@
     "dev": "vite"
   },
   "dependencies": {
+    "howler": "^2.2.4",
     "pixi.js": "^8.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/howler": "^2.2.12",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
