@@ -5,16 +5,16 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 14:49:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/23 16:23:13 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 10:40:51 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 11:46:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Graphics } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
-import { Graphics } from 'pixi.js';
 
 export class Ball extends Entity {
 	lastHit: string;

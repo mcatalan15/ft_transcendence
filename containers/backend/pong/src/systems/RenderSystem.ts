@@ -5,33 +5,21 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 13:56:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/23 14:25:48 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 10:51:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { PongGame } from '../engine/Game'; // or wherever your Game type/class lives
 import type { Entity } from '../engine/Entity';
 import type { RenderComponent } from '../components/RenderComponent';
 import type { PhysicsComponent } from '../components/PhysicsComponent';
 import type { TextComponent } from '../components/TextComponent';
-import { Application } from 'pixi.js';
 
 export class RenderSystem {
-	private game: PongGame;
-	private app: Application;
-	private renderedTextComponents: Set<string>; // maybe store entity IDs or component IDs
-
-	constructor(game: PongGame, app: Application) {
-		this.game = game;
-		this.app = app;
-		this.renderedTextComponents = new Set();
-	}
-
-	update(entities: Entity[], delta: number): void {
+	update(entities: Entity[]): void {
 		entities.forEach((entity) => {
-			const renderComponent = entity.getComponent('render') as RenderComponent | null;
-			const physicsComponent = entity.getComponent('physics') as PhysicsComponent | null;
+			const renderComponent = entity.getComponent('render') as RenderComponent;
+			const physicsComponent = entity.getComponent('physics') as PhysicsComponent;
 
 			if (renderComponent && physicsComponent) {
 				renderComponent.graphic.x = physicsComponent.x;

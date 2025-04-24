@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 14:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/23 16:11:15 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 09:58:17 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 12:29:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { Graphics } from "pixi.js";
 
 export class Wall extends Entity {
-    constructor(id: string, layer:string, width: number, height: number, thickness: number, offset: number) {
+    constructor(id: string, layer:string, width: number, thickness: number, offset: number) {
         super(id, layer);
 
         const wallGraphic = this.createWallGraphic(width, thickness);
@@ -24,7 +24,7 @@ export class Wall extends Entity {
         const renderComponent = new RenderComponent(wallGraphic);
         this.addComponent(renderComponent);
 
-        const physicsData = this.initWallPhysicsData(width, thickness, height, offset);
+        const physicsData = this.initWallPhysicsData(width, thickness, offset);
         const physicsComponent = new PhysicsComponent(physicsData);
         this.addComponent(physicsComponent);
     }
@@ -37,9 +37,9 @@ export class Wall extends Entity {
         return wallGraphic;
     }
 
-    initWallPhysicsData(width: number, thickness: number, height: number, offset: number) {
+    initWallPhysicsData(width: number, thickness: number, offset: number) {
         const data = {
-            x: 0,
+            x: width / 2,
             y: offset,
             width: width,
             height: thickness,

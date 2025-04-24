@@ -5,27 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 12:58:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/23 12:58:26 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 12:43:38 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 12:43:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Component } from '../engine/Component.ts';
-
-type ParticleOptions = {
+interface ParticleBehaviorOptions {
 	rotate?: boolean;
 	shrink?: boolean;
-};
+}
 
-export class ParticleBehaviorComponent implements Component {
-	type = 'particleBehavior';
-	instanceId?: string;
-
+export class ParticleBehaviorComponent {
+	type: string;
 	rotate: boolean;
 	shrink: boolean;
 	rotationSpeed: number;
 
-	constructor(options: ParticleOptions = {}) {
+	constructor(options: ParticleBehaviorOptions = {}) {
+		this.type = 'particleBehavior';
 		this.rotate = options.rotate ?? false;
 		this.shrink = options.shrink ?? false;
 		this.rotationSpeed = 0.1;

@@ -5,18 +5,18 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 14:49:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/23 16:10:56 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 10:31:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Graphics } from 'pixi.js';
 import { PongGame } from '../engine/Game'
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";
 import { InputComponent } from '../components/InputComponent';
 import { TextComponent } from '../components/TextComponent';
-import { Graphics } from 'pixi.js';
 
 export class Paddle extends Entity {
     game: PongGame;

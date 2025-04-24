@@ -1,11 +1,11 @@
-import { Application} from "pixi.js";
+import { Application } from "pixi.js";
 import { PongGame } from './engine/Game.ts';
 
 (async () => {
   const app = new Application();
   await app.init({
     background: "#171717",
-    width: 1000,
+    width: 1500,
     height: 500,
     antialias: false,
     resolution: 2,
