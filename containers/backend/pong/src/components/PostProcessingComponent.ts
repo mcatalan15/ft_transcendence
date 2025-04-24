@@ -1,24 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RenderComponent.ts                                 :+:      :+:    :+:   */
+/*   PostProcessingComponent.ts                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/24 09:54:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 18:07:16 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/24 17:45:35 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/24 17:59:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Graphics, Container } from 'pixi.js';
-import { Component } from '../engine/Component.ts'
+import { PostProcessingOptions } from '../utils/Types';
 
-export class RenderComponent implements Component {
-	type = 'render';
-	instanceId?: string;
-	graphic: Graphics | Container;
+export class PostProcessingComponent {
+    type: string;
+    enabled: boolean;
+    time: number;
+    options: PostProcessingOptions;
 
-	constructor(graphic: Graphics | Container) {
-		this.graphic = graphic;
-	}
+    constructor(options: PostProcessingOptions = {}) {
+        this.type = 'postProcessing';
+        this.enabled = true;
+        this.time = 0;
+        this.options = options;
+    }
 }

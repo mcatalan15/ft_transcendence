@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 09:55:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:50:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ import type { Component } from '../engine/Component.ts';
 
 export class TextComponent implements Component {
 	type = 'text';
+	text: string;
 	instanceId?: string;
 	
 	private textObject: Text;
@@ -39,6 +40,7 @@ export class TextComponent implements Component {
 		rotation?: number;
 	}) {
 		this.tag = tag;
+		this.text = text;
 
 		const defaultStyle: Partial<TextStyle> = {
 			fontFamily: '"Roboto Mono", monospace',

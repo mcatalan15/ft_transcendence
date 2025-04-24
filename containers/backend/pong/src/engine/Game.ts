@@ -6,32 +6,44 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 12:59:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/24 19:14:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import Pixi stuff
+// Import Pixi and Howler stuff
 import { Application, Container } from 'pixi.js';
+import { Howl } from 'howler';
 
 // Import Engine elements (ECS)
-import { Entity } from '../engine/Entity.ts';
-import { Component } from '../engine/Component.ts';
-import { System } from '../engine/System.ts';
+import { Entity } from '../engine/Entity';
+import { Component } from '../engine/Component';
+import { System } from '../engine/System';
 
 // Import defined entities
-import { Wall } from '../entities/Wall.ts';
-import { Paddle } from '../entities/Paddle.ts'
-import { Ball } from '../entities/Ball.ts'
+import { Wall } from '../entities/Wall';
+import { Paddle } from '../entities/Paddle'
+import { Ball } from '../entities/Ball'
+import { UI } from '../entities/UI'
+import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 
 // Import built components
-import { RenderComponent } from '../components/RenderComponent.ts';
-import { TextComponent } from '../components/TextComponent.ts';
-import { PhysicsComponent } from '../components/PhysicsComponent.ts';
+import { RenderComponent } from '../components/RenderComponent';
+import { TextComponent } from '../components/TextComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
 
 // Import Implemented Systems
-import { RenderSystem } from '../systems/RenderSystem.ts';
-import { InputSystem } from '../systems/InputSystem.ts';
-import { PhysicsSystem } from '../systems/PhysicsSystem.ts';
+import { RenderSystem } from '../systems/RenderSystem';
+import { InputSystem } from '../systems/InputSystem';
+import { PhysicsSystem } from '../systems/PhysicsSystem';
+import { AnimationSystem } from '../systems/AnimationSystem';
+import { VFXSystem } from '../systems/VFXSystem';
+import { ParticleSystem } from '../systems/ParticleSystem';
+import { UISystem } from '../systems/UISystem';
+import { PowerupSystem } from '../systems/PowerupSystem';
+import { PostProcessingSystem } from '../systems/PostProcessingSystem';
+
+// Import exported types
+import { FrameData, GameEvent, GameSounds } from '../utils/Types'
 
 export class PongGame {
 	app: Application;
@@ -39,10 +51,24 @@ export class PongGame {
 	height: number;
 	entities: Entity[];
     systems: System[];
-    eventQueue: any[];
+    eventQueue: GameEvent[];
     topWallOffset: number;
     bottomWallOffset: number;
     wallThickness: number;
+	renderLayers: {
+		background: Container;
+		midground: Container;
+		foreground: Container;
+		ui: Container;
+		pp: Container;
+	};
+	visualRoot: Container;
+	sounds: GameSounds = {
+		pong: new Howl({ src: [] }),
+		powerup: new Howl({ src: [] }),
+		death: new Howl({ src: [] }),
+		paddleReset: new Howl({ src: [] })
+	};
 
 	constructor(app: Application) {
 		this.app = app;
@@ -51,48 +77,127 @@ export class PongGame {
 		this.entities = [];
         this.systems = [];
         this.eventQueue = [];
-        this.topWallOffset = 40;
-        this.bottomWallOffset = 60;
+        this.topWallOffset = 60;
+        this.bottomWallOffset = 80;
         this.wallThickness = 20;
+
+		this.renderLayers = {
+			background: new Container(),
+			midground: new Container(),
+			foreground: new Container(),
+			ui: new Container(),
+			pp: new Container()
+		};
+		this.visualRoot = new Container();
+		this.visualRoot.sortableChildren = true;
+			
+		this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.visualRoot);
+
+		this.visualRoot.addChild(this.renderLayers.midground);
+		this.visualRoot.addChild(this.renderLayers.foreground);
+		this.visualRoot.addChild(this.renderLayers.pp);
+
+		this.visualRoot.addChild(this.renderLayers.ui);
 	}
 
 	async init(): Promise<void> {
 		console.log("Initializing PongGame...");
 		
 		this.initSystems();
-		console.log('Systems initialiazed');
+		console.log('All Systems initialiazed');
+
+		this.initSounds();
+		console.log('Sounds lodaded');
 
 		await this.createEntities();
-		console.log('Entities created');
+		console.log('All Entities created');
 
-		this.app.ticker.add((time) => {
+		this.app.ticker.add((ticker) => {
+			//!DEBUG
+			/*console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
+				id,
+				type: entity.constructor.name
+			})));*/
+			
+			const frameData: FrameData = {
+				deltaTime: ticker.deltaTime
+			};
+		
 			this.systems.forEach(system => {
-				system.update(this.entities, );
+				system.update(this.entities, frameData);
 			});
-		  });
+		});
 	}
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
+		const animationSystem = new AnimationSystem(this, this.app, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
+		const vfxSystem = new VFXSystem(this, this.width, this.height);
+		const particleSystem = new ParticleSystem(this);
+		const uiSystem = new UISystem(this, this.app);
+		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height);
+		const postProcessingSystem = new PostProcessingSystem();
 
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
 		this.systems.push(physicsSystem);
+		this.systems.push(animationSystem);
+		this.systems.push(vfxSystem);
+		this.systems.push(particleSystem);
+		this.systems.push(uiSystem);
+		this.systems.push(powerupSystem);
+		this.systems.push(postProcessingSystem);
+	}
+
+	initSounds(): void {
+		this.sounds = {
+			pong: new Howl({ 
+				src: ['src/assets/sfx/pong.wav'],
+				preload: true
+			}),
+			powerup: new Howl({ 
+				src: ['src/assets/sfx/powerup.wav'],
+				preload: true 
+			}),
+			death: new Howl({ 
+				src: ['src/assets/sfx/death.wav'],
+				preload: true
+			}),
+			paddleReset: new Howl({ 
+				src: ['src/assets/sfx/paddleReset.wav'],
+				preload: true
+			}),
+		};
+		
+		// Create a better warm-up mechanism
+		const warmUpAudio = () => {
+			// Only attempt warm-up on user interaction
+			const silence = new Howl({
+				src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'],
+				volume: 0.01
+			});
+			silence.play();
+		};
+		
+		// Add the warm-up to a user interaction event
+		document.addEventListener('click', warmUpAudio, { once: true });
+		document.addEventListener('keydown', warmUpAudio, { once: true });
 	}
 
 	async createEntities(): Promise<void>  {
 		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
 		const wallTRender = wallT.getComponent('render') as RenderComponent;
-		this.app.stage.addChild(wallTRender.graphic)
+		this.renderLayers.foreground.addChild(wallTRender.graphic)
 		this.entities.push(wallT);
 		console.log("Top Wall created");
 
 		const wallB = new Wall('wallB', 'foreground', this.width, this.wallThickness, this.height - (this.bottomWallOffset - this.wallThickness));
 		const wallBRender = wallB.getComponent('render') as RenderComponent;
-		this.app.stage.addChild(wallBRender.graphic);
+		this.renderLayers.foreground.addChild(wallBRender.graphic);
 		this.entities.push(wallB);
 		console.log("Bottom wall created");
 
@@ -100,38 +205,62 @@ export class PongGame {
 		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'LeftPlayer');
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
-		this.app.stage.addChild(paddleLRender.graphic);
-		this.app.stage.addChild(paddleLText.getRenderable());
+		this.renderLayers.foreground.addChild(paddleLRender.graphic);
+		this.renderLayers.foreground.addChild(paddleLText.getRenderable());
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
 		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, 'RightPlayer');
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
-		this.app.stage.addChild(paddleRRender.graphic);
-		this.app.stage.addChild(paddleRText.getRenderable());
+		this.renderLayers.foreground.addChild(paddleRRender.graphic);
+		this.renderLayers.foreground.addChild(paddleRText.getRenderable());
 		this.entities.push(paddleR);
 		console.log("Right paddle created");
 
 		// Create Ball
 		const ball = new Ball('ball', 'foreground', this.width / 2, this.height / 2);
 		const ballRender = ball.getComponent('render') as RenderComponent;
-		this.app.stage.addChild(ballRender.graphic);
+		this.renderLayers.foreground.addChild(ballRender.graphic);
 		this.entities.push(ball);
-		console.log()
+		console.log("Ball created")
+
+		// Create UI
+		const ui = new UI('UI', 'ui', this.width, this.height, this.topWallOffset);
+		const uiText = ui.getComponent('text') as TextComponent;
+		this.renderLayers.ui.addChild(uiText.getRenderable());
+		this.entities.push(ui);
+		console.log("UI created")
+
+		// Create Postprocessing Layer
+		const postProcessingLayer = new PostProcessingLayer('postProcessing', 'pp', this);
+		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
+		this.renderLayers.pp.addChild(ppRender.graphic);
+		this.entities.push(postProcessingLayer);
+		console.log("PostProcessing Layer created")
 	}
 
 	addEntity(entity: Entity): void {
 		this.entities.push(entity);
-
-		const render = entity.getComponent('render') as RenderComponent;
-		if (render) {
-			this.app.stage.addChild(render.graphic);
+		let targetLayer = this.renderLayers.midground;
+	
+		if (entity.layer) {
+			switch(entity.layer) {
+				case 'background': targetLayer = this.renderLayers.background; break;
+				case 'foreground': targetLayer = this.renderLayers.foreground; break;
+				case 'ui': targetLayer = this.renderLayers.ui; break;
+				case 'pp': targetLayer = this.renderLayers.pp; break;
+			}
 		}
-
+	
+		const render = entity.getComponent('render') as RenderComponent;
+		if (render?.graphic) {
+			targetLayer.addChild(render.graphic);
+		}
+		
 		const text = entity.getComponent('text') as TextComponent;
-		if (text) {
-			this.app.stage.addChild(text.getRenderable());
+		if (text?.getRenderable) {
+			targetLayer.addChild(text.getRenderable());
 		}
 	}
 

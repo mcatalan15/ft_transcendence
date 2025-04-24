@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 13:00:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/24 16:26:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,7 @@ export class ParticleSpawner {
 
 			game.addEntity(particle);
 			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.app.stage.addChild(particleRender.graphic);
-			//game.renderLayers.foreground.addChild(particle.getComponent('render')!.graphic);
+			game.renderLayers.foreground.addChild(particleRender.graphic);
 		}
 	}
 
@@ -88,8 +87,7 @@ export class ParticleSpawner {
 
 			game.addEntity(particle);
 			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.app.stage.addChild(particleRender.graphic);
-			//game.renderLayers.midground.addChild(particle.getComponent('render')!.graphic);
+			game.renderLayers.midground.addChild(particleRender.graphic);
 		}
 	}
 
