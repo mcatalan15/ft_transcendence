@@ -22,12 +22,16 @@ const fastify = Fastify({
 });
 
 fastify.register(cors, {
-    origin: true, // !Allows requests from any origin, NOT SECURE!
+    origin: ['https://mrlouf.studio'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
+	// deactivate preconfigured routes:
+    preflight: false,
+    hook: 'preHandler'
 });
 fastify.register(fastifyMultipart);
-fastify.register(require('./routes/registration'));	// user registration
+fastify.register(require('./routes/registration'));	//	user registration
+fastify.register(require('./routes/google-auth'));	//	Google authentication
 
 // Ensure database connection is established
 db.serialize(() => {

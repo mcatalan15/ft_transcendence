@@ -1,13 +1,15 @@
-FROM nginx
+FROM nginx:stable-alpine
 
-RUN apt-get update \
-    && apt-get install -y certbot python3-certbot-nginx iputils-ping \
-    && apt-get clean
+RUN apk add --no-cache nano certbot certbot-nginx iputils
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY tools/init-certs.sh .
 
-RUN chmod -R 755 /usr/share/nginx/html
+
+RUN chmod -R 755 /usr/share/nginx/html \
+    && chmod +x ./init-certs.sh
 
 EXPOSE 80 443
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT [ "./init-certs.sh" ]
+#CMD ["nginx", "-g", "daemon off;"]

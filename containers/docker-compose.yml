@@ -23,9 +23,6 @@ volumes:
   grafana_data:
     driver: local
 
-  portainer_data:
-    driver: local
-
 #########################################################
 #                       SERVICES                        #
 #########################################################
@@ -97,23 +94,6 @@ services:
       - userbase:/db
     ports:
       - "127.0.0.1:1090:1090"
-    restart: always
-    networks:
-      - transcendence
-
-#                       PORTAINER                        #
-
-  portainer:
-    build: ./portainer
-    container_name: portainer
-    ports:
-      - "127.0.0.1:9000:9000"
-    volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      nginx:
-        condition: service_started
     restart: always
     networks:
       - transcendence
