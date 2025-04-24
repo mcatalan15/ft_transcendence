@@ -1,11 +1,10 @@
-FROM nginx
+FROM nginx:stable-alpine
 
-RUN apt-get update \
-    && apt-get install -y nano certbot python3-certbot-nginx iputils-ping \
-    && apt-get clean
+RUN apk add --no-cache nano certbot certbot-nginx iputils
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/init-certs.sh .
+
 
 RUN chmod -R 755 /usr/share/nginx/html \
     && chmod +x ./init-certs.sh
