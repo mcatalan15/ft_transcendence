@@ -1,52 +1,26 @@
 import * as GoogleSignInModule from "./auth/googleSignIn.js";
 
-const ball = document.getElementById("ball") as HTMLElement;
-const paddleTop = document.getElementById("paddleTop") as HTMLElement;
-const paddleBottom = document.getElementById("paddleBottom") as HTMLElement;
-const container = document.getElementById("zone") as HTMLElement;
+import { Application } from "pixi.js";
+import { PongGame } from './engine/Game.js';
 
-let x = 100;
-let y = 100;
-let dx = 1;
-let dy = 1;
+(async () => {
+  const app = new Application();
+  await app.init({
+    background: "#171717",
+    width: 1500,
+    height: 500,
+    antialias: false,
+    resolution: 2,
+    autoDensity: true,
+  });
 
-let v = 1;
-let position = 0;
+  const container = document.getElementById("game-container");
+	if (!container) throw new Error("game-container not found!");
+  container.appendChild(app.canvas);
 
-const max = 230;
-
-function moveBall() {
-  x += dx;
-  y += dy;
-
-  if (x <= 0 || x >= max) dx = -dx;
-  if (y <= 0 || y >= max) dy = -dy;
-
-  ball.style.transform = `translate(265px, ${y}px)`;
-}
-
-function animatePaddles() {
-  const paddleWidth = paddleTop.offsetWidth;
-  const containerWidth = container.clientWidth;
-
-  position += v;
-
-  if (position <= 0) {
-    position = 0;
-    v = Math.abs(v);
-  } else if (position + paddleWidth >= containerWidth) {
-    position = containerWidth - paddleWidth;
-    v = -Math.abs(v);
-  }
-
-  paddleTop.style.left = position + "px";
-  paddleBottom.style.left = position + "px";
-
-  requestAnimationFrame(animatePaddles);
-}
-
-setInterval(moveBall, 10);
-requestAnimationFrame(animatePaddles);
+  const game = new PongGame(app);
+  await game.init();
+})();
 
 GoogleSignInModule.initializeGoogleSignIn((credential: string) => {
       
