@@ -21,6 +21,12 @@ re:
 	$(MAKE) clean
 	$(MAKE) up
 
+backend:
+	$(MAKE) stop
+	docker volume rm containers_public
+	$(MAKE) clean
+	$(MAKE) up
+
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
 	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
 
@@ -38,3 +44,6 @@ fclean:
 
 certs:
 	docker exec -it nginx certbot --nginx -d mrlouf.studio -d www.mrlouf.studio
+
+.PHONY:
+	up down re stop clean fclean certs backend
