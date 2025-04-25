@@ -1,11 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PowerupSystem.ts                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/25 16:00:33 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 import { PongGame } from '../engine/Game';
-import { PowerupSpawner } from '../spawners/PowerupSpawner';
 import { Entity } from '../engine/Entity';
+import type { System } from '../engine/System'
+
 import { LifetimeComponent } from '../components/LifetimeComponent';
+
+import { PowerupSpawner } from '../spawners/PowerupSpawner';
+
 import { FrameData } from '../utils/Types'
 import { isPaddle } from '../utils/Guards'
 
-export class PowerupSystem {
+export class PowerupSystem implements System {
     game: PongGame;
     app: any;
     width: number;

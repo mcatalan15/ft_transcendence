@@ -6,16 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:37:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 15:28:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { System } from '../engine/System';
+import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
-import { FrameData } from '../utils/Types';
+import { System } from '../engine/System';
+
 import { VFXComponent } from '../components/VFXComponent';
 import { RenderComponent } from '../components/RenderComponent';
-import { PongGame } from '../engine/Game';
+
+import { FrameData } from '../utils/Types';
 
 export class VFXSystem implements System {
 	private game: PongGame;

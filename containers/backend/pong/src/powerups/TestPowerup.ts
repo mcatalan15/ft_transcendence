@@ -6,17 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:54:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics } from 'pixi.js'
 import { Entity } from '../engine/Entity.js';
-import { RenderComponent } from '../components/RenderComponent.js';
-import { PhysicsComponent } from '../components/PhysicsComponent.js';
-import { VFXComponent } from '../components/VFXComponent.js';
-import { LifetimeComponent } from '../components/LifetimeComponent.js';
-import { PowerupComponent } from '../components/PowerupComponent.js';
+import { RenderComponent } from '../components/RenderComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
+import { VFXComponent } from '../components/VFXComponent';
+import { LifetimeComponent } from '../components/LifetimeComponent';
+import { PowerupComponent } from '../components/PowerupComponent';
 
 interface PowerupOptions {
     lifetime?: number;
@@ -58,9 +58,9 @@ export class Powerup extends Entity {
     createPowerupGraphic(): Graphics {
         const powerupGraphic = new Graphics();
         powerupGraphic.fill(0xFFFBEB);  // Ensure fill color is specified in hex
-        powerupGraphic.rect(0, 0, 30 , 300);
+        powerupGraphic.rect(0, 0, 30 , 30);
         powerupGraphic.fill('#FFFBEB');
-        powerupGraphic.pivot.set(15, 150);  // Adjust pivot for rotation if needed
+        powerupGraphic.pivot.set(15, 15);  // Adjust pivot for rotation if needed
         return powerupGraphic;
     }
 
@@ -69,7 +69,7 @@ export class Powerup extends Entity {
             x,
             y,
             width: 30,
-            height: 300,
+            height: 30,
             velocityX: 0,
             velocityY: 0,
             isStatic: true,

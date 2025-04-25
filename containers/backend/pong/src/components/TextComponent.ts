@@ -6,12 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 15:50:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Text, TextStyle } from 'pixi.js';
-import type { Component } from '../engine/Component.ts';
+
+import type { Component } from '../engine/Component';
 
 export class TextComponent implements Component {
 	type = 'text';

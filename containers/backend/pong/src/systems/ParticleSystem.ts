@@ -6,19 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 15:38:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Entity } from '../engine/Entity';
-import type { FrameData } from '../utils/Types';
 import type { PongGame } from '../engine/Game';
+import type { Entity } from '../engine/Entity';
 import type { System } from '../engine/System';
-import { isParticle } from '../utils/Guards'
+
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
 import { ParticleBehaviorComponent } from '../components/ParticleBehaviorComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
+
+import type { FrameData } from '../utils/Types';
+import { isParticle } from '../utils/Guards'
 
 export class ParticleSystem implements System {
 	private game: PongGame;

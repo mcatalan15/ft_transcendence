@@ -6,13 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 18:44:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { TextStyle } from 'pixi.js'
-import { Paddle } from '../entities/Paddle'
+
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter } from 'pixi-filters'
+
+import { Paddle } from '../entities/Paddle'
 
 export interface DepthLineBehavior {
 	movement: 'vertical';
@@ -37,7 +39,7 @@ export type TextData = {
 export type GameEvent = {
     type: string;
     side?: 'left' | 'right'; // For example, for the SCORE event
-	target?: Paddle;
+	target?: Paddle | World;
     // Add any other fields you expect in an event here
 };
 
@@ -61,4 +63,20 @@ export interface GameSounds {
 	powerup: Howl;
 	death: Howl;
 	paddleReset: Howl;
+}
+
+export interface World {
+	name: string;
+	color: number;
+}
+
+export const WORLD_COLORS = {
+	desert: 0xFBBF24,
+	city: 0xF32A4D,
+	abyss: 0xD946EF,
+	forest: 0x65A30D,
+	ice: 0x67E8F9,
+	fire: 0xEA580C,
+	sky: 0x38BDF8,
+	void: 0x7C3AED
 }

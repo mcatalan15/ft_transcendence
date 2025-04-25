@@ -6,14 +6,16 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 18:11:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Entity } from "../engine/Entity";
+import type { System } from '../engine/System'
+
 import { PostProcessingComponent } from "../components/PostProcessingComponent";
 
-export class PostProcessingSystem {
+export class PostProcessingSystem implements System {
     time: number;
 
     constructor() {

@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 19:14:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Container } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import Engine elements (ECS)
@@ -41,9 +41,11 @@ import { ParticleSystem } from '../systems/ParticleSystem';
 import { UISystem } from '../systems/UISystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
 import { PostProcessingSystem } from '../systems/PostProcessingSystem';
+import { WorldSystem } from '../systems/WorldSystem';
 
-// Import exported types
-import { FrameData, GameEvent, GameSounds } from '../utils/Types'
+// Import exported types and utils
+import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS } from '../utils/Types'
+import { createWorld } from '../utils/Utils'
 
 export class PongGame {
 	app: Application;
@@ -56,19 +58,22 @@ export class PongGame {
     bottomWallOffset: number;
     wallThickness: number;
 	renderLayers: {
+		bounding: Container;
 		background: Container;
 		midground: Container;
 		foreground: Container;
 		ui: Container;
 		pp: Container;
 	};
+	backgroundLayer : Container;
 	visualRoot: Container;
-	sounds: GameSounds = {
-		pong: new Howl({ src: [] }),
-		powerup: new Howl({ src: [] }),
-		death: new Howl({ src: [] }),
-		paddleReset: new Howl({ src: [] })
+	sounds!: GameSounds;
+	worldPool!: {
+		desertWorld: World,
+		cityWorld: World,
+		abyssWorld: World,
 	};
+	currentWorld!: World;
 
 	constructor(app: Application) {
 		this.app = app;
@@ -82,18 +87,22 @@ export class PongGame {
         this.wallThickness = 20;
 
 		this.renderLayers = {
+			bounding: new Container(),
 			background: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
 			ui: new Container(),
 			pp: new Container()
 		};
+		this.backgroundLayer = new Container();
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
 			
-		this.app.stage.addChild(this.renderLayers.background);
+		this.backgroundLayer.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.backgroundLayer);
 		this.app.stage.addChild(this.visualRoot);
 
+		this.visualRoot.addChild(this.renderLayers.bounding);
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
@@ -104,14 +113,17 @@ export class PongGame {
 	async init(): Promise<void> {
 		console.log("Initializing PongGame...");
 		
+		await this.createEntities();
+		console.log('All Entities created');
+
+		this.populateWorlds();
+		this.currentWorld = this.worldPool.desertWorld;
+
 		this.initSystems();
 		console.log('All Systems initialiazed');
 
 		this.initSounds();
 		console.log('Sounds lodaded');
-
-		await this.createEntities();
-		console.log('All Entities created');
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
@@ -140,6 +152,7 @@ export class PongGame {
 		const uiSystem = new UISystem(this, this.app);
 		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
+		const worldSystem = new WorldSystem(this, this.app);
 
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
@@ -150,6 +163,7 @@ export class PongGame {
 		this.systems.push(uiSystem);
 		this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
+		this.systems.push(worldSystem);
 	}
 
 	initSounds(): void {
@@ -188,6 +202,9 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
+		// Create Bounding Box
+		this.createBoundingBox();
+		
 		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
 		const wallTRender = wallT.getComponent('render') as RenderComponent;
@@ -240,6 +257,14 @@ export class PongGame {
 		console.log("PostProcessing Layer created")
 	}
 
+	populateWorlds() {
+		this.worldPool = {
+			desertWorld: createWorld('Desert of Spiked Reflections', WORLD_COLORS.fire),
+			cityWorld: createWorld('Ruins of Yonder', WORLD_COLORS.city),
+			abyssWorld: createWorld('Pelagic Netherscape', WORLD_COLORS.void),
+		};
+	}
+
 	addEntity(entity: Entity): void {
 		this.entities.push(entity);
 		let targetLayer = this.renderLayers.midground;
@@ -281,5 +306,12 @@ export class PongGame {
 
 			this.entities.splice(index, 1);
 		}
+	}
+
+	createBoundingBox() {
+		const boundingBox = new Graphics();
+		boundingBox.rect(0, 0, this.width, this.height);
+		boundingBox.stroke('#171717');
+		this.renderLayers.bounding.addChild(boundingBox);;
 	}
 }

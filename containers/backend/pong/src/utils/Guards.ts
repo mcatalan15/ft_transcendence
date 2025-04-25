@@ -6,11 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:59:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Entity } from '../engine/Entity';
+
 import { Paddle } from '../entities/Paddle';
 import { Ball } from '../entities/Ball';
 import { Wall } from '../entities/Wall';

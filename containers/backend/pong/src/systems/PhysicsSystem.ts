@@ -6,34 +6,30 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 19:10:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import ECS engine elements
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { PongGame } from '../engine/Game'
 
-// Import defined entities
 import { Wall } from '../entities/Wall';
-import { Paddle } from '../entities/Paddle.ts'
-import { Ball } from '../entities/Ball.ts'
+import { Paddle } from '../entities/Paddle'
+import { Ball } from '../entities/Ball'
 
-// Import built components
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
 import { InputComponent } from '../components/InputComponent';
+import { PowerupComponent } from '../components/PowerupComponent';
+import { LifetimeComponent } from '../components/LifetimeComponent';
 
-// Import Spawners
 import { ParticleSpawner } from '../spawners/ParticleSpawner'
 
-// Import utils
-import { createEntitiesMap } from '../utils/Utils.ts';
-import { isPaddle, isBall, isPowerup } from '../utils/Guards.ts';
+import { createEntitiesMap } from '../utils/Utils';
+import { isPaddle, isBall, isPowerup } from '../utils/Guards';
 import { BoundingBox } from '../utils/Types';
-import { PowerupComponent } from '../components/PowerupComponent.ts';
-import { LifetimeComponent } from '../components/LifetimeComponent.ts';
+
 
 export class PhysicsSystem implements System {
 	game: PongGame;

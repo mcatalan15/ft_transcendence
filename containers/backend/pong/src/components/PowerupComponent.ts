@@ -6,12 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:35:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:37:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { GameEvent } from '../utils/Types';
 import { Paddle } from '../entities/Paddle'
+
+import { GameEvent } from '../utils/Types';
 
 export class PowerupComponent {
     game: any;

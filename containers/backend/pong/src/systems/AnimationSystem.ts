@@ -6,38 +6,28 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 18:35:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import PIXI stuff
 import { Application, Graphics } from 'pixi.js'
 
-// Import ECS engine 
-import { PongGame } from '../engine/Game.ts';
-import { Entity } from '../engine/Entity.ts';
+import { PongGame } from '../engine/Game';
+import { Entity } from '../engine/Entity';
+import type { System } from '../engine/System'
 
-// Import defined entities
 import { Paddle } from '../entities/Paddle'
 
-// Import built components
-import { RenderComponent } from '../components/RenderComponent.ts';
-import { PhysicsComponent } from '../components/PhysicsComponent.ts';
+import { RenderComponent } from '../components/RenderComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
+import { LifetimeComponent } from '../components/LifetimeComponent';
 
-// Import spawners
-import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner.ts';
+import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
 
-// Import exported types
-import { DepthLineBehavior } from '../utils/Types.ts';
-import { FrameData } from '../utils/Types'
+import { DepthLineBehavior, FrameData, GameEvent } from '../utils/Types';
+import { isPaddle, isDepthLine } from '../utils/Guards'
 
-// Import guards
-import { isPaddle } from '../utils/Guards'
-import { isDepthLine } from '../utils/Guards'
-import { LifetimeComponent } from '../components/LifetimeComponent.ts';
-import { GameEvent } from '../utils/Types'
-
-export class AnimationSystem {
+export class AnimationSystem implements System {
 	private game: PongGame;
 	private app: Application;
 	private width: number;
@@ -48,7 +38,7 @@ export class AnimationSystem {
 
 	private depthLineCooldown: number = 20;
 	private frameCounter: number = 0;
-	private depthLineUpdateRate: number = 2;
+	private depthLineUpdateRate: number = 1;
 	private lastLineSpawnTime: number = 0;
 
 	constructor(

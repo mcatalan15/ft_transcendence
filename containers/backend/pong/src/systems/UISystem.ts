@@ -6,19 +6,24 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 17:35:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { PongGame } from '../engine/Game';
 import type { Application, Container, Text } from 'pixi.js';
+
+import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
+import type { System } from '../engine/System'
+
 import type { UI } from '../entities/UI'
+
 import type { TextComponent } from '../components/TextComponent';
+
 import { isUI } from '../utils/Guards';
 import { GameEvent } from '../utils/Types'
 
-export class UISystem {
+export class UISystem implements System {
 	private game: PongGame;
 	private app: Application;
 	private renderedTextComponents: Set<TextComponent>;
@@ -63,7 +68,10 @@ export class UISystem {
 						textObject.x = this.game.width / 2;
 						textObject.y = entity.topOffset - 5;
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
-						textObject.x = entity.width - 30;
+						textObject.x = entity.width - 40;
+						textObject.y = entity.topOffset + 5;
+					} else if (tag == 'world' || textComponent.instanceId === 'world') {
+						textObject.x = 20;
 						textObject.y = entity.topOffset + 5;
 					}
 

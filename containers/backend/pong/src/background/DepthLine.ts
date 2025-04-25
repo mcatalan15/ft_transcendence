@@ -6,12 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 15:17:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics } from 'pixi.js';
+
+import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
+
 import { RenderComponent } from '../components/RenderComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
@@ -56,7 +59,7 @@ export class DepthLine extends Entity {
 	alphaIncrease: number;
 	behavior: DepthLineBehavior;
 
-	constructor(id: string, layer: string, options: DepthLineOptions = {}) {
+	constructor(id: string, layer: string, game: PongGame, options: DepthLineOptions = {}) {
 		super(id, layer);
 
 		const {
@@ -96,7 +99,7 @@ export class DepthLine extends Entity {
 		this.targetAlpha = alpha || 1;
 		this.alphaIncrease = this.targetAlpha / 50;
 
-		const graphic = this.generateLine(width);
+		const graphic = this.generateLine(width, game.currentWorld.color);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 
@@ -109,10 +112,10 @@ export class DepthLine extends Entity {
 		this.addComponent(animationComp);
 	}
 
-	private generateLine(width: number): Graphics {
+	private generateLine(width: number, color: number): Graphics {
 		const line = new Graphics();
 		line.rect(-width / 2, 0, width, 0.5);
-		line.fill({ color: 0xF43F5E, alpha: 1 });
+		line.fill({ color: color, alpha: 1 });
 		return line;
 	}
 

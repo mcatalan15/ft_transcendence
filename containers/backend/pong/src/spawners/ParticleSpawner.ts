@@ -6,18 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:26:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import Engine elements (ECS)
 import { PongGame } from '../engine/Game';
-
-// Import built components
 import { Particle } from '../entities/Particle';
-
-// Import built components
-import { RenderComponent } from '../components/RenderComponent.ts';
+import { RenderComponent } from '../components/RenderComponent';
 
 export class ParticleSpawner {
 	static spawnBasicExplosion(game: PongGame, x: number, y: number, color: number): void {

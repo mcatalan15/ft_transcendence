@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 17:22:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from "../engine/Game"; // Import your Game type
+import { PongGame } from "../engine/Game";
 import { Powerup } from "../powerups/TestPowerup";
 import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";

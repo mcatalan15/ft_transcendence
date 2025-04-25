@@ -6,12 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:45:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 15:25:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 15:59:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Component } from '../engine/Component.ts';
-import type { Entity } from '../engine/Entity.ts'; // 👈 You need this!
+import type { Entity } from '../engine/Entity';
+import type { Component } from '../engine/Component';
+
 import { RenderComponent } from '../components/RenderComponent'
 
 export class VFXComponent implements Component {
