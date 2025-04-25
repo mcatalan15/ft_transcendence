@@ -6,17 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:43:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics } from 'pixi.js'
+import { Graphics, Container } from 'pixi.js'
+
 import { Entity } from '../engine/Entity.js';
+
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
-import { VFXComponent } from '../components/VFXComponent';
+import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 import { PowerupComponent } from '../components/PowerupComponent';
+
+import { AnimationOptions } from '../utils/Types.js'
 
 interface PowerupOptions {
     lifetime?: number;
@@ -41,8 +45,12 @@ export class Powerup extends Entity {
         this.lifetime = lifetime;
 
         const powerupGraphic = this.createPowerupGraphic();
-        const renderComponent = new RenderComponent(powerupGraphic);
-        this.addComponent(renderComponent);
+        //const powerupOrnament = this.createPowerupOrnament();
+        const renderComponentBase = new RenderComponent(powerupGraphic);
+        //const renderComponentOrnament = new RenderComponent(powerupOrnament);
+        //this.addComponent(renderComponentOrnament);
+        this.addComponent(renderComponentBase);
+        
 
         const physicsData = this.initPowerupPhysicsData(x, y);
         const physicsComponent = new PhysicsComponent(physicsData);
@@ -53,15 +61,35 @@ export class Powerup extends Entity {
 
         const powerupComp = new PowerupComponent(game);
         this.addComponent(powerupComp);
+
+        const animationOptions = this.defineAnimationOptions(physicsComponent);
+        const animationComp = new AnimationComponent(animationOptions);
+		this.addComponent(animationComp);
     }
 
-    createPowerupGraphic(): Graphics {
+    createPowerupGraphic(): Container {
+        const container = new Container;
+
         const powerupGraphic = new Graphics();
-        powerupGraphic.fill(0xFFFBEB);  // Ensure fill color is specified in hex
-        powerupGraphic.rect(0, 0, 30 , 30);
-        powerupGraphic.fill('#FFFBEB');
-        powerupGraphic.pivot.set(15, 15);  // Adjust pivot for rotation if needed
-        return powerupGraphic;
+        powerupGraphic.rect(-10, -10, 20 , 20);
+        powerupGraphic.fill(0xFFFBEB);
+        //powerupGraphic.pivot.set(15, 15);
+        container.addChild(powerupGraphic);
+
+        const powerupOrnament = new Graphics();
+        powerupOrnament.rect(-15, -15, 30, 30);
+        powerupOrnament.stroke(0xFFFBEB);
+        //powerupGraphic.pivot.set(17.5, 17.5);
+        container.addChild(powerupOrnament);
+
+        return container;
+    }
+
+    createPowerupOrnament(): Graphics {
+        const powerupOrnament = new Graphics();
+        powerupOrnament.rect(0, 0, 35 , 35);
+        powerupOrnament.stroke(0xFF0000);
+        return powerupOrnament;
     }
 
     initPowerupPhysicsData(x: number, y: number) {
@@ -78,5 +106,15 @@ export class Powerup extends Entity {
             mass: 0,
             speed: 0,
         };
+    }
+
+    defineAnimationOptions(physics: PhysicsComponent): AnimationOptions {
+        return {
+            initialY: physics.y,
+			floatAmplitude: 5, // How many pixels up/down
+			floatSpeed: 2, // Adjust speed of floating
+			floatOffset: Math.random() * Math.PI * 2, // Random starting point in the cycle
+			initialized: true,
+        } as AnimationOptions;
     }
 }

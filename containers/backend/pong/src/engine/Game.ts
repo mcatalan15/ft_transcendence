@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:57:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player, PlayerData } from '../utils/Types'
 import { createWorld } from '../utils/Utils'
 
 export class PongGame {
@@ -62,10 +62,12 @@ export class PongGame {
 		background: Container;
 		midground: Container;
 		foreground: Container;
+		powerup: Container;
 		ui: Container;
 		pp: Container;
 	};
-	backgroundLayer : Container;
+	backgroundLayer: Container;
+	powerupLayer: Container;
 	visualRoot: Container;
 	sounds!: GameSounds;
 	worldPool!: {
@@ -91,15 +93,19 @@ export class PongGame {
 			background: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
+			powerup: new Container(),
 			ui: new Container(),
 			pp: new Container()
 		};
 		this.backgroundLayer = new Container();
+		this.powerupLayer = new Container();
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
 			
 		this.backgroundLayer.addChild(this.renderLayers.background);
+		this.powerupLayer.addChild(this.renderLayers.powerup);
 		this.app.stage.addChild(this.backgroundLayer);
+		this.app.stage.addChild(this.powerupLayer);
 		this.app.stage.addChild(this.visualRoot);
 
 		this.visualRoot.addChild(this.renderLayers.bounding);
@@ -202,6 +208,21 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
+		//Fetch player info from jsons
+		let playerData;
+		try {
+			const response = await fetch('../../data/players.json');
+			playerData = await response.json();
+		} catch (error) {
+			console.error("Failed to fetch player data, using mock data:", error);
+		}
+
+		const leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
+		const rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
+
+		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`);
+
+		
 		// Create Bounding Box
 		this.createBoundingBox();
 		
@@ -219,7 +240,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'LeftPlayer');
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, leftPlayer.name);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -227,7 +248,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, 'RightPlayer');
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, rightPlayer.name);
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);

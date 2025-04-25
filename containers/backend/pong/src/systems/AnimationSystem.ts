@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:53:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@ import { Paddle } from '../entities/Paddle'
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
+import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
 
 import { DepthLineBehavior, FrameData, GameEvent } from '../utils/Types';
-import { isPaddle, isDepthLine } from '../utils/Guards'
+import { isPaddle, isDepthLine, isPowerup } from '../utils/Guards'
 
 export class AnimationSystem implements System {
 	private game: PongGame;
@@ -161,9 +162,9 @@ export class AnimationSystem implements System {
 
 		if (this.frameCounter === 0) {
 			for (const entity of entities) {
-				if (!isDepthLine(entity)) {
+				if (!isDepthLine(entity) && !isPowerup(entity)) {
 					continue;
-				} else {
+				} else if (isDepthLine(entity)) {
 					const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
 					const render = entity.getComponent('render') as RenderComponent;
 
@@ -201,6 +202,25 @@ export class AnimationSystem implements System {
 						) {
 							entitiesToRemove.push(entity.id);
 						}
+					}
+				} else if (isPowerup(entity)) {
+					// ANIMATE POWERUP HERE
+					const render = entity.getComponent('render') as RenderComponent;
+					const animation = entity.getComponent('animation') as AnimationComponent;
+					const physics = entity.getComponent('physics') as PhysicsComponent;
+					
+					if (!render || !animation || !physics) continue;
+					
+					// Calculate the new Y position using a sine wave
+					if (animation.options) {
+						const animationOptions = animation.options;
+						const floatY = animationOptions.initialY as number + 
+						Math.sin((Date.now() / 800 * (animationOptions.floatSpeed as number)) + (animationOptions.floatOffset as number)) * 
+						(animationOptions.floatAmplitude as number);
+					
+						// Update the position of the powerup
+						physics.y = floatY;
+						render.graphic.position.set(physics.x, floatY);
 					}
 				}
 			}

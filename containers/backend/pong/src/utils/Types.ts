@@ -6,13 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:54:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { TextStyle } from 'pixi.js'
 
-import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter } from 'pixi-filters'
+import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter } from 'pixi-filters'
 
 import { Paddle } from '../entities/Paddle'
 
@@ -55,7 +55,8 @@ export interface PostProcessingOptions {
 	crtFilter?: CRTFilter | null;
     bulgePinch?: BulgePinchFilter | null;
 	rgbSpilt?: RGBSplitFilter | null;
-    
+    powerupGlow?: GlowFilter | null;
+	powerupCRT?: CRTFilter | null,
 }
 
 export interface GameSounds {
@@ -80,3 +81,20 @@ export const WORLD_COLORS = {
 	sky: 0x38BDF8,
 	void: 0x7C3AED
 }
+
+export type AnimationOptions = {
+	initialized?: boolean;
+    initialY?: number;
+    floatAmplitude?: number;
+    floatSpeed?: number;
+    floatOffset?: number;
+}
+
+export type Player = {
+	id: string;
+	name: string;
+};
+
+export type PlayerData = {
+	players: Player[];
+};
