@@ -1,6 +1,6 @@
 import * as GoogleSignInModule from "./auth/googleSignIn.js";
 
-import { Application } from "pixi.js";
+import { Application } from 'pixi.js';
 import { PongGame } from './engine/Game.js';
 
 (async () => {

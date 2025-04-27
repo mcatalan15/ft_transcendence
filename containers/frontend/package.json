@@ -1,14 +1,20 @@
 {
 	"name": "frontend",
 	"version": "1.0.0",
+	"private": true,
+	"type": "module",
 	"scripts": {
-	  "build": "tsc && postcss src/styles/tailwind.css -o public/styles.css",
-	  "start": "echo 'Frontend is served via Nginx'; exit 0"
+	  "build": "vite build && npx postcss src/styles/tailwind.css -o public/styles.css",
+	  "lint": "eslint .",
+	  "dev": "vite"
 	},
 	"dependencies": {
 	  "tailwindcss": "^3.0.0",
 	  "autoprefixer": "^10.0.0",
-	  "postcss": "^8.0.0"
+	  "postcss": "^8.0.0",
+	  "howler": "^2.2.4",
+	  "pixi-filters": "^6.1.2",
+	  "pixi.js": "^8.8.1"
 	},
 	"devDependencies": {
 	  "typescript": "^4.0.0",
