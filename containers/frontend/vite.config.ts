@@ -2,10 +2,10 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: "src", // Set the root directory to src
+  root: "src",
   build: {
-    outDir: "../public", // Output directory for the bundled files
-    emptyOutDir: true, // Clear the output directory before building
+    outDir: "../public",
+    emptyOutDir: true,
     rollupOptions: {
       input: "src/index.html", // Entry point for the build
     },
