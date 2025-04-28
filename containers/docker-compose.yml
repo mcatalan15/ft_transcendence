@@ -1,0 +1,128 @@
+#########################################################
+#                       NETWORK                         #
+#########################################################
+
+networks:
+  transcendence:
+    driver: bridge
+
+#########################################################
+#                       VOLUMES                         #
+#########################################################
+
+volumes:
+  public:
+    driver: local
+  userbase:
+    driver: local
+  certs:  # SSL certificates
+    driver: local
+
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+#########################################################
+#                       SERVICES                        #
+#########################################################
+
+services:
+
+#                       NGINX                           #
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - public:/usr/share/nginx/html:ro
+      - certs:/etc/letsencrypt
+    networks:
+      - transcendence
+
+#                       FRONTEND                        #
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    volumes:
+      - public:/app/public
+    restart: on-failure    
+    networks:
+      - transcendence
+
+#                       BACKEND                         #
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "127.0.0.1:3100:3100"
+    volumes:
+      - userbase:/usr/src/app/db
+    restart: always
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD", "sqlite3", "db/mydatabase.db", "SELECT 1"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+#                       ADMINER                         #
+
+  adminer:
+    build: ./adminer
+    container_name: adminer
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - PUID=1000  # Adjust to match your user ID (UID) if needed
+      - PGID=1000  # Adjust to match your group ID (GID) if needed
+      - TZ=Etc/UTC  # Set timezone
+    volumes:
+      - userbase:/db
+    ports:
+      - "127.0.0.1:1090:1090"
+    restart: always
+    networks:
+      - transcendence
+
+#########################################################
+#                       MONITORING                      #
+#########################################################
+
+  prometheus:
+    build: ./monitoring/prometheus
+    container_name: prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: always
+    volumes:
+      - prometheus_data:/prometheus
+    networks:
+      - transcendence
+      
+  grafana:
+    build: ./monitoring/grafana
+    container_name: grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: always
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - UID=1000
+      - GID=1000
+    networks:
+      - transcendence
