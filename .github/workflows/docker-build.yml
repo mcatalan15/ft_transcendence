@@ -37,8 +37,8 @@ jobs:
         docker ps --format "{{.Names}}" | grep backend
         docker ps --format "{{.Names}}" | grep nginx
         docker ps --format "{{.Names}}" | grep adminer
-		docker ps --format "{{.Names}}" | grep grafana
-		docker ps --format "{{.Names}}" | grep prometheus
+        docker ps --format "{{.Names}}" | grep grafana
+        docker ps --format "{{.Names}}" | grep prometheus
 
         
     - name: Clean up containers
