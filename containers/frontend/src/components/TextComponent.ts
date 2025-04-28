@@ -6,15 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 09:55:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Text, TextStyle } from 'pixi.js';
-import type { Component } from '../engine/Component.js';
+
+import type { Component } from '../engine/Component';
 
 export class TextComponent implements Component {
 	type = 'text';
+	text: string;
 	instanceId?: string;
 	
 	private textObject: Text;
@@ -39,6 +41,7 @@ export class TextComponent implements Component {
 		rotation?: number;
 	}) {
 		this.tag = tag;
+		this.text = text;
 
 		const defaultStyle: Partial<TextStyle> = {
 			fontFamily: '"Roboto Mono", monospace',

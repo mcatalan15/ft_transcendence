@@ -6,13 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:52:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 10:52:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Entity } from '../engine/Entity';
+import type { System } from '../engine/System'
+
 import { InputComponent } from '../components/InputComponent'
-import { System } from '../engine/System';
 
 export class InputSystem implements System {
 	private keysDown: Set<string> = new Set();

@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 09:54:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 09:51:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Component } from '../engine/Component.js';
+import type { Component } from '../engine/Component';
 
 type PhysicsBehaviour = 'bounce' | 'block' | 'trigger' | 'none';
 

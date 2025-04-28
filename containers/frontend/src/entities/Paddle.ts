@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 10:31:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/24 16:34:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ export class Paddle extends Entity {
     originalHeight: number;
     overshootTarget: number;
     overshootPhase: string;
-    _targetHeight: number;
+    targetHeight: number;
 
     constructor(id: string, layer: string, game: PongGame, x: number, y: number, isLeftPaddle: boolean, name: string) {
         super(id, layer);
@@ -44,7 +44,7 @@ export class Paddle extends Entity {
 
         this.overshootTarget = 0;
         this.overshootPhase = '';
-        this._targetHeight = 0;
+        this.targetHeight = 0;
         
         // These will be initialized in the code below
         this.baseWidth = 0;

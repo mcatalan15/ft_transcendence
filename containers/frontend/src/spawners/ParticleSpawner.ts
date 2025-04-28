@@ -6,17 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 13:00:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import Engine elements (ECS)
 import { PongGame } from '../engine/Game';
-
-// Import built components
 import { Particle } from '../entities/Particle';
-
-// Import built components
 import { RenderComponent } from '../components/RenderComponent';
 
 export class ParticleSpawner {
@@ -46,8 +41,7 @@ export class ParticleSpawner {
 
 			game.addEntity(particle);
 			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.app.stage.addChild(particleRender.graphic);
-			//game.renderLayers.foreground.addChild(particle.getComponent('render')!.graphic);
+			game.renderLayers.foreground.addChild(particleRender.graphic);
 		}
 	}
 
@@ -88,8 +82,7 @@ export class ParticleSpawner {
 
 			game.addEntity(particle);
 			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.app.stage.addChild(particleRender.graphic);
-			//game.renderLayers.midground.addChild(particle.getComponent('render')!.graphic);
+			game.renderLayers.midground.addChild(particleRender.graphic);
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 09:53:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 09:52:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Its a basic block which will act as inheritance base, and needs just to track co
 Hence, it has an id and a container of components, with functions to add/get to/from it.
 */
 
-import { Component } from './Component.js'
+import { Component } from './Component'
 
 export class Entity {
     id: string;

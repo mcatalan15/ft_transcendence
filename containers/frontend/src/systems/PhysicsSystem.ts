@@ -6,28 +6,30 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 12:33:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import ECS engine elements
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { PongGame } from '../engine/Game'
 
-// Import defined entities
-// import { Wall } from '../entities/Wall';
+import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { Ball } from '../entities/Ball'
 
-// Import built components
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
 import { InputComponent } from '../components/InputComponent';
+import { PowerupComponent } from '../components/PowerupComponent';
+import { LifetimeComponent } from '../components/LifetimeComponent';
 
-// Import utils
+import { ParticleSpawner } from '../spawners/ParticleSpawner'
+
 import { createEntitiesMap } from '../utils/Utils';
-import { isPaddle, isBall } from '../utils/Guards';
+import { isPaddle, isBall, isPowerup } from '../utils/Guards';
+import { BoundingBox } from '../utils/Types';
+
 
 export class PhysicsSystem implements System {
 	game: PongGame;
@@ -47,7 +49,7 @@ export class PhysicsSystem implements System {
 			if (isPaddle(entity)) {
 				this.updatePaddle(entity, entitiesMap);
 			} else if (isBall(entity)) {
-				this.updateBall(entity, entitiesMap);
+				this.updateBall(entity, entities, entitiesMap);
 			}
 		}
 	}
@@ -105,7 +107,7 @@ export class PhysicsSystem implements System {
         }
     }
 
-	updateBall(ball: Ball, entitiesMap: Map<string, Entity>) {
+	updateBall(ball: Ball, entities: Entity[], entitiesMap: Map<string, Entity>) {
 		const physics = ball.getComponent('physics') as PhysicsComponent;
 		const vfx = ball.getComponent('vfx') as VFXComponent;
 
@@ -118,7 +120,7 @@ export class PhysicsSystem implements System {
 		 // Handle collisions
 		this.handleBallWallCollisions(physics, entitiesMap);
         this.handleBallPaddleCollisions(physics, entitiesMap);
-        //this.handlePowerupCollisions(physics, entitiesMap);
+        this.handlePowerupCollisions(physics, entities, entitiesMap);
 
 		// Check if ball is out of bounds
         this.checkBallOutOfBounds(ball, physics);
@@ -158,7 +160,7 @@ export class PhysicsSystem implements System {
 	): void {
 		const ballLeft = physics.x - physics.width / 2;
 		const ballRight = physics.x + physics.width / 2;
-		// const ball = entitiesMap.get("ball");
+		const ball = entitiesMap.get("ball") as Ball;
 	
 		const MAX_BOUNCE_ANGLE = Math.PI / 4;
 		const PADDLE_INFLUENCE = 0.5;
@@ -178,6 +180,8 @@ export class PhysicsSystem implements System {
 				ballLeft <= paddleRight &&
 				ballLeft >= paddleRight - Math.abs(physics.velocityX)
 			) {
+				this.game.sounds.pong.play();
+
 				physics.x = paddleRight + physics.width / 2;
 	
 				const relativeHit = (physics.y - paddlePhysics.y) / (paddlePhysics.height / 2);
@@ -201,7 +205,12 @@ export class PhysicsSystem implements System {
 					physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
 				}
 	
-				//Handle sound
+				ball.lastHit = 'left';
+				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
+				if (ball && ball.hasComponent('vfx')) {
+					const vfx = ball.getComponent('vfx') as VFXComponent;
+					vfx.startFlash(0x5EEAD4, 10); // Green flash for left paddle
+				}
 			}
 		}
 	
@@ -219,6 +228,8 @@ export class PhysicsSystem implements System {
 				ballRight >= paddleLeft &&
 				ballRight <= paddleLeft + Math.abs(physics.velocityX)
 			) {
+				this.game.sounds.pong.play();
+				
 				physics.x = paddleLeft - physics.width / 2;
 	
 				const relativeHit = (physics.y - paddlePhysics.y) / (paddlePhysics.height / 2);
@@ -242,10 +253,44 @@ export class PhysicsSystem implements System {
 					physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
 				}
 	
-				//Handle sound
-			}
+				ball.lastHit = 'right';
+				ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
+				
+				if (ball && ball.hasComponent('vfx')) {
+					const vfx = ball.getComponent('vfx') as VFXComponent;
+					vfx.startFlash(0xD946EF, 10); // Purple flash for right paddle
+				}
+				}
 		}
 	}
+
+	handlePowerupCollisions(physics: PhysicsComponent, entities: Entity[], entitiesMap: Map<string, Entity>) {
+		const ball = entitiesMap.get('ball') as Ball;
+		if (!ball) return;
+		const ballBox = this.getBoundingBox(ball.getComponent('physics') as PhysicsComponent);
+
+        for (const entity of entities) {
+			if (isPowerup(entity)) {
+                const powerupBox = this.getBoundingBox(entity.getComponent('physics') as PhysicsComponent);
+                if (ball.lastHit && this.isAABBOverlap(ballBox, powerupBox)) {
+                    console.log(`Triggered powerup: ${entity.id}`);
+                    this.game.sounds.powerup.play();
+                    const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
+                    const powerupComp = entity.getComponent('powerup') as PowerupComponent;
+                    if (ball.lastHit === 'left')
+                    {  
+                        const paddleL = entitiesMap.get('paddleL') as Paddle;
+						powerupComp.enlargePaddle(paddleL);
+                    } else if (ball.lastHit === 'right') {
+						const paddleR = entitiesMap.get('paddleR') as Paddle;
+                        powerupComp.enlargePaddle(paddleR);
+					}
+                    lifetime.remaining = 0;
+                }
+            }
+        }
+    }
+
 
 	checkBallOutOfBounds(ball: Ball, physics: PhysicsComponent) {
         const ballLeft = physics.x - (physics.width / 2);
@@ -253,7 +298,8 @@ export class PhysicsSystem implements System {
 
         // Ball exits right side
         if (ballLeft > this.width) {
-            /*ParticleSpawner.spawnBurst(
+            this.game.sounds.death.play();
+			ParticleSpawner.spawnBurst(
                 this.game,
                 physics.x - physics.width / 4,
                 physics.y,
@@ -261,15 +307,15 @@ export class PhysicsSystem implements System {
                 physics.velocityX,
                 physics.velocityY,
                 0xFBBF24,
-            );*/
-            //this.game.sounds.death.play();
-            //this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
+            );
+            this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
             this.resetBall(ball, physics, 1);
         }
 
         // Ball exits left side
         if (ballRight < 0) {
-            /*ParticleSpawner.spawnBurst(
+            this.game.sounds.death.play();
+			ParticleSpawner.spawnBurst(
                 this.game,
                 physics.x + physics.width / 4,
                 physics.y,
@@ -277,9 +323,9 @@ export class PhysicsSystem implements System {
                 physics.velocityX,
                 physics.velocityY,
                 0xFBBF24,
-            );*/
-            //this.game.sounds.death.play();
-            //this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
+            );
+            this.game.sounds.death.play();
+            this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
             this.resetBall(ball, physics, -1);
         }
     }
@@ -294,5 +340,24 @@ export class PhysicsSystem implements System {
         physics.velocityX = Math.cos(angle) * speed * direction;
         physics.velocityY = Math.sin(angle) * speed;
         ball.lastHit = '';
+    }
+
+	// Utils
+    getBoundingBox(physics: PhysicsComponent): BoundingBox {
+        return {
+            left: physics.x - physics.width / 2,
+            right: physics.x + physics.width / 2,
+            top: physics.y - physics.height / 2,
+            bottom: physics.y + physics.height / 2
+        };
+    }
+    
+    isAABBOverlap(a: BoundingBox, b: BoundingBox) {
+        return (
+            a.left < b.right &&
+            a.right > b.left &&
+            a.top < b.bottom &&
+            a.bottom > b.top
+        );
     }
 }

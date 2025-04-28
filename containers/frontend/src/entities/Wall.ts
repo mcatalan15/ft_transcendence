@@ -6,14 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:58:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 12:29:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:00:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Graphics } from "pixi.js";
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
-import { Graphics } from "pixi.js";
 
 export class Wall extends Entity {
     constructor(id: string, layer:string, width: number, thickness: number, offset: number) {
