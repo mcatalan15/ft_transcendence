@@ -20,7 +20,8 @@ if [ ! -f "$DB_PATH" ]; then
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
+        password TEXT,
+		provider TEXT NOT NULL DEFAULT 'local',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     -- Add more initialization logic as needed
