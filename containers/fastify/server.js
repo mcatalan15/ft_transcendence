@@ -127,7 +127,7 @@ fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, (err, address) => {
 // Blockchain
 //
 //
-fastify.post('/blockchain/deploy-contract', async (request, reply) => {
+fastify.post('/blockchain/contracts', async (request, reply) => {
   try {
     const response = await fetch('http://blockchain:3002/deploy', {
       method: 'POST',
