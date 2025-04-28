@@ -6,9 +6,6 @@ export default defineConfig({
   build: {
     outDir: "../public",
     emptyOutDir: true,
-    rollupOptions: {
-      input: "src/index.html", // Entry point for the build
-    },
   },
   server: {
     port: 5173,
