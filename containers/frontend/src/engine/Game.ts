@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 18:57:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/28 10:45:44 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ export class PongGame {
 		//Fetch player info from jsons
 		let playerData;
 		try {
-			const response = await fetch('../../data/players.json');
+			const response = await fetch('../../players.json');
 			playerData = await response.json();
 		} catch (error) {
 			console.error("Failed to fetch player data, using mock data:", error);
