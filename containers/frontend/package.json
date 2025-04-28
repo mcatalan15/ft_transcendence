@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-	  "build": "vite build && npx postcss src/styles/tailwind.css -o public/styles/styles.css && cp players.json .",
+	  "build": "vite build && npx postcss src/styles/tailwind.css -o public/styles/styles.css && cp src/players.json public/players.json",
 	  "lint": "eslint .",
 	  "dev": "vite"
 	},
