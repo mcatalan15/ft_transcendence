@@ -21,16 +21,17 @@ async function googleAuthRoutes(fastify, options) {
 
       const name = payload.name;
       const email = payload.email;
+	  const provider = 'google';
 
 	  	try {
        	 await checkUserExists(name, email);
 
-     	 await saveUserToDatabase(name, email, null, 'google');
+     	 await saveUserToDatabase(name, email, null, provider);
 
     	 return reply.status(200).send({
 			success: true,
 			message: 'Google sign-in successful',
-			user: { name, email } });
+			user: { name, email, provider } });
 
 		} catch (error) {
 		// If user already exists
