@@ -2,9 +2,9 @@ name: Docker Compose Build Check
 
 on:
   push:
-    branches: [ main, develop2, marc-develop1, nico-develop2 ]
+    branches: [ main, develop1, marc-develop1, nico-develop2 ]
   pull_request:
-    branches: [ main, develop2 ]
+    branches: [ main, develop1 ]
 
 jobs:
   build:
@@ -34,12 +34,11 @@ jobs:
         
     - name: Verify containers are running
       run: |
-        docker ps --format "{{.Names}}" | grep backend
+        docker ps --format "{{.Names}}" | grep backend 
         docker ps --format "{{.Names}}" | grep nginx
         docker ps --format "{{.Names}}" | grep adminer
         docker ps --format "{{.Names}}" | grep grafana
         docker ps --format "{{.Names}}" | grep prometheus
-
         
     - name: Clean up containers
       if: always()
