@@ -6,19 +6,19 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 12:42:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Entity } from '../engine/Entity';
 
 import { Paddle } from '../entities/Paddle';
-import { Ball } from '../entities/Ball';
+import { Ball } from '../entities/balls/Ball';
 import { Wall } from '../entities/Wall';
-import { DepthLine } from '../background/DepthLine';
+import { DepthLine } from '../entities/background/DepthLine';
 import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
-import { Powerup } from '../powerups/TestPowerup'
+import { Powerup } from '../entities/powerups/Powerup'
 
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;

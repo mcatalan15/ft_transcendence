@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:34:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:12:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,13 @@ export class Paddle extends Entity {
     game: PongGame;
     name: string;
     isEnlarged: boolean;
+    wasEnlarged: boolean;
     enlargeTimer: number;
 	enlargeProgress: number;
+    isShrinked: boolean;
+    wasShrinked: boolean;
+    shrinkTimer: number;
+    shrinkProgress: number;
     baseWidth: number;
     originalWidth: number;
     baseHeight: number;
@@ -39,8 +44,14 @@ export class Paddle extends Entity {
         this.name = name;
         
         this.isEnlarged = false;
+        this.wasEnlarged = false;
         this.enlargeTimer = 0;
 		this.enlargeProgress = 0;
+
+        this.isShrinked = false;
+        this.wasShrinked = false;
+        this.shrinkTimer = 0;
+		this.shrinkProgress = 0;
 
         this.overshootTarget = 0;
         this.overshootPhase = '';
@@ -123,10 +134,18 @@ export class Paddle extends Entity {
 	}
 
     resetPaddleSize(paddle: Paddle): void {
-        if (!paddle.isEnlarged) return;
+        if (!paddle.isEnlarged && !paddle.isShrinked) return;
 
+        if (paddle.isEnlarged) {
+            paddle.wasEnlarged = true;
+        } else if (paddle.isShrinked) {
+            paddle.wasShrinked = true;
+        }
+        
         paddle.isEnlarged = false;
+        paddle.isShrinked = false;
         paddle.enlargeProgress = 0;
+        paddle.shrinkProgress = 0;
 
         this.game.eventQueue.push({
             type: 'RESET_PADDLE',

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 18:54:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 14:40:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { TextStyle } from 'pixi.js'
 
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter } from 'pixi-filters'
 
+import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 
 export interface DepthLineBehavior {
@@ -40,6 +41,7 @@ export type GameEvent = {
     type: string;
     side?: 'left' | 'right'; // For example, for the SCORE event
 	target?: Paddle | World;
+	entitiesMap?: Map<string, Entity>;
     // Add any other fields you expect in an event here
 };
 

@@ -6,12 +6,16 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 17:57:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:43:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from "../engine/Game";
-import { Powerup } from "../powerups/TestPowerup";
+
+import { EnlargePowerup } from "../entities/powerups/EnlargePowerup";
+import { ShrinkPowerDown } from "../entities/powerups/ShrinkPowerDown";
+import { CurveBallPowerup } from "../entities/powerups/CurveBallPowerup";
+
 import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";
 
@@ -31,8 +35,20 @@ export class PowerupSpawner {
         const randomX = (width - spawnAreaWidth) / 2 + Math.random() * spawnAreaWidth;
         const randomY = topBoundary + Math.random() * availableHeight;
         
-        // Powerup generation
-        const powerup = new Powerup(uniqueId, 'powerup', game, randomX, randomY, {});
+        let powerup;
+        let spawnIndex = Math.floor(Math.random() * 3);
+
+        switch (spawnIndex) {
+            case (0):
+                powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomX, randomY);
+                break;
+            case (1):
+                powerup = new CurveBallPowerup(uniqueId, 'ballChange', game, randomX, randomY);
+                break;
+            default:
+                powerup = new ShrinkPowerDown(uniqueId, 'powerdown', game, randomX, randomY);
+                break;
+        }
     
         game.addEntity(powerup);
     
@@ -42,6 +58,14 @@ export class PowerupSpawner {
         render.graphic.x = physics.x;
         render.graphic.y = physics.y;
     
-        game.renderLayers.powerup.addChild(render.graphic);
+        //game.renderLayers.powerup.addChild(render.graphic);
+        console.log(powerup.layer);
+        if (powerup.layer === 'powerup') {
+            game.renderLayers.powerup.addChild(render.graphic);
+        } else if (powerup.layer === 'powerdown') {
+            game.renderLayers.powerdown.addChild(render.graphic);
+        } else if (powerup.layer === 'ballChange') {
+            game.renderLayers.ballChange.addChild(render.graphic);
+        }
     }
 }

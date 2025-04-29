@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:40:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 12:32:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from '../engine/Game';
-import { DepthLine } from '../background/DepthLine';
+import { DepthLine } from '../entities/background/DepthLine';
 import { RenderComponent } from '../components/RenderComponent'
 import { DepthLineBehavior } from '../utils/Types'
 

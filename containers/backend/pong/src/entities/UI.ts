@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 14:41:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 15:49:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ export class UI extends Entity {
 			textComponent.text = newTime;
 			textComponent.setText(newTime);
 		} else {
-			console.error("Score text component not found");
+			console.error("Timer text component not found");
 		}
 	}
 
@@ -142,7 +142,7 @@ export class UI extends Entity {
 			textComponent.text = newWorld;
 			textComponent.setText(newWorld);
 		} else {
-			console.error("Score text component not found");
+			console.error("World text component not found");
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 18:59:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:48:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,73 @@ export class PostProcessingLayer extends Entity {
             quality: 0.1,
         });
 
-        const dropShadow = new DropShadowFilter({
+        const powerdownGlow = new GlowFilter({
+            alpha: 0.2,
+            color: WORLD_COLORS.ice,
+            distance: 10,
+            innerStrength: 3,
+            knockout: false,
+            outerStrength: 2,
+            quality: 0.1,
+        });
+
+        const ballChangeGlow = new GlowFilter({
+            alpha: 0.2,
+            color: WORLD_COLORS.ice,
+            distance: 10,
+            innerStrength: 3,
+            knockout: false,
+            outerStrength: 2,
+            quality: 0.1,
+        });
+
+        const powerupDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.fire,
-            offset: {x: 2.5,y: 2.5},
+            color: WORLD_COLORS.forest,
+            offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,
             resolution: 1,
+        });
+        
+        const powerdownDropShadow = new DropShadowFilter({
+            alpha: 0.75,
+            blur: 1,
+            color: WORLD_COLORS.city,
+            offset: {x: 4,y: 4},
+            pixelSize: {x:1,y:1},
+            quality: 4,
+            resolution: 1,
+        });
+
+        const ballChangeDropShadow = new DropShadowFilter({
+            alpha: 0.75,
+            blur: 1,
+            color: WORLD_COLORS.fire,
+            offset: {x: 4,y: 4},
+            pixelSize: {x:1,y:1},
+            quality: 4,
+            resolution: 1,
+        });
+
+        const powerupGlitch = new GlitchFilter({
+            average: false,
+            blue: {x: 0.5, y: 0.5},
+            green: {x: 0.5, y: 0.5},
+            red: {x: 0.5, y: 0.5},
+            direction: 0,
+            fillMode: 1,
+            offset : 100,
+            sampleSize: 512,
+            seed: 0,
+            slices: 5,
+        });
+
+        const powerupMotionBlur = new MotionBlurFilter({
+           kernelSize: 5,
+           offset: 1,
+           velocity: {x: 0, y:0},
         });
 
         // Apply filters to the visual root
@@ -120,8 +179,10 @@ export class PostProcessingLayer extends Entity {
             powerupCRT: powerupCRT,
         }));
 
-        //Apply filters to the powerup layer
-        game.powerupLayer.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, dropShadow];
+        //Apply filters to the powerup layer0
+        game.powerupLayer.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
+        game.powerdownLayer.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur];
+        game.ballChangeLayer.filters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow, powerupMotionBlur];
 
         // Create RenderTexture for background
         const rt = RenderTexture.create({ width: game.app.screen.width, height: game.app.screen.height });

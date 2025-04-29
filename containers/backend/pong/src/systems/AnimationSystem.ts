@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 18:53:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:13:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,26 +63,43 @@ export class AnimationSystem implements System {
 	update(entities: Entity[], delta: FrameData): void {
 		this.frameCounter = (this.frameCounter + 1) % this.depthLineUpdateRate;
 		const entitiesToRemove: string[] = [];
-
-		// 1. Handle paddle events (ENLARGE/RESET)
+	
+		// 1. Handle paddle events (ENLARGE/SHRINK/RESET)
 		const unhandledEvents = [];
-
+	
 		while (this.game.eventQueue.length > 0) {
 			const event = this.game.eventQueue.shift() as GameEvent;
-
-			if (event.type === 'ENLARGE_PADDLE' || event.type === 'RESET_PADDLE') {
+	
+			if (
+				event.type === 'ENLARGE_PADDLE' ||
+				event.type === 'SHRINK_PADDLE' ||
+				event.type === 'RESET_PADDLE'
+			) {
 				const paddle = event.target as Paddle;
 				const render = paddle.getComponent('render') as RenderComponent;
 				const physics = paddle.getComponent('physics') as PhysicsComponent;
 				if (!render || !physics) continue;
-
+	
 				paddle.originalHeight = physics.height;
-				paddle.targetHeight = event.type === 'ENLARGE_PADDLE'
-					? paddle.baseHeight * 2
-					: paddle.baseHeight;
-				paddle.overshootTarget = event.type === 'ENLARGE_PADDLE'
-					? paddle.targetHeight * 1.2
-					: paddle.targetHeight * 0.9;
+	
+				// Set target height
+				if (event.type === 'ENLARGE_PADDLE') {
+					paddle.targetHeight = paddle.baseHeight * 2;
+					paddle.overshootTarget = paddle.targetHeight * 1.2; // Overshoot by growing 20% larger
+				} else if (event.type === 'SHRINK_PADDLE') {
+					paddle.targetHeight = paddle.baseHeight * 0.5; // Final target is 50% of original
+					paddle.overshootTarget = paddle.baseHeight * 0.4; // Overshoot by shrinking to 40% first
+				} else {
+					paddle.targetHeight = paddle.baseHeight;
+					if (paddle.wasEnlarged) {
+						paddle.overshootTarget = paddle.targetHeight * 0.9;
+						paddle.wasEnlarged = false;
+					} else if (paddle.wasShrinked) {
+						paddle.overshootTarget = paddle.targetHeight * 1.1;
+						paddle.wasShrinked = false;
+					}
+				}
+				
 				paddle.overshootPhase = 'expand';
 				paddle.enlargeProgress = 0;
 			} else {
@@ -90,19 +107,19 @@ export class AnimationSystem implements System {
 			}
 		}
 		this.game.eventQueue.push(...unhandledEvents);
-
+	
 		// 2. Update paddle animations
 		for (const entity of entities) {
 			const render = entity.getComponent('render') as RenderComponent;
 			const physics = entity.getComponent('physics') as PhysicsComponent;
 			if (!render || !physics) continue;
-		
+	
 			if (isPaddle(entity) && entity.targetHeight && entity.enlargeProgress < 1) {
 				entity.enlargeProgress += delta.deltaTime * 0.1;
 				const t = Math.min(entity.enlargeProgress, 1);
 				let easeT = 1 - Math.pow(2, -10 * t);
 				let targetHeight;
-		
+	
 				if (entity.overshootPhase === 'expand') {
 					targetHeight = this.lerp(entity.originalHeight, entity.overshootTarget, easeT);
 					if (t >= 1) {
@@ -116,7 +133,7 @@ export class AnimationSystem implements System {
 						entity.overshootPhase = '';
 					}
 				}
-		
+	
 				if (targetHeight !== undefined) {
 					physics.height = targetHeight;
 					const graphic = render.graphic as Graphics;

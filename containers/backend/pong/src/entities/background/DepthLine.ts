@@ -6,18 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 12:31:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics } from 'pixi.js';
 
-import { PongGame } from '../engine/Game';
-import { Entity } from '../engine/Entity';
+import { PongGame } from '../../engine/Game';
+import { Entity } from '../../engine/Entity';
 
-import { RenderComponent } from '../components/RenderComponent';
-import { LifetimeComponent } from '../components/LifetimeComponent';
-import { AnimationComponent } from '../components/AnimationComponent';
+import { RenderComponent } from '../../components/RenderComponent';
+import { LifetimeComponent } from '../../components/LifetimeComponent';
+import { AnimationComponent } from '../../components/AnimationComponent';
 
 type DepthLineBehavior = {
 	movement?: 'vertical' | 'horizontal';

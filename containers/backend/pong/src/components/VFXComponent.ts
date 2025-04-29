@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:45:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 15:59:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/29 12:30:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,15 @@ export class VFXComponent implements Component {
 	type = 'vfx';
 	instanceId?: string;
 
-	flashColor: number; // 👈 We'll make this always a number
+	flashColor: number;
 	flashDuration: number;
 	flashTimeLeft: number;
 	originalTint: number;
 	isFlashing: boolean;
-	entity?: Entity; // 👈 Let it be the full Entity class
+	entity?: Entity;
 
 	constructor() {
-		this.flashColor = 0xFFFFFF; // 👈 Default value instead of null
+		this.flashColor = 0xFFFFFF;
 		this.flashDuration = 0;
 		this.flashTimeLeft = 0;
 		this.originalTint = 0xFBBF24;
