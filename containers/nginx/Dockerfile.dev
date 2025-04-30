@@ -1,0 +1,9 @@
+FROM nginxinc/nginx-unprivileged:stable-alpine
+
+COPY conf/nginx.dev.conf /etc/nginx/nginx.conf
+
+# RUN apk add --no-cache nano iputils
+
+EXPOSE 8080 8443
+
+CMD ["nginx", "-g", "daemon off;"]
