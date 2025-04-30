@@ -8,11 +8,11 @@ services:
       - ./frontend/src:/app/src
       - public:/app/public
     ports:
-      - "3000:3000"
+      - "5173:5173"
     restart: on-failure
     environment:
       - VITE_DEV=true
-    command: npm run dev
+    command: npm run dev -- --host
     networks:
       - transcendence
 
@@ -29,7 +29,6 @@ services:
     container_name: nginx
     ports:
       - "8080:80"  # Expose dev version on different ports (0-1024 are blocked at 42)
-      - "8443:443"
     depends_on:
       - frontend
     volumes:
