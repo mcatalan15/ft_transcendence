@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 15:33:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:14:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,26 @@ import { PongGame } from '../engine/Game';
 import { Ball } from '../entities/balls/Ball'
 import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
+import { MultiplyBall } from '../entities/balls/MultiplyBall';
+import { BurstBall } from '../entities/balls/BurstBall';
 
 import { RenderComponent } from '../components/RenderComponent'
 import { PhysicsComponent } from '../components/PhysicsComponent';
+import { VFXComponent } from '../components/VFXComponent';
+
+import { WORLD_COLORS } from '../utils/Types';
 
 export class BallSpawner {
 	static spawnDefaultBall(game: PongGame): void {
-		const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2);
+		const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2, true);
 		const ballRender = ball.getComponent('render') as RenderComponent;
 		game.renderLayers.foreground.addChild(ballRender.graphic);
 		game.entities.push(ball);
 		console.log("DefaultBall spawned")
     }
 
-    static spawnCurveBall(game: PongGame): void {
-        const ball = new CurveBall('curveBall', 'foreground', game.width / 2, game.height / 2);
-        const ballRender = ball.getComponent('render') as RenderComponent;
-        game.renderLayers.foreground.addChild(ballRender.graphic);
-        game.entities.push(ball);
-        console.log("CurveBall spawned");
-    }
-
     static spawnCurveBallAt(game: PongGame, physics: PhysicsComponent): CurveBall {
-        const ball = new CurveBall('curveBall', 'foreground', physics.x, physics.y);
+        const ball = new CurveBall('curveBall', 'foreground', physics.x, physics.y, true);
     
         // Override default physics with the passed data
         const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
@@ -56,25 +53,64 @@ export class BallSpawner {
         return ball;
     }
 
-    /*spawnSpecialBall(type: BallType, x: number, y: number, velocityX: number, velocityY: number): Ball {
-        switch (type) {
-            case 'rugby':
-                return new RugbyBall(this.generateId(), 'ballLayer', x, y, velocityX, velocityY);
-            case 'poison':
-                return new PoisonBall(this.generateId(), 'ballLayer', x, y, velocityX, velocityY);
-            case 'multiplying':
-                return new MultiplyingBall(this.generateId(), 'ballLayer', x, y, velocityX, velocityY);
-            case 'arrow':
-                return new ArrowBall(this.generateId(), 'ballLayer', x, y, velocityX, velocityY);
-            case 'glitch':
-                return new GlitchBall(this.generateId(), 'ballLayer', x, y, velocityX, velocityY);
-            default:
-                throw new Error(`Unknown ball type: ${type}`);
-        }
-    }*/
+    static spawnMultiplyBallsAt(game: PongGame, physics: PhysicsComponent): MultiplyBall[] {
+        const clones: MultiplyBall[] = [];
+    
+        // Decide randomly which index is the real ball (0, 1, or 2)
+        const realIndex = Math.floor(Math.random() * 3);
+    
+        for (let i = 0; i < 3; i++) {
+            const isGoodBall = i === realIndex;
+            const offsetY = (i - 1) * 100; 
+            const offsetX = (i - 1) * 50; 
+            const clone = new MultiplyBall(`multiplyBall_${i}`, 'foreground', physics.x, physics.y + offsetY, isGoodBall);
+    
+            // Copy physics values from the original ball
+            const clonePhysics = clone.getComponent('physics') as PhysicsComponent;
+            clonePhysics.x = physics.x + offsetX;
+            clonePhysics.y = physics.y + offsetY;
+            clonePhysics.velocityX = physics.velocityX;
+            clonePhysics.velocityY = physics.velocityY;
+            clonePhysics.restitution = physics.restitution;
+            clonePhysics.mass = physics.mass;
+    
+            // Add to scene and entity list
+            const cloneRender = clone.getComponent('render') as RenderComponent;
+            game.renderLayers.foreground.addChild(cloneRender.graphic);
+            game.entities.push(clone);
+            clones.push(clone);
 
-    despawnBall(ball: Ball) {
-        // Remove ball from your world/entities list here
+            const vfx = clone.getComponent('vfx') as VFXComponent;
+            if (clone.isGoodBall) {
+                vfx.startFlash(WORLD_COLORS.forest, 20);
+            } else {
+                vfx.startFlash(WORLD_COLORS.city, 20);
+            }
+    
+            console.log(`${isGoodBall ? "REAL" : "FAKE"} MultiplyBall spawned at (${clonePhysics.x}, ${clonePhysics.y})`);
+        }
+    
+        return clones;
+    }
+
+    static spawnBurstBallAt(game: PongGame, physics: PhysicsComponent): BurstBall {
+        const ball = new BurstBall('burstBall', 'foreground', physics.x, physics.y, true);
+    
+        // Override default physics with the passed data
+        const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
+        physicsComponent.x = physics.x;
+        physicsComponent.y = physics.y;
+        physicsComponent.velocityX = physics.velocityX;
+        physicsComponent.velocityY = physics.velocityY;
+        physicsComponent.restitution = physics.restitution;
+        physicsComponent.mass = physics.mass;
+    
+        const ballRender = ball.getComponent('render') as RenderComponent;
+        game.renderLayers.foreground.addChild(ballRender.graphic);
+        game.entities.push(ball);
+    
+        console.log("BurstBall spawned at", physics.x, physics.y);
+        return ball;
     }
 
     static generateId(): string {

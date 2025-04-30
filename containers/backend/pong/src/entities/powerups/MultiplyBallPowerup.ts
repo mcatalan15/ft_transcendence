@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EnlargePowerup.ts                                  :+:      :+:    :+:   */
+/*   MultiplyBallPowerup.ts                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 17:23:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:55:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,17 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
+import { PhysicsData, GameEvent } from '../../utils/Types.js';
 
-export class EnlargePowerup extends Powerup {
+export class MultiplyBallPowerup extends Powerup {
     game: PongGame;
 
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'enlargePowerup',
-            affectation: 'powerUp',
-            event: { type: 'enlargePowerup' },
+            effect: 'spawnCurveBall',
+            affectation: 'ballChange',
+            event: {type:'spawnMultiplyBall'},
         });
 
         this.game = game;
@@ -34,56 +34,45 @@ export class EnlargePowerup extends Powerup {
 
     createPowerupGraphic(): Container {
         const container = new Container();
-    
+
         const base = new Graphics();
-        base.rect(-10, -10, 20, 20);
+        base.circle(0, 0, 10);
         base.fill(0xFFFBEB);
         container.addChild(base);
-    
+
         const ornament = new Graphics();
-        ornament.rect(-15, -15, 30, 30);
+        ornament.circle(0, 0, 15);
         ornament.stroke({ color: 0xFFFBEB, width: 1.2 });
         container.addChild(ornament);
-    
-        const createArrow = (): Graphics => {
-            const arrow = new Graphics();
-            const points = [
-                { x: 0, y: -4 },
-                { x: -3, y: 0 },
-                { x: -1, y: 0 },
-                { x: -1, y: 4 },
-                { x: 1, y: 4 },
-                { x: 1, y: 0 },
-                { x: 3, y: 0 },
-            ];
-            arrow.poly(points, true);
-            arrow.fill(0x171717);
-            return arrow;
-        };
-    
-        const diagonals = [
-            { x: -5, y: -5, rotation: -Math.PI / 4 },
-            { x: 5, y: -5, rotation: Math.PI / 4 },
-            { x: 5, y: 5, rotation: (3 * Math.PI) / 4 },
-            { x: -5, y: 5, rotation: -(3 * Math.PI) / 4 }
-        ];
-    
-        for (const diag of diagonals) {
-            const arrow = createArrow();
-            arrow.position.set(diag.x, diag.y);
-            arrow.rotation = diag.rotation;
-            container.addChild(arrow);
-        }
-    
+
+        const innerSign = new Container;
+
+        const innerSignA = new Graphics();
+        innerSignA.circle(0, 0, 2);
+        innerSignA.fill(0x171717);
+        innerSign.addChild(innerSignA);
+        
+        const innerSignB = new Graphics();
+        innerSignB.circle(-4.5, -4.5, 2);
+        innerSignB.fill(0x171717);
+        innerSign.addChild(innerSignB);
+
+        const innerSignC = new Graphics();
+        innerSignC.circle(4.5, 4.5, 2);
+        innerSignC.fill(0x171717);
+        innerSign.addChild(innerSignC);
+        
+        container.addChild(innerSign);
+
         return container;
     }
 
     initPowerupPhysicsData(x: number, y: number): PhysicsData {
-        return {
+		return {
             x,
             y,
-            width: 30,
-            height: 30,
+            width: 20,
+            height: 20,
             velocityX: 0,
             velocityY: 0,
             isStatic: true,
@@ -92,12 +81,17 @@ export class EnlargePowerup extends Powerup {
             mass: 0,
             speed: 0,
         };
-    }
+	}
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side?: string, ): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
         }
+        if (side == 'left' || side == 'right') {
+            this.event.side = side;
+        }
         this.game.eventQueue.push(this.event);
     }
+
+    
 }

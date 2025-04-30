@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 09:04:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:18:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,22 +71,6 @@ export abstract class Powerup extends Entity {
     abstract createPowerupGraphic(): Container;
     abstract sendPowerupEvent(entitiesMap: Map<string, Entity>): void;
     abstract initPowerupPhysicsData(x: number, y: number): PhysicsData;
-
-    /*protected initPowerupPhysicsData(x: number, y: number) {
-        return {
-            x,
-            y,
-            width: 30,
-            height: 30,
-            velocityX: 0,
-            velocityY: 0,
-            isStatic: true,
-            behaviour: 'trigger' as const,
-            restitution: 1.0,
-            mass: 0,
-            speed: 0,
-        };
-    }*/
 
     protected defineAnimationOptions(physics: PhysicsComponent): AnimationOptions {
         return {

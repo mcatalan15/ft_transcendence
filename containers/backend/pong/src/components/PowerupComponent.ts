@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:35:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:05:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:55:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ export class PowerupComponent {
         this.game.eventQueue.push(enlargeEvent);
     }
 
-    shrinkPaddle(paddle: Paddle): void {
+    shrinkPaddle(paddle: Paddle): void {        
         if (paddle.isShrinked) {
             paddle.shrinkTimer = 500;
             return;

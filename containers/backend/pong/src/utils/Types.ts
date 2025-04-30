@@ -6,13 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 09:02:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:35:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { TextStyle } from 'pixi.js'
 
-import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter } from 'pixi-filters'
+import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter } from 'pixi-filters'
 
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
@@ -75,11 +75,14 @@ export interface PostProcessingOptions {
 	rgbSpilt?: RGBSplitFilter | null;
     powerupGlow?: GlowFilter | null;
 	powerupCRT?: CRTFilter | null,
+	powerupGlitch?: GlitchFilter | null,
 }
 
 export interface GameSounds {
 	pong: Howl;
 	powerup: Howl;
+	powerdown: Howl;
+	ballchange: Howl;
 	death: Howl;
 	paddleReset: Howl;
 }

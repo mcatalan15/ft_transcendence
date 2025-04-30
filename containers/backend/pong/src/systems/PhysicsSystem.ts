@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 14:56:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:28:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import { Paddle } from '../entities/Paddle'
 import { Ball } from '../entities/balls/Ball'
 import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
+import { BurstBall } from '../entities/balls/BurstBall';
 
 
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -157,112 +158,119 @@ export class PhysicsSystem implements System {
 		}
 	}
 
-	handleBallPaddleCollisions(physics: PhysicsComponent,entitiesMap: Map<string, Entity>, ball: Ball): void {
-		const ballLeft = physics.x - physics.width / 2;
-		const ballRight = physics.x + physics.width / 2;
-
-		const MAX_BOUNCE_ANGLE = Math.PI / 4;
+	handleBallPaddleCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+		const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees
 		const PADDLE_INFLUENCE = 0.5;
-		const MIN_HORIZONTAL_COMPONENT = 0.7;
-	
-		// Left Paddle
-		const paddleL = entitiesMap.get("paddleL");
-		if (paddleL) {
-			const paddlePhysics = paddleL.getComponent("physics") as PhysicsComponent;
-			const paddleRight = paddlePhysics.x + paddlePhysics.width / 2;
-			const paddleTop = paddlePhysics.y - paddlePhysics.height / 2;
-			const paddleBottom = paddlePhysics.y + paddlePhysics.height / 2;
-	
-			if (
-				physics.y >= paddleTop &&
-				physics.y <= paddleBottom &&
-				ballLeft <= paddleRight &&
-				ballLeft >= paddleRight - Math.abs(physics.velocityX)
-			) {
-				this.game.sounds.pong.play();
-
-				physics.x = paddleRight + physics.width / 2;
-	
-				const relativeHit = (physics.y - paddlePhysics.y) / (paddlePhysics.height / 2);
-				const clamped = Math.max(-0.8, Math.min(0.8, relativeHit));
-				const bounceAngle = clamped * MAX_BOUNCE_ANGLE;
-	
-				const speed = Math.hypot(physics.velocityX, physics.velocityY);
-				physics.velocityX = Math.cos(bounceAngle) * speed;
-				physics.velocityY = Math.sin(bounceAngle) * speed;
-	
-				if (paddlePhysics.velocityY !== 0) {
-					const paddleInfluence = Math.min(Math.abs(paddlePhysics.velocityY), 5) * Math.sign(paddlePhysics.velocityY);
-					physics.velocityY += paddleInfluence * PADDLE_INFLUENCE;
-				}
-	
-				const horizontalComponent = Math.abs(physics.velocityX) / speed;
-				if (horizontalComponent < MIN_HORIZONTAL_COMPONENT) {
-					const direction = Math.sign(physics.velocityX);
-					physics.velocityX = direction * MIN_HORIZONTAL_COMPONENT * speed;
-					const maxVertical = Math.sqrt(1 - MIN_HORIZONTAL_COMPONENT ** 2);
-					physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
-				}
-	
-				ball.lastHit = 'left';
-				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
-				if (ball && ball.hasComponent('vfx')) {
-					const vfx = ball.getComponent('vfx') as VFXComponent;
-					vfx.startFlash(0x5EEAD4, 10); // Green flash for left paddle
-				}
+		const MIN_HORIZONTAL_COMPONENT = 0.7; // At least 70% of velocity should be horizontal
+		const MIN_VERTICAL_ANGLE = 0.2; // To prevent completely flat trajectories
+		
+		if (ball.isGoodBall) {
+			// Ball data
+			const ballBox = {
+				x: physics.x,
+				y: physics.y,
+				width: physics.width,
+				height: physics.height,
+				vx: physics.velocityX,
+				vy: physics.velocityY
+			};
+			
+			// Process paddles with swept collision
+			const paddles = [entitiesMap.get("paddleL"), entitiesMap.get("paddleR")];
+			
+			for (const paddle of paddles) {
+				if (!paddle) continue;
+				
+				const paddlePhysics = paddle.getComponent("physics") as PhysicsComponent;
+				const paddleSide = paddle.id === "paddleL" ? "left" : "right";
+				
+				const paddleBox = {
+					x: paddlePhysics.x,
+					y: paddlePhysics.y,
+					width: paddlePhysics.width,
+					height: paddlePhysics.height,
+					vy: paddlePhysics.velocityY
+				};
+				
+				// Perform swept collision test
+				const collision = this.sweptAABB(
+					ballBox.x, ballBox.y, ballBox.width, ballBox.height, ballBox.vx, ballBox.vy,
+					paddleBox.x, paddleBox.y, paddleBox.width, paddleBox.height, paddleBox.vy
+				);
+				
+				// If collision is detected
+				if (collision.hit && collision.time >= 0 && collision.time <= 1) {
+					this.game.sounds.pong.play();
+					
+					physics.x = collision.position.x;
+					physics.y = collision.position.y;
+					
+					const speed = Math.hypot(physics.velocityX, physics.velocityY);
+					
+					if (collision.normal.x !== 0) {
+						physics.velocityX = -physics.velocityX;
+						
+						const relativeHit = (physics.y - paddlePhysics.y) / (paddlePhysics.height / 2);
+						const clamped = Math.max(-0.8, Math.min(0.8, relativeHit));
+						const bounceAngle = clamped * MAX_BOUNCE_ANGLE;
+						
+						if (paddleSide === "left") {
+							physics.velocityX = Math.abs(physics.velocityX); // Force right direction
+							physics.velocityX = Math.cos(bounceAngle) * speed;
+						} else {
+							physics.velocityX = -Math.abs(physics.velocityX); // Force left direction
+							physics.velocityX = -Math.cos(bounceAngle) * speed;
+						}
+						
+						physics.velocityY = Math.sin(bounceAngle) * speed;
+						
+						// Apply paddle movement influence
+						if (paddleBox.vy !== 0) {
+							const paddleInfluence = Math.min(Math.abs(paddleBox.vy), 5) * Math.sign(paddleBox.vy);
+							physics.velocityY += paddleInfluence * PADDLE_INFLUENCE;
+						}
+						
+					} else if (collision.normal.y !== 0) {
+						physics.velocityY = -physics.velocityY;
+						
+						if (paddleSide === "left") {
+							physics.velocityX = Math.max(physics.velocityX, MIN_HORIZONTAL_COMPONENT * speed);
+						} else {
+							physics.velocityX = Math.min(physics.velocityX, -MIN_HORIZONTAL_COMPONENT * speed);
+						}
+						
+						const newSpeed = Math.hypot(physics.velocityX, physics.velocityY);
+						physics.velocityX = (physics.velocityX / newSpeed) * speed;
+						physics.velocityY = (physics.velocityY / newSpeed) * speed;
+					}
+					
+					this.enforceMinimumHorizontalComponent(physics, speed, MIN_HORIZONTAL_COMPONENT);
+					
+					ball.lastHit = paddleSide;
+					if (ball instanceof BurstBall) {
+						ball.resetWindup();
+					}
+					
+					if (paddleSide === "left") {
+						ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
+						
+						if (ball.hasComponent('vfx')) {
+							const vfx = ball.getComponent('vfx') as VFXComponent;
+							vfx.startFlash(0x5EEAD4, 10); // Green flash for left paddle
+						}
+					} else {
+						ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
+						
+						if (ball.hasComponent('vfx')) {
+							const vfx = ball.getComponent('vfx') as VFXComponent;
+							vfx.startFlash(0xD946EF, 10); // Purple flash for right paddle
+						}
+					}
+				}	
 			}
 		}
-	
-		// Right Paddle
-		const paddleR = entitiesMap.get("paddleR");
-		if (paddleR) {
-			const paddlePhysics = paddleR.getComponent("physics") as PhysicsComponent;
-			const paddleLeft = paddlePhysics.x - paddlePhysics.width / 2;
-			const paddleTop = paddlePhysics.y - paddlePhysics.height / 2;
-			const paddleBottom = paddlePhysics.y + paddlePhysics.height / 2;
-	
-			if (
-				physics.y >= paddleTop &&
-				physics.y <= paddleBottom &&
-				ballRight >= paddleLeft &&
-				ballRight <= paddleLeft + Math.abs(physics.velocityX)
-			) {
-				this.game.sounds.pong.play();
-				
-				physics.x = paddleLeft - physics.width / 2;
-	
-				const relativeHit = (physics.y - paddlePhysics.y) / (paddlePhysics.height / 2);
-				const clamped = Math.max(-0.8, Math.min(0.8, relativeHit));
-				const bounceAngle = clamped * MAX_BOUNCE_ANGLE;
-	
-				const speed = Math.hypot(physics.velocityX, physics.velocityY);
-				physics.velocityX = -Math.cos(bounceAngle) * speed;
-				physics.velocityY = Math.sin(bounceAngle) * speed;
-	
-				if (paddlePhysics.velocityY !== 0) {
-					const paddleInfluence = Math.min(Math.abs(paddlePhysics.velocityY), 5) * Math.sign(paddlePhysics.velocityY);
-					physics.velocityY += paddleInfluence * PADDLE_INFLUENCE;
-				}
-	
-				const horizontalComponent = Math.abs(physics.velocityX) / speed;
-				if (horizontalComponent < MIN_HORIZONTAL_COMPONENT) {
-					const direction = Math.sign(physics.velocityX);
-					physics.velocityX = direction * MIN_HORIZONTAL_COMPONENT * speed;
-					const maxVertical = Math.sqrt(1 - MIN_HORIZONTAL_COMPONENT ** 2);
-					physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
-				}
-	
-				ball.lastHit = 'right';
-				ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
-				
-				if (ball && ball.hasComponent('vfx')) {
-					const vfx = ball.getComponent('vfx') as VFXComponent;
-					vfx.startFlash(0xD946EF, 10); // Purple flash for right paddle
-				}
-				}
-		}
 	}
-
+	
 	// Make powerups crate events, handle those events in powerup system. 
 	handlePowerupCollisions(physics: PhysicsComponent, entities: Entity[], entitiesMap: Map<string, Entity>, ball: Ball) {
 		const ballBox = this.getBoundingBox(ball.getComponent('physics') as PhysicsComponent);
@@ -272,17 +280,7 @@ export class PhysicsSystem implements System {
                 const powerupBox = this.getBoundingBox(entity.getComponent('physics') as PhysicsComponent);
                 if (ball.lastHit && this.isAABBOverlap(ballBox, powerupBox)) {
                     console.log(`Triggered powerup: ${entity.id}`);
-                    this.game.sounds.powerup.play();
                     const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
-                    const powerupComp = entity.getComponent('powerup') as PowerupComponent;
-                    /*if (ball.lastHit === 'left')
-                    {  
-                        const paddleL = entitiesMap.get('paddleL') as Paddle;
-						powerupComp.enlargePaddle(paddleL);
-                    } else if (ball.lastHit === 'right') {
-						const paddleR = entitiesMap.get('paddleR') as Paddle;
-                        powerupComp.enlargePaddle(paddleR);
-					}*/
 					entity.sendPowerupEvent(entitiesMap);
                     lifetime.remaining = 0;
                 }
@@ -295,38 +293,46 @@ export class PhysicsSystem implements System {
         const ballLeft = physics.x - (physics.width / 2);
         const ballRight = physics.x + (physics.width / 2);
 
-        // Ball exits right side
-        if (ballLeft > this.width) {
-            this.game.sounds.death.play();
-			ParticleSpawner.spawnBurst(
-                this.game,
-                physics.x - physics.width / 4,
-                physics.y,
-                10,
-                physics.velocityX,
-                physics.velocityY,
-                0xFBBF24,
-            );
-            this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
-            this.resetBall(ball, physics, 1);
-        }
+		// Ball exits right side
+		if (ballLeft > this.width) {
+			if (ball.isGoodBall) {
+				this.game.sounds.death.play();
+				ParticleSpawner.spawnBurst(
+					this.game,
+					physics.x - physics.width / 4,
+					physics.y,
+					10,
+					physics.velocityX,
+					physics.velocityY,
+					0xFBBF24,
+				);
+				this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
+				this.resetBall(ball, physics, 1);
+			} else if (ball.isFakeBall) {
+				ball.despawnBall(this.game, ball.id);
+			}
+		}
 
-        // Ball exits left side
-        if (ballRight < 0) {
-            this.game.sounds.death.play();
-			ParticleSpawner.spawnBurst(
-                this.game,
-                physics.x + physics.width / 4,
-                physics.y,
-                10,
-                physics.velocityX,
-                physics.velocityY,
-                0xFBBF24,
-            );
-            this.game.sounds.death.play();
-            this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
-            this.resetBall(ball, physics, -1);
-        }
+		// Ball exits left side
+		if (ballRight < 0) {
+			if 	(ball.isGoodBall) {
+				this.game.sounds.death.play();
+				ParticleSpawner.spawnBurst(
+					this.game,
+					physics.x + physics.width / 4,
+					physics.y,
+					10,
+					physics.velocityX,
+					physics.velocityY,
+					0xFBBF24,
+				);
+				this.game.sounds.death.play();
+				this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
+				this.resetBall(ball, physics, -1);
+			} else if (ball.isFakeBall) {
+				ball.despawnBall(this.game, ball.id);
+			}
+		}
     }
     
     resetBall(ball: Ball, physics: PhysicsComponent, direction: number) {
@@ -369,4 +375,84 @@ export class PhysicsSystem implements System {
             a.bottom > b.top
         );
     }
+
+	sweptAABB(
+		ballX: number, ballY: number, ballWidth: number, ballHeight: number, ballVx: number, ballVy: number,
+		paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, paddleVy: number = 0
+	) {
+		const ballHalfW = ballWidth / 2;
+		const ballHalfH = ballHeight / 2;
+		const paddleHalfW = paddleWidth / 2;
+		const paddleHalfH = paddleHeight / 2;
+		
+		const relVx = ballVx;
+		const relVy = ballVy - paddleVy;
+		
+		const entryDistX = (paddleX - paddleHalfW) - (ballX + ballHalfW);
+		const exitDistX = (paddleX + paddleHalfW) - (ballX - ballHalfW);
+		
+		const entryDistY = (paddleY - paddleHalfH) - (ballY + ballHalfH);
+		const exitDistY = (paddleY + paddleHalfH) - (ballY - ballHalfH);
+		
+		let entryTimeX = relVx !== 0 ? entryDistX / relVx : -Infinity;
+		let entryTimeY = relVy !== 0 ? entryDistY / relVy : -Infinity;
+		let exitTimeX = relVx !== 0 ? exitDistX / relVx : Infinity;
+		let exitTimeY = relVy !== 0 ? exitDistY / relVy : Infinity;
+		
+		if (entryTimeX > exitTimeX) [entryTimeX, exitTimeX] = [exitTimeX, entryTimeX];
+		if (entryTimeY > exitTimeY) [entryTimeY, exitTimeY] = [exitTimeY, entryTimeY];
+		
+		if (exitTimeX < 0 || exitTimeY < 0) {
+			return { hit: false, time: 1, position: { x: ballX + ballVx, y: ballY + ballVy }, normal: { x: 0, y: 0 } };
+		}
+		
+		if (entryTimeX > exitTimeY || entryTimeY > exitTimeX) {
+			return { hit: false, time: 1, position: { x: ballX + ballVx, y: ballY + ballVy }, normal: { x: 0, y: 0 } };
+		}
+		
+		const entryTime = Math.max(entryTimeX, entryTimeY);
+		
+		// Get the earlier exit time
+		const exitTime = Math.min(exitTimeX, exitTimeY);
+		
+		if (entryTime > 1 || entryTime < 0) {
+			return { hit: false, time: 1, position: { x: ballX + ballVx, y: ballY + ballVy }, normal: { x: 0, y: 0 } };
+		}
+		
+		let normalX = 0;
+		let normalY = 0;
+		
+		if (entryTimeX > entryTimeY) {
+			normalX = entryDistX < 0 ? 1 : -1;
+		} else {
+			normalY = entryDistY < 0 ? 1 : -1;
+		}
+		
+		const posX = ballX + ballVx * entryTime;
+		const posY = ballY + ballVy * entryTime;
+		
+		return {
+			hit: true,
+			time: entryTime,
+			position: { x: posX, y: posY },
+			normal: { x: normalX, y: normalY }
+		};
+	}
+
+	enforceMinimumHorizontalComponent(physics: PhysicsComponent, speed: number, minHorizontalComponent: number): void {
+		const horizontalComponent = Math.abs(physics.velocityX) / speed;
+		
+		if (horizontalComponent < minHorizontalComponent) {
+			const direction = Math.sign(physics.velocityX);
+			
+			const horizontalDir = direction !== 0 ? direction : 
+				(physics.x < this.game.width / 2 ? 1 : -1);
+			
+			physics.velocityX = horizontalDir * minHorizontalComponent * speed;
+			
+			const maxVertical = Math.sqrt(1 - minHorizontalComponent * minHorizontalComponent);
+			
+			physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
+		}
+	}
 }

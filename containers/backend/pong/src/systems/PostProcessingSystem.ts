@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 18:31:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:48:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,22 @@ export class PostProcessingSystem implements System {
             if (options.powerupCRT) {
                 options.powerupCRT.time = this.time;
                 options.powerupCRT.seed = Math.sin(this.time) * 10000 % 1;
+            }
+
+            if (options.powerupGlitch) {
+                const t = this.time;
+            
+                // Randomize seed slightly each frame
+                options.powerupGlitch.seed = Math.random();
+            
+                // Occasionally spike offset for a burst effect
+                options.powerupGlitch.offset = 2 + Math.sin(t * 10);
+            
+                // Rotate the glitch direction slowly
+                options.powerupGlitch.direction = Math.sin(t * 0.5) * Math.PI / 2;
+            
+                // Optionally animate the number of slices (intense flicker effect)
+                options.powerupGlitch.slices = 100 + Math.floor(Math.random() * 100);
             }
             
             // Animate the powerup glow with a sine wave pattern

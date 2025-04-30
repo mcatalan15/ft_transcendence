@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:43:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:26:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@ import { PongGame } from "../engine/Game";
 import { EnlargePowerup } from "../entities/powerups/EnlargePowerup";
 import { ShrinkPowerDown } from "../entities/powerups/ShrinkPowerDown";
 import { CurveBallPowerup } from "../entities/powerups/CurveBallPowerup";
+import { MultiplyBallPowerup } from "../entities/powerups/MultiplyBallPowerup";
+import { BurstBallPowerup } from "../entities/powerups/BurstBallPowerup"
 
 import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";
@@ -40,13 +42,15 @@ export class PowerupSpawner {
 
         switch (spawnIndex) {
             case (0):
-                powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomX, randomY);
+                powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomX, randomY); // Radius of the inscribed triangle
+                //powerup = this.getBallChange(uniqueId, game, randomY, randomX);
                 break;
             case (1):
-                powerup = new CurveBallPowerup(uniqueId, 'ballChange', game, randomX, randomY);
+                powerup = new ShrinkPowerDown(uniqueId, 'powerdown', game, randomX, randomY);
+                //powerup = this.getBallChange(uniqueId, game, randomY, randomX);
                 break;
             default:
-                powerup = new ShrinkPowerDown(uniqueId, 'powerdown', game, randomX, randomY);
+                powerup = this.getBallChange(uniqueId, game, randomY, randomX);
                 break;
         }
     
@@ -58,7 +62,6 @@ export class PowerupSpawner {
         render.graphic.x = physics.x;
         render.graphic.y = physics.y;
     
-        //game.renderLayers.powerup.addChild(render.graphic);
         console.log(powerup.layer);
         if (powerup.layer === 'powerup') {
             game.renderLayers.powerup.addChild(render.graphic);
@@ -67,5 +70,24 @@ export class PowerupSpawner {
         } else if (powerup.layer === 'ballChange') {
             game.renderLayers.ballChange.addChild(render.graphic);
         }
+    }
+
+    static getBallChange(uniqueId: string, game: PongGame, randomX: number, randomY: number) {
+        let idx = Math.floor(Math.random() * 3);
+
+        let powerup;
+
+        switch(idx) {
+            case(0):
+                powerup = new CurveBallPowerup(uniqueId, 'ballChange', game, randomY, randomX);
+                break;
+            case(1):
+                powerup =  new MultiplyBallPowerup(uniqueId, 'ballChange', game, randomY, randomX);
+                break;
+            default:
+                powerup = new BurstBallPowerup(uniqueId, 'ballChange', game, randomY, randomX);
+                break;
+        };
+        return (powerup);
     }
 }

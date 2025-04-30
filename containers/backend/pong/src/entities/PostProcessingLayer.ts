@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:48:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:42:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,10 +156,10 @@ export class PostProcessingLayer extends Entity {
             red: {x: 0.5, y: 0.5},
             direction: 0,
             fillMode: 1,
-            offset : 100,
+            offset : 2,
             sampleSize: 512,
             seed: 0,
-            slices: 5,
+            slices: 200,
         });
 
         const powerupMotionBlur = new MotionBlurFilter({
@@ -177,11 +177,12 @@ export class PostProcessingLayer extends Entity {
             rgbSpilt: rgbSplit,
             powerupGlow: powerupGlow,
             powerupCRT: powerupCRT,
+            powerupGlitch: powerupGlitch,
         }));
 
         //Apply filters to the powerup layer0
         game.powerupLayer.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
-        game.powerdownLayer.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur];
+        game.powerdownLayer.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur, powerupGlitch];
         game.ballChangeLayer.filters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow, powerupMotionBlur];
 
         // Create RenderTexture for background

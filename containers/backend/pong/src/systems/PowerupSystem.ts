@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:46:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:22:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,19 +102,34 @@ export class PowerupSystem implements System {
 			const event = this.game.eventQueue.shift();
 			if (!event)
 				break;
-			switch (event.type) {
-				case ('enlargePaddle'):
+			/*switch (event.type) {
+				case ('enlargePowerup'):
 					this.triggerEnlargePaddle(event);
 					break;
-				case ('shrinkPaddle'):
+				case ('shrinkPowerdown'):
 					this.triggerShrinkPaddle(event);
 					break;
 				case ('spawnCurveBall'):
 					this.changeToCurveBall(event);
 					break;
+				case ('spawnMultiplyBall'):
+					this.changeToMultiplyBall(event);
+					break;
+				case ('spawnBurstBall'):
+					this.changeToBurstBall(event);
+					break;
 				default:
 					unhandledEvents.push(event);
 					break;
+			}*/
+			if (event.type.endsWith("Ball")) {
+				this.changeBall(event);
+			} else if (event.type.endsWith("Powerup")) {
+				this.triggerPowerup(event);
+			} else if (event.type.endsWith("Powerdown")) {
+				this.triggerPowerdown(event);
+			} else {
+				unhandledEvents.push(event);
 			}
 		}
 
@@ -126,7 +141,39 @@ export class PowerupSystem implements System {
 		}
 	}
 
+	changeBall(event: GameEvent) {
+		switch (event.type) {
+			case ('spawnCurveBall'):
+				this.changeToCurveBall(event);
+				break;
+			case ('spawnMultiplyBall'):
+				this.changeToMultiplyBall(event);
+				break;
+			case ('spawnBurstBall'):
+				this.changeToBurstBall(event);
+				break;
+		}
+	}
+
+	triggerPowerup(event: GameEvent) {
+		switch (event.type) {
+			case ('enlargePowerup'):
+				this.triggerEnlargePaddle(event);
+				break;
+		}
+	}
+
+	triggerPowerdown(event: GameEvent) {
+		switch (event.type) {
+			case ('shrinkPowerdown'):
+				this.triggerShrinkPaddle(event);
+				break;
+		}
+	}
+
 	triggerEnlargePaddle(event: GameEvent) {
+		this.game.sounds.powerup.play();
+		
 		if (event.entitiesMap) {
 			let ball, powerupComp;
 
@@ -152,6 +199,8 @@ export class PowerupSystem implements System {
 	}
 
 	triggerShrinkPaddle(event: GameEvent) {
+		this.game.sounds.powerdown.play();
+
 		if (event.entitiesMap) {
 			let ball, powerupComp;
 
@@ -177,6 +226,8 @@ export class PowerupSystem implements System {
 	}
 
 	changeToCurveBall(event: GameEvent) {
+		this.game.sounds.ballchange.play();
+
 		if (event.entitiesMap) {
 			for (const entity of event.entitiesMap.values()) {
 				if (isBall(entity)) {
@@ -185,7 +236,41 @@ export class PowerupSystem implements System {
 					this.game.removeEntity(entity.id);
 	
 					BallSpawner.spawnCurveBallAt(this.game, physics);
-					break; // Only replace one ball
+					break;
+				}
+			}
+		}
+	}
+
+	changeToMultiplyBall(event: GameEvent) {
+		this.game.sounds.ballchange.play();
+
+		if (event.entitiesMap) {
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					const physics = entity.getComponent('physics') as PhysicsComponent;
+	
+					this.game.removeEntity(entity.id);
+	
+					BallSpawner.spawnMultiplyBallsAt(this.game, physics);
+					break;
+				}
+			}
+		}
+	}
+
+	changeToBurstBall(event: GameEvent) {
+		this.game.sounds.ballchange.play();
+
+		if (event.entitiesMap) {
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					const physics = entity.getComponent('physics') as PhysicsComponent;
+	
+					this.game.removeEntity(entity.id);
+	
+					BallSpawner.spawnBurstBallAt(this.game, physics);
+					break;
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 09:10:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:14:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,13 @@ export class CurveBallPowerup extends Powerup {
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke(0xFFFBEB);
+        ornament.stroke({ color: 0xFFFBEB, width: 1.2 });
         container.addChild(ornament);
+
+        const innerSign = new Graphics();
+        innerSign.ellipse(0, 0, 8.5, 4);
+        innerSign.fill(0x171717);
+        container.addChild(innerSign);
 
         return container;
     }

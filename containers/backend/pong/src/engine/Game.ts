@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:47:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:54:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,14 @@ export class PongGame {
 			}),
 			powerup: new Howl({ 
 				src: ['src/assets/sfx/powerup.wav'],
+				preload: true 
+			}),
+			powerdown: new Howl({ 
+				src: ['src/assets/sfx/powerdown.wav'],
+				preload: true 
+			}),
+			ballchange: new Howl({ 
+				src: ['src/assets/sfx/ballchange.wav'],
 				preload: true 
 			}),
 			death: new Howl({ 

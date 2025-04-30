@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 11:32:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 15:17:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 11:19:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ import { PhysicsComponent } from '../../components/PhysicsComponent';
 import { RenderComponent } from '../../components/RenderComponent';
 
 export class CurveBall extends Ball {
-	constructor(id: string, layer: string, x: number, y: number) {
-		super(id, layer, x, y);
+	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {
+		super(id, layer, x, y, isGoodBall);
 	}
 
 	createBallGraphic(): Graphics {

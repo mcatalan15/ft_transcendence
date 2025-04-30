@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:12:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:55:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ export class Paddle extends Entity {
 
     setUpPaddleKeys(isLeftPaddle: boolean): { up: string[], down: string[] } {
         if (isLeftPaddle) {
-            return { up: ['w'], down: ['s'] };
+            return { up: ['w', 'W'], down: ['s', 'S'] };
         }
         return { up: ['ArrowUp'], down: ['ArrowDown'] };
     }

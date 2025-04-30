@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   DefaultBall.ts                                     :+:      :+:    :+:   */
+/*   MultiplyBall.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 11:19:09 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/04/30 10:08:52 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/04/30 11:18:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,23 @@ import { Ball } from './Ball'
 
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 
-export class DefaultBall extends Ball {
+import { WORLD_COLORS } from '../../utils/Types';
+
+
+export class MultiplyBall extends Ball {
+	flashColor: number;
+	
 	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {
 		super(id, layer, x, y, isGoodBall);
+
+		this.flashColor = WORLD_COLORS.forest;
 	}
 
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
-		ballGraphic.circle(10, 10, 10);
+		ballGraphic.circle(5, 5, 5);
 		ballGraphic.fill(0xFFFFFF);
-		ballGraphic.pivot.set(10, 10);
+		ballGraphic.pivot.set(2.5, 2.5);
 		return ballGraphic;
 	}
 
@@ -38,8 +45,8 @@ export class DefaultBall extends Ball {
 		const data = {
 			x: x,
 			y: y,
-			width: 20,
-			height: 20,
+			width: 10,
+			height: 10,
 			velocityX: velocityX,
 			velocityY: velocityY,
 			isStatic: false,
