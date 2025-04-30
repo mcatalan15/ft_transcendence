@@ -1,6 +1,6 @@
 FROM nginx:stable-alpine
 
-RUN apk add --no-cache nano certbot certbot-nginx iputils
+RUN apk add --no-cache nano openssl certbot certbot-nginx iputils
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/init-certs.sh .
