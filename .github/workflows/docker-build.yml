@@ -39,6 +39,7 @@ jobs:
         docker ps --format "{{.Names}}" | grep adminer
         docker ps --format "{{.Names}}" | grep grafana
         docker ps --format "{{.Names}}" | grep prometheus
+        docker ps --format "{{.Names}}" | grep blockchain
         
     - name: Clean up containers
       if: always()
