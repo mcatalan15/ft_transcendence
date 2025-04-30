@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 14:40:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:02:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,22 @@ export interface DepthLineBehavior {
 
 export type FrameData = {
 	deltaTime: number;
+};
+
+type PhysicsBehaviour = 'bounce' | 'block' | 'trigger' | 'none';
+
+export type PhysicsData = {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	velocityX: number;
+	velocityY: number;
+	isStatic: boolean;
+	behaviour: PhysicsBehaviour;
+	restitution: number;
+	mass: number;
+	speed: number;
 };
 
 export type TextData = {

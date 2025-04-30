@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 16:04:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:06:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { AnimationOptions, GameEvent } from '../../utils/Types.js';
+import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
 
 export class EnlargePowerup extends Powerup {
     game: PongGame;
@@ -30,13 +30,6 @@ export class EnlargePowerup extends Powerup {
         });
 
         this.game = game;
-    }
-
-    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
-        if (entitiesMap) {
-            this.event.entitiesMap = entitiesMap;
-        }
-        this.game.eventQueue.push(this.event);
     }
 
     createPowerupGraphic(): Container {
@@ -53,5 +46,28 @@ export class EnlargePowerup extends Powerup {
         container.addChild(ornament);
 
         return container;
+    }
+
+    initPowerupPhysicsData(x: number, y: number): PhysicsData {
+        return {
+            x,
+            y,
+            width: 30,
+            height: 30,
+            velocityX: 0,
+            velocityY: 0,
+            isStatic: true,
+            behaviour: 'trigger' as const,
+            restitution: 1.0,
+            mass: 0,
+            speed: 0,
+        };
+    }
+
+    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
+        if (entitiesMap) {
+            this.event.entitiesMap = entitiesMap;
+        }
+        this.game.eventQueue.push(this.event);
     }
 }

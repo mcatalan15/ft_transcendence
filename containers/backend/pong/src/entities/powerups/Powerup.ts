@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 16:03:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/04/30 09:04:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ import { AnimationComponent } from '../../components/AnimationComponent';
 import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { PowerupComponent } from '../../components/PowerupComponent';
 
-import { AnimationOptions, GameEvent } from '../../utils/Types.js';
+import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
 
 export type AffectationType = 'powerUp' | 'powerDown' | 'ballChange';
 
@@ -70,8 +70,9 @@ export abstract class Powerup extends Entity {
 
     abstract createPowerupGraphic(): Container;
     abstract sendPowerupEvent(entitiesMap: Map<string, Entity>): void;
+    abstract initPowerupPhysicsData(x: number, y: number): PhysicsData;
 
-    protected initPowerupPhysicsData(x: number, y: number) {
+    /*protected initPowerupPhysicsData(x: number, y: number) {
         return {
             x,
             y,
@@ -85,7 +86,7 @@ export abstract class Powerup extends Entity {
             mass: 0,
             speed: 0,
         };
-    }
+    }*/
 
     protected defineAnimationOptions(physics: PhysicsComponent): AnimationOptions {
         return {
