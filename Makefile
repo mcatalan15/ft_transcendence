@@ -6,9 +6,15 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/04/02 14:44:32 by nponchon         ###   ########.fr        #
+#    Updated: 2025/04/30 11:30:24 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+dev:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
+
+prod:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
 
 up:
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml up -d --build
@@ -42,8 +48,5 @@ fclean:
 	docker network prune -f
 	docker image prune -a -f
 
-certs:
-	docker exec -it nginx certbot --nginx -d mrlouf.studio -d www.mrlouf.studio
-
 .PHONY:
-	up down re stop clean fclean certs backend
+	up down re stop clean fclean backend dev prod
