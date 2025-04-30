@@ -98,6 +98,25 @@ services:
     networks:
       - transcendence
 
+#                       BLOCKCHAIN                      #
+
+  blockchain:
+    build: ./blockchain
+    container_name: blockchain
+    ports:
+      - "3002:3002"
+    environment:
+      AVALANCHE_RPC_URL: "https://api.avax-test.network/ext/bc/C/rpc"
+      PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY}  # Will be loaded from .env
+      FASTIFY_PORT: 3002
+      FASTIFY_ADDRESS: "127.0.0.1"
+    volumes:
+      - ./blockchain:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always 
+    networks:
+      - transcendence
+
 #########################################################
 #                       MONITORING                      #
 #########################################################
@@ -127,19 +146,3 @@ services:
     networks:
       - transcendence
 
-  blockchain:
-    build: ./blockchain
-    container_name: blockchain
-    ports:
-      - "3002:3002"
-    environment:
-      AVALANCHE_RPC_URL: "https://api.avax-test.network/ext/bc/C/rpc"
-      PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY}  # Will be loaded from .env
-      FASTIFY_PORT: 3002
-      FASTIFY_ADDRESS: "0.0.0.0"
-    volumes:
-      - ./blockchain:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: unless-stopped
-    networks:
-      - transcendence
