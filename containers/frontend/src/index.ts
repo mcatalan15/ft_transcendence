@@ -22,6 +22,7 @@ function router(path: string): void {
 
   if (!app) return;
 
+  //TODO destroy game when leaving /pong
   if (path !== '/pong' && currentGame) {
     currentGame.destroy();
     currentGame = null;
