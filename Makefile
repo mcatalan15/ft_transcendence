@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/04/30 15:33:43 by nponchon         ###   ########.fr        #
+#    Updated: 2025/05/01 14:38:20 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,10 +22,12 @@ re:
 	$(MAKE) prod
 
 frontend:
-	$(MAKE) stop
-	docker volume rm containers_public
-	$(MAKE) clean
-	$(MAKE) dev
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build frontend
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d frontend
+#	$(MAKE) stop
+#	docker volume rm containers_public
+#	$(MAKE) clean
+#	$(MAKE) dev
 
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
 	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)

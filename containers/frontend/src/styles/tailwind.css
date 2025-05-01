@@ -77,3 +77,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#game-container {
+	width: 1500px;
+	height: 500px;
+  }

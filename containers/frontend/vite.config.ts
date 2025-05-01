@@ -8,8 +8,13 @@ build: {
 	emptyOutDir: true,
 },
 server: {
+	host: '0.0.0.0',
 	port: 5173,
 	open: true,
+	strictPort: true,
+	watch: {
+	  usePolling: true, // this helps with Docker sometimes
+	},
 	hmr: process.env.NODE_ENV === 'development' ? {  // Enable HMR only in dev
 		protocol: 'ws',
 		host: 'localhost',

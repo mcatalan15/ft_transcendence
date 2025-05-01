@@ -1,36 +1,54 @@
-import * as GoogleSignInModule from "./auth/googleSignIn.js";
+import './styles/tailwind.css';
+import { showHome } from './views/home';
+import { showPong } from './views/pong';
+//import { showProfile } from './views/profile';
+import { showLogin } from './views/login';
 
-GoogleSignInModule.initializeGoogleSignIn((credential: string) => {
-      
-    fetch("/api/auth/google", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ credential })
-  })
-    .then(res => res.json())
-    .then(data => {
-    	console.log("Results of Google Sign-In:", data);
+const app = document.getElementById('app') as HTMLElement | null;
 
-    })
-    .catch(err => {
-      console.error("Error signing in with Google:", err);
-    });
-});
-	
-const startGameBtn = document.getElementById("start-game") as HTMLButtonElement;
+if (!app)
+	throw new Error('App container not found');
 
-startGameBtn?.addEventListener("click", async () => {
-  try {
-    console.log("Loading Pong...");
-    // Importation dynamique du fichier de jeu (pong.js)
-    await import("./pong/pong.js");
+function navigate(path: string): void {
+  history.pushState({}, '', path);
+  router(path);
+}
 
-	startGameBtn.style.display = "none";
-	
-    // Ici, vous pouvez ajouter toute logique supplémentaire après l'import du jeu
-  } catch (error) {
-    console.error("Error while importing the game:", error);
+window.navigate = navigate;
+
+let currentGame: PongGame | null = null;
+
+function router(path: string): void {
+
+  if (!app) return;
+
+  if (path !== '/pong' && currentGame) {
+    currentGame.destroy();
+    currentGame = null;
+	console.log('Current game destroyed');
   }
+
+  app.innerHTML = '';
+
+  switch (path) {
+    case '/':
+      showHome(app);
+      break;
+	case '/login':
+		showLogin(app);
+		break;
+    case '/pong':
+      showPong(app);
+      break;
+    default:
+      app.innerHTML = `<h2>Page not found</h2>
+	  <button onclick="navigate('/')">Back home</button>
+	  `;
+  }
+}
+
+window.addEventListener('popstate', () => {
+  router(window.location.pathname);
 });
+
+router(window.location.pathname);

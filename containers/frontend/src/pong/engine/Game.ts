@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/28 10:45:44 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/01 16:21:52 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,41 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.ui);
 	}
 
+	destroy() {
+
+		this.entities.forEach(entity => {
+			const render = entity.getComponent('render') as RenderComponent;
+			if (render?.graphic) {
+				render.graphic.destroy();
+			}
+	
+			const text = entity.getComponent('text') as TextComponent;
+			if (text) {
+				const renderable = text.getRenderable();
+				if (renderable) renderable.destroy();
+			}
+		});
+		this.entities = [];
+		Object.values(this.renderLayers).forEach(layer => {
+			layer.removeChildren();
+		});
+		Object.values(this.renderLayers).forEach(layer => {
+			layer.destroy({ children: true });
+		});
+		this.app.ticker.stop();
+		this.systems.forEach(system => {
+			if (system.destroy) system.destroy();
+		});
+		Object.values(this.sounds).forEach((sound) => {
+			sound.stop();
+			sound.unload();
+		});
+		this.app.stage.removeChildren();
+		this.app.destroy(true, { children: true, texture: true, baseTexture: true });
+
+		console.log("Game destroyed.");
+	  }
+
 	async init(): Promise<void> {
 		console.log("Initializing PongGame...");
 		
@@ -129,7 +164,7 @@ export class PongGame {
 		console.log('All Systems initialiazed');
 
 		this.initSounds();
-		console.log('Sounds lodaded');
+		console.log('Sounds loaded');
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
