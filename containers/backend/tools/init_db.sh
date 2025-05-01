@@ -24,7 +24,7 @@ if [ ! -f "$DB_PATH" ]; then
         email TEXT UNIQUE NOT NULL,
         password TEXT,
         provider TEXT NOT NULL DEFAULT 'local',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         avatar TEXT,
         alias TEXT
     );
