@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BurstBallPowerup.ts                                :+:      :+:    :+:   */
+/*   SpinBallPowerup.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 17:50:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 11:54:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ import { Powerup } from './Powerup.js';
 
 import { PhysicsData, GameEvent } from '../../utils/Types.js';
 
-export class BurstBallPowerup extends Powerup {
+export class SpinBallPowerup extends Powerup {
     game: PongGame;
 
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'spawnBurstBall',
+            effect: 'spinBurstBall',
             affectation: 'ballChange',
-            event: {type:'spawnBurstBall'},
+            event: {type:'spawnSpinBall'},
         });
 
         this.game = game;
@@ -47,17 +47,31 @@ export class BurstBallPowerup extends Powerup {
 
         const innerSign = new Graphics();
 
-        const r = 7;
-        const points = [
-            { x: 0, y: -r },
-            { x: r * Math.sin(Math.PI / 3), y: r * Math.cos(Math.PI / 3) },
-            { x: -r * Math.sin(Math.PI / 3), y: r * Math.cos(Math.PI / 3) },
-        ];
-        
-        innerSign.poly(points, true);
+        innerSign.rect(-6.5, -6.5, 13, 13);
         innerSign.fill(0x171717);
-        innerSign.pivot.set(0, 0);
-        innerSign.angle = +30;
+        innerSign.angle = 45;
+        
+        innerSign.moveTo(4.5, 0);
+        innerSign.arc(0, 0, 4, 0, 1.75 * Math.PI, false);
+        innerSign.stroke({ color: 0xFFFBEB, width: 1.5 });
+        
+        const angle = 1.75 * Math.PI;
+        const arrowX = Math.cos(angle) * 5;
+        const arrowY = Math.sin(angle) * 5;
+        const tipSize = 2;
+        
+        innerSign.moveTo(arrowX, arrowY);
+        innerSign.lineTo(
+            arrowX + Math.cos(angle - Math.PI / 2) * tipSize,
+            arrowY + Math.sin(angle - Math.PI / 2) * tipSize
+        );
+        innerSign.lineTo(
+            arrowX + Math.cos(angle + Math.PI / 2) * tipSize,
+            arrowY + Math.sin(angle + Math.PI / 2) * tipSize
+        );
+        innerSign.closePath();
+        innerSign.fill(0xFFFBEB);
+        
         container.addChild(innerSign);
 
         return container;

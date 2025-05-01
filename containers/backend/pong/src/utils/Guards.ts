@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 12:42:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 11:13:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,18 @@ import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
 import { Powerup } from '../entities/powerups/Powerup'
 
+import { SpinBall } from '../entities/balls/SpinBall';
+
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;
 }
 
 export function isBall(entity: Entity): entity is Ball {
 	return entity instanceof Ball;
+}
+
+export function isSpinBall(entity: Entity): entity is SpinBall {
+	return entity instanceof SpinBall;
 }
 
 export function isWall(entity: Entity): entity is Wall {

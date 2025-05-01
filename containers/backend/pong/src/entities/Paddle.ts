@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 14:55:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 18:16:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,16 @@ export class Paddle extends Entity {
     name: string;
     isEnlarged: boolean;
     wasEnlarged: boolean;
-    enlargeTimer: number;
+    affectedTimer: number;
 	enlargeProgress: number;
     isShrinked: boolean;
     wasShrinked: boolean;
-    shrinkTimer: number;
     shrinkProgress: number;
+    isInverted: boolean;
+    inversion: number;
+    isSlowed: boolean;
+    slowness: number;
+    isFlat: boolean;
     baseWidth: number;
     originalWidth: number;
     baseHeight: number;
@@ -43,19 +47,27 @@ export class Paddle extends Entity {
         this.game = game;
         this.name = name;
         
+        this.affectedTimer = 0;
+
         this.isEnlarged = false;
         this.wasEnlarged = false;
-        this.enlargeTimer = 0;
 		this.enlargeProgress = 0;
 
         this.isShrinked = false;
         this.wasShrinked = false;
-        this.shrinkTimer = 0;
 		this.shrinkProgress = 0;
 
         this.overshootTarget = 0;
         this.overshootPhase = '';
         this.targetHeight = 0;
+
+        this.isInverted = false;
+        this.inversion = 1;
+
+        this.isSlowed = false;
+        this.slowness = 1;
+
+        this.isFlat = false;
         
         // These will be initialized in the code below
         this.baseWidth = 0;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 17:48:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 15:45:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ export class PostProcessingSystem implements System {
                 options.powerupGlitch.seed = Math.random();
             
                 // Occasionally spike offset for a burst effect
-                options.powerupGlitch.offset = 2 + Math.sin(t * 10);
+                options.powerupGlitch.offset = 1 + Math.sin(t * 10);
             
                 // Rotate the glitch direction slowly
                 options.powerupGlitch.direction = Math.sin(t * 0.5) * Math.PI / 2;

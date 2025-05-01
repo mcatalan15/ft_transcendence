@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 17:22:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 18:20:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,19 +78,22 @@ export class PowerupSystem implements System {
 
 			// Restore powerup effects
 			if (isPaddle(entity)) {
-				if (entity.isEnlarged) {
-					entity.enlargeTimer -= delta.deltaTime;
+				if (entity.isEnlarged || entity.isShrinked || entity.isInverted || entity.isSlowed || entity.isFlat ) {
+					entity.affectedTimer -= delta.deltaTime;
 				}
 
-				if (entity.isShrinked) {
-					console.log(entity.shrinkTimer);
-					entity.shrinkTimer -= delta.deltaTime;
-				}
-
-				if ((entity.isEnlarged && entity.enlargeTimer <= 0) || (entity.isShrinked && entity.shrinkTimer <= 0)) {
+				if ((entity.isEnlarged || entity.isShrinked) && entity.affectedTimer <= 0) {
 					console.log('Resetting paddle height');
 					this.game.sounds.paddleReset.play();
 					entity.resetPaddleSize(entity);
+				} else if (entity.isInverted && entity.affectedTimer <= 0) {
+					entity.inversion = 1;
+					entity.isInverted = false;
+				} else if (entity.isSlowed && entity.affectedTimer <= 0) {
+					entity.slowness = 1;
+					entity.isSlowed = false;
+				} else if (entity.isFlat && entity.affectedTimer <= 0) {
+					entity.isFlat = false;
 				}
 			}
 		}
@@ -102,26 +105,7 @@ export class PowerupSystem implements System {
 			const event = this.game.eventQueue.shift();
 			if (!event)
 				break;
-			/*switch (event.type) {
-				case ('enlargePowerup'):
-					this.triggerEnlargePaddle(event);
-					break;
-				case ('shrinkPowerdown'):
-					this.triggerShrinkPaddle(event);
-					break;
-				case ('spawnCurveBall'):
-					this.changeToCurveBall(event);
-					break;
-				case ('spawnMultiplyBall'):
-					this.changeToMultiplyBall(event);
-					break;
-				case ('spawnBurstBall'):
-					this.changeToBurstBall(event);
-					break;
-				default:
-					unhandledEvents.push(event);
-					break;
-			}*/
+			
 			if (event.type.endsWith("Ball")) {
 				this.changeBall(event);
 			} else if (event.type.endsWith("Powerup")) {
@@ -152,6 +136,9 @@ export class PowerupSystem implements System {
 			case ('spawnBurstBall'):
 				this.changeToBurstBall(event);
 				break;
+			case ('spawnSpinBall'):
+				this.changeToSpinBall(event);
+				break;
 		}
 	}
 
@@ -167,6 +154,15 @@ export class PowerupSystem implements System {
 		switch (event.type) {
 			case ('shrinkPowerdown'):
 				this.triggerShrinkPaddle(event);
+				break;
+			case ('invertPowerdown'):
+				this.triggerInvertPaddle(event);
+				break;
+			case ('slowPowerdown'):
+				this.triggerSlowPaddle(event);
+				break;
+			case ('flatPowerdown'):
+				this.triggerFlatPaddle(event);
 				break;
 		}
 	}
@@ -225,6 +221,87 @@ export class PowerupSystem implements System {
 		}
 	}
 
+	triggerInvertPaddle(event: GameEvent) {
+		this.game.sounds.powerdown.play();
+
+		if (event.entitiesMap) {
+			let ball, powerupComp;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+				if (isPowerup(entity)) {
+					powerupComp = entity.getComponent('powerup') as PowerupComponent;
+				}
+
+				if (ball && powerupComp) {
+					if (ball.lastHit === 'left'){  
+						const paddleL = event.entitiesMap.get('paddleL') as Paddle;
+						powerupComp.invertPaddle(paddleL);
+					} else if (ball.lastHit === 'right') {
+						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
+						powerupComp.invertPaddle(paddleR);
+					}
+				}
+			}
+		}
+	}
+
+	triggerSlowPaddle(event: GameEvent) {
+		this.game.sounds.powerdown.play();
+
+		if (event.entitiesMap) {
+			let ball, powerupComp;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+				if (isPowerup(entity)) {
+					powerupComp = entity.getComponent('powerup') as PowerupComponent;
+				}
+
+				if (ball && powerupComp) {
+					if (ball.lastHit === 'left'){  
+						const paddleL = event.entitiesMap.get('paddleL') as Paddle;
+						powerupComp.slowPaddle(paddleL);
+					} else if (ball.lastHit === 'right') {
+						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
+						powerupComp.slowPaddle(paddleR);
+					}
+				}
+			}
+		}
+	}
+
+	triggerFlatPaddle(event: GameEvent) {
+		this.game.sounds.powerdown.play();
+
+		if (event.entitiesMap) {
+			let ball, powerupComp;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+				if (isPowerup(entity)) {
+					powerupComp = entity.getComponent('powerup') as PowerupComponent;
+				}
+
+				if (ball && powerupComp) {
+					if (ball.lastHit === 'left'){  
+						const paddleL = event.entitiesMap.get('paddleL') as Paddle;
+						powerupComp.flatPaddle(paddleL);
+					} else if (ball.lastHit === 'right') {
+						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
+						powerupComp.flatPaddle(paddleR);
+					}
+				}
+			}
+		}
+	}
+
 	changeToCurveBall(event: GameEvent) {
 		this.game.sounds.ballchange.play();
 
@@ -270,6 +347,23 @@ export class PowerupSystem implements System {
 					this.game.removeEntity(entity.id);
 	
 					BallSpawner.spawnBurstBallAt(this.game, physics);
+					break;
+				}
+			}
+		}
+	}
+
+	changeToSpinBall(event: GameEvent) {
+		this.game.sounds.ballchange.play();
+
+		if (event.entitiesMap) {
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					const physics = entity.getComponent('physics') as PhysicsComponent;
+	
+					this.game.removeEntity(entity.id);
+	
+					BallSpawner.spawnSpinBallAt(this.game, physics);
 					break;
 				}
 			}

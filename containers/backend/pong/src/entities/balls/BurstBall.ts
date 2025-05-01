@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 16:53:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 11:52:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ export class BurstBall extends Ball {
 	private state: 'winding' | 'burst' = 'winding';
 	private windupFrames = 30; // wind-up duration in frames
 	private frameCounter = 0;
-	private burstSpeed = 30;
+	private burstSpeed = 25;
 	private windSpeed = 2;
 
 	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {

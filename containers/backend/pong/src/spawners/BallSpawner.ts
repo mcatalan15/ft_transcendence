@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 17:14:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 14:30:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
 import { MultiplyBall } from '../entities/balls/MultiplyBall';
 import { BurstBall } from '../entities/balls/BurstBall';
+import { SpinBall } from '../entities/balls/SpinBall';
 
 import { RenderComponent } from '../components/RenderComponent'
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -28,6 +29,11 @@ export class BallSpawner {
 	static spawnDefaultBall(game: PongGame): void {
 		const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2, true);
 		const ballRender = ball.getComponent('render') as RenderComponent;
+        const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ballRender.graphic.x = ballPhysics.x;
+		ballRender.graphic.y = ballPhysics.y;
+
 		game.renderLayers.foreground.addChild(ballRender.graphic);
 		game.entities.push(ball);
 		console.log("DefaultBall spawned")
@@ -46,6 +52,11 @@ export class BallSpawner {
         physicsComponent.mass = physics.mass;
     
         const ballRender = ball.getComponent('render') as RenderComponent;
+        const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ballRender.graphic.x = ballPhysics.x;
+		ballRender.graphic.y = ballPhysics.y;
+        
         game.renderLayers.foreground.addChild(ballRender.graphic);
         game.entities.push(ball);
     
@@ -76,6 +87,10 @@ export class BallSpawner {
     
             // Add to scene and entity list
             const cloneRender = clone.getComponent('render') as RenderComponent;
+
+            cloneRender.graphic.x = clonePhysics.x;
+		    cloneRender.graphic.y = clonePhysics.y;
+
             game.renderLayers.foreground.addChild(cloneRender.graphic);
             game.entities.push(clone);
             clones.push(clone);
@@ -96,7 +111,6 @@ export class BallSpawner {
     static spawnBurstBallAt(game: PongGame, physics: PhysicsComponent): BurstBall {
         const ball = new BurstBall('burstBall', 'foreground', physics.x, physics.y, true);
     
-        // Override default physics with the passed data
         const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
         physicsComponent.x = physics.x;
         physicsComponent.y = physics.y;
@@ -106,10 +120,39 @@ export class BallSpawner {
         physicsComponent.mass = physics.mass;
     
         const ballRender = ball.getComponent('render') as RenderComponent;
+        const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ballRender.graphic.x = ballPhysics.x;
+		ballRender.graphic.y = ballPhysics.y;
+        
         game.renderLayers.foreground.addChild(ballRender.graphic);
         game.entities.push(ball);
     
         console.log("BurstBall spawned at", physics.x, physics.y);
+        return ball;
+    }
+
+    static spawnSpinBallAt(game: PongGame, physics: PhysicsComponent): SpinBall {
+        const ball = new SpinBall('curveBall', 'foreground', physics.x, physics.y, true);
+    
+        const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
+        physicsComponent.x = physics.x;
+        physicsComponent.y = physics.y;
+        physicsComponent.velocityX = physics.velocityX;
+        physicsComponent.velocityY = physics.velocityY;
+        physicsComponent.restitution = physics.restitution;
+        physicsComponent.mass = physics.mass;
+    
+        const ballRender = ball.getComponent('render') as RenderComponent;
+        const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ballRender.graphic.x = ballPhysics.x;
+		ballRender.graphic.y = ballPhysics.y;
+        
+        game.renderLayers.foreground.addChild(ballRender.graphic);
+        game.entities.push(ball);
+    
+        console.log("CurveBall spawned at", physics.x, physics.y);
         return ball;
     }
 

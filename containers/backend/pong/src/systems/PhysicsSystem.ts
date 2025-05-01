@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 16:28:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/01 18:21:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ import { Ball } from '../entities/balls/Ball'
 import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
 import { BurstBall } from '../entities/balls/BurstBall';
+import { SpinBall } from '../entities/balls/SpinBall';
 
 
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -32,7 +33,7 @@ import { ParticleSpawner } from '../spawners/ParticleSpawner'
 import { BallSpawner } from '../spawners/BallSpawner'
 
 import { createEntitiesMap } from '../utils/Utils';
-import { isPaddle, isBall, isPowerup } from '../utils/Guards';
+import { isPaddle, isBall, isSpinBall, isPowerup } from '../utils/Guards';
 import { BoundingBox } from '../utils/Types';
 
 
@@ -65,18 +66,18 @@ export class PhysicsSystem implements System {
         
         if (!input || !physics) return;
 
-        this.applyInputToPaddle(input, physics);
+        this.applyInputToPaddle(input, physics, paddle);
         
         this.constrainPaddleToWalls(physics, entitiesMap);
 	}
 
-	applyInputToPaddle(input: InputComponent, physics: PhysicsComponent) {
+	applyInputToPaddle(input: InputComponent, physics: PhysicsComponent, paddle: Paddle) {
         const speed = physics.speed || 5;
 
         if (input.upPressed) {
-            physics.velocityY = -speed;
+            physics.velocityY = -speed * paddle.inversion * paddle.slowness;
         } else if (input.downPressed) {
-            physics.velocityY = speed;
+            physics.velocityY = speed * paddle.inversion * paddle.slowness;
         } else {
             physics.velocityY = 0;
         }
@@ -131,6 +132,8 @@ export class PhysicsSystem implements System {
 	}
 
 	handleBallWallCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+		let collided = false;
+		
 		// Top wall collision
 		const wallT = entitiesMap.get('wallT');
 		if (wallT) {
@@ -141,6 +144,7 @@ export class PhysicsSystem implements System {
 			if (ballTop < wallBottom) {
 				physics.y = wallBottom + (physics.height / 2);
 				physics.velocityY *= -1;
+				collided = true;
 			}
 		}
 	
@@ -154,7 +158,13 @@ export class PhysicsSystem implements System {
 			if (ballBottom > wallTop) {
 				physics.y = wallTop - (physics.height / 2);
 				physics.velocityY *= -1;
+				collided = true;
 			}
+		}
+		
+		// Apply spin effect if SpinBall
+		if (isSpinBall(ball) && collided) {
+			(ball as SpinBall).applySpinToBounce(physics);
 		}
 	}
 
@@ -175,7 +185,6 @@ export class PhysicsSystem implements System {
 				vy: physics.velocityY
 			};
 			
-			// Process paddles with swept collision
 			const paddles = [entitiesMap.get("paddleL"), entitiesMap.get("paddleR")];
 			
 			for (const paddle of paddles) {
@@ -198,7 +207,6 @@ export class PhysicsSystem implements System {
 					paddleBox.x, paddleBox.y, paddleBox.width, paddleBox.height, paddleBox.vy
 				);
 				
-				// If collision is detected
 				if (collision.hit && collision.time >= 0 && collision.time <= 1) {
 					this.game.sounds.pong.play();
 					
@@ -246,6 +254,16 @@ export class PhysicsSystem implements System {
 					
 					this.enforceMinimumHorizontalComponent(physics, speed, MIN_HORIZONTAL_COMPONENT);
 					
+					// Apply spin effect for SpinBall
+					if (isSpinBall(ball)) {
+						(ball as SpinBall).applySpinToBounce(physics);
+						if (paddleSide === 'left') {
+							ball.rotationDir = 1;
+						} else if (paddleSide === 'right') {
+							ball.rotationDir = -1;
+						}
+					}
+					
 					ball.lastHit = paddleSide;
 					if (ball instanceof BurstBall) {
 						ball.resetWindup();
@@ -258,6 +276,7 @@ export class PhysicsSystem implements System {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
 							vfx.startFlash(0x5EEAD4, 10); // Green flash for left paddle
 						}
+
 					} else {
 						ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
 						
@@ -265,6 +284,11 @@ export class PhysicsSystem implements System {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
 							vfx.startFlash(0xD946EF, 10); // Purple flash for right paddle
 						}
+					}
+
+					if ((paddle as Paddle).isFlat) {
+						physics.velocityY = 0;
+						physics.velocityX *= 1.2;
 					}
 				}	
 			}
@@ -337,10 +361,11 @@ export class PhysicsSystem implements System {
     
     resetBall(ball: Ball, physics: PhysicsComponent, direction: number) {
         this.game.removeEntity(ball.id);
-		BallSpawner.spawnDefaultBall(this.game);
 		
 		physics.x = this.width / 2;
         physics.y = this.height / 2;
+		
+		BallSpawner.spawnDefaultBall(this.game);
     
         const angle = (Math.random() * 60 - 30) * (Math.PI / 180);
         const speed = 10;
