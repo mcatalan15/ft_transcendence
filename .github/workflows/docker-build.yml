@@ -1,6 +1,7 @@
 name: Docker Compose Build Check
 
 on:
+
     push:
         branches: [main, develop2, marc-develop2, nico-develop2]
     pull_request:
