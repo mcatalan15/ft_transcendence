@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EnlargePowerup.ts                                  :+:      :+:    :+:   */
+/*   ShieldPowerUp.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 15:10:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 13:05:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ import { Powerup } from './Powerup.js';
 
 import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
 
-export class EnlargePowerup extends Powerup {
+export class ShieldPowerup extends Powerup {
     game: PongGame;
 
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'enlargePowerup',
+            effect: 'shieldPowerup',
             affectation: 'powerUp',
-            event: { type: 'enlargePowerup' },
+            event: { type: 'shieldPowerup' },
         });
 
         this.game = game;
@@ -45,36 +45,17 @@ export class EnlargePowerup extends Powerup {
         ornament.stroke({ color: 0xFFFBEB, width: 1.2 });
         container.addChild(ornament);
     
-        const createArrow = (): Graphics => {
-            const arrow = new Graphics();
-            const points = [
-                { x: 0, y: -4 },
-                { x: -3, y: 0 },
-                { x: -1, y: 0 },
-                { x: -1, y: 4 },
-                { x: 1, y: 4 },
-                { x: 1, y: 0 },
-                { x: 3, y: 0 },
-            ];
-            arrow.poly(points, true);
-            arrow.fill(0x171717);
-            return arrow;
-        };
-    
-        const diagonals = [
-            { x: -5, y: -5, rotation: -Math.PI / 4 },
-            { x: 5, y: -5, rotation: Math.PI / 4 },
-            { x: 5, y: 5, rotation: (3 * Math.PI) / 4 },
-            { x: -5, y: 5, rotation: -(3 * Math.PI) / 4 }
-        ];
-    
-        for (const diag of diagonals) {
-            const arrow = createArrow();
-            arrow.position.set(diag.x, diag.y);
-            arrow.rotation = diag.rotation;
-            container.addChild(arrow);
-        }
-    
+        const innerSign = new Graphics();
+        innerSign.moveTo(0, -8);            // Top center
+        innerSign.lineTo(7.5, -6);           // Top-right
+        innerSign.lineTo(5.5, 4);            // Bottom-right curve
+        innerSign.lineTo(0, 8);            // Bottom tip
+        innerSign.lineTo(-5.5, 4);           // Bottom-left curve
+        innerSign.lineTo(-7.5, -6);          // Top-left
+        innerSign.closePath();
+        innerSign.fill(0x171717);
+        container.addChild(innerSign);
+        
         return container;
     }
 

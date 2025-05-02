@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 11:52:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:32:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ export class BurstBall extends Ball {
 			mass: 1,
 			collisionShape: 'triangle' as const,
 		};
+		
 		return data;
 	}
 

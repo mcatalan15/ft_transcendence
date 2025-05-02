@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 18:13:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:09:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,6 @@ export class AnimationSystem implements System {
 						}
 					}
 				} else if (isPowerup(entity)) {
-					// ANIMATE POWERUP HERE
 					const render = entity.getComponent('render') as RenderComponent;
 					const animation = entity.getComponent('animation') as AnimationComponent;
 					const physics = entity.getComponent('physics') as PhysicsComponent;

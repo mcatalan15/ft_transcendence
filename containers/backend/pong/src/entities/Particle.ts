@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 12:50:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:27:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ export class Particle extends Entity {
 			behaviour: 'none' as const,
 			restitution: 1.0,
 			mass: 1,
+			speed: 0,
 		});
 		this.addComponent(physics);
 

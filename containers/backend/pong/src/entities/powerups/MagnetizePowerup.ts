@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EnlargePowerup.ts                                  :+:      :+:    :+:   */
+/*   MagnetizePowerUp.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 15:10:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 15:32:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ import { Powerup } from './Powerup.js';
 
 import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
 
-export class EnlargePowerup extends Powerup {
+export class MagnetizePowerup extends Powerup {
     game: PongGame;
 
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'enlargePowerup',
+            effect: 'MagnetizePowerup',
             affectation: 'powerUp',
-            event: { type: 'enlargePowerup' },
+            event: { type: 'MagnetizePowerup' },
         });
 
         this.game = game;
@@ -45,36 +45,29 @@ export class EnlargePowerup extends Powerup {
         ornament.stroke({ color: 0xFFFBEB, width: 1.2 });
         container.addChild(ornament);
     
-        const createArrow = (): Graphics => {
-            const arrow = new Graphics();
-            const points = [
-                { x: 0, y: -4 },
-                { x: -3, y: 0 },
-                { x: -1, y: 0 },
-                { x: -1, y: 4 },
-                { x: 1, y: 4 },
-                { x: 1, y: 0 },
-                { x: 3, y: 0 },
-            ];
-            arrow.poly(points, true);
-            arrow.fill(0x171717);
-            return arrow;
-        };
-    
-        const diagonals = [
-            { x: -5, y: -5, rotation: -Math.PI / 4 },
-            { x: 5, y: -5, rotation: Math.PI / 4 },
-            { x: 5, y: 5, rotation: (3 * Math.PI) / 4 },
-            { x: -5, y: 5, rotation: -(3 * Math.PI) / 4 }
-        ];
-    
-        for (const diag of diagonals) {
-            const arrow = createArrow();
-            arrow.position.set(diag.x, diag.y);
-            arrow.rotation = diag.rotation;
-            container.addChild(arrow);
-        }
-    
+        const magnet = new Graphics();
+        magnet.moveTo(-5, -5);
+        magnet.arc(0, -5, 5, Math.PI, 0, false); // Top half-circle
+        magnet.lineTo(5, -1);
+        magnet.moveTo(-5, -5);
+        magnet.lineTo(-5, -1);
+        magnet.stroke({width: 3, color: 0x171717});
+        magnet.y = 3;
+        magnet.x = 0;
+        container.addChild(magnet);
+
+        // Left tip (black block)
+        const leftTip = new Graphics();
+        leftTip.rect(-6.5, 4, 3, 4);
+        leftTip.fill(0x171717);
+        container.addChild(leftTip);
+
+        // Right tip (white with black stroke)
+        const rightTip = new Graphics();
+        rightTip.rect(3.5, 4, 3, 4);
+        rightTip.fill(0x171717);
+        container.addChild(rightTip);
+        
         return container;
     }
 

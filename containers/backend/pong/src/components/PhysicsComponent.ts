@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 14:55:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:27:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ export class PhysicsComponent implements Component {
 	behaviour: PhysicsBehaviour;
 	restitution: number;
 	mass: number;
-	speed: number;
+	speed?: number;
 
 	constructor(physicsData: PhysicsData){
 		this.x = physicsData.x;

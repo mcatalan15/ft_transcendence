@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 18:25:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 12:25:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,11 +184,5 @@ export class PostProcessingLayer extends Entity {
         game.powerupLayer.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
         game.powerdownLayer.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur, powerupGlitch];
         game.ballChangeLayer.filters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow, powerupMotionBlur];
-
-        // Create RenderTexture for background
-        const rt = RenderTexture.create({ width: game.app.screen.width, height: game.app.screen.height });
-        const backgroundSprite = new Sprite(rt);
-        backgroundSprite.filters = [glow];
-        game.app.stage.addChild(backgroundSprite);
     }
 }

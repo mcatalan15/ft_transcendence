@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:58:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 12:33:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ export class Wall extends Entity {
             behaviour: 'block' as const,
             restitution: 1.0,
             mass: 100,
+            speed: 0,
         };
         
         return data;

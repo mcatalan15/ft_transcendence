@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 18:16:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:53:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ export class Paddle extends Entity {
     isSlowed: boolean;
     slowness: number;
     isFlat: boolean;
+    isMagnetized: boolean;
+    isStunned: boolean;
     baseWidth: number;
     originalWidth: number;
     baseHeight: number;
@@ -68,6 +70,8 @@ export class Paddle extends Entity {
         this.slowness = 1;
 
         this.isFlat = false;
+        this.isMagnetized = false;
+        this.isStunned = false;
         
         // These will be initialized in the code below
         this.baseWidth = 0;

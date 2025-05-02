@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:35:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 18:17:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:52:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,16 @@ export class PowerupComponent {
         }
 
         paddle.isFlat = true;
+        paddle.affectedTimer = 500;
+    }
+
+    magnetizePaddle(paddle: Paddle): void {
+        if (paddle.isMagnetized) {
+            paddle.affectedTimer = 500;
+            return ;
+        }
+
+        paddle.isMagnetized = true;
         paddle.affectedTimer = 500;
     }
 }

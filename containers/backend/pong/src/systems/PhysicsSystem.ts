@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 18:21:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 19:04:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
 import { BurstBall } from '../entities/balls/BurstBall';
 import { SpinBall } from '../entities/balls/SpinBall';
-
+import { Shield } from '../entities/background/Shield';
+import { Bullet } from '../entities/Bullet';
 
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
@@ -31,9 +32,10 @@ import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { ParticleSpawner } from '../spawners/ParticleSpawner'
 import { BallSpawner } from '../spawners/BallSpawner'
+import { PowerupSpawner } from '../spawners/PowerupSpawner';
 
 import { createEntitiesMap } from '../utils/Utils';
-import { isPaddle, isBall, isSpinBall, isPowerup } from '../utils/Guards';
+import { isPaddle, isBall, isSpinBall, isPowerup, isBullet } from '../utils/Guards';
 import { BoundingBox } from '../utils/Types';
 
 
@@ -56,6 +58,8 @@ export class PhysicsSystem implements System {
 				this.updatePaddle(entity, entitiesMap);
 			} else if (isBall(entity)) {
 				this.updateBall(entity, entities, entitiesMap);
+			} else if (isBullet(entity)) {
+				this.updateBullet(entity, entities, entitiesMap);
 			}
 		}
 	}
@@ -72,7 +76,7 @@ export class PhysicsSystem implements System {
 	}
 
 	applyInputToPaddle(input: InputComponent, physics: PhysicsComponent, paddle: Paddle) {
-        const speed = physics.speed || 5;
+        const speed = paddle.isStunned? 0 : physics.speed || 5;
 
         if (input.upPressed) {
             physics.velocityY = -speed * paddle.inversion * paddle.slowness;
@@ -120,10 +124,17 @@ export class PhysicsSystem implements System {
 		if (!physics || !vfx) return;
 
 		// Move the ball
+		ball.applyMagneticForce(this.game, physics, entitiesMap);
+		if (physics.velocityX > 0) {
+			ball.magneticInfluence = 'right';
+		} else {
+			ball.magneticInfluence = 'left';
+		}
 		ball.moveBall(physics);
 
 		 // Handle collisions
 		this.handleBallWallCollisions(physics, entitiesMap, ball);
+		this.handleBallShieldCollisions(physics, entitiesMap, ball);
         this.handleBallPaddleCollisions(physics, entitiesMap, ball);
         this.handlePowerupCollisions(physics, entities, entitiesMap, ball);
 
@@ -162,6 +173,36 @@ export class PhysicsSystem implements System {
 			}
 		}
 		
+		// Apply spin effect if SpinBall
+		if (isSpinBall(ball) && collided) {
+			(ball as SpinBall).applySpinToBounce(physics);
+		}
+	}
+
+	handleBallShieldCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+		let collided = false;
+		
+		const shield = entitiesMap.get('shield') as Shield;
+		if (shield) {
+			const shieldPhysics = shield.getComponent('physics') as PhysicsComponent;
+			// Left Shield collision
+			if (shield.side === 'left') {
+				const ballLeft = physics.x - (physics.width / 2);
+				const shieldRight = shieldPhysics.x + shieldPhysics.width / 2;
+				if (ballLeft < shieldRight) {
+					physics.velocityX *= -1;
+					PowerupSpawner.despawnShield(this.game, shield.id);
+				}
+			} else if (shield.side === 'right') {
+				const ballRight = physics.x + (physics.width / 2);
+				const shieldLeft = shieldPhysics.x - shieldPhysics.width / 2;
+				if (ballRight > shieldLeft) {
+					physics.velocityX *= -1;
+					PowerupSpawner.despawnShield(this.game, shield.id);
+				}
+			}
+		}
+
 		// Apply spin effect if SpinBall
 		if (isSpinBall(ball) && collided) {
 			(ball as SpinBall).applySpinToBounce(physics);
@@ -374,6 +415,73 @@ export class PhysicsSystem implements System {
         physics.velocityY = Math.sin(angle) * speed;
         ball.lastHit = '';
     }
+
+	updateBullet(bullet: Bullet, entities: Entity[], entitiesMap: Map<string, Entity>) {
+		const physics = bullet.getComponent('physics') as PhysicsComponent;
+
+		if (!physics) return;
+
+		// Move the bullet
+		bullet.moveBullet(physics);
+
+		 // Handle collisions
+		this.handleBulletCollisions(bullet, entitiesMap);
+
+		// Check if ball is out of bounds
+        this.checkBulletOutOfBounds(bullet);
+	}
+
+	handleBulletCollisions(bullet: Bullet, entitiesMap: Map<string, Entity>) {
+		const bulletPhysics = bullet.getComponent('physics') as PhysicsComponent;
+		const bulletBox = this.getBoundingBox(bulletPhysics);
+	
+		let paddleL;
+		let paddleR;
+
+		for (const entity of entitiesMap.values()) {
+			if (entity.id === 'paddleL') {
+				paddleL = entity as Paddle;
+			} else if (entity.id === 'paddleR') {
+				paddleR = entity as Paddle;
+			}
+		}
+		
+		if (!paddleL || !paddleR) { console.log('cucufu'); return;};
+	
+		const paddleLPhysics = paddleL.getComponent('physics') as PhysicsComponent;
+		const paddleRPhysics = paddleR.getComponent('physics') as PhysicsComponent;
+	
+		const paddleLBox = this.getBoundingBox(paddleLPhysics);
+		const paddleRBox = this.getBoundingBox(paddleRPhysics);
+	
+		
+		if (bullet.direction === 'right') {
+			if (this.isAABBOverlap(bulletBox, paddleRBox)) {
+				paddleR.isStunned = true;
+				paddleR.affectedTimer = 100;
+				PowerupSpawner.despawnBullet(this.game, bullet.id);
+				console.log('Bullet hit!');
+			}
+		} else if (bullet.direction === 'left') {
+			if (this.isAABBOverlap(bulletBox, paddleLBox)) {
+				paddleL.isStunned = true;
+				paddleL.affectedTimer = 100;
+				PowerupSpawner.despawnBullet(this.game, bullet.id);
+				console.log('Bullet hit!');
+			}
+		}
+	}
+
+	checkBulletOutOfBounds(bullet: Bullet) {
+		const bulletPhysics = bullet.getComponent('physics') as PhysicsComponent;
+
+		const bulletLeft = bulletPhysics.x + bulletPhysics.width / 2;
+		const bulletRight = bulletPhysics.x - bulletPhysics.width / 2;
+
+		if (bulletLeft < 0 || bulletRight > this.game.width) {
+			PowerupSpawner.despawnBullet(this.game, bullet.id);
+		}
+	}
 
 	// Utils
     getCurrentBall(): Ball | undefined{

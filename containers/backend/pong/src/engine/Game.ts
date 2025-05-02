@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 15:46:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 12:29:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ export class PongGame {
     topWallOffset: number;
     bottomWallOffset: number;
     wallThickness: number;
+	paddleOffset: number;
 	renderLayers: {
 		bounding: Container;
 		background: Container;
@@ -95,6 +96,7 @@ export class PongGame {
         this.topWallOffset = 60;
         this.bottomWallOffset = 80;
         this.wallThickness = 20;
+		this.paddleOffset = 50;
 
 		this.renderLayers = {
 			bounding: new Container(),
@@ -266,7 +268,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, leftPlayer.name);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -274,7 +276,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, rightPlayer.name);
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
@@ -355,6 +357,9 @@ export class PongGame {
 		const boundingBox = new Graphics();
 		boundingBox.rect(0, 0, this.width, this.height);
 		boundingBox.stroke('#171717');
-		this.renderLayers.bounding.addChild(boundingBox);;
+		//this.renderLayers.bounding.addChild(boundingBox);
+		this.renderLayers.powerup.addChild(boundingBox);
+		//this.renderLayers.powerdown.addChild(boundingBox);
+		//this.renderLayers.ballChange.addChild(boundingBox);
 	}
 }

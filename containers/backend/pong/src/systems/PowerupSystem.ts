@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 18:20:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/02 19:09:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ import { PowerupSpawner } from '../spawners/PowerupSpawner';
 import { BallSpawner } from '../spawners/BallSpawner';
 
 import { FrameData, GameEvent  } from '../utils/Types'
-import { isPaddle, isBall, isPowerup } from '../utils/Guards'
+import { isPaddle, isBall, isPowerup, isShield } from '../utils/Guards'
 
 export class PowerupSystem implements System {
 	game: PongGame;
@@ -35,6 +35,10 @@ export class PowerupSystem implements System {
 	height: number;
 	cooldown: number;
 	lastPowerupSpawn: number;
+	isSpawningBullets: boolean = false;
+	bulletSpawnInterval: number = 10;
+	bulletQuantity: number = 3;
+	bulletEvent?: GameEvent;
 
 	constructor(game: PongGame, app: any, width: number, height: number) {
 		this.game = game;
@@ -76,9 +80,23 @@ export class PowerupSystem implements System {
 				}
 			}
 
+			//Manage shield lifetime
+			if (isShield(entity)) {
+				const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
+				if (!lifetime) continue;
+
+				if (lifetime.despawn === 'time') {
+					lifetime.remaining -= delta.deltaTime;
+
+					if (lifetime.remaining <= 0) {
+						PowerupSpawner.despawnShield(this.game, entity.id);
+					}
+				}
+			}
+
 			// Restore powerup effects
 			if (isPaddle(entity)) {
-				if (entity.isEnlarged || entity.isShrinked || entity.isInverted || entity.isSlowed || entity.isFlat ) {
+				if (entity.isEnlarged || entity.isShrinked || entity.isInverted || entity.isSlowed || entity.isFlat || entity.isMagnetized || entity.isStunned ) {
 					entity.affectedTimer -= delta.deltaTime;
 				}
 
@@ -94,6 +112,10 @@ export class PowerupSystem implements System {
 					entity.isSlowed = false;
 				} else if (entity.isFlat && entity.affectedTimer <= 0) {
 					entity.isFlat = false;
+				} else if (entity.isMagnetized && entity.affectedTimer <= 0) {
+					entity.isMagnetized = false;
+				} else if (entity.isStunned && entity.affectedTimer <= 0) {
+					entity.isStunned = false;
 				}
 			}
 		}
@@ -123,6 +145,21 @@ export class PowerupSystem implements System {
 		for (const entityId of powerupsToRemove) {
 			this.game.removeEntity(entityId);
 		}
+
+		// Handle bullet spawning
+		if (this.isSpawningBullets) {
+			this.bulletSpawnInterval -= delta.deltaTime;
+
+			if (this.bulletSpawnInterval <= 0 && this.bulletQuantity) {
+				this.triggerShootPaddle(this.bulletEvent);
+				this.bulletSpawnInterval = 10;
+				this.bulletQuantity--;
+			}
+
+			if (this.bulletQuantity <= 0) {
+				this.isSpawningBullets = false;
+			}
+		}
 	}
 
 	changeBall(event: GameEvent) {
@@ -147,6 +184,17 @@ export class PowerupSystem implements System {
 			case ('enlargePowerup'):
 				this.triggerEnlargePaddle(event);
 				break;
+			case ('shieldPowerup'):
+				this.triggerShieldSpawn(event);
+				break;
+			case ('MagnetizePowerup'):
+					this.triggerMagnetizePaddle(event);
+					break;
+			case ('ShootPowerup'):
+					this.bulletEvent = event;
+					this.isSpawningBullets = true;
+					this.bulletQuantity = 3;
+					break;
 		}
 	}
 
@@ -188,6 +236,88 @@ export class PowerupSystem implements System {
 					} else if (ball.lastHit === 'right') {
 						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
 						powerupComp.enlargePaddle(paddleR);
+					}
+				}
+			}
+		}
+	}
+
+	triggerShieldSpawn(event: GameEvent) {
+		this.game.sounds.powerup.play();
+
+		if (event.entitiesMap) {
+			let ball;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+
+				if (ball) {
+					if (ball.lastHit === 'left') {
+						PowerupSpawner.spawnShield(this.game, ball.lastHit)
+						break ;
+					} else if (ball.lastHit === 'right') {
+						PowerupSpawner.spawnShield(this.game, ball.lastHit)
+						break ;
+					}
+				}
+			}
+		}
+	}
+
+	triggerMagnetizePaddle(event: GameEvent) {
+		this.game.sounds.powerup.play();
+		
+		if (event.entitiesMap) {
+			let ball, powerupComp;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+				if (isPowerup(entity)) {
+					powerupComp = entity.getComponent('powerup') as PowerupComponent;
+				}
+
+				if (ball && powerupComp) {
+					if (ball.lastHit === 'left'){  
+						const paddleL = event.entitiesMap.get('paddleL') as Paddle;
+						powerupComp.magnetizePaddle(paddleL);
+					} else if (ball.lastHit === 'right') {
+						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
+						powerupComp.magnetizePaddle(paddleR);
+					}
+				}
+			}
+		}
+	}
+
+	triggerShootPaddle(event?: GameEvent) {
+		if (!event) return;
+		
+		this.game.sounds.powerup.play();
+		
+		if (event.entitiesMap) {
+			let ball, powerupComp;
+
+			for (const entity of event.entitiesMap.values()) {
+				if (isBall(entity)) {
+					ball = entity;
+				}
+				if (isPowerup(entity)) {
+					powerupComp = entity.getComponent('powerup') as PowerupComponent;
+				}
+
+				if (ball && powerupComp) {
+					if (ball.lastHit === 'left'){  
+						const paddleL = event.entitiesMap.get('paddleL') as Paddle;
+						PowerupSpawner.spawnBullet(this.game, ball.lastHit, paddleL);
+						break;
+					} else if (ball.lastHit === 'right') {
+						const paddleR = event.entitiesMap.get('paddleR') as Paddle;
+						PowerupSpawner.spawnBullet(this.game, ball.lastHit, paddleR);
+						break;
 					}
 				}
 			}
