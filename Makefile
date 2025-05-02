@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/05/01 14:38:20 by nponchon         ###   ########.fr        #
+#    Updated: 2025/05/02 13:11:45 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ clean:
 
 fclean:
 	@read -p "Are you sure? This will take down the whole network and you will lose the database. [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
-	$(MAKE) down
+	$(MAKE) stop
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans --rmi all --volumes
 	docker volume prune -f
 	docker network prune -f
