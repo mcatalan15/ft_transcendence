@@ -1,9 +1,9 @@
 import './styles/tailwind.css';
+import { showLanding } from './views/landing';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
 import { showLogin } from './views/login';
-import { showLanding } from './views/landing';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
@@ -16,12 +16,13 @@ function navigate(path: string): void {
 }
 window.navigate = navigate;
 
-//localStorage.setItem('user', 'nico');
-//console.log(isLoggedIn())
+localStorage.setItem('user', 'nico');
+console.log(isLoggedIn())
 
 function isLoggedIn() : boolean
 {
   return !!localStorage.getItem('user');
+  //return false;
 }
 
 let currentGame: PongGame | null = null;
@@ -35,29 +36,27 @@ function router(path: string): void {
   
   app.innerHTML = '';
   
-  if(!isLoggedIn())
+  if(!isLoggedIn() && path !== '/landing')
   {
-    showLogin(app);
+    showLanding(app);
     return ;
   }
 
-  if (path !== '/pong' && currentGame) {
+ if (path !== '/pong' && currentGame) {
     currentGame.destroy();
     currentGame = null;
 	console.log('Current game destroyed');
   }
 
 
-  switch (path) {
-    case '/':
+  switch(path)
+  {
+    case'/':
       showLanding(app);
       break;
-    case '/':
-      showHome(app);
-      break;
-	case '/login':
-		showLogin(app);
-		break;
+    case '/login':
+		  showLogin(app);
+		  break;
     case '/pong':
       showPong(app);
       break;
