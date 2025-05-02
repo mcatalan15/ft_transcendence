@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 16:21:52 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/02 11:05:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,7 @@ export class PongGame {
 
 	async createEntities(): Promise<void>  {
 		//Fetch player info from jsons
-		let playerData;
+/* 		let playerData;
 		try {
 			const response = await fetch('../../players.json');
 			playerData = await response.json();
@@ -255,7 +255,7 @@ export class PongGame {
 		const leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
 		const rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
 
-		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`);
+		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`); */
 
 		
 		// Create Bounding Box
@@ -275,7 +275,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'Player 1');
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -283,7 +283,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, 'Player 2');
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);

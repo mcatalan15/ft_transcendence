@@ -2,14 +2,15 @@ FROM node:23-slim
 
 WORKDIR /app
 
+RUN npm install -g pnpm
+
 COPY package*.json ./
 
 # CSS Tailwind and dependencies
-RUN npm install tailwindcss postcss autoprefixer pixi.js vite \
-	&& npm install --save-dev @types/google.accounts
+RUN pnpm install
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
 CMD ["echo", "Frontend built"]

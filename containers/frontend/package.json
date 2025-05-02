@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-	  "build": "npx postcss src/styles/tailwind.css -o public/styles/styles.css && cp src/pong/players.json public/players.json",
+	  "build": "npx postcss src/styles/tailwind.css -o public/styles/styles.css",
 	  "lint": "eslint .",
 	  "dev": "vite"
 	},
@@ -14,7 +14,8 @@
 	  "postcss": "^8.0.0",
 	  "howler": "^2.2.4",
 	  "pixi-filters": "^6.1.2",
-	  "pixi.js": "^8.8.1"
+	  "pixi.js": "^8.8.1",
+	  "@types/google.accounts": "^0.0.15"
 	},
 	"devDependencies": {
 	  "typescript": "^4.0.0",
