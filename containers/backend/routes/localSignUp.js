@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const { saveUserToDatabase, checkUserExists } = require('../db/database');
 
-async function registrationRoutes(fastify, options) {
-  fastify.post('/api/signup', async (request, reply) => {
+module.exports = async function (fastify, options) {
+  fastify.post('/api/auth/signup', async (request, reply) => {
     const { username, email, password } = request.body;
 
     if (!username || !email || !password) {
@@ -16,7 +16,7 @@ async function registrationRoutes(fastify, options) {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      await saveUserToDatabase(username, email, hashedPassword);
+      await saveUserToDatabase(username, email, hashedPassword, 'local');
 
       return reply.status(201).send({ success: true, message: 'User registered successfully' });
     } catch (error) {
@@ -25,5 +25,3 @@ async function registrationRoutes(fastify, options) {
     }
   });
 }
-
-module.exports = registrationRoutes;

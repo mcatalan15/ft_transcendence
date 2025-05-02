@@ -17,7 +17,7 @@ function buildApp() {
   
   // Register routes
   fastify.register(require('./routes/routeLoader'));
-  
+
   return fastify;
 }
 

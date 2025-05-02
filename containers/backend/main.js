@@ -3,6 +3,9 @@ const serverConfig = require('./config/serverConfiguration');
 
 const app = buildApp();
 
+console.log('Registered routes:');
+console.log(app.printRoutes());
+
 app.listen({ 
   host: serverConfig.ADDRESS, 
   port: serverConfig.PORT 

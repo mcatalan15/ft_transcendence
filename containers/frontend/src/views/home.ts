@@ -4,7 +4,7 @@ export function showHome(container: HTMLElement): void {
 	const homeDiv = document.createElement('div');
 	homeDiv.innerHTML = `
 		<h1>${t('home_title')}</h1>
-		<button onclick="navigate('/game')">${t('play_button')}</button>
+		<button onclick="navigate('/pong')">${t('play_button')}</button>
 		<button onclick="navigate('/login')">${t('login_button')}</button>
 		<button onclick="navigate('/profile')">${t('profile_button')}</button>
 		<select id="lang-switcher">
