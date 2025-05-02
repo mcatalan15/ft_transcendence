@@ -4,7 +4,8 @@
 	"description": "Fastify server to host the 42 transcendence project",
 	"main": "server.js",
 	"scripts": {
-	  "start": "node server.js"
+	  "start": "node server.js",
+      "dev": "nodemon --legacy-watch main.js"
 	},
 	"dependencies": {
 	  "fastify": "^4.0.0",
@@ -12,5 +13,6 @@
 	},
 	"devDependencies": {},
 	"author": "",
-	"license": "ISC"
+	"license": "ISC",
+	"nodemon": "^3.0.1"
   }

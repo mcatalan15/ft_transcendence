@@ -12,7 +12,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
 async function saveUserToDatabase(username, email, hashedPassword, provider) {
 	return new Promise((resolve, reject) => {
 	  const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
-	  db.run(query, [username, email, hashedPassword, provider], function (err) {
+	  const params = [username, email, hashedPassword, provider];
+	  db.run(query, params, function (err) {
 		if (err) {
 		  console.error('[DB INSERT ERROR]', err);
 		  reject(err);
@@ -27,12 +28,20 @@ async function checkUserExists(username, email) {
 	return new Promise((resolve, reject) => {
 	  const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
 	  db.get(query, [username, email], (err, row) => {
-		if (err) reject(err);
-		if (row) {
-			reject(new Error('User already exists'));  // Reject if user exists
-		  } else {
-			resolve(null);
+		if (err) {
+			console.error('[DB ERROR]', err);
+			reject(new Error('Database error'));
+			return;
 		  }
+		if (row) {
+			resolve({
+				exists: true,
+				usernameExists: row.username === username,
+				emailExists: row.email === email
+			  });
+			} else {
+			  resolve({ exists: false });
+			}
 	  });
 	});
   }

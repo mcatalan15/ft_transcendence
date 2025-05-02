@@ -1,0 +1,79 @@
+<!-- # Preventing SQL Injection in SQLite
+
+I see you're already implementing the most important protection against SQL injection - parameterized queries with placeholder values. This is excellent! Let's review SQL injection prevention techniques:
+
+## What You're Doing Right
+
+```javascript
+const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
+const params = [username, email, hashedPassword, provider];
+db.run(query, params, function(err) {
+  // callback code
+});
+```
+
+This pattern:
+1. ✅ Separates SQL code from data
+2. ✅ Uses `?` placeholders
+3. ✅ Passes parameters as an array
+
+## Why This Works
+
+When you use parameterized queries, the SQLite driver:
+- Escapes special characters
+- Handles quoting automatically
+- Prevents attackers from changing the structure of your SQL
+
+## Additional Best Practices
+
+1. **Input Validation**: Add type checking and length limits:
+   ```javascript
+   if (typeof username !== 'string' || username.length > 50) {
+     reject(new Error('Invalid username'));
+     return;
+   }
+   ```
+
+2. **Principle of Least Privilege**: Configure SQLite with minimal permissions:
+   ```javascript
+   // Read-only connection for queries that don't modify data
+   const readOnlyDb = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY);
+   ```
+
+3. **Explicit Column Lists**: Never use `SELECT *` in production:
+   ```javascript
+   // Instead of SELECT *
+   const query = `SELECT id, username, email FROM users WHERE username = ?`;
+   ```
+
+4. **Error Messages**: Don't expose detailed error info to clients:
+   ```javascript
+   if (err) {
+     console.error('[DB ERROR]', err); // Log the full error internally
+     reject(new Error('Database error')); // Send generic message to client
+   }
+   ```
+
+5. **Prepared Statements**: For repeated queries:
+   ```javascript
+   const stmt = db.prepare(`SELECT id FROM users WHERE username = ?`);
+   // later
+   stmt.get(username, callback);
+   // when done
+   stmt.finalize();
+   ```
+
+## Example: Vulnerable vs. Safe Code
+
+❌ **Vulnerable** (string concatenation):
+```javascript
+!NEVER DO THIS
+db.run(`SELECT * FROM users WHERE username = '${username}'`);
+```
+
+✅ **Safe** (parameterized query):
+```javascript
+db.run(`SELECT * FROM users WHERE username = ?`, [username]);
+```
+
+Your code already follows the safe pattern, which is excellent. Just fix the duplicate `db.run` call, and you'll have solid SQL injection protection. -->

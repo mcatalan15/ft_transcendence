@@ -19,6 +19,7 @@ services:
   backend:
     volumes:
       - userbase:/usr/src/app/db
+      - /usr/src/app/node_modules
     networks:
       - transcendence
 
