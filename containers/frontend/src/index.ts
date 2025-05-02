@@ -3,6 +3,7 @@ import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
 import { showLogin } from './views/login';
+import { showLanding } from './views/landing';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
@@ -13,14 +14,32 @@ function navigate(path: string): void {
   history.pushState({}, '', path);
   router(path);
 }
-
 window.navigate = navigate;
+
+//localStorage.setItem('user', 'nico');
+//console.log(isLoggedIn())
+
+function isLoggedIn() : boolean
+{
+  return !!localStorage.getItem('user');
+}
 
 let currentGame: PongGame | null = null;
 
-function router(path: string): void {
 
+app.innerHTML=`<h2>Page not found</h2>`;
+
+function router(path: string): void {
+  
   if (!app) return;
+  
+  app.innerHTML = '';
+  
+  if(!isLoggedIn())
+  {
+    showLogin(app);
+    return ;
+  }
 
   if (path !== '/pong' && currentGame) {
     currentGame.destroy();
@@ -28,9 +47,11 @@ function router(path: string): void {
 	console.log('Current game destroyed');
   }
 
-  app.innerHTML = '';
 
   switch (path) {
+    case '/':
+      showLanding(app);
+      break;
     case '/':
       showHome(app);
       break;

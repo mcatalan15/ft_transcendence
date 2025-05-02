@@ -1,7 +1,12 @@
 /* Import Tailwind's default styles */
 @tailwind base;
+
 @tailwind components;
+
+@import url('https://use.typekit.net/rla1kou.css');
+
 @tailwind utilities;
+
 
 body {
   background-color: #221c17;

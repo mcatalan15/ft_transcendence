@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-	  "build": "npx postcss src/styles/tailwind.css -o public/styles/styles.css && cp src/pong/players.json public/players.json",
+	  "build": "npx postcss src/styles/tailwind.css -o public/styles/styles.css",
 	  "lint": "eslint .",
 	  "dev": "vite"
 	},
