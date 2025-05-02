@@ -1,4 +1,6 @@
 import './styles/tailwind.css';
+
+import { loadLanguage, getCurrentLang } from './lang';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
@@ -8,6 +10,18 @@ const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
 	throw new Error('App container not found');
+
+async function initLanguage() {
+  try {
+    await loadLanguage(getCurrentLang());
+    router(window.location.pathname);
+  } catch (error) {
+    console.error("Failed to load language:", error);
+    // Fallback to a default language or show an error message
+  }
+}
+
+initLanguage();
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
