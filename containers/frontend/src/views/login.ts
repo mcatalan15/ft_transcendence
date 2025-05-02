@@ -25,23 +25,39 @@ export function showLogin(container: HTMLElement): void {
 					border-radius: 4px;
 				}
 			</style>
+
+		    <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+
 			<button style='margin-right:16px' type="button" id="signUpButton">Sign Up</button>
 			<button style='margin-right:16px' onclick="navigate('/')">Return home</button>
 		</form>
 	`;
 
 	const signUpButton = homeDiv.querySelector('#signUpButton') as HTMLButtonElement;
-	signUpButton.addEventListener('click', () => {
+	const errorMessageDiv = homeDiv.querySelector('#errorMessage') as HTMLDivElement;
+
+	signUpButton.addEventListener('click', async () => {
 		const username = (homeDiv.querySelector('#username') as HTMLInputElement).value;
 		const email = (homeDiv.querySelector('#email') as HTMLInputElement).value;
 		const password = (homeDiv.querySelector('#password') as HTMLInputElement).value;
 		const confirmPassword = (homeDiv.querySelector('#confirmPassword') as HTMLInputElement).value;
 
+		errorMessageDiv.textContent = '';
+
 		if (password === confirmPassword) {
-			localSignUp( username, email, password );
-		} else {
-			alert('Passwords do not match!');
-		}
+			const result = await localSignUp(username, email, password);
+      
+			if (!result.success) {
+			  // Display the error message from the backend
+			  errorMessageDiv.textContent = result.message;
+			} else {
+			  // Registration successful - redirect or show success message
+			  alert('Registration successful!');
+			  navigate('/');
+			}
+		  } else {
+			errorMessageDiv.textContent = 'Passwords do not match!';
+		  }
 	});
 	container.appendChild(homeDiv);
   }
