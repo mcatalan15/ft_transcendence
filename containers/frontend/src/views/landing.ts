@@ -1,5 +1,3 @@
-import { showLogin } from './views/login';
-
 export function showLanding(container: HTMLElement): void {
 	const landingDiv = document.createElement('div');
 
