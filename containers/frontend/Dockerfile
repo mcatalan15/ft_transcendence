@@ -1,5 +1,7 @@
 FROM node:23-slim
 
+ENV TZ=Europe/Paris
+
 WORKDIR /app
 
 COPY package*.json ./

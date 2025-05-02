@@ -1,5 +1,7 @@
 FROM node:18-alpine3.21
 
+ENV TZ=Europe/Paris
+
 RUN apk add --no-cache sqlite
 
 WORKDIR /usr/src/app
