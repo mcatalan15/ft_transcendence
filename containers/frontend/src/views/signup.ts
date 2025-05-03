@@ -1,6 +1,6 @@
 import { localSignUp } from '../auth/localSignUp';
 
-export function showLogin(container: HTMLElement): void {
+export function showSignUp(container: HTMLElement): void {
 	const homeDiv = document.createElement('div');
 	homeDiv.innerHTML = `
 	  <h1>Log in or Sign up</h1>

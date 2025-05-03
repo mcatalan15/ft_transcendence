@@ -31,7 +31,7 @@ module.exports = async function (fastify, options) {
       
       return reply.status(400).send({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid email or password'
       });
 
     } catch (error) {

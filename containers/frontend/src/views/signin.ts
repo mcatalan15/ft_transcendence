@@ -23,6 +23,7 @@ export function showSignIn(container: HTMLElement): void {
 				<form id="login-form" class="space-y-4">
 					<input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded" />
 					<input type="password" id="password" placeholder="Password" required class="w-full border px-3 py-2 rounded" />
+					<div id="errorMessage" style="color: red; margin-top: 10px;"></div>
 					<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
 						Sign In
 					</button>
@@ -55,27 +56,27 @@ export function showSignIn(container: HTMLElement): void {
 	const form = SignInDiv.querySelector('#login-form') as HTMLFormElement;
 	const emailInput = SignInDiv.querySelector('#email') as HTMLInputElement;
 	const passwordInput = SignInDiv.querySelector('#password') as HTMLInputElement;
-	const errorMessageDiv = document.createElement('div');
-	errorMessageDiv.style.color = 'red';
-	errorMessageDiv.style.marginTop = '10px';
-	SignInDiv.appendChild(errorMessageDiv);
+	const errorMessageDiv = SignInDiv.querySelector('#errorMessage') as HTMLInputElement;
+
+	errorMessageDiv.textContent = '';
+
 	form.onsubmit = async (e) => {
 		e.preventDefault();
 		const email = emailInput.value;
 		const password = passwordInput.value;
-		errorMessageDiv.textContent = '';
+
 		if (email && password) {
 			const result = await localSignIn(email, password);
 			if (!result.success) {
 				// Display the error message from the backend
 				errorMessageDiv.textContent = result.message;
 			} else {
-				// Sign-in successful - redirect or show success message
+				// Sign-in successful - show success message and redirect
 				alert('Sign-in successful!');
 				navigate('/home');
 			}
 		} else {
-			errorMessageDiv.textContent = 'Please fill in all fields';
+			errorMessageDiv.textContent = 'Invalid email or password';
 		}
 	};
 

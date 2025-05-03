@@ -5,7 +5,7 @@ import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
 import { showSignIn } from './views/signin';
-import { showSignUn } from './views/signup';
+import { showSignUp } from './views/signup';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
