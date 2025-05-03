@@ -14,3 +14,16 @@ export function t(key: string): string {
 export function getCurrentLang(): string {
   return currentLang;
 }
+
+export function changeLanguage(langSwitcher: HTMLSelectElement): void {
+  langSwitcher.value = localStorage.getItem('lang') || 'fr';
+  langSwitcher.addEventListener('change', async (e) => {
+    const target = e.target as HTMLSelectElement | null;
+    if (target) {
+      await import('./lang').then(async ({ loadLanguage }) => {
+        await loadLanguage(target.value);
+        location.reload();
+      });
+    }
+  });
+}

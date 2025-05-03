@@ -18,7 +18,8 @@ server: {
 	hmr: process.env.NODE_ENV === 'development' ? {  // Enable HMR only in dev
 		protocol: 'ws',
 		host: 'localhost',
-		port: 5173
+		port: 5173,
+		overlay: false,
 	} : false,  // Disable HMR in production
 	proxy: {
 		'/api': {

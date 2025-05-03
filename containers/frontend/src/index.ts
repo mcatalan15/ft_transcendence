@@ -7,6 +7,20 @@ import { showPong } from './views/pong';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 
+import i18next from 'i18next';
+
+i18next.init({
+  lng: 'en', // if you're using a language detector, do not define the lng option
+  debug: true,
+  resources: {
+    en: {
+      translation: {
+        "key": "hello world"
+      }
+    }
+  }
+});
+
 const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
@@ -21,8 +35,6 @@ async function initLanguage() {
     // Fallback to a default language or show an error message
   }
 }
-
-initLanguage();
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
@@ -77,6 +89,9 @@ function router(path: string): void {
       break;
     case '/pong':
       showPong(app);
+      break;
+    case '/home':
+      showHome(app);
       break;
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>

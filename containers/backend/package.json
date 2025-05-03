@@ -4,15 +4,17 @@
 	"description": "Fastify server to host the 42 transcendence project",
 	"main": "server.js",
 	"scripts": {
-	  "start": "node server.js",
-      "dev": "nodemon --legacy-watch main.js"
+		"start": "node server.js",
+		"dev": "nodemon --legacy-watch main.js"
 	},
 	"dependencies": {
-	  "fastify": "^4.0.0",
-	  "sqlite3": "^5.0.0"
+		"@fastify/cookie": "^11.0.2",
+		"@fastify/session": "^11.1.0",
+		"fastify": "^4.0.0",
+		"i18next": "^25.0.2",
+		"sqlite3": "^5.0.0"
 	},
-	"devDependencies": {},
 	"author": "",
 	"license": "ISC",
 	"nodemon": "^3.0.1"
-  }
+}
