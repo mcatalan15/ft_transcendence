@@ -1,15 +1,14 @@
 import './styles/tailwind.css';
 import { showLanding } from './views/landing';
-import { loadLanguage, getCurrentLang } from './lang';
+//import { loadLanguage, getCurrentLang } from './lang';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 
-import i18next from 'i18next';
 
-i18next.init({
+/*i18next.init({
   lng: 'en', // if you're using a language detector, do not define the lng option
   debug: true,
   resources: {
@@ -19,14 +18,14 @@ i18next.init({
       }
     }
   }
-});
+});*/
 
 const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
 	throw new Error('App container not found');
 
-async function initLanguage() {
+/*async function initLanguage() {
   try {
     await loadLanguage(getCurrentLang());
     router(window.location.pathname);
@@ -34,7 +33,7 @@ async function initLanguage() {
     console.error("Failed to load language:", error);
     // Fallback to a default language or show an error message
   }
-}
+}*/
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
