@@ -1,4 +1,5 @@
 import { localSignIn } from '../auth/localSignIn';
+import i18next from 'i18next';
 
 function loadGoogleScript(): void {
 	if (document.getElementById('google-script')) return;
@@ -24,8 +25,8 @@ export function showSignIn(container: HTMLElement): void {
 					<input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded" />
 					<input type="password" id="password" placeholder="Password" required class="w-full border px-3 py-2 rounded" />
 					<div id="errorMessage" style="color: red; margin-top: 10px;"></div>
-					<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-						Sign In
+					<button type="submit" id="sign-in-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+
 					</button>
 				</form>
 
@@ -48,10 +49,18 @@ export function showSignIn(container: HTMLElement): void {
 						data-logo_alignment="left">
 					</div>
 				</div>
-
+				<select id="lang-switcher">
+		<option value="fr">🇫🇷 FR</option>
+		<option value="en">🇬🇧 EN</option>
+		<option value="es">🇪🇸 ES</option>
+		</select>
 			</div>
 		</div>
+
 	`;
+
+	const signInButton = SignInDiv.querySelector('#sign-in-button') as HTMLButtonElement;
+	signInButton.textContent = i18next.t('key');
 
 	const form = SignInDiv.querySelector('#login-form') as HTMLFormElement;
 	const emailInput = SignInDiv.querySelector('#email') as HTMLInputElement;

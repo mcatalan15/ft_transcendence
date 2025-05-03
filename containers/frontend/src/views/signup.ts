@@ -59,7 +59,7 @@ export function showSignUp(container: HTMLElement): void {
 			return;
 		}
 		if (!/^[a-zA-Z0-9]+$/.test(username)) {
-			errorMessageDiv.textContent = 'Username can only contain letters, numbers!';
+			errorMessageDiv.textContent = 'Username can only contain letters and numbers!';
 			return;
 		}		
 
