@@ -243,20 +243,6 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
-		//Fetch player info from jsons
-/* 		let playerData;
-		try {
-			const response = await fetch('../../players.json');
-			playerData = await response.json();
-		} catch (error) {
-			console.error("Failed to fetch player data, using mock data:", error);
-		}
-
-		const leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
-		const rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
-
-		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`); */
-
 		
 		// Create Bounding Box
 		this.createBoundingBox();
