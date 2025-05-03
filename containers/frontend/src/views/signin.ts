@@ -1,3 +1,5 @@
+import { localSignIn } from '../auth/localSignIn';
+
 function loadGoogleScript(): void {
 	if (document.getElementById('google-script')) return;
 
@@ -16,7 +18,7 @@ export function showSignIn(container: HTMLElement): void {
 	SignInDiv.innerHTML = `
 		<div class="h-screen flex items-center justify-center text-amber-50 bg-gradient-to-br from-neutral-900">
 			<div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6">
-				<h2 class="text-2xl font-semibold text-center">Lets Play!</h2>
+				<h2 class="text-2xl font-semibold text-center">Let's play!</h2>
 
 				<form id="login-form" class="space-y-4">
 					<input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded" />
@@ -49,6 +51,33 @@ export function showSignIn(container: HTMLElement): void {
 			</div>
 		</div>
 	`;
+
+	const form = SignInDiv.querySelector('#login-form') as HTMLFormElement;
+	const emailInput = SignInDiv.querySelector('#email') as HTMLInputElement;
+	const passwordInput = SignInDiv.querySelector('#password') as HTMLInputElement;
+	const errorMessageDiv = document.createElement('div');
+	errorMessageDiv.style.color = 'red';
+	errorMessageDiv.style.marginTop = '10px';
+	SignInDiv.appendChild(errorMessageDiv);
+	form.onsubmit = async (e) => {
+		e.preventDefault();
+		const email = emailInput.value;
+		const password = passwordInput.value;
+		errorMessageDiv.textContent = '';
+		if (email && password) {
+			const result = await localSignIn(email, password);
+			if (!result.success) {
+				// Display the error message from the backend
+				errorMessageDiv.textContent = result.message;
+			} else {
+				// Sign-in successful - redirect or show success message
+				alert('Sign-in successful!');
+				navigate('/home');
+			}
+		} else {
+			errorMessageDiv.textContent = 'Please fill in all fields';
+		}
+	};
 
 	container.appendChild(SignInDiv);
 }

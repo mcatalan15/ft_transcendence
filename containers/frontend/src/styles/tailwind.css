@@ -1,9 +1,10 @@
 /* Import Tailwind's default styles */
+@import url('https://use.typekit.net/rla1kou.css');
+
 @tailwind base;
 
 @tailwind components;
 
-@import url('https://use.typekit.net/rla1kou.css');
 
 @tailwind utilities;
 
