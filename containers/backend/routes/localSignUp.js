@@ -15,22 +15,22 @@ module.exports = async function (fastify, options) {
         if (userExists.usernameExists && userExists.emailExists) {
           return reply.status(400).send({ 
             success: false, 
-            message: 'Both username and email are already taken' 
+            message: 'First' 
           });
         } else if (userExists.usernameExists) {
           return reply.status(400).send({ 
-            success: false, 
-            message: 'Username is already taken' 
+            success: false,
+            message: 'Second' 
           });
         } else if (userExists.emailExists) {
           return reply.status(400).send({ 
             success: false, 
-            message: 'Email address is already registered' 
+            message: 'Third' 
           });
         }
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 12);
       await saveUserToDatabase(username, email, hashedPassword, 'local');
 
       return reply.status(201).send({
@@ -45,16 +45,27 @@ module.exports = async function (fastify, options) {
         code: error.code,
         stack: error.stack,
         name: error.name,
-        // Custom error property
         customCode: error.code === 'SQLITE_CONSTRAINT' ? 'This should be caught' : 'Unknown error type'
       });
 
-      if (error.code === 'SQLITE_CONSTRAINT' || 
-          error.message.includes('already')) {
-
+      if (error.message.includes('First')) {
         return reply.status(400).send({
           success: false,
-          message: 'Username or email already exists'
+          message: 'Username and email are already taken'
+        });
+      }
+
+      if (error.message.includes('Second')) {
+        return reply.status(400).send({
+          success: false,
+          message: 'Username is already taken'
+        });
+      }
+
+      if (error.message.includes('Third')) {
+        return reply.status(400).send({
+          success: false,
+          message: 'That email is already taken'
         });
       }
 

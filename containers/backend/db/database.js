@@ -65,9 +65,29 @@ async function isDatabaseHealthy() {
 	});
 }
 
+async function getHashedPassword(email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT password FROM users WHERE email = ?`;
+		db.get(query, [email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve(row.password);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
 	isDatabaseHealthy,
+	getHashedPassword
+	// Add other database functions here as needed
 };
