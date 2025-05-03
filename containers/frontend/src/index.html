@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="https://use.typekit.net/rla1kou.css" />
@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <script type="module" src="auth/googleSignIn.js"></script>
+  <script type="module" src="auth/googleSignUp.js"></script>
   <script src="https://accounts.google.com/gsi/client" async></script>
 
   <div id="g_id_onload"
@@ -17,7 +17,8 @@
      data-context="signin"
      data-login_uri="https://mrlouf.studio"
      data-auto_select="true"
-     data-itp_support="true">
+     data-itp_support="true"
+     data-auto_prompt="false">
   </div>
   <div id="app" role="main">
   </div>

@@ -21,12 +21,11 @@ async function googleAuthRoutes(fastify, options) {
 
       const name = payload.name;
       const email = payload.email;
-	  const provider = 'google';
 
 	  	try {
        	 await checkUserExists(name, email);
 
-     	 await saveUserToDatabase(name, email, null, provider);
+     	 await saveUserToDatabase(name, email, null, 'provider');
 
     	 return reply.status(200).send({
 			success: true,

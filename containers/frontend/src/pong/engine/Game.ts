@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 16:21:52 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/02 11:05:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,8 +243,6 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
-
-
 		
 		// Create Bounding Box
 		this.createBoundingBox();

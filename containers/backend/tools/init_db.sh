@@ -32,4 +32,5 @@ else
     echo "Database found at $DB_PATH"
 fi
 
-exec node server.js
+#exec node main.js
+exec npm run dev

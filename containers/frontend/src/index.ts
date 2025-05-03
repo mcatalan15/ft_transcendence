@@ -1,5 +1,6 @@
 import './styles/tailwind.css';
 import { showLanding } from './views/landing';
+import { loadLanguage, getCurrentLang } from './lang';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
@@ -10,6 +11,18 @@ const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
 	throw new Error('App container not found');
+
+async function initLanguage() {
+  try {
+    await loadLanguage(getCurrentLang());
+    router(window.location.pathname);
+  } catch (error) {
+    console.error("Failed to load language:", error);
+    // Fallback to a default language or show an error message
+  }
+}
+
+initLanguage();
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
@@ -43,7 +56,8 @@ function router(path: string): void {
     return ;
   }
 
- if (path !== '/pong' && currentGame) {
+  //TODO destroy game when leaving /pong
+  if (path !== '/pong' && currentGame) {
     currentGame.destroy();
     currentGame = null;
 	console.log('Current game destroyed');
@@ -65,7 +79,8 @@ function router(path: string): void {
       showPong(app);
       break;
     default:
-      app.innerHTML = `<h2>Page not found</h2>
+      app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
+	  <span style="display: block; height: 20px;"></span>
 	  <button onclick="navigate('/')">Back home</button>
 	  `;
   }

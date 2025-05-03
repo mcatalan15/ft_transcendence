@@ -10,7 +10,7 @@ build: {
 server: {
 	host: '0.0.0.0',
 	port: 5173,
-	open: true,
+	open: false,
 	strictPort: true,
 	watch: {
 	  usePolling: true, // this helps with Docker sometimes
@@ -20,5 +20,11 @@ server: {
 		host: 'localhost',
 		port: 5173
 	} : false,  // Disable HMR in production
+	proxy: {
+		'/api': {
+		  target: 'http://backend:3100',
+		  changeOrigin: true
+		}
+	}
 },
 });

@@ -1,10 +1,11 @@
 FROM node:23-slim
 
+ENV TZ=Europe/Paris
+
 WORKDIR /app
 
 COPY package*.json ./
 
-# CSS Tailwind and dependencies
 RUN npm install tailwindcss postcss autoprefixer pixi.js vite \
 	&& npm install --save-dev @types/google.accounts
 
