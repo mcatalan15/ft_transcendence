@@ -1,5 +1,6 @@
-import { localSignIn } from '../auth/localSignIn';
 import i18next from 'i18next';
+
+import { localSignIn } from '../auth/localSignIn';
 
 function loadGoogleScript(): void {
 	if (document.getElementById('google-script')) return;

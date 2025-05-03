@@ -33,7 +33,7 @@ function buildApp() {
   fastify.register(require('./plugins/prometheusMetrics'));
   
   // Register routes
-  fastify.register(require('./routes/routeLoader'));
+  fastify.register(require('./api/routes/routeLoader'));
 
   return fastify;
 }
