@@ -44,6 +44,25 @@ export function showSignUp(container: HTMLElement): void {
 
 		errorMessageDiv.textContent = '';
 
+		if (!username || !email || !password || !confirmPassword) {
+			errorMessageDiv.textContent = 'All fields are required!';
+			return;
+		}
+
+		if (username.length < 3 || username.length > 8) {
+			errorMessageDiv.textContent = 'Username must be between 3 and 8 characters long!';
+			return;
+		}
+
+		if (password.length < 6 || password.length > 20) {
+			errorMessageDiv.textContent = 'Password must be between 6 and 20 characters long!';
+			return;
+		}
+		if (!/^[a-zA-Z0-9]+$/.test(username)) {
+			errorMessageDiv.textContent = 'Username can only contain letters, numbers!';
+			return;
+		}		
+
 		if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
       
