@@ -3,7 +3,8 @@ import { showLanding } from './views/landing';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
-import { showLogin } from './views/login';
+import { showSignIn } from './views/signin';
+import { showSignUn } from './views/signup';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
@@ -54,9 +55,12 @@ function router(path: string): void {
     case'/':
       showLanding(app);
       break;
-    case '/login':
-		  showLogin(app);
+    case '/signin':
+		  showSignIn(app);
 		  break;
+    case '/signup':
+      showSignUp(app);
+      break;
     case '/pong':
       showPong(app);
       break;

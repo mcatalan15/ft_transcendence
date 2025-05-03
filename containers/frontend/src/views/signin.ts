@@ -9,14 +9,26 @@ function loadGoogleScript(): void {
 	document.head.appendChild(script);
 }
 
-export function showLogin(container: HTMLElement): void {
+export function showSignIn(container: HTMLElement): void {
 	loadGoogleScript();
 
-	const loginDiv = document.createElement('div');
-	loginDiv.innerHTML = `
+	const SignInDiv = document.createElement('div');
+	SignInDiv.innerHTML = `
 		<div class="h-screen flex items-center justify-center text-amber-50 bg-gradient-to-br from-neutral-900">
 			<div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6">
 				<h2 class="text-2xl font-semibold text-center">Lets Play!</h2>
+
+				<form id="login-form" class="space-y-4">
+					<input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded" />
+					<input type="password" id="password" placeholder="Password" required class="w-full border px-3 py-2 rounded" />
+					<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+						Sign In
+					</button>
+				</form>
+
+				<div class="flex items-center gap-2 text-sm text-gray-500">
+					<hr class="flex-1 border-gray-300" />
+				</div>
 
 				<div>
 					<div id="g_id_onload"
@@ -34,28 +46,11 @@ export function showLogin(container: HTMLElement): void {
 					</div>
 				</div>
 
-				<div class="flex items-center gap-2 text-sm text-gray-500">
-					<hr class="flex-1 border-gray-300" />
-				</div>
-
-				<form id="login-form" class="space-y-4">
-					<input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded" />
-					<input type="password" id="password" placeholder="Password" required class="w-full border px-3 py-2 rounded" />
-					<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-						Sign In
-					</button>
-				</form>
-
-				<p class="text-sm text-center">
-					<a href="#" onclick="navigate('/register')" class="text-blue-600 hover:underline">
-						Sign Up
-					</a>
-				</p>
 			</div>
 		</div>
 	`;
 
-	container.appendChild(loginDiv);
+	container.appendChild(SignInDiv);
 }
 /*
 <h1>Log in or Sign up</h1>

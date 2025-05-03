@@ -11,12 +11,12 @@ export function showLanding(container: HTMLElement): void {
                 <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
                     <button id="sign-in-btn"
                         class="bg-amber-50 text-neutral-900 px-4 py-2 rounded hover:bg-amber-100 transition-colors z-30 relative"
-                        onclick="console.log('Sign in clicked'); navigate('/login')">
+                        onclick="console.log('Sign in clicked'); navigate('/signin')">
                         Sign in
                     </button>
                     <button id="sign-up-btn"
                         class="border border-amber-50 text-amber-50 px-4 py-2 rounded hover:bg-neutral-800 transition-colors z-30 relative"
-                        onclick="console.log('Sign up clicked'); navigate('/register')">
+                        onclick="console.log('Sign up clicked'); navigate('/signup')">
                         Sign up
                     </button>
                 </div>
@@ -27,7 +27,7 @@ export function showLanding(container: HTMLElement): void {
                         <span>P</span>
                         <button id="bounce-button"
                             class="w-12 h-12 md:w-16 md:h-16 bg-amber-400 rounded-full animate-bounce shadow-lg hover:scale-110 transition duration-300 cursor-pointer z-10"
-                            title="Crear bolas">
+                            title="">
                         </button>
                         <span>NG</span>
                     </div>
@@ -49,13 +49,13 @@ export function showLanding(container: HTMLElement): void {
     signInBtn.addEventListener('click', (e) => {
         console.log("Sign in clicked via addEventListener");
         e.stopPropagation();
-        window.location.href = '/login';
+        window.location.href = '/signin';
     });
     
     signUpBtn.addEventListener('click', (e) => {
         console.log("Sign up clicked via addEventListener");
         e.stopPropagation();
-        window.location.href = '/register';
+        window.location.href = '/signup';
     });
 
     const balls: HTMLDivElement[] = [];
@@ -99,7 +99,7 @@ export function showLanding(container: HTMLElement): void {
         updatePosition();
         balls.push(ball);
 
-        if (balls.length > 30) {
+        if (balls.length > 50) {
             const oldest = balls.shift();
             if (oldest) animationLayer.removeChild(oldest);
         }
