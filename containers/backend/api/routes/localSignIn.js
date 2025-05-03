@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { getHashedPassword } = require('../db/database');
+const { getHashedPassword, getUserByEmail } = require('../db/database');
 
 module.exports = async function (fastify, options) {
   fastify.post('/api/auth/signin', async (request, reply) => {
@@ -23,6 +23,16 @@ module.exports = async function (fastify, options) {
       const match = await bcrypt.compare(password, hash);
 
       if (match) {
+
+        const user = await getUserByEmail(email);
+      
+        request.session.set('user', {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          //! Never store sensitive data like passwords !
+        });
+
         return reply.status(201).send({
           success: true,
           message: 'Authentication successful'

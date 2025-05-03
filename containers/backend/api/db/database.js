@@ -83,11 +83,30 @@ async function getHashedPassword(email) {
 	});
 }
 
+async function getUserByEmail(email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT * FROM users WHERE email = ?`;
+		db.get(query, [email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve(row);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
 	isDatabaseHealthy,
-	getHashedPassword
+	getHashedPassword,
+	getUserByEmail
 	// Add other database functions here as needed
 };
