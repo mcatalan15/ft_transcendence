@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { saveUserToDatabase, checkUserExists } = require('../db/database');
+const { saveUserToDatabase, checkUserExists } = require('../../db/database');
 
 module.exports = async function (fastify, options) {
   fastify.post('/api/auth/signup', async (request, reply) => {

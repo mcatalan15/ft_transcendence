@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { getHashedPassword, getUserByEmail } = require('../db/database');
+const { getHashedPassword, getUserByEmail } = require('../../db/database');
 
 module.exports = async function (fastify, options) {
   fastify.post('/api/auth/signin', async (request, reply) => {
