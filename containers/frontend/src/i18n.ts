@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 
 const i18n = i18next.createInstance();
-// Initialisation de i18next
+
 i18n.init({
-    lng: 'en', // langue par défaut
+    lng: 'en', 
     fallbackLng: 'en',
-    //debug: true,
+
     resources: {
         en: {
             translation: {

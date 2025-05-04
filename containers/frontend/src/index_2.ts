@@ -1,19 +1,28 @@
 import './styles/tailwind.css';
-import './i18n';
 import { showLanding } from './views/landing';
-//import { loadLanguage, getCurrentLang } from './lang';
+import { loadLanguage, getCurrentLang } from './lang';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
 //import { showProfile } from './views/profile';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 
-
 const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
 	throw new Error('App container not found');
 
+async function initLanguage() {
+  try {
+    await loadLanguage(getCurrentLang());
+    router(window.location.pathname);
+  } catch (error) {
+    console.error("Failed to load language:", error);
+    // Fallback to a default language or show an error message
+  }
+}
+
+initLanguage();
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
@@ -66,11 +75,11 @@ function router(path: string): void {
     case '/signup':
       showSignUp(app);
       break;
+    case '/home':
+        showHome(app);
+        break;
     case '/pong':
       showPong(app);
-      break;
-    case '/home':
-      showHome(app);
       break;
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
