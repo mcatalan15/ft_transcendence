@@ -3,8 +3,9 @@ import i18next from 'i18next';
 const i18n = i18next.createInstance();
 
 i18n.init({
-    lng: 'en', 
     fallbackLng: 'en',
+    lng: localStorage.getItem('lng') || undefined,
+
 
     resources: {
         en: {

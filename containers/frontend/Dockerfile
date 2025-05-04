@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install tailwindcss postcss autoprefixer pixi.js vite \
-	&& npm install --save-dev @types/google.accounts i18next
+	&& npm install --save-dev @types/google.accounts i18next i18next-browser-languagedetector
 
 COPY . .
 
