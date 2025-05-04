@@ -4,38 +4,38 @@ const i18n = i18next.createInstance();
 
 i18n.init({
     fallbackLng: 'en',
-    lng: localStorage.getItem('lng') || undefined,
+    lng: localStorage.getItem('lng') || 'en',
 
 
     resources: {
         en: {
             translation: {
-                sign_in: 'Sign in',
-                sign_up: 'Sign up',
-                language_en: 'English',
-                language_es: 'Español',
-                language_fr: 'Français'
+                signIn: 'Sign in',
+                signUp: 'Sign up',
+                languageEn: 'EN',
+                languageEs: 'ES',
+                languageFr: 'FR'
             }
         },
         fr: {
             translation: {
-                sign_in: 'Se connecter',
-                sign_up: 'S\'inscrire',
-                language_en: 'Anglais',
-                language_es: 'Espagnol',
-                language_fr: 'Français'
+                signIn: 'Se connecter',
+                signUp: 'S\'inscrire',
+                languageEn: 'EN',
+                languageEs: 'ES',
+                languageFr: 'FR'
             }
         },
         es: {
             translation: {
-                sign_in: 'Iniciar sesión',
-                sign_up: 'Registrarse',
-                language_en: 'Inglés',
-                language_es: 'Castellano',
-                language_fr: 'Francés'
+                signIn: 'Iniciar sesión',
+                signUp: 'Registrarse',
+                languageEn: 'EN',
+                languageEs: 'ES',
+                languageFr: 'FR'
             }
         }
     }
 });
 
-export default i18next;
+export default i18n;
