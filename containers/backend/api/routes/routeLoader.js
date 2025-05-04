@@ -2,9 +2,7 @@
 	Future routes can be required directly here. */
 
 module.exports = async function (fastify) {
-	fastify.register(require('./auth/localSignUp'));
-	fastify.register(require('./auth/googleSignUp'));
-	fastify.register(require('./auth/localSignIn'));
+	fastify.register(require('./auth/authRoutesIndex'));
 	// Add future routes here
 	fastify.register(require('./profile/getProfile'));
   };
