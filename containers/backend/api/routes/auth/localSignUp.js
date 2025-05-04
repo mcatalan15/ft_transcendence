@@ -2,7 +2,47 @@ const bcrypt = require('bcrypt');
 const { saveUserToDatabase, checkUserExists } = require('../../db/database');
 
 module.exports = async function (fastify, options) {
-  fastify.post('/api/auth/signup', async (request, reply) => {
+  fastify.post('/api/auth/signup', {
+    schema: {
+      description: 'Create a new user account',
+      tags: ['authentication'],
+      body: {
+        type: 'object',
+        required: ['username', 'email', 'password'],
+        properties: {
+          username: { type: 'string', description: 'Unique username' },
+          email: { type: 'string', format: 'email', description: 'User email address' },
+          password: { type: 'string', description: 'User password' }
+        }
+      },
+      response: {
+        201: {
+          description: 'Successful registration',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' }
+          }
+        },
+        400: {
+          description: 'Bad request - invalid data or user already exists',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' }
+          }
+        },
+        500: {
+          description: 'Server error',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
     const { username, email, password } = request.body;
 
     if (!username || !email || !password) {

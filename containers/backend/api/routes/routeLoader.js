@@ -6,5 +6,5 @@ module.exports = async function (fastify) {
 	fastify.register(require('./auth/googleSignUp'));
 	fastify.register(require('./auth/localSignIn'));
 	// Add future routes here
-	fastify.register(require('./profile/displayProfile'));
+	fastify.register(require('./profile/getProfile'));
   };
