@@ -1,9 +1,7 @@
-let server;
-
-function gracefulShutdown(signal) {
+function gracefulShutdown(app, db, signal) {
   console.log(`Received ${signal}, shutting down gracefully`);
 
-  server.close(() => {
+  app.close(() => {
     console.log('Server closed');
     
     db.close((err) => {
