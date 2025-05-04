@@ -17,6 +17,10 @@ export async function logUserOut(user: string): Promise<{success: boolean, messa
 			};
 		}
 
+		// Clear the user data from local storage
+		localStorage.removeItem('user');
+		localStorage.removeItem('token');
+		
 		return { 
 			success: true,
 			message: 'Sign-in successful!'

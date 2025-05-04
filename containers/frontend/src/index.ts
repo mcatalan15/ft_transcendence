@@ -75,6 +75,7 @@ function router(path: string): void {
       break;
     case '/logout':
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
       navigate('/');
       break;
     default:

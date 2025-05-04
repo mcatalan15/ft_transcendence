@@ -51,7 +51,10 @@ const signupSchema = {
 };
 
 const signinSchema = {
-  description: 'Authenticate a user with their email and password. The password is compared with the stored hash in the database.',
+  description: 'Authenticate a user with their email and password. \
+    The password is compared with the stored hash in the database. \
+    If the password matches, a token is generated and returned to the user. \
+    Currently, this is a simple phrase, but in production, it will be a JWT token for the authenticated user.',
   tags: ['authentication'],
   body: {
     type: 'object',
@@ -67,11 +70,13 @@ const signinSchema = {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
-        message: { type: 'string' }
+        message: { type: 'string' },
+        token: { type: 'string', description: 'Currently a simple phrase, prod will have JWT token for authenticated user' }
       },
       example: {
         success: true,
-        message: 'User registered successfully'
+        message: 'User registered successfully',
+        token: 'simple-phrase-token'
       }
     },
     400: {
@@ -79,11 +84,13 @@ const signinSchema = {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
-        message: { type: 'string' }
+        message: { type: 'string' },
+        token: { type: 'string' || null }
       },
       example: {
         success: false,
-        message: 'User not found'
+        message: 'User not found',
+        token: null
       }
     },
     500: {
@@ -91,11 +98,13 @@ const signinSchema = {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
-        message: { type: 'string' }
+        message: { type: 'string' },
+        token: { type: 'string' || null }
       },
       example: {
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
+        token: null
       }
     }
   }

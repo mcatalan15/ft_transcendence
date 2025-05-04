@@ -1,15 +1,17 @@
 const { gracefulShutdown } = require('./config/serverConfiguration');
 const serverConfig = require('./config/serverConfiguration');
 const buildApp = require('./app');
-const { db } = require('./db/database');
+const { db } = require('./api/db/database');
 
 const app = buildApp();
 
+let server;
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
-  process.on(signal, () => gracefulShutdown(app, db, signal));
+  process.on(signal, () => gracefulShutdown(server, db, signal));
 });
 
-app.listen({ 
+server = app.listen({ 
   host: serverConfig.ADDRESS, 
   port: serverConfig.PORT 
 }, (err, address) => {
@@ -18,5 +20,4 @@ app.listen({
     process.exit(1);
   }
   app.log.info(`Server listening at ${address}`);
-
 });

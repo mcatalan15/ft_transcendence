@@ -3,7 +3,7 @@ const { saveUserToDatabase,
   checkUserExists,
   getHashedPassword,
   getUserByEmail
-} = require('../../db/database');
+} = require('../db/database');
 
 async function signupHandler(request, reply) {
   const { username, email, password } = request.body;
@@ -84,7 +84,10 @@ async function signinHandler(request, reply) {
 
         return reply.status(201).send({
           success: true,
-          message: 'Authentication successful'
+          message: 'Authentication successful',
+          //! For development purposes only, use JWT or similar in production
+          //! Never expose sensitive data like tokens in production
+          token: 'simple-development-token'
         });
       }
       
