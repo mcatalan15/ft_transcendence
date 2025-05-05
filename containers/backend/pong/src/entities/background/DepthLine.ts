@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 12:31:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 08:53:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,13 @@ import { RenderComponent } from '../../components/RenderComponent';
 import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { AnimationComponent } from '../../components/AnimationComponent';
 
+import { DepthLineOptions } from '../../utils/Types';
+
 type DepthLineBehavior = {
 	movement?: 'vertical' | 'horizontal';
 	direction?: 'upwards' | 'downwards' | 'left' | 'right';
 	fade?: 'in' | 'out' | 'none';
 };
-
-interface DepthLineOptions {
-	initialized?: boolean;
-	initialY?: number;
-	velocityX?: number;
-	velocityY?: number;
-	width?: number;
-	height?: number;
-	upperLimit?: number;
-	lowerLimit?: number;
-	alpha?: number;
-	alphaDecay?: number;
-	alphaIncrease?: number;
-	lifetime?: number;
-	type?: 'top' | 'bottom' | string;
-	despawn?: 'time' | 'offscreen' | string;
-	behavior?: DepthLineBehavior;
-}
 
 export class DepthLine extends Entity {
 	initialized: boolean;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 12:29:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 11:36:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,24 +170,24 @@ export class PongGame {
 		const renderSystem = new RenderSystem();
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
-		const animationSystem = new AnimationSystem(this, this.app, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
+		const worldSystem = new WorldSystem(this);
+		const animationSystem = new AnimationSystem(this, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
 		const vfxSystem = new VFXSystem(this, this.width, this.height);
 		const particleSystem = new ParticleSystem(this);
 		const uiSystem = new UISystem(this, this.app);
 		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
-		const worldSystem = new WorldSystem(this, this.app);
-
+		
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
 		this.systems.push(physicsSystem);
+		this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		this.systems.push(vfxSystem);
 		this.systems.push(particleSystem);
 		this.systems.push(uiSystem);
 		this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
-		this.systems.push(worldSystem);
 	}
 
 	initSounds(): void {
@@ -304,9 +304,9 @@ export class PongGame {
 
 	populateWorlds() {
 		this.worldPool = {
-			desertWorld: createWorld('Desert of Spiked Reflections', WORLD_COLORS.fire),
-			cityWorld: createWorld('Ruins of Yonder', WORLD_COLORS.city),
-			abyssWorld: createWorld('Pelagic Netherscape', WORLD_COLORS.void),
+			desertWorld: createWorld('desert', 'Desert of Spiked Reflections', WORLD_COLORS.fire),
+			cityWorld: createWorld('city', 'Ruins of Yonder', WORLD_COLORS.city),
+			abyssWorld: createWorld('abyss', 'Pelagic Netherscape', WORLD_COLORS.void),
 		};
 	}
 

@@ -7,8 +7,8 @@ import { PongGame } from './engine/Game';
     background: '#171717',
     width: 1500,
     height: 500,
-    antialias: false,
-    resolution: 2,
+    antialias: true,
+    resolution: 3,
     autoDensity: true,
   });
 

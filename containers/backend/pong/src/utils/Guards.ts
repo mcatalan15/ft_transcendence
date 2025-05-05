@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 18:11:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 16:35:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ import { Paddle } from '../entities/Paddle';
 import { Ball } from '../entities/balls/Ball';
 import { Wall } from '../entities/Wall';
 import { DepthLine } from '../entities/background/DepthLine';
+import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
 import { Powerup } from '../entities/powerups/Powerup'
@@ -52,6 +53,11 @@ export function isWall(entity: Entity): entity is Wall {
 export function isDepthLine(entity: Entity): entity is DepthLine {
 	return entity instanceof DepthLine;
 }
+
+export function isPyramidDepthLine(entity: Entity): entity is PyramidDepthLine {
+	return entity instanceof PyramidDepthLine;
+}
+
 
 export function isParticle(entity: Entity): entity is Particle {
 	return entity instanceof Particle;

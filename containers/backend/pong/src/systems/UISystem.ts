@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 15:43:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 18:29:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ export class UISystem implements System {
 
 					if (tag === 'score' || textComponent.instanceId === 'score') {
 						textObject.x = this.game.width / 2;
-						textObject.y = entity.topOffset - 10;
+						textObject.y = entity.topOffset - 5;
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
 						textObject.x = entity.width - 40;
 						textObject.y = entity.topOffset + 5;

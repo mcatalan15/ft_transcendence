@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 18:09:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 16:21:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,22 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
-import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
-
-import { DepthLineBehavior, FrameData, GameEvent } from '../utils/Types';
+import { FrameData, GameEvent } from '../utils/Types';
 import { isPaddle, isDepthLine, isPowerup } from '../utils/Guards'
 
 export class AnimationSystem implements System {
 	private game: PongGame;
-	private app: Application;
 	private width: number;
 	private height: number;
 	private topWallOffset: number;
 	private bottomWallOffset: number;
 	private wallThickness: number;
 
-	private depthLineCooldown: number = 20;
 	private frameCounter: number = 0;
 	private depthLineUpdateRate: number = 1;
-	private lastLineSpawnTime: number = 0;
 
 	constructor(
 		game: PongGame,
-		app: any,
 		width: number,
 		height: number,
 		topWallOffset: number,
@@ -52,7 +46,6 @@ export class AnimationSystem implements System {
 		wallThickness: number
 	) {
 		this.game = game;
-		this.app = app;
 		this.width = width;
 		this.height = height;
 		this.topWallOffset = topWallOffset;
@@ -145,38 +138,7 @@ export class AnimationSystem implements System {
 			}
 		}
 
-		// 3. Spawn depth lines
-		this.depthLineCooldown -= delta.deltaTime;
-
-		if (this.depthLineCooldown <= 0) {
-			this.lastLineSpawnTime = Date.now();
-
-			const behaviorTop: DepthLineBehavior = { movement: 'vertical', direction: 'upwards', fade: 'in' };
-			const behaviorBottom: DepthLineBehavior = { movement: 'vertical', direction: 'downwards', fade: 'in' };
-
-			MainBackgroundSpawner.spawnDepthLine(this.game, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness, 'top', behaviorTop);
-			MainBackgroundSpawner.spawnDepthLine(this.game, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness, 'bottom', behaviorBottom);
-
-			this.depthLineCooldown = 20;
-		}
-
-		// 4. Initialize and animate depth lines
-		for (const entity of entities) {
-			if (isDepthLine(entity) && entity.id.startsWith('depthLine')) {
-				const idParts = entity.id.split('-');
-				const timestamp = parseInt(idParts[1]);
-				if (!entity.initialized && timestamp >= this.lastLineSpawnTime - 100) {
-					const render = entity.getComponent('render') as RenderComponent;
-					if (render) {
-						entity.initialized = true;
-						entity.initialY = entity.y;
-						entity.alpha = 0;
-						render.graphic.alpha = 0;
-					}
-				}
-			}
-		}
-
+		// 3. Animate entities
 		if (this.frameCounter === 0) {
 			for (const entity of entities) {
 				if (!isDepthLine(entity) && !isPowerup(entity)) {
@@ -187,11 +149,10 @@ export class AnimationSystem implements System {
 
 					if (!lifetime || !render || !entity.behavior) continue;
 
-					if (!entity.initialY) {
-						entity.initialY = entity.y;
-						entity.initialized = true;
+					if (!entity.initialized) {	
+						continue; // Skip if not initialized by WorldSystem
 					}
-
+					
 					let progress = 0;
 					if (entity.behavior.direction === 'upwards') {
 						progress = 1 - ((entity.y - entity.upperLimit) / (entity.initialY - entity.upperLimit));

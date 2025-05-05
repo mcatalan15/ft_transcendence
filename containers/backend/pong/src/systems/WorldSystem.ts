@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 18:30:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,47 @@ import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
 import type { System } from '../engine/System'
 
-import { FrameData, GameEvent, World } from '../utils/Types';
-import { isUI } from '../utils/Guards';
+import { DepthLine } from '../entities/background/DepthLine';
+
+import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
+import { DesertBackgroundSpawner } from '../spawners/DesertBackgroundSpawner';
+
+import { FrameData, GameEvent, World, DepthLineBehavior } from '../utils/Types';
+import { isUI, isDepthLine, isPyramidDepthLine } from '../utils/Guards';
+import { RenderComponent } from '../components/RenderComponent';
 
 export class WorldSystem implements System {
 	game: PongGame;
-	app: Application;
-	timer: number;
+	worldTimer: number;
+
+	isSpawningFigures: boolean;
+	figureTimer: number;
 	
-	constructor(game: PongGame, app: Application) {
+	// New properties for depth line spawning
+	private depthLineCooldown: number = 10;
+	private lastLineSpawnTime: number = 0;
+	private width: number;
+	private height: number;
+	private topWallOffset: number;
+	private bottomWallOffset: number;
+	private wallThickness: number;
+
+	depthLineQueue: DepthLine[];
+	
+	constructor(
+		game: PongGame, 
+	) {
 		this.game = game;
-		this.app = app;
-		this.timer = 200;
+		this.worldTimer = 300;
+		this.width = game.width;
+		this.height = game.height;
+		this.topWallOffset = game.topWallOffset;
+		this.bottomWallOffset = game.bottomWallOffset;
+		this.wallThickness = game.wallThickness;
+		this.isSpawningFigures = false;
+		this.figureTimer = 200;
+
+		this.depthLineQueue = [];
 		
 		this.game.entities.forEach(entity => {
 			if (isUI(entity)) {
@@ -37,12 +66,49 @@ export class WorldSystem implements System {
 	}
 
 	update(entities: Entity[], delta: FrameData){
-		this.timer -= delta.deltaTime;
+		// Handle World and Figure timer
+		this.worldTimer -= delta.deltaTime;
+		this.figureTimer -= delta.deltaTime;
 
-		if (this.timer <= 0){
-			this.changeWorld();
-			this.timer = 200;
+		if (this.worldTimer <= 0){
+			//this.changeWorld();
+			this.worldTimer = 300;
 		}
+
+		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
+			if (this.game.currentWorld.theme === 'desert') {
+				this.isSpawningFigures = true;
+				let depth = Math.floor(Math.random() * (15 - 7 + 1)) + 7;
+				let idx = Math.floor(Math.random() 	* 5);
+				switch (idx) {
+					case (0):
+						DesertBackgroundSpawner.buildTopPyramid(this, depth);
+						break;
+					case (1):
+						DesertBackgroundSpawner.buildBottomPyramid(this, depth);
+						break;
+					default:
+						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);;
+						break;
+				}
+			}
+		}
+
+		// Handle depth line spawning
+		this.depthLineCooldown -= delta.deltaTime;
+		
+		if (this.depthLineCooldown <= 0) {
+			if (this.depthLineQueue.length > 0) {
+				this.spawnFromQueue();
+				this.spawnFromQueue();
+			} else {
+				this.spawnDepthLines();
+			}
+			this.depthLineCooldown = 10;
+		}
+		
+		// Initialize depth lines
+		this.initializeDepthLines(entities);
 
 		// Catch and handle world change events
 		const unhandledEvents = [];
@@ -82,6 +148,92 @@ export class WorldSystem implements System {
 		};
 		
 		this.game.eventQueue.push(changeWorldEvent);
-	  }
+	}
 	
+	// New method to spawn depth lines
+	private spawnDepthLines(): void {
+		this.lastLineSpawnTime = Date.now();
+
+		// Create behavior objects for top and bottom lines
+		const behaviorTop: DepthLineBehavior = {
+			movement: 'vertical',
+			direction: 'upwards',
+			fade: 'in',
+			// Pyramid specific properties
+			pyramidBaseHeight: 0,
+			pyramidBaseWidth: this.width / 8,
+			pyramidPeakHeight: this.height / 3 - this.game.topWallOffset - this.game.wallThickness,
+			pyramidPeakOffset: this.width / 4,
+		};
+		
+		const behaviorBottom: DepthLineBehavior = {
+			movement: 'vertical',
+			direction: 'downwards',
+			fade: 'in',
+			// Pyramid specific properties
+			pyramidBaseHeight: 0,
+			pyramidBaseWidth: this.width / 8,
+			pyramidPeakHeight: this.height / 3 - this.game.topWallOffset - this.game.wallThickness,
+			pyramidPeakOffset: -this.width / 4,
+		};
+		
+		MainBackgroundSpawner.spawnDepthLine(
+			this.game, 
+			this.width, 
+			this.height, 
+			this.topWallOffset, 
+			this.bottomWallOffset, 
+			this.wallThickness, 
+			'top', 
+			behaviorTop
+		);
+		
+		MainBackgroundSpawner.spawnDepthLine(
+			this.game, 
+			this.width, 
+			this.height, 
+			this.topWallOffset, 
+			this.bottomWallOffset, 
+			this.wallThickness, 
+			'bot', 
+			behaviorBottom
+		);
+
+		if (this.isSpawningFigures) {
+			this.isSpawningFigures = false;
+			this.figureTimer = 200;
+		}
+	}
+
+	spawnFromQueue() {
+		let line = this.depthLineQueue.pop();
+
+		if (line) {
+			this.game.addEntity(line);
+
+			const render = line.getComponent('render') as RenderComponent;
+			if (render) {
+				this.game.renderLayers.background.addChild(render.graphic);
+			}
+		}
+	}
+	
+	// New method to initialize depth lines
+	private initializeDepthLines(entities: Entity[]): void {
+		for (const entity of entities) {
+			if (isDepthLine(entity)) {
+				const idParts = entity.id.split('-');
+				const timestamp = parseInt(idParts[1]);
+				if (!entity.initialized && timestamp >= this.lastLineSpawnTime - 100) {
+					const render = entity.getComponent('render') as RenderComponent;
+					if (render) {
+						entity.initialized = true;
+						entity.initialY = entity.y;
+						entity.alpha = 0;
+						render.graphic.alpha = 0;
+					}
+				}
+			}
+		}
+	}
 }

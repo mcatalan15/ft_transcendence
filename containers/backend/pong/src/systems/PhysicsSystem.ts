@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 19:04:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 08:27:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,7 +446,7 @@ export class PhysicsSystem implements System {
 			}
 		}
 		
-		if (!paddleL || !paddleR) { console.log('cucufu'); return;};
+		if (!paddleL || !paddleR) return;
 	
 		const paddleLPhysics = paddleL.getComponent('physics') as PhysicsComponent;
 		const paddleRPhysics = paddleR.getComponent('physics') as PhysicsComponent;

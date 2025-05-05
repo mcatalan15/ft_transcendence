@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 17:35:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/05 10:25:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,15 @@ import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 
 export interface DepthLineBehavior {
-	movement: 'vertical';
-	direction: 'upwards' | 'downwards';
-	fade: 'in' | 'out' | 'none';
+    movement?: 'vertical' | 'horizontal';
+    direction?: 'upwards' | 'downwards' | 'left' | 'right';
+    fade?: 'in' | 'out' | 'none';
+    
+	// Pyramid specific properties
+    pyramidBaseHeight?: number;
+    pyramidBaseWidth?: number;
+    pyramidPeakHeight?: number;
+    pyramidPeakOffset?: number;
 }
 
 export type FrameData = {
@@ -88,6 +94,7 @@ export interface GameSounds {
 }
 
 export interface World {
+	theme: string;
 	name: string;
 	color: number;
 }
@@ -101,6 +108,31 @@ export const WORLD_COLORS = {
 	fire: 0xEA580C,
 	sky: 0x38BDF8,
 	void: 0x7C3AED
+}
+
+export interface DepthLineOptions {
+    initialized?: boolean;
+    initialY?: number;
+    velocityX?: number;
+    velocityY?: number;
+    width?: number;
+    height?: number;
+    upperLimit?: number;
+    lowerLimit?: number;
+    alpha?: number;
+    alphaDecay?: number;
+    alphaIncrease?: number;
+    lifetime?: number;
+    type?: string;
+    despawn?: string;
+    behavior?: DepthLineBehavior;
+}
+
+export interface PyramidDepthLineOptions extends DepthLineOptions {
+    // These properties are for backward compatibility - better to use behavior properties
+    baseHeight?: number;
+    peakHeight?: number;
+    peakOffset?: number;
 }
 
 export type AnimationOptions = {
