@@ -65,7 +65,7 @@ i18n
   .init({
     debug: false,
     fallbackLng: 'en',
-    supportedLngs: ['en', 'es', 'fr'],
+    supportedLngs: ['cat', 'en', 'es', 'fr'],
     ns: ['landing', 'signin', 'signup'],
     defaultNS: 'landing',
     backend: {

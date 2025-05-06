@@ -21,6 +21,7 @@ export class LanguageSelector {
         </button>
         <ul id="lang-menu"
           class="hidden absolute bottom-full mb-2 w-full bg-neutral-800 border border-neutral-700 rounded shadow text-center">
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="cat">${i18n.t('CAT')}</li>
           <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="en">${i18n.t('EN')}</li>
           <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="es">${i18n.t('ES')}</li>
           <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="fr">${(i18n.t('FR'))}</li>
@@ -50,6 +51,7 @@ export class LanguageSelector {
     
           menu?.querySelectorAll('li').forEach(item => {
             const l = item.getAttribute('data-lang');
+            if (l === 'ca') item.textContent = (i18n.t('CAT')).toUpperCase();
             if (l === 'en') item.textContent = (i18n.t('EN')).toUpperCase();
             if (l === 'es') item.textContent = (i18n.t('ES')).toUpperCase();
             if (l === 'fr') item.textContent = (i18n.t('FR')).toUpperCase();
