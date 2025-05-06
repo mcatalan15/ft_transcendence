@@ -23,7 +23,7 @@ export async function logUserOut(user: string): Promise<{success: boolean, messa
 		
 		return { 
 			success: true,
-			message: 'Sign-in successful!'
+			message: 'User logged out'
 		};
 
 	} catch (error) {

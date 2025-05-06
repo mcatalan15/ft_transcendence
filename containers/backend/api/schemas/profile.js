@@ -1,9 +1,11 @@
 const profileSchema = {
-	description: 'Get non-sensitive data from the user\'s profile. The user needs to be logged-in prior to accessing the profile.',
+	description: 'Get non-sensitive data from the user\'s profile.\
+	The user needs to be logged-in prior to accessing the profile.\
+	Returns empty strings in case of failure.\
+	',
 	tags: ['profile'],
 	querystring: {
 	  type: 'object',
-	  required: ['user'],
 	  properties: {
 		id: { type: 'string', description: 'User\s ID from the database' },
 	  }
@@ -24,7 +26,7 @@ const profileSchema = {
 		}
 	  },
 	  400: {
-		description: 'Couldn\t fetch user\s profile',
+		description: 'Couldn\'t fetch user\'s profile',
 		type: 'object',
 		properties: {
 		  id: { type: 'string', description: 'User\s ID', },
@@ -38,7 +40,7 @@ const profileSchema = {
 		}
 	  },
 	  500: {
-		description: 'Couldn\t fetch user\s profile',
+		description: 'Internal server error',
 		type: 'object',
 		properties: {
 		  id: { type: 'string', description: 'User\s ID' },

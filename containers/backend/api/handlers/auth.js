@@ -107,9 +107,22 @@ async function signinHandler(request, reply) {
     }
 };
 
+async function logoutHandler(request, reply) {
+	try {
+
+	} catch (error) {
+		console.error(error);
+		return reply.status(500).send({
+		  success: false,
+		  message: 'Internal server error'
+		});
+	}
+
+}
 
 module.exports = {
   signupHandler,
   signinHandler,
+  logoutHandler,
   // Add other auth handlers here (loginHandler, logoutHandler, etc.)
 };
