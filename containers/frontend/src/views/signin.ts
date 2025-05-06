@@ -31,7 +31,7 @@ export function showSignIn(container: HTMLElement): void {
 					<input type="password" id="password" placeholder="${i18n.t('password')}" required class="w-full border px-3 py-2 rounded" />
 					<div id="errorMessage" style="color: red; margin-top: 10px;"></div>
 					<button type="submit" id="sign-in-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-					${i18n.t('signIp')}
+					${i18n.t('signIn')}
 					</button>
 				</form>
 
