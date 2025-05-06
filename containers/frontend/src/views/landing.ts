@@ -39,7 +39,6 @@ export function showLanding(container: HTMLElement): void {
 
   const wrapper = landingDiv.querySelector('.flex-col')!;
   const langSelector = new LanguageSelector(() => {
-    // Vuelve a traducir textos cuando cambia el idioma
     const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
     const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
     signInBtn.textContent = i18n.t('signIn');

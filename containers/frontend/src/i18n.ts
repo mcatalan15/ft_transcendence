@@ -14,7 +14,12 @@ i18n.init({
                 signUp: 'Sign up',
                 languageEn: 'EN',
                 languageEs: 'ES',
-                languageFr: 'FR'
+                languageFr: 'FR',
+                nickname: 'Nickname',
+                email:'E-mail',
+                password: 'Password',
+                confirmPassword: 'Confirm Password'
+
             }
         },
         fr: {
@@ -23,7 +28,11 @@ i18n.init({
                 signUp: 'S\'inscrire',
                 languageEn: 'EN',
                 languageEs: 'ES',
-                languageFr: 'FR'
+                languageFr: 'FR',
+                nickname: 'Pseudo',
+                email: 'Courriel',
+                password: 'Mot de passe',
+                confirmPassword: 'Confirmez le mot de passe'
             }
         },
         es: {
@@ -32,7 +41,11 @@ i18n.init({
                 signUp: 'Registrarse',
                 languageEn: 'EN',
                 languageEs: 'ES',
-                languageFr: 'FR'
+                languageFr: 'FR',
+                nickname: 'Alias',
+                email: 'Correo electrónico',
+                password: 'Contraseña',
+                confirmPassword: 'Confirme la contraseña'
             }
         }
     }
