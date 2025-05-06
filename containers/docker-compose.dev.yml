@@ -1,0 +1,40 @@
+# docker-compose.dev.yml (development config)
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    restart: on-failure
+    environment:
+      - VITE_DEV=true
+    command: npm run dev -- --host
+    networks:
+      - transcendence
+
+  backend:
+    volumes:
+      - ./backend:/usr/src/app:consistent
+      - userbase:/usr/src/app/db
+      - /usr/src/app/node_modules
+    networks:
+      - transcendence
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    container_name: nginx
+    ports:
+      - "8080:80"  # Expose dev version on different ports (0-1024 are blocked at 42)
+    depends_on:
+      - frontend
+    volumes:
+      - public:/usr/share/nginx/html:ro
+      - certs:/etc/letsencrypt
+    networks:
+      - transcendence

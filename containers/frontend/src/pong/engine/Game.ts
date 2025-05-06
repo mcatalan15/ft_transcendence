@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/28 10:45:44 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/02 11:05:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,41 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.ui);
 	}
 
+	destroy() {
+
+		this.entities.forEach(entity => {
+			const render = entity.getComponent('render') as RenderComponent;
+			if (render?.graphic) {
+				render.graphic.destroy();
+			}
+	
+			const text = entity.getComponent('text') as TextComponent;
+			if (text) {
+				const renderable = text.getRenderable();
+				if (renderable) renderable.destroy();
+			}
+		});
+		this.entities = [];
+		Object.values(this.renderLayers).forEach(layer => {
+			layer.removeChildren();
+		});
+		Object.values(this.renderLayers).forEach(layer => {
+			layer.destroy({ children: true });
+		});
+		this.app.ticker.stop();
+		this.systems.forEach(system => {
+			if (system.destroy) system.destroy();
+		});
+		Object.values(this.sounds).forEach((sound) => {
+			sound.stop();
+			sound.unload();
+		});
+		this.app.stage.removeChildren();
+		this.app.destroy(true, { children: true, texture: true, baseTexture: true });
+
+		console.log("Game destroyed.");
+	  }
+
 	async init(): Promise<void> {
 		console.log("Initializing PongGame...");
 		
@@ -129,7 +164,7 @@ export class PongGame {
 		console.log('All Systems initialiazed');
 
 		this.initSounds();
-		console.log('Sounds lodaded');
+		console.log('Sounds loaded');
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
@@ -208,20 +243,6 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
-		//Fetch player info from jsons
-		let playerData;
-		try {
-			const response = await fetch('../../players.json');
-			playerData = await response.json();
-		} catch (error) {
-			console.error("Failed to fetch player data, using mock data:", error);
-		}
-
-		const leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
-		const rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
-
-		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`);
-
 		
 		// Create Bounding Box
 		this.createBoundingBox();
@@ -240,7 +261,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'Player 1');
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -248,7 +269,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, 'Player 2');
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);

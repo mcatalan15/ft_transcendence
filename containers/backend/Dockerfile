@@ -1,5 +1,7 @@
 FROM node:18-alpine3.21
 
+ENV TZ=Europe/Paris
+
 RUN apk add --no-cache sqlite
 
 WORKDIR /usr/src/app
@@ -8,9 +10,20 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm cache clean --force \
-	&& npm install fastify@^5.0.0 pino-pretty sqlite3 \
-	&& npm install fastify-multipart bcrypt @fastify/cors @fastify/under-pressure \
-	&& npm install prom-client google-auth-library
+	&& npm install fastify@^5.0.0 \
+	pino-pretty \
+	sqlite3 \
+	fastify-multipart \
+	bcrypt \
+	@fastify/cors \
+	@fastify/under-pressure \
+	prom-client \
+	google-auth-library \
+	nodemon \
+	@fastify/cookie \
+	@fastify/session \
+	@fastify/swagger \
+	@fastify/swagger-ui
 
 COPY . .
 

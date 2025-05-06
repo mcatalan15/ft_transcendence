@@ -4,9 +4,14 @@ module.exports = {
 	  "./public/index.html",
 	],
 	theme: {
-	  extend: {},
+	  extend: {
+		fontFamily: {
+			anatol:['"anatol-mn"', 'sans-serif'],
+		},
+	  },
 	},
 	plugins: [],
+
 
 	// Optional purge
 	purge: {

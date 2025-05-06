@@ -6,26 +6,28 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/04/02 14:44:32 by nponchon         ###   ########.fr        #
+#    Updated: 2025/05/02 13:11:45 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-up:
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml up -d --build
+prod:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
 
-down:
-	docker compose -f ./containers/docker-compose.yml down --remove-orphans
+dev:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
 
 re:
 	$(MAKE) stop
 	$(MAKE) clean
-	$(MAKE) up
+	$(MAKE) prod
 
-backend:
-	$(MAKE) stop
-	docker volume rm containers_public
-	$(MAKE) clean
-	$(MAKE) up
+frontend:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build frontend
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d frontend
+#	$(MAKE) stop
+#	docker volume rm containers_public
+#	$(MAKE) clean
+#	$(MAKE) dev
 
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
 	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
@@ -36,7 +38,7 @@ clean:
 
 fclean:
 	@read -p "Are you sure? This will take down the whole network and you will lose the database. [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
-	$(MAKE) down
+	$(MAKE) stop
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans --rmi all --volumes
 	docker volume prune -f
 	docker network prune -f
@@ -46,4 +48,4 @@ certs:
 	docker exec -it nginx certbot --nginx -d mrlouf.studio -d www.mrlouf.studio
 
 .PHONY:
-	up down re stop clean fclean certs backend
+	up down re stop clean fclean frontend dev prod

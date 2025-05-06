@@ -1,5 +1,7 @@
 FROM alpine:3.21
 
+ENV TZ=Europe/Paris
+
 RUN apk add --no-cache \
     ca-certificates \
     && update-ca-certificates \

@@ -1,10 +1,16 @@
 /* Import Tailwind's default styles */
+@import url('https://use.typekit.net/rla1kou.css');
+
 @tailwind base;
+
 @tailwind components;
+
+
 @tailwind utilities;
 
+
 body {
-  background-color: #221c17;
+  background-color: #171717;
   color: #feeee2;
   display: flex;
   flex-direction: column;
@@ -77,3 +83,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#game-container {
+	width: 1500px;
+	height: 500px;
+  }
