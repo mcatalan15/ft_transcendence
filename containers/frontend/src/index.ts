@@ -10,6 +10,7 @@ import { showPong } from './views/pong';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
+import { logUserOut } from './auth/userLogout';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
@@ -44,8 +45,8 @@ function router(path: string): void {
       showLanding(app);
       break;
     case '/signin':
-		  showSignIn(app);
-		  break;
+	  showSignIn(app);
+	  break;
     case '/signup':
       showSignUp(app);
       break;
@@ -63,8 +64,9 @@ function router(path: string): void {
       showProfile(app);
       break;
     case '/logout':
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+	  if (!isUserAuthenticated()){
+        logUserOut('user');
+	  }
       navigate('/');
       break;
     default:

@@ -6,6 +6,9 @@ module.exports = async function (fastify, options) {
 		schema: profileSchema, 
 		preHandler: requireAuth
 	}, async (request, reply) => {
+
+	try {
+		
 	const user = request.session.get('user');
 	
 	console.log('User:', user.username);
@@ -24,5 +27,13 @@ module.exports = async function (fastify, options) {
 	  username: user.username,
 	  email: user.email,
 	});
+
+	} catch (error) {
+		console.error('Error fetching profile:', error);
+		return reply.status(500).send({
+		  success: false,
+		  message: 'Internal server error'
+		});		
+	}
   });
 }

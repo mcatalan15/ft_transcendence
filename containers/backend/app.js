@@ -26,10 +26,20 @@ function buildApp() {
 
   // Register Swagger for API documentation
   fastify.register(swagger, {
-    swagger: {
+    openapi: {
+	  openapi: '3.0.0',
       info: {
         title: 'ft_transcendence API',
-        description: 'API documentation for the ft_transcendence project',
+        description: 'API documentation for the ft_transcendence project.\n\n \
+			PUT to create or replace\n \
+			GET to fetch or list\n \
+			DELETE to remove\n \
+			PATCH for partial update\n \
+			POST for actions\n\n \
+			The client and API worked (success - 2xx response code)\n \
+			The client application behaved erroneously (client error - 4xx response code)\n \
+			The API behaved erroneously (server error - 5xx response code)\n \
+		',
         version: '1.0.0'
       },
       host: 'localhost:3100',
