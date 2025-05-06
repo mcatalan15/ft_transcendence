@@ -1,13 +1,24 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const dbPath = '/usr/src/app/db/mydatabase.db';
-const db = new sqlite3.Database(dbPath, (err) => {
-if (err) {
-	console.error('Error opening database:', err.message);
-} else {
-	console.log('Connected to SQLite database');
+const db = connectToDatabase();
+
+function connectToDatabase(retries = 5, delay = 2000) {
+	const db = new sqlite3.Database(dbPath, (err) => {
+		if (err) {
+		console.error(`Error opening database (attempts left: ${retries}):`, err.message);
+		if (retries > 0) {
+			console.log(`Retrying in ${delay/1000} seconds...`);
+			setTimeout(() => connectToDatabase(retries - 1, delay), delay);
+		} else {
+			console.error('Failed to connect to database after multiple attempts');
+		}
+		} else {
+		console.log('Connected to SQLite database successfully');
+		}
+	});
+	return db;
 }
-});
 
 async function saveUserToDatabase(username, email, hashedPassword, provider) {
 	return new Promise((resolve, reject) => {
@@ -83,11 +94,30 @@ async function getHashedPassword(email) {
 	});
 }
 
+async function getUserByEmail(email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT * FROM users WHERE email = ?`;
+		db.get(query, [email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve(row);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
 	isDatabaseHealthy,
-	getHashedPassword
+	getHashedPassword,
+	getUserByEmail
 	// Add other database functions here as needed
 };

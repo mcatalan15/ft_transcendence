@@ -1,6 +1,8 @@
-import { localSignIn } from '../auth/localSignIn';
 import i18n from '../i18n';
+import i18next from 'i18next';
+
 import { LanguageSelector } from '../components/languageSelector';
+import { localSignIn } from '../auth/localSignIn';
 
 function loadGoogleScript(): void {
 	if (document.getElementById('google-script')) return;
@@ -76,6 +78,7 @@ export function showSignIn(container: HTMLElement): void {
 			} else {
 				// Sign-in successful - show success message and redirect
 				alert('Sign-in successful!');
+				localStorage.setItem('token', result.token);
 				navigate('/home');
 			}
 		} else {

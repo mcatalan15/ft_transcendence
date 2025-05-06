@@ -1,4 +1,5 @@
-export async function localSignIn(email: string, password: string): Promise<{success: boolean, message: string}> {
+export async function localSignIn(email: string, password: string):
+	Promise<{success: boolean, message: string, token?: string | null}> {
 	try {
 		const response = await fetch('/api/auth/signin', {
 		method: 'POST',
@@ -13,13 +14,14 @@ export async function localSignIn(email: string, password: string): Promise<{suc
 		if (!response.ok) {
 			return { 
 				success: false, 
-				message: data.message || 'Sign-in failed. Please try again.' 
+				message: data.message || 'Sign-in failed. Please try again.',
 			};
 		}
 
 		return { 
 			success: true,
-			message: 'Sign-in successful!'
+			message: 'Sign-in successful!',
+			token: data.token
 		};
 
 	} catch (error) {
