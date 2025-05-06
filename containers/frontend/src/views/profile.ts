@@ -20,8 +20,7 @@ export function showProfile(container: HTMLElement): void {
 		})
 		.catch(error => {
 			navigate('/home');
-/* 			console.error('Error fetching profile:', error);
-			profileInfo.textContent = 'Error fetching profile information.'; */
+ 			console.error('Error fetching profile:', error);
 		});
 
 	container.innerHTML = '';
