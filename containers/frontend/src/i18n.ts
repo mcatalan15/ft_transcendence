@@ -1,8 +1,10 @@
 import i18next from 'i18next';
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-const i18n = i18next.createInstance();
+//const i18n = i18next.createInstance();
 
-i18n.init({
+/*i18n.init({
     fallbackLng: 'en',
     lng: localStorage.getItem('lng') || 'en',
 
@@ -51,4 +53,28 @@ i18n.init({
     }
 });
 
+export default i18n;*/
+
+
+// Crear una instancia de i18next explícitamente
+const i18n = i18next.createInstance();
+
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .init({
+    debug: false,
+    fallbackLng: 'en',
+    supportedLngs: ['en', 'es', 'fr'],
+    ns: ['landing', 'signin', 'signup'],
+    defaultNS: 'landing',
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json'
+    },
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
 export default i18n;
+
