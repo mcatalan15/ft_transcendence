@@ -10,6 +10,8 @@ import { showPong } from './views/pong';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
+import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
+
 import { logUserOut } from './auth/userLogout';
 
 const app = document.getElementById('app') as HTMLElement | null;
@@ -69,6 +71,9 @@ function router(path: string): void {
 	  }
       navigate('/');
       break;
+		case '/blockchain': //Delete when blockchain working!!
+			showBlockchain(app);
+			break;
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>

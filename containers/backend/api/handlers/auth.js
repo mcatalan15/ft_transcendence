@@ -107,6 +107,9 @@ async function signinHandler(request, reply) {
     }
 };
 
+
+// ADD BLOCKCHAIN handlers
+
 async function logoutHandler(request, reply) {
 	try {
 
