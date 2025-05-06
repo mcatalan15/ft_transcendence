@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:40:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 18:34:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 08:56:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,8 +287,8 @@ export class DesertBackgroundSpawner {
 
 	private static getRandomBaseWidth(width: number): number {
 		const maxBaseWidth = width / 3;
-		// Allow base width to be between 20% and 90% of the max
-		const randomFactor = this.getRandomNumber(0.2, 0.9);
+		// Allow base width to be between 50% and 90% of the max
+		const randomFactor = this.getRandomNumber(0.5, 0.9);
 		return randomFactor * maxBaseWidth;
 	}
 }

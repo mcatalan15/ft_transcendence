@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 18:30:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 08:57:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ export class WorldSystem implements System {
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
 			if (this.game.currentWorld.theme === 'desert') {
 				this.isSpawningFigures = true;
-				let depth = Math.floor(Math.random() * (15 - 7 + 1)) + 7;
+				let depth = Math.floor(Math.random() * (21 - 15 + 1)) + 15;
 				let idx = Math.floor(Math.random() 	* 5);
 				switch (idx) {
 					case (0):
@@ -104,7 +104,7 @@ export class WorldSystem implements System {
 			} else {
 				this.spawnDepthLines();
 			}
-			this.depthLineCooldown = 10;
+			this.depthLineCooldown = 5;
 		}
 		
 		// Initialize depth lines
