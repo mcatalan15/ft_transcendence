@@ -79,7 +79,7 @@ function router(path: string): void {
       localStorage.removeItem('token');
       navigate('/');
       break;
-		case '/blockchain': //Delete whe blockchain working!!
+		case '/blockchain': //Delete when blockchain working!!
 			showBlockchain(app);
 			break;
     default:

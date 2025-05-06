@@ -107,6 +107,7 @@ async function signinHandler(request, reply) {
     }
 };
 
+// ADD BLOCKCHAIN handlers
 
 module.exports = {
   signupHandler,

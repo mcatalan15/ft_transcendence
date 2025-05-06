@@ -21,9 +21,15 @@ if [ ! -f "$DB_PATH" ]; then
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT,
-		provider TEXT NOT NULL DEFAULT 'local',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		provider TEXT NOT NULL DEFAULT 'local'
     );
+
+    CREATE TABLE IF NOT EXISTS games (
+        id_game INTEGER PRIMARY KEY AUTOINCREMENT,
+        player1_score INTEGER,
+        player2_score INTEGER
+    );
+    
     -- Add more initialization logic as needed
 EOF
 

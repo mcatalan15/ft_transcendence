@@ -112,12 +112,34 @@ async function getUserByEmail(email) {
 	});
 }
 
+//ADD ASYN FUNC TO SCORES (API)
+async function saveGameToDatabase(player1_score, player2_score) {
+	return new Promise((resolve, reject) => {
+		const query = `INSERT INTO games (player1_score, player2_score) VALUES (?, ?)`;
+		const params = [player1_score, player2_score];
+		db.run(query, params, function (err) {
+			if (err) {
+				console.error('[DB INSERT ERROR] Full error:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno,
+					stack: err.stack
+				});
+				reject(err);
+			} else {
+				resolve(this.lastID);
+			}
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
 	isDatabaseHealthy,
 	getHashedPassword,
-	getUserByEmail
+	getUserByEmail,
+	saveGameToDatabase
 	// Add other database functions here as needed
 };
