@@ -6,11 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 16:35:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 14:54:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Entity } from '../engine/Entity';
+import { System } from '../engine/System';
 
 import { Paddle } from '../entities/Paddle';
 import { Ball } from '../entities/balls/Ball';
@@ -25,6 +26,9 @@ import { SpinBall } from '../entities/balls/SpinBall';
 
 import { Shield } from '../entities/background/Shield';
 import { Bullet } from '../entities/Bullet';
+
+import { RenderSystem } from '../systems/RenderSystem';
+import { AnimationSystem } from '../systems/AnimationSystem';
 
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;
@@ -69,4 +73,12 @@ export function isUI(entity: Entity): entity is UI {
 
 export function isPowerup(entity: Entity): entity is Powerup {
 	return entity instanceof Powerup;
+}
+
+export function isAnimationSystem(system: System): system is AnimationSystem {
+	return system instanceof AnimationSystem;
+}
+
+export function isRenderSystem(system: System): system is RenderSystem {
+	return system instanceof RenderSystem;
 }

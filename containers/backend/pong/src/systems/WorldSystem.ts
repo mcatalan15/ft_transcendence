@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 08:57:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 18:02:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ export class WorldSystem implements System {
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
 			if (this.game.currentWorld.theme === 'desert') {
 				this.isSpawningFigures = true;
-				let depth = Math.floor(Math.random() * (21 - 15 + 1)) + 15;
+				let depth = this.randomOdd(21, 41);
 				let idx = Math.floor(Math.random() 	* 5);
 				switch (idx) {
 					case (0):
@@ -90,7 +90,8 @@ export class WorldSystem implements System {
 					default:
 						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);;
 						break;
-				}
+				} 
+				//DesertBackgroundSpawner.buildBottomPyramid(this, depth);
 			}
 		}
 
@@ -236,4 +237,19 @@ export class WorldSystem implements System {
 			}
 		}
 	}
+
+	randomOdd(min: number, max: number) {
+		// Make sure min is odd
+		min = min % 2 === 0 ? min + 1 : min;
+		
+		// Make sure max is odd
+		max = max % 2 === 0 ? max - 1 : max;
+		
+		// Count how many odd numbers are in range
+		const oddNumberCount = Math.floor((max - min) / 2) + 1;
+		
+		// Generate random odd number
+		return min + 2 * Math.floor(Math.random() * oddNumberCount);
+	  }
+	  
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 08:27:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 18:05:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ export class PhysicsSystem implements System {
 
 		 // Handle collisions
 		this.handleBallWallCollisions(physics, entitiesMap, ball);
+		//this.handleBallCutCollisions(physics, entitiesMap, ball);
 		this.handleBallShieldCollisions(physics, entitiesMap, ball);
         this.handleBallPaddleCollisions(physics, entitiesMap, ball);
         this.handlePowerupCollisions(physics, entities, entitiesMap, ball);
@@ -179,6 +180,65 @@ export class PhysicsSystem implements System {
 		}
 	}
 
+	handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+		for (const [id, entity] of entitiesMap.entries()) {
+			if (!id.startsWith('cut_')) continue;
+	
+			const cutPhysics = entity.getComponent('physics') as PhysicsComponent;
+			if (!cutPhysics) continue;
+	
+			const ballRadius = physics.width / 2;
+			const ballCenter = { x: physics.x, y: physics.y };
+	
+			// Define triangle points based on center + dimensions
+			const baseWidth = cutPhysics.width;
+			const height = cutPhysics.height;
+			const centerX = cutPhysics.x;
+			const centerY = cutPhysics.y;
+	
+			// Assuming upward-pointing isosceles triangle
+			const A = { x: centerX, y: centerY - height / 2 }; // top
+			const B = { x: centerX - baseWidth / 2, y: centerY + height / 2 }; // bottom-left
+			const C = { x: centerX + baseWidth / 2, y: centerY + height / 2 }; // bottom-right
+	
+			// Check against each edge
+			const edges = [
+				[A, B],
+				[B, C],
+				[C, A],
+			];
+	
+			for (const [p1, p2] of edges) {
+				if (this.circleIntersectsSegment(ballCenter, ballRadius, p1, p2)) {
+					const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+					const normal = { x: -edge.y, y: edge.x }; // perpendicular vector
+					const normalLen = Math.hypot(normal.x, normal.y);
+					const nx = normal.x / normalLen;
+					const ny = normal.y / normalLen;
+	
+					// Reflect ball velocity across normal
+					const dot = physics.velocityX * nx + physics.velocityY * ny;
+					physics.velocityX -= 2 * dot * nx;
+					physics.velocityY -= 2 * dot * ny;
+	
+					// Apply spin effect if SpinBall
+					if (isSpinBall(ball)) {
+						(ball as SpinBall).applySpinToBounce(physics);
+					}
+	
+					// VFX
+					const vfx = ball.getComponent('vfx') as VFXComponent;
+					if (vfx) {
+						vfx.startFlash(0xFFFF00, 5);
+					}
+					ParticleSpawner.spawnBasicExplosion(this.game, physics.x, physics.y, 0xFFFFAA);
+					this.game.sounds.pong.play();
+					break;
+				}
+			}
+		}
+	}
+	
 	handleBallShieldCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
 		let collided = false;
 		
@@ -588,4 +648,21 @@ export class PhysicsSystem implements System {
 			physics.velocityY = Math.sign(physics.velocityY) * maxVertical * speed;
 		}
 	}
+
+	circleIntersectsSegment(circle: {x: number, y: number}, radius: number, a: {x: number, y: number}, b: {x: number, y: number}): boolean {
+		// Vector from A to B
+		const ab = { x: b.x - a.x, y: b.y - a.y };
+		const ac = { x: circle.x - a.x, y: circle.y - a.y };
+	
+		// Project ac onto ab to find closest point
+		const abLengthSq = ab.x * ab.x + ab.y * ab.y;
+		const t = Math.max(0, Math.min(1, (ac.x * ab.x + ac.y * ab.y) / abLengthSq));
+		const closest = { x: a.x + ab.x * t, y: a.y + ab.y * t };
+	
+		// Distance from circle center to closest point
+		const dx = circle.x - closest.x;
+		const dy = circle.y - closest.y;
+		return dx * dx + dy * dy <= radius * radius;
+	}
+	
 }

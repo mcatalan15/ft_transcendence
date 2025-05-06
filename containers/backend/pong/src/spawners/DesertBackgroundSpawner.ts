@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:40:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 08:56:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 18:03:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,11 @@ export class DesertBackgroundSpawner {
 	static buildTopPyramid(worldSystem: WorldSystem, depth: number): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
 		const maxPyramidHeight = height / 3 - topWallOffset - wallThickness;
-		const halfDepth = Math.floor(depth / 2.5);
 		
-		// Random Values
+		// For odd depth, the middle index is at depth / 2 (integer division)
+		const middleIndex = Math.floor(depth / 2);
+		
+		// Random Values that remain consistent throughout the pyramid
 		const pyramidBaseWidthTop = this.getRandomBaseWidth(width);
 		const pyramidBaseWidthBottom = this.getRandomBaseWidth(width);
 		const pyramidPeakOffsetTop = this.getRandomPeakOffset(width, 1);  // Positive side
@@ -103,17 +105,12 @@ export class DesertBackgroundSpawner {
 		const heightVariationFactor = this.getRandomNumber(0.85, 1.15);
 	
 		for (let i = 0; i < depth; i++) {
-			// Calculate pyramidHeightRatio: 0 → 1 → 0
-			let heightRatio: number;
-			if (i <= halfDepth) {
-				heightRatio = i / halfDepth; // ascending
-			} else {
-				heightRatio = (depth - 1 - i) / halfDepth; // descending
-			}
+			// Calculate height ratio: 0 at edges, 1 at the middle
+			// For an odd depth (e.g. 21), this creates a perfect pyramid with peak at the middle
+			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
 	
 			// Apply consistent randomness to the pyramid parameters
-			const basePyramidHeight = heightRatio * maxPyramidHeight;
-			const pyramidHeight = basePyramidHeight * heightVariationFactor;
+			const pyramidHeight = heightRatio * maxPyramidHeight * heightVariationFactor;
 	
 			const behaviorTop: DepthLineBehavior = {
 				movement: 'vertical',
@@ -150,9 +147,10 @@ export class DesertBackgroundSpawner {
 	static buildBottomPyramid(worldSystem: WorldSystem, depth: number): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
 		const maxPyramidHeight = height / 3 - topWallOffset - wallThickness;
-		const halfDepth = Math.floor(depth / 2.5);
+		const middleIndex = Math.floor(depth / 2);
+		const side = Math.floor(Math.random() * 2) > 0 ? 1 : -1;
 		
-		// Random values
+		// Random values that remain consistent throughout the pyramid
 		const pyramidBaseWidthTop = this.getRandomBaseWidth(width);
 		const pyramidBaseWidthBottom = this.getRandomBaseWidth(width);
 		const pyramidPeakOffsetTop = this.getRandomPeakOffset(width, 1);
@@ -160,13 +158,11 @@ export class DesertBackgroundSpawner {
 		const heightVariationFactor = this.getRandomNumber(0.85, 1.15);
 	
 		for (let i = 0; i < depth; i++) {
-			let heightRatio = i <= halfDepth
-				? i / halfDepth
-				: (depth - 1 - i) / halfDepth;
+			// Calculate height ratio: 0 at edges, 1 at the middle
+			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
 			
 			// Apply consistent randomness to the pyramid parameters
-			const basePyramidHeight = heightRatio * maxPyramidHeight;
-			const pyramidHeight = basePyramidHeight * heightVariationFactor;
+			const pyramidHeight = heightRatio * maxPyramidHeight * heightVariationFactor;
 	
 			const behaviorTop: DepthLineBehavior = {
 				movement: 'vertical',
@@ -185,7 +181,7 @@ export class DesertBackgroundSpawner {
 				pyramidBaseHeight: 0,
 				pyramidBaseWidth: pyramidBaseWidthBottom,
 				pyramidPeakHeight: pyramidHeight,
-				pyramidPeakOffset: pyramidPeakOffsetBottom,
+				pyramidPeakOffset: pyramidPeakOffsetBottom * side,
 			};
 	
 			let bottomLine = this.spawnPyramidDepthLine(
@@ -203,9 +199,9 @@ export class DesertBackgroundSpawner {
 	static buildTopAndBottomPyramid(worldSystem: WorldSystem, depth: number): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
 		const maxPyramidHeight = height / 3 - topWallOffset - wallThickness;
-		const halfDepth = Math.floor(depth / 2.5);
+		const middleIndex = Math.floor(depth / 2);
 		
-		// Random values
+		// Random values that remain consistent throughout the pyramid
 		const pyramidBaseWidthTop = this.getRandomBaseWidth(width);
 		const pyramidBaseWidthBottom = this.getRandomBaseWidth(width);
 		const pyramidPeakOffsetTop = this.getRandomPeakOffset(width, 1);
@@ -214,14 +210,12 @@ export class DesertBackgroundSpawner {
 		const heightVariationFactorBottom = this.getRandomNumber(0.85, 1.15);
 	
 		for (let i = 0; i < depth; i++) {
-			let heightRatio = i <= halfDepth
-				? i / halfDepth
-				: (depth - 1 - i) / halfDepth;
+			// Calculate height ratio: 0 at edges, 1 at the middle
+			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
 			
 			// Apply consistent randomness to the pyramid parameters
-			const basePyramidHeight = heightRatio * maxPyramidHeight;
-			const pyramidHeightTop = basePyramidHeight * heightVariationFactorTop;
-			const pyramidHeightBottom = basePyramidHeight * heightVariationFactorBottom;
+			const pyramidHeightTop = heightRatio * maxPyramidHeight * heightVariationFactorTop;
+			const pyramidHeightBottom = heightRatio * maxPyramidHeight * heightVariationFactorBottom;
 	
 			const behaviorTop: DepthLineBehavior = {
 				movement: 'vertical',

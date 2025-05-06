@@ -5,8 +5,8 @@ import { PongGame } from './engine/Game';
   const app = new Application();
   await app.init({
     background: '#171717',
-    width: 1500,
-    height: 500,
+    width: 1800,
+    height: 750,
     antialias: true,
     resolution: 3,
     autoDensity: true,

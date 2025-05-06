@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 11:36:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 16:11:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,10 +151,10 @@ export class PongGame {
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
-			/*console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
+			/* console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
 				id,
 				type: entity.constructor.name
-			})));*/
+			}))); */
 			
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
@@ -167,7 +167,7 @@ export class PongGame {
 	}
 
 	initSystems(): void {
-		const renderSystem = new RenderSystem();
+		const renderSystem = new RenderSystem(this);
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const worldSystem = new WorldSystem(this);

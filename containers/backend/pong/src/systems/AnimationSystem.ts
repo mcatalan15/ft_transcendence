@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 16:21:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/06 16:11:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { Entity } from '../engine/Entity';
 import type { System } from '../engine/System'
 
 import { Paddle } from '../entities/Paddle'
+import { cutTriangle } from '../entities/background/cutTriangle';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -24,7 +25,8 @@ import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { FrameData, GameEvent } from '../utils/Types';
-import { isPaddle, isDepthLine, isPowerup } from '../utils/Guards'
+import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isRenderSystem } from '../utils/Guards'
+import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 
 export class AnimationSystem implements System {
 	private game: PongGame;
@@ -36,6 +38,7 @@ export class AnimationSystem implements System {
 
 	private frameCounter: number = 0;
 	private depthLineUpdateRate: number = 1;
+	lastCutId: string | null = null;
 
 	constructor(
 		game: PongGame,
@@ -178,6 +181,17 @@ export class AnimationSystem implements System {
 							(entity.behavior.direction === 'upwards' && entity.y <= entity.upperLimit) ||
 							(entity.behavior.direction === 'downwards' && entity.y >= entity.lowerLimit)
 						) {
+							if (isPyramidDepthLine(entity)) {
+								if (entity.points && entity.points.length >= 4) {
+									for (const system of this.game.systems) {
+										if (isRenderSystem(system)) {
+											system.generatePyramidCut(entity);
+										}
+									}
+								} else {
+									console.warn("PyramidDepthLine missing required points:", entity);
+								}
+							}
 							entitiesToRemove.push(entity.id);
 						}
 					}
