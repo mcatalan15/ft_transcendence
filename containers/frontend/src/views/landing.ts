@@ -11,11 +11,11 @@ export function showLanding(container: HTMLElement): void {
         <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
           <button id="sign-in-btn"
             class="bg-amber-50 text-neutral-900 px-4 py-2 rounded hover:bg-amber-100 transition-colors z-30 relative">
-            ${i18n.t('signIn')}
+            ${i18n.t('Sign in')}
           </button>
           <button id="sign-up-btn"
             class="border border-amber-50 text-amber-50 px-4 py-2 rounded hover:bg-neutral-800 transition-colors z-30 relative">
-            ${i18n.t('signUp')}
+            ${i18n.t('Sign up')}
           </button>
         </div>
 
@@ -41,8 +41,8 @@ export function showLanding(container: HTMLElement): void {
   const langSelector = new LanguageSelector(() => {
     const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
     const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
-    signInBtn.textContent = i18n.t('signIn');
-    signUpBtn.textContent = i18n.t('signUp');
+    signInBtn.textContent = i18n.t('Sign in');
+    signUpBtn.textContent = i18n.t('Sign up');
   });
   wrapper.appendChild(langSelector.getElement());
 

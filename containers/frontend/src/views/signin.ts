@@ -27,11 +27,11 @@ export function showSignIn(container: HTMLElement): void {
 				<h2 class="text-2xl font-semibold text-center">Let's play!</h2>
 
 				<form id="login-form" class="space-y-4">
-					<input type="email" id="email" placeholder="${i18n.t('email')}" required class="w-full border px-3 py-2 rounded" />
-					<input type="password" id="password" placeholder="${i18n.t('password')}" required class="w-full border px-3 py-2 rounded" />
+					<input type="email" id="email" placeholder="${i18n.t('E-mail')}" required class="w-full border px-3 py-2 rounded" />
+					<input type="password" id="password" placeholder="${i18n.t('Password')}" required class="w-full border px-3 py-2 rounded" />
 					<div id="errorMessage" style="color: red; margin-top: 10px;"></div>
 					<button type="submit" id="sign-in-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-					${i18n.t('signIn')}
+					${i18n.t('Sign in')}
 					</button>
 				</form>
 
@@ -93,9 +93,9 @@ export function showSignIn(container: HTMLElement): void {
 		const emailInput = SignInDiv.querySelector('#email') as HTMLButtonElement;
 		const passwordInput = SignInDiv.querySelector('#password') as HTMLButtonElement;
 		const signUpBtn = SignInDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
-		emailInput.placeholder = i18n.t('email');
-		passwordInput.placeholder = i18n.t('password');
-		signUpBtn.textContent = i18n.t('signIn');
+		emailInput.placeholder = i18n.t('signin:E-mail');
+		passwordInput.placeholder = i18n.t('signin:Password');
+		signUpBtn.textContent = i18n.t('Sign in');
 	});
 	wrapper.appendChild(langSelector.getElement());
 }

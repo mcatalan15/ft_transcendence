@@ -30,12 +30,12 @@ export function showSignUp(container: HTMLElement): void {
 						<h2 class="text-2xl font-semibold text-center">Let's start!</h2>
 
 						<form id="login-form" class="space-y-4">
-							<input type="nickname" id="nickname" placeholder="${i18n.t('nickname')}" required class="w-full border px-3 py-2 rounded" />
-							<input type="email" id="email" placeholder="${i18n.t('email')}" required class="w-full border px-3 py-2 rounded" />
-							<input type="password" id="password" placeholder="${i18n.t('password')}" required class="w-full border px-3 py-2 rounded" />
-							<input type="password" id="confirmPassword" placeholder="${i18n.t('confirmPassword')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="nickname" id="nickname" placeholder="${i18n.t('Nickname')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="email" id="email" placeholder="${i18n.t('E-mail')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="password" id="password" placeholder="${i18n.t('Password')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="password" id="confirmPassword" placeholder="${i18n.t('Confirm Password')}" required class="w-full border px-3 py-2 rounded" />
 							<button type="submit" id="sign-up-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-								${i18n.t('signUp')}
+								${i18n.t('Sign up')}
 							</button>
 						</form>
 
@@ -126,11 +126,11 @@ export function showSignUp(container: HTMLElement): void {
 		const passwordInput = SignUpDiv.querySelector('#password') as HTMLButtonElement;
 		const confirmPasswordInput = SignUpDiv.querySelector('#confirmPassword') as HTMLButtonElement;
 		const signUpBtn = SignUpDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
-		nicknameInput.placeholder = i18n.t('nickname');
-		emailInput.placeholder = i18n.t('email');
-		passwordInput.placeholder = i18n.t('password');
-		confirmPasswordInput.placeholder = i18n.t('confirmPassword');
-		signUpBtn.textContent = i18n.t('signUp');
+		nicknameInput.placeholder = i18n.t('signup:Nickname');
+		emailInput.placeholder = i18n.t('signup:E-mail');
+		passwordInput.placeholder = i18n.t('signup:Password');
+		confirmPasswordInput.placeholder = i18n.t('signup:ConfirmPassword');
+		signUpBtn.textContent = i18n.t('Sign up');
 	});
 	wrapper.appendChild(langSelector.getElement());
 }
