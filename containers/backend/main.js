@@ -1,9 +1,17 @@
-const buildApp = require('./app');
+const { gracefulShutdown } = require('./config/serverConfiguration');
 const serverConfig = require('./config/serverConfiguration');
+const buildApp = require('./app');
+const { db } = require('./api/db/database');
 
 const app = buildApp();
 
-app.listen({ 
+let server;
+
+['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
+  process.on(signal, () => gracefulShutdown(server, db, signal));
+});
+
+server = app.listen({ 
   host: serverConfig.ADDRESS, 
   port: serverConfig.PORT 
 }, (err, address) => {

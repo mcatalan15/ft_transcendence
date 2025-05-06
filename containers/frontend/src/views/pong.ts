@@ -26,7 +26,7 @@ async function initGame(canvas: HTMLCanvasElement): Promise<void> {
 	gameDiv.innerHTML = `
 	  <h2>Pong</h2>
 	  <canvas id="game-canvas" width="1500" height="500"></canvas>
-	  <button onclick="navigate('/')">Back home</button>
+	  <button onclick="navigate('/home')">Back home</button>
 	`;
 	container.appendChild(gameDiv);
   

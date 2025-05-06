@@ -1,5 +1,5 @@
 const underPressure = require('@fastify/under-pressure');
-const { db, isDatabaseHealthy } = require('../db/database');
+const { db, isDatabaseHealthy } = require('../api/db/database');
 
 module.exports = async function (fastify) {
   // Ensure database connection is established

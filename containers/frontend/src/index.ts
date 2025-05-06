@@ -1,19 +1,20 @@
 import './styles/tailwind.css';
 import './i18n';
-import { showLanding } from './views/landing';
 //import { loadLanguage, getCurrentLang } from './lang';
+import i18next from 'i18next';
+
+import { isUserAuthenticated } from './auth/authGuard';
+import { showLanding } from './views/landing';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
-//import { showProfile } from './views/profile';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
-
+import { showProfile} from './views/profile';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
 if (!app)
 	throw new Error('App container not found');
-
 
 function navigate(path: string): void {
   history.pushState({}, '', path);
@@ -21,31 +22,13 @@ function navigate(path: string): void {
 }
 window.navigate = navigate;
 
-localStorage.setItem('user', 'nico');
-console.log(isLoggedIn())
-
-function isLoggedIn() : boolean
-{
-  return !!localStorage.getItem('user');
-  //return false;
-}
-
 let currentGame: PongGame | null = null;
 
-
-app.innerHTML=`<h2>Page not found</h2>`;
-
 function router(path: string): void {
-  
+
   if (!app) return;
   
   app.innerHTML = '';
-  
-  if(!isLoggedIn() && path !== '/landing')
-  {
-    showLanding(app);
-    return ;
-  }
 
   //TODO destroy game when leaving /pong
   if (path !== '/pong' && currentGame) {
@@ -67,10 +50,22 @@ function router(path: string): void {
       showSignUp(app);
       break;
     case '/pong':
+      if (!isUserAuthenticated()) {
+        navigate('/landing');
+        return;
+      }
       showPong(app);
       break;
     case '/home':
       showHome(app);
+      break;
+    case '/profile':
+      showProfile(app);
+      break;
+    case '/logout':
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      navigate('/');
       break;
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>

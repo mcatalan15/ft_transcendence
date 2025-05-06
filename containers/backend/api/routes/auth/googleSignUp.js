@@ -1,5 +1,5 @@
 const { OAuth2Client } = require('google-auth-library');
-const { saveUserToDatabase, checkUserExists } = require('../db/database');
+const { saveUserToDatabase, checkUserExists } = require('../../db/database');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
