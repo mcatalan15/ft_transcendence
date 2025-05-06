@@ -1,59 +1,98 @@
-import { localSignUp } from '../auth/localSignUp';
+import { localSignUp } from "../auth/localSignUp";
+import i18n from '../i18n';
+import { LanguageSelector } from '../components/languageSelector';
+
+function loadGoogleScript(): void {
+	if (document.getElementById('google-script')) return;
+
+	const script = document.createElement('script');
+	script.src = 'https://accounts.google.com/gsi/client';
+	script.id = 'google-script';
+	script.async = true;
+	script.defer = true;
+	document.head.appendChild(script);
+}
 
 export function showSignUp(container: HTMLElement): void {
-	const homeDiv = document.createElement('div');
-	homeDiv.innerHTML = `
-	  <h1>Log in or Sign up</h1>
-		<form id="signupForm">
-			<label style='margin-right:16px' for="username">Username:</label>
-			<input type="text" id="username" name="username" required><br><br>
+	loadGoogleScript();
 
-			<label style='margin-right:16px' for="email">Email:</label>
-			<input type="email" id="email" name="email" required><br><br>
+	const SignUpDiv = document.createElement('div');
+	SignUpDiv.innerHTML = `
+    <div class="fixed inset-0 bg-neutral-900 text-amber-50 overflow-hidden" id="landing-wrapper">
 
-			<label style='margin-right:16px' for="password">Password:</label>
-			<input type="password" id="password" name="password" required><br><br>
+	  	<div class="relative h-full flex flex-col">
 
-			<label style='margin-right:16px' for="confirmPassword">Confirm Password:</label>
-			<input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
-			<style>
-				input[type="text"], input[type="email"], input[type="password"] {
-					background-color: #333;
-					color: #fff;
-					border: 1px solid #555;
-					padding: 6px;
-					border-radius: 4px;
-				}
-			</style>
+        	<div class="pt-6 w-full flex justify-center gap-x-4 z-30">
 
-		    <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+				<div class="h-screen flex items-center justify-center text-amber-50 bg-gradient-to-br from-neutral-900">
 
-			<button style='margin-right:16px' type="button" id="signUpButton">Sign Up</button>
-			<button style='margin-right:16px' onclick="navigate('/')">Return home</button>
-		</form>
+					<div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6">
+						<h2 class="text-2xl font-semibold text-center">Let's start!</h2>
+
+						<form id="login-form" class="space-y-4">
+							<input type="nickname" id="nickname" placeholder="${i18n.t('Nickname')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="email" id="email" placeholder="${i18n.t('E-mail')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="password" id="password" placeholder="${i18n.t('Password')}" required class="w-full border px-3 py-2 rounded" />
+							<input type="password" id="confirmPassword" placeholder="${i18n.t('Confirm Password')}" required class="w-full border px-3 py-2 rounded" />
+							<button type="submit" id="sign-up-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+								${i18n.t('Sign up')}
+							</button>
+						</form>
+
+					<div class="flex items-center gap-2 text-sm text-gray-500">
+						<hr class="flex-1 border-gray-300" />
+					</div>
+
+				<div>			
+					<div id="g_id_onload"
+						data-client_id="YOUR_GOOGLE_CLIENT_ID"
+						data-login_uri="https://your.domain/your_login_endpoint"
+						data-auto_prompt="false">
+					</div>
+
+					<div class="g_id_signin"
+						data-type="standard"
+						data-size="large"
+						data-theme="outline"
+						data-text="sign_in_with"
+						data-shape="rectangular"
+						data-logo_alignment="left">
+					</div>
+
+				</div>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 	`;
 
-	const signUpButton = homeDiv.querySelector('#signUpButton') as HTMLButtonElement;
-	const errorMessageDiv = homeDiv.querySelector('#errorMessage') as HTMLDivElement;
-
-	signUpButton.addEventListener('click', async () => {
-		const username = (homeDiv.querySelector('#username') as HTMLInputElement).value;
-		const email = (homeDiv.querySelector('#email') as HTMLInputElement).value;
-		const password = (homeDiv.querySelector('#password') as HTMLInputElement).value;
-		const confirmPassword = (homeDiv.querySelector('#confirmPassword') as HTMLInputElement).value;
-
+	
+	const form = SignUpDiv.querySelector('#login-form') as HTMLFormElement;
+	const errorMessageDiv = document.createElement('div');
+	errorMessageDiv.style.color = 'red';
+	errorMessageDiv.style.marginTop = '10px';
+	SignUpDiv.appendChild(errorMessageDiv);
+	
+	
+	form.onsubmit = async (e) => {
+		e.preventDefault();
+		const username = (SignUpDiv.querySelector('#nickname') as HTMLInputElement).value;
+		const email = (SignUpDiv.querySelector('#email') as HTMLInputElement).value;
+		const password = (SignUpDiv.querySelector('#password') as HTMLInputElement).value;
+		const confirmPassword = (SignUpDiv.querySelector('#confirmPassword') as HTMLInputElement).value;
 		errorMessageDiv.textContent = '';
-
 		if (!username || !email || !password || !confirmPassword) {
 			errorMessageDiv.textContent = 'All fields are required!';
 			return;
 		}
-
 		if (username.length < 3 || username.length > 8) {
 			errorMessageDiv.textContent = 'Username must be between 3 and 8 characters long!';
 			return;
 		}
-
+		
 		if (password.length < 6 || password.length > 20) {
 			errorMessageDiv.textContent = 'Password must be between 6 and 20 characters long!';
 			return;
@@ -62,21 +101,36 @@ export function showSignUp(container: HTMLElement): void {
 			errorMessageDiv.textContent = 'Username can only contain letters and numbers!';
 			return;
 		}		
-
+		
 		if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
-      
+			
 			if (!result.success) {
-			  // Display the error message from the backend
-			  errorMessageDiv.textContent = result.message;
+				// Display the error message from the backend
+				errorMessageDiv.textContent = result.message;
 			} else {
-			  // Registration successful - redirect or show success message
-			  alert('Registration successful!');
-			  navigate('/');
+				// Registration successful - redirect or show success message
+				alert('Registration successful!');
+				navigate('/signin');
 			}
-		  } else {
+		} else {
 			errorMessageDiv.textContent = 'Passwords do not match!';
-		  }
+		}
+	};
+	container.appendChild(SignUpDiv);
+	
+	const wrapper = SignUpDiv.querySelector('.flex-col')!;
+	const langSelector = new LanguageSelector(() => {
+		const nicknameInput = SignUpDiv.querySelector('#nickname') as HTMLButtonElement;
+		const emailInput = SignUpDiv.querySelector('#email') as HTMLButtonElement;
+		const passwordInput = SignUpDiv.querySelector('#password') as HTMLButtonElement;
+		const confirmPasswordInput = SignUpDiv.querySelector('#confirmPassword') as HTMLButtonElement;
+		const signUpBtn = SignUpDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
+		nicknameInput.placeholder = i18n.t('signup:Nickname');
+		emailInput.placeholder = i18n.t('signup:E-mail');
+		passwordInput.placeholder = i18n.t('signup:Password');
+		confirmPasswordInput.placeholder = i18n.t('signup:ConfirmPassword');
+		signUpBtn.textContent = i18n.t('Sign up');
 	});
-	container.appendChild(homeDiv);
-  }
+	wrapper.appendChild(langSelector.getElement());
+}

@@ -1,5 +1,6 @@
 import './styles/tailwind.css';
-
+import './i18n';
+//import { loadLanguage, getCurrentLang } from './lang';
 import i18next from 'i18next';
 
 import { isUserAuthenticated } from './auth/authGuard';
@@ -11,17 +12,7 @@ import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
 
-i18next.init({
-  lng: 'en', // if you're using a language detector, do not define the lng option
-  debug: true,
-  resources: {
-    en: {
-      translation: {
-        "key": "hello world"
-      }
-    }
-  }
-});
+import { logUserOut } from './auth/userLogout';
 
 const app = document.getElementById('app') as HTMLElement | null;
 
@@ -56,8 +47,8 @@ function router(path: string): void {
       showLanding(app);
       break;
     case '/signin':
-		  showSignIn(app);
-		  break;
+	  showSignIn(app);
+	  break;
     case '/signup':
       showSignUp(app);
       break;
@@ -75,8 +66,9 @@ function router(path: string): void {
       showProfile(app);
       break;
     case '/logout':
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+	  if (!isUserAuthenticated()){
+        logUserOut('user');
+	  }
       navigate('/');
       break;
 		case '/blockchain': //Delete when blockchain working!!

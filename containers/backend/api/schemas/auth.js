@@ -110,7 +110,60 @@ const signinSchema = {
   }
 };
 
+const logoutSchema = {
+	description: 'Logs a user out. \
+	  The session information are deleted, including the token to communicate with backend. \
+	',
+	tags: ['authentication'],
+	body: {
+	  type: 'object',
+	  required: ['user'],
+	  properties: {
+		user: { type: 'string', description: 'User\'s session to be destroyed' }
+	  }
+	},
+	response: {
+	  201: {
+		description: 'Successful logout',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' }
+		},
+		example: {
+		  success: true,
+		  message: 'User registered successfully'
+		}
+	  },
+	  400: {
+		description: 'Bad request - user session could not be destroyed',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' }
+		},
+		example: {
+		  success: false,
+		  message: 'User not found'
+		}
+	  },
+	  500: {
+		description: 'Server error',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' }
+		},
+		example: {
+		  success: false,
+		  message: 'Internal server error'
+		}
+	  }
+	}
+  };
+
 module.exports = {
   signupSchema,
-  signinSchema
+  signinSchema,
+  logoutSchema
 };

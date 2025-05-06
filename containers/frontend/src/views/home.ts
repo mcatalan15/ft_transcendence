@@ -5,6 +5,7 @@ export function showHome(container: HTMLElement): void {
 		<div><button onclick="navigate('/pong')">Play</button></div>
 		<div><button onclick="navigate('/signin')">Login</button></div>
 		<div><button onclick="navigate('/profile')">Profile</button></div>
+		<div><button onclick="navigate('/blockchain')">Blockchain</button></div>
 		<div><button onclick="navigate('/logout')">Logout</button></div>
 		<select id="lang-switcher">
 		<option value="fr">🇫🇷 FR</option>
