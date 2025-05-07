@@ -107,11 +107,22 @@ async function signinHandler(request, reply) {
     }
 };
 
-
-// ADD BLOCKCHAIN handlers
-
 async function logoutHandler(request, reply) {
 	try {
+
+		// Check if request.session exists
+		if (request.session.get('user')) {
+			request.session.destroy();
+			return reply.status(200).send({
+				success: true,
+				message: 'User session destroyed'
+			  });
+		}
+
+		return reply.status(400).send({
+			success: false,
+			message: 'No user session found'
+		  });
 
 	} catch (error) {
 		console.error(error);
@@ -122,6 +133,9 @@ async function logoutHandler(request, reply) {
 	}
 
 }
+
+// ADD BLOCKCHAIN handlers
+
 
 module.exports = {
   signupHandler,

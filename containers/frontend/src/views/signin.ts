@@ -73,12 +73,9 @@ export function showSignIn(container: HTMLElement): void {
 		if (email && password) {
 			const result = await localSignIn(email, password);
 			if (!result.success) {
-				// Display the error message from the backend
 				errorMessageDiv.textContent = result.message;
 			} else {
-				// Sign-in successful - show success message and redirect
 				alert('Sign-in successful!');
-				localStorage.setItem('token', result.token);
 				navigate('/home');
 			}
 		} else {

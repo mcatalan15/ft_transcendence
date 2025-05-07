@@ -18,6 +18,10 @@ export async function localSignIn(email: string, password: string):
 			};
 		}
 
+		// Use real, secret token generated from backend here
+		localStorage.setItem('authToken', 'blablabla');
+		localStorage.setItem('user', 'testUser');
+
 		return { 
 			success: true,
 			message: 'Sign-in successful!',

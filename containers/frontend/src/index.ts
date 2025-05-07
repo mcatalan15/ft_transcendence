@@ -1,7 +1,6 @@
 import './styles/tailwind.css';
 import './i18n';
-//import { loadLanguage, getCurrentLang } from './lang';
-import i18next from 'i18next';
+// import i18next from 'i18next';
 
 import { isUserAuthenticated } from './auth/authGuard';
 import { showLanding } from './views/landing';
@@ -54,7 +53,7 @@ function router(path: string): void {
       break;
     case '/pong':
       if (!isUserAuthenticated()) {
-        navigate('/landing');
+        navigate('/');
         return;
       }
       showPong(app);
@@ -63,11 +62,15 @@ function router(path: string): void {
       showHome(app);
       break;
     case '/profile':
+	  if (!isUserAuthenticated()) {
+		navigate('/');
+		return;
+		}
       showProfile(app);
       break;
     case '/logout':
-	  if (!isUserAuthenticated()){
-        logUserOut('user');
+	  if (isUserAuthenticated()){
+        logUserOut(localStorage.getItem('user'));
 	  }
       navigate('/');
       break;
