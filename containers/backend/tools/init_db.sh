@@ -17,7 +17,7 @@ if [ ! -f "$DB_PATH" ]; then
 
     sqlite3 "$DB_PATH" <<EOF
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_user INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT,
@@ -26,8 +26,19 @@ if [ ! -f "$DB_PATH" ]; then
 
     CREATE TABLE IF NOT EXISTS games (
         id_game INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_tournament BOOLEAN,
+        player1_id INTEGER,
+        player2_id INTEGER,
         player1_score INTEGER,
-        player2_score INTEGER
+        player2_score INTEGER,
+        winner_id INTEGER,
+        player1_is_ai BOOLEAN,
+        player2_is_ai BOOLEAN,
+        game_mode TEXT CHECK(game_mode IN ('local', 'online', 'vs_ai')),
+        FOREIGN KEY(player1_id) REFERENCES users(id_user),
+        FOREIGN KEY(player2_id) REFERENCES users(id_user),
+        FOREIGN KEY(winner_id) REFERENCES users(id_user)
     );
     
     -- Add more initialization logic as needed
