@@ -70,7 +70,7 @@ function router(path: string): void {
       break;
     case '/logout':
 	  if (isUserAuthenticated()){
-        logUserOut(localStorage.getItem('user'));
+        logUserOut();
 	  }
       navigate('/');
       break;

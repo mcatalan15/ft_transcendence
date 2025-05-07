@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 17:16:08 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/07 17:49:34 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,7 +261,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 
-		const Player1 = localStorage.getItem('user');
+		const Player1 = sessionStorage.getItem('user') || 'cucufu';
 
 		// Create Paddles
 		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, Player1!);

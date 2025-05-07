@@ -1,5 +1,6 @@
 // schemas/game.js
 const gameSchema = {
+	tags: ['blockchain'],
     body: {
         type: 'object',
         required: ['player1_score', 'player2_score'],

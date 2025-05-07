@@ -10,4 +10,30 @@ async function requireAuth(request, reply) {
   }
 }
 
-module.exports = { requireAuth };
+async function verifyToken(request, reply) {
+
+	const token = request.body.token;
+
+	if (token) {
+
+        const secret = process.env.JWT_SECRET;
+        const decode = jwt.verify(token, secret);
+
+        return reply.status(200).send({
+            success: true,
+            message: decode,
+        });
+
+    } else {
+
+        return reply.status(400).send({
+            success: false,
+            message: 'Invalid token',
+        });
+    }
+}
+
+module.exports = { 
+	requireAuth,
+	verifyToken
+};

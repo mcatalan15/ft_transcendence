@@ -53,8 +53,7 @@ const signupSchema = {
 const signinSchema = {
   description: 'Authenticate a user with their email and password. \
     The password is compared with the stored hash in the database. \
-    If the password matches, a token is generated and returned to the user. \
-    Currently, this is a simple phrase, but in production, it will be a JWT token for the authenticated user.',
+    If the password matches, a token is generated and returned to the user.',
   tags: ['authentication'],
   body: {
     type: 'object',
@@ -71,13 +70,13 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string', description: 'Currently a simple phrase, prod will have JWT token for authenticated user' },
+        token: { type: 'string', description: 'JWT token generated from a secret' },
 		user: { type: 'string' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
-        token: 'simple-phrase-token',
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
 		user: 'test-user'
       }
     },
