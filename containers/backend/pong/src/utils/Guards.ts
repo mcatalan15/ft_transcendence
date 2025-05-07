@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 14:54:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:44:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
 import { Powerup } from '../entities/powerups/Powerup'
+import { crossCut } from '../entities/crossCuts/crossCut';
+import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
 
 import { SpinBall } from '../entities/balls/SpinBall';
 
@@ -62,6 +64,9 @@ export function isPyramidDepthLine(entity: Entity): entity is PyramidDepthLine {
 	return entity instanceof PyramidDepthLine;
 }
 
+export function isTriangleCut(cut: TriangleCrossCut): cut is TriangleCrossCut {
+	return cut instanceof TriangleCrossCut;
+}
 
 export function isParticle(entity: Entity): entity is Particle {
 	return entity instanceof Particle;
@@ -73,6 +78,10 @@ export function isUI(entity: Entity): entity is UI {
 
 export function isPowerup(entity: Entity): entity is Powerup {
 	return entity instanceof Powerup;
+}
+
+export function isCrossCut(entity: Entity): entity is crossCut {
+	return entity instanceof crossCut;
 }
 
 export function isAnimationSystem(system: System): system is AnimationSystem {

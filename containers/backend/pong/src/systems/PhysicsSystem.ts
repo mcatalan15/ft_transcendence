@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 18:05:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:20:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,8 @@ import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { PongGame } from '../engine/Game'
 
-import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { Ball } from '../entities/balls/Ball'
-import { DefaultBall } from '../entities/balls/DefaultBall'
-import { CurveBall } from '../entities/balls/CurveBall'
 import { BurstBall } from '../entities/balls/BurstBall';
 import { SpinBall } from '../entities/balls/SpinBall';
 import { Shield } from '../entities/background/Shield';
@@ -27,7 +24,6 @@ import { Bullet } from '../entities/Bullet';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
 import { InputComponent } from '../components/InputComponent';
-import { PowerupComponent } from '../components/PowerupComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { ParticleSpawner } from '../spawners/ParticleSpawner'
@@ -59,7 +55,7 @@ export class PhysicsSystem implements System {
 			} else if (isBall(entity)) {
 				this.updateBall(entity, entities, entitiesMap);
 			} else if (isBullet(entity)) {
-				this.updateBullet(entity, entities, entitiesMap);
+				this.updateBullet(entity, entitiesMap);
 			}
 		}
 	}
@@ -137,7 +133,7 @@ export class PhysicsSystem implements System {
 		//this.handleBallCutCollisions(physics, entitiesMap, ball);
 		this.handleBallShieldCollisions(physics, entitiesMap, ball);
         this.handleBallPaddleCollisions(physics, entitiesMap, ball);
-        this.handlePowerupCollisions(physics, entities, entitiesMap, ball);
+        this.handlePowerupCollisions(entities, entitiesMap, ball);
 
 		// Check if ball is out of bounds
         this.checkBallOutOfBounds(physics, ball);
@@ -180,6 +176,7 @@ export class PhysicsSystem implements System {
 		}
 	}
 
+	//! WIP
 	handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
 		for (const [id, entity] of entitiesMap.entries()) {
 			if (!id.startsWith('cut_')) continue;
@@ -273,7 +270,6 @@ export class PhysicsSystem implements System {
 		const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees
 		const PADDLE_INFLUENCE = 0.5;
 		const MIN_HORIZONTAL_COMPONENT = 0.7; // At least 70% of velocity should be horizontal
-		const MIN_VERTICAL_ANGLE = 0.2; // To prevent completely flat trajectories
 		
 		if (ball.isGoodBall) {
 			// Ball data
@@ -397,7 +393,7 @@ export class PhysicsSystem implements System {
 	}
 	
 	// Make powerups crate events, handle those events in powerup system. 
-	handlePowerupCollisions(physics: PhysicsComponent, entities: Entity[], entitiesMap: Map<string, Entity>, ball: Ball) {
+	handlePowerupCollisions(entities: Entity[], entitiesMap: Map<string, Entity>, ball: Ball) {
 		const ballBox = this.getBoundingBox(ball.getComponent('physics') as PhysicsComponent);
 
         for (const entity of entities) {
@@ -476,7 +472,7 @@ export class PhysicsSystem implements System {
         ball.lastHit = '';
     }
 
-	updateBullet(bullet: Bullet, entities: Entity[], entitiesMap: Map<string, Entity>) {
+	updateBullet(bullet: Bullet, entitiesMap: Map<string, Entity>) {
 		const physics = bullet.getComponent('physics') as PhysicsComponent;
 
 		if (!physics) return;
@@ -604,9 +600,6 @@ export class PhysicsSystem implements System {
 		}
 		
 		const entryTime = Math.max(entryTimeX, entryTimeY);
-		
-		// Get the earlier exit time
-		const exitTime = Math.min(exitTimeX, exitTimeY);
 		
 		if (entryTime > 1 || entryTime < 0) {
 			return { hit: false, time: 1, position: { x: ballX + ballVx, y: ballY + ballVy }, normal: { x: 0, y: 0 } };

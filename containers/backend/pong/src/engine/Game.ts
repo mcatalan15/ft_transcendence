@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 16:11:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:26:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,17 @@ import { Howl } from 'howler';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
-import { Component } from '../engine/Component';
 import { System } from '../engine/System';
 
 // Import defined entities
 import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
-import { DefaultBall } from '../entities/balls/DefaultBall'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
-import { PhysicsComponent } from '../components/PhysicsComponent';
 
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
@@ -42,14 +39,14 @@ import { UISystem } from '../systems/UISystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
 import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
+import { CrossCutSystem } from '../systems/CrossCutSystem';
 
 // Import spawners
 import { BallSpawner } from '../spawners/BallSpawner'
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player, PlayerData } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player } from '../utils/Types'
 import { createWorld } from '../utils/Utils'
-import { Ball } from '../entities/balls/Ball';
 
 export class PongGame {
 	app: Application;
@@ -167,19 +164,22 @@ export class PongGame {
 	}
 
 	initSystems(): void {
-		const renderSystem = new RenderSystem(this);
+		const renderSystem = new RenderSystem();
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const worldSystem = new WorldSystem(this);
-		const animationSystem = new AnimationSystem(this, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
-		const vfxSystem = new VFXSystem(this, this.width, this.height);
+		const animationSystem = new AnimationSystem(this);
+		const vfxSystem = new VFXSystem();
 		const particleSystem = new ParticleSystem(this);
-		const uiSystem = new UISystem(this, this.app);
-		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height);
+		const uiSystem = new UISystem(this);
+		const powerupSystem = new PowerupSystem(this, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
+		const crossCutSystem = new CrossCutSystem(this);
 		
+		// this.systems.push(crossCutSystem);
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
+		this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
 		this.systems.push(worldSystem);
 		this.systems.push(animationSystem);

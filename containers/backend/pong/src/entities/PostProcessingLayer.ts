@@ -6,17 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 12:25:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:56:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Application, Container, Point, Sprite, RenderTexture } from 'pixi.js'
-import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, ZoomBlurFilter, MotionBlurFilter, GlitchFilter, DropShadowFilter } from 'pixi-filters'
+import { Container, Point } from 'pixi.js'
+import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, MotionBlurFilter, GlitchFilter, DropShadowFilter } from 'pixi-filters'
 import { PongGame } from '../engine/Game'
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from "../components/RenderComponent";
 import { PostProcessingComponent } from "../components/PostProcessingComponent";
-import { PostProcessingOptions, WORLD_COLORS } from '../utils/Types';
+import { WORLD_COLORS } from '../utils/Types';
 
 export class PostProcessingLayer extends Entity {
     constructor(id: string, layer: string, game: PongGame) {

@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 10:25:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 15:33:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { TextStyle } from 'pixi.js'
+import { Point, TextStyle } from 'pixi.js'
 
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter } from 'pixi-filters'
 
@@ -18,9 +18,9 @@ import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 
 export interface DepthLineBehavior {
-    movement?: 'vertical' | 'horizontal';
-    direction?: 'upwards' | 'downwards' | 'left' | 'right';
-    fade?: 'in' | 'out' | 'none';
+    movement?: 'vertical' | 'horizontal' | string;
+    direction?: 'upwards' | 'downwards' | 'left' | 'right' | string;
+    fade?: 'in' | 'out' | 'none' | string;
     
 	// Pyramid specific properties
     pyramidBaseHeight?: number;
@@ -64,6 +64,9 @@ export type GameEvent = {
     side?: 'left' | 'right'; // For example, for the SCORE event
 	target?: Paddle | World;
 	entitiesMap?: Map<string, Entity>;
+	points?: Point[];
+	x?: number;
+	y?: number;
     // Add any other fields you expect in an event here
 };
 

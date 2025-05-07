@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 13:05:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:55:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Container } from 'pixi.js';
+import { Container } from 'pixi.js';
 
 import { Entity } from '../../engine/Entity.js';
 

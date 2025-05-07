@@ -6,11 +6,9 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 18:02:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:24:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-import type { Application } from 'pixi.js';
 
 import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
@@ -18,12 +16,14 @@ import type { System } from '../engine/System'
 
 import { DepthLine } from '../entities/background/DepthLine';
 
+import { RenderComponent } from '../components/RenderComponent';
+
 import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
 import { DesertBackgroundSpawner } from '../spawners/DesertBackgroundSpawner';
 
 import { FrameData, GameEvent, World, DepthLineBehavior } from '../utils/Types';
-import { isUI, isDepthLine, isPyramidDepthLine } from '../utils/Guards';
-import { RenderComponent } from '../components/RenderComponent';
+import { isUI, isDepthLine } from '../utils/Guards';
+
 
 export class WorldSystem implements System {
 	game: PongGame;
@@ -78,7 +78,7 @@ export class WorldSystem implements System {
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
 			if (this.game.currentWorld.theme === 'desert') {
 				this.isSpawningFigures = true;
-				let depth = this.randomOdd(21, 41);
+				let depth = this.randomOdd(35, 49);
 				let idx = Math.floor(Math.random() 	* 5);
 				switch (idx) {
 					case (0):
@@ -88,10 +88,10 @@ export class WorldSystem implements System {
 						DesertBackgroundSpawner.buildBottomPyramid(this, depth);
 						break;
 					default:
-						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);;
+						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);
 						break;
 				} 
-				//DesertBackgroundSpawner.buildBottomPyramid(this, depth);
+				// DesertBackgroundSpawner.buildTopPyramid(this, depth);
 			}
 		}
 
@@ -105,7 +105,7 @@ export class WorldSystem implements System {
 			} else {
 				this.spawnDepthLines();
 			}
-			this.depthLineCooldown = 5;
+			this.depthLineCooldown = 8;
 		}
 		
 		// Initialize depth lines

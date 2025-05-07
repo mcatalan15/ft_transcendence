@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 15:49:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:57:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,20 @@ export class UI extends Entity {
 		this.leftScore = 0;
 		this.rightScore = 0;
 
-		const scoreText = this.setUpScoreText(width, height);
+		const scoreText = this.setUpScoreText();
 		const scoreTextComponent = new TextComponent(scoreText);
 		this.addComponent(scoreTextComponent, "scoreText");
 
-		const timerText = this.setUpTimerText(width, height);
+		const timerText = this.setUpTimerText();
 		const timerTextComponent = new TextComponent(timerText);
 		this.addComponent(timerTextComponent, "timerText");
 
-		const worldText = this.setUpWorldText(width, height);
+		const worldText = this.setUpWorldText();
 		const worldTextComponent = new TextComponent(worldText);
 		this.addComponent(worldTextComponent, "worldText");
 	}
 
-	private setUpScoreText(width: number, height: number): TextData {
+	private setUpScoreText(): TextData {
 		return {
 			tag: 'score',
 			text: '0 - 0',
@@ -62,7 +62,7 @@ export class UI extends Entity {
 		};
 	}
 
-	private setUpTimerText(width: number, height: number): TextData {
+	private setUpTimerText(): TextData {
 		return {
 			tag: 'timer',
 			text: '00:00:00',
@@ -77,7 +77,7 @@ export class UI extends Entity {
 		};
 	}
 
-	private setUpWorldText(widht: number, height: number): TextData {
+	private setUpWorldText(): TextData {
 		return {
 			tag: 'world',
 			text: 'NO_WORLD',

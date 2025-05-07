@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 17:06:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:55:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
+import { PhysicsData } from '../../utils/Types.js';
 
 export class ShootPowerup extends Powerup {
     game: PongGame;

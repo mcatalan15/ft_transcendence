@@ -6,14 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/06 16:10:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:13:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
 import { PongGame } from "../../engine/Game";
-import { Entity } from "../../engine/Entity";
 import { DepthLine } from "./DepthLine";
 
 import { RenderComponent } from "../../components/RenderComponent";
@@ -90,7 +89,6 @@ export class PyramidDepthLine extends DepthLine {
 			join: 'round',
 			miterLimit: 10
 		});
-
 		return g;
 	}
 

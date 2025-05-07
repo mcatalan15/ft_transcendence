@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 18:29:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:59:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Application, Container, Text } from 'pixi.js';
+import type { Container, Text } from 'pixi.js';
 
 import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
@@ -25,13 +25,11 @@ import { GameEvent } from '../utils/Types'
 
 export class UISystem implements System {
 	private game: PongGame;
-	private app: Application;
 	private renderedTextComponents: Set<TextComponent>;
 	private uiLayer: Container;
 
-	constructor(game: PongGame, app: Application) {
+	constructor(game: PongGame) {
 		this.game = game;
-		this.app = app;
 		this.renderedTextComponents = new Set();
 		this.uiLayer = game.renderLayers.ui;
 	}

@@ -6,13 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 14:30:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:57:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from '../engine/Game';
 
-import { Ball } from '../entities/balls/Ball'
 import { DefaultBall } from '../entities/balls/DefaultBall'
 import { CurveBall } from '../entities/balls/CurveBall'
 import { MultiplyBall } from '../entities/balls/MultiplyBall';

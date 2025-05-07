@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 17:32:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:50:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,6 @@ export class BurstBall extends Ball {
 	}
 
 	initBallPhysicsData(x: number, y: number) {
-		const initialAngle = (Math.random() * 120 - 60) * (Math.PI / 180);
-		const dirX = Math.cos(initialAngle) * (Math.random() < 0.5 ? -1 : 1);
-		const dirY = Math.sin(initialAngle);
-
 		const data = {
 			x,
 			y,

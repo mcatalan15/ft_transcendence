@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 19:09:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 14:00:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,6 @@ import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle';
 import type { System } from '../engine/System'
 
-import { CurveBall } from '../entities/balls/CurveBall';
-
-import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { PowerupComponent } from '../components/PowerupComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
@@ -30,7 +27,6 @@ import { isPaddle, isBall, isPowerup, isShield } from '../utils/Guards'
 
 export class PowerupSystem implements System {
 	game: PongGame;
-	app: any;
 	width: number;
 	height: number;
 	cooldown: number;
@@ -40,9 +36,8 @@ export class PowerupSystem implements System {
 	bulletQuantity: number = 3;
 	bulletEvent?: GameEvent;
 
-	constructor(game: PongGame, app: any, width: number, height: number) {
+	constructor(game: PongGame, width: number, height: number) {
 		this.game = game;
-		this.app = app;
 		this.width = width;
 		this.height = height;
 

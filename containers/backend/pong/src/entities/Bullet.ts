@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 19:06:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:56:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@ import { Graphics } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
-import { LifetimeComponent } from '../components/LifetimeComponent';
-import { ParticleBehaviorComponent } from '../components/ParticleBehaviorComponent';
 
 export class Bullet extends Entity {
 	direction: string;

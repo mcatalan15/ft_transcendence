@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:54:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ export class TextComponent implements Component {
 	private textObject: Text;
 	private tag: string;
 
-	// In the hellhole that is TS, constructor now is - constructor({defaultValues}:{types}) {definedValues}
 	constructor({
 		tag = '',
 		text = '',
