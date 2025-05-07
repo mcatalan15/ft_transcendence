@@ -38,3 +38,13 @@ services:
       - certs:/etc/letsencrypt
     networks:
       - transcendence
+
+  blockchain:
+    build: ./blockchain
+    ports:
+      - "3002:3002"
+    environment:
+      - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+      - FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+    depends_on:
+      - backend  # If it needs your backend service

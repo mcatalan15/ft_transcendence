@@ -113,10 +113,10 @@ async function getUserByEmail(email) {
 }
 
 //ADD ASYN FUNC TO SCORES (API)
-async function saveGameToDatabase(player1_score, player2_score) {
+async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
 	return new Promise((resolve, reject) => {
-		const query = `INSERT INTO games (player1_score, player2_score) VALUES (?, ?)`;
-		const params = [player1_score, player2_score];
+		const query = `INSERT INTO games (player1_name, player1_score,player2_name, player2_score, winner_name) VALUES (?, ?, ?, ?, ?)`;
+		const params = [player1_name, player1_score,player2_name, player2_score, winner_name];
 		db.run(query, params, function (err) {
 			if (err) {
 				console.error('[DB INSERT ERROR] Full error:', {
