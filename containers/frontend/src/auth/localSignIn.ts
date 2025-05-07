@@ -1,5 +1,5 @@
 export async function localSignIn(email: string, password: string):
-	Promise<{success: boolean, message: string, token?: string | null}> {
+	Promise<{success: boolean, message: string, token?: string | null, user?: string | null}> {
 	try {
 		const response = await fetch('/api/auth/signin', {
 		method: 'POST',
@@ -10,7 +10,9 @@ export async function localSignIn(email: string, password: string):
 		});
 
 		const data = await response.json();
-		
+
+		console.log('Frontend received:', data);
+
 		if (!response.ok) {
 			return { 
 				success: false, 
@@ -18,14 +20,14 @@ export async function localSignIn(email: string, password: string):
 			};
 		}
 
-		// Use real, secret token generated from backend here
-		localStorage.setItem('authToken', 'blablabla');
-		localStorage.setItem('user', 'testUser');
+		localStorage.setItem('authToken', data.token);
+		localStorage.setItem('user', data.user);
 
 		return { 
 			success: true,
 			message: 'Sign-in successful!',
-			token: data.token
+			token: data.token,
+			user: data.user
 		};
 
 	} catch (error) {

@@ -1,12 +1,18 @@
-<!-- 
-fastify.post('/api/auth/logout', async (request, reply) => {
-  request.session.destroy();
-  return reply.status(200).send({
-    success: true,
-    message: 'Logged out successfully'
-  });
-});
- -->
+<!-- How It Works
+
+    Initial Authentication: Upon successful authentication, the server issues a JWT as it normally would. This token contains a unique session identifier (session ID).
+	-> Backend issues the JWT from the JWT_SECRET passed from .env, sends it to frontend which keeps it in local storage(?).
+
+    Session Storage: The server stores the session data associated with this session ID in a server-side session store. This data can include user permissions, roles, and other session-specific details.
+	-> Along with JWT, backend sends username, id, profile info etc. Enables language preference!
+
+    Validation and Session Data Retrieval: Each time a user makes a request with a JWT, the server validates the JWT and then uses the session ID within it to retrieve the corresponding session data from the server-side store.
+	-> Use JWT along with Middleware functions to protect API routes everytime the frontend makes a request to the backend.
+
+    Flexibility in Session Management: This approach allows the server to invalidate sessions, change session data, and handle logouts more effectively than with stateless JWTs alone.
+	-> Integrate JWT in the login/logout processes, languageSwitcher, etc.
+	
+-->
 
 <!-- # Preventing SQL Injection in SQLite
 
@@ -36,20 +42,6 @@ When you use parameterized queries, the SQLite driver:
 
 ## Additional Best Practices
 
-1. **Input Validation**: Add type checking and length limits:
-   ```javascript
-   if (typeof username !== 'string' || username.length > 50) {
-     reject(new Error('Invalid username'));
-     return;
-   }
-   ```
-
-2. **Principle of Least Privilege**: Configure SQLite with minimal permissions:
-   ```javascript
-   // Read-only connection for queries that don't modify data
-   const readOnlyDb = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY);
-   ```
-
 3. **Explicit Column Lists**: Never use `SELECT *` in production:
    ```javascript
    // Instead of SELECT *
@@ -72,18 +64,3 @@ When you use parameterized queries, the SQLite driver:
    // when done
    stmt.finalize();
    ```
-
-## Example: Vulnerable vs. Safe Code
-
-❌ **Vulnerable** (string concatenation):
-```javascript
-!NEVER DO THIS
-db.run(`SELECT * FROM users WHERE username = '${username}'`);
-```
-
-✅ **Safe** (parameterized query):
-```javascript
-db.run(`SELECT * FROM users WHERE username = ?`, [username]);
-```
-
-Your code already follows the safe pattern, which is excellent. Just fix the duplicate `db.run` call, and you'll have solid SQL injection protection. -->

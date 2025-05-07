@@ -5,10 +5,8 @@ const { db } = require('./api/db/database');
 
 const app = buildApp();
 
-let server;
-
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
-  process.on(signal, () => gracefulShutdown(server, db, signal));
+  process.on(signal, () => gracefulShutdown(app, db, signal));
 });
 
 server = app.listen({ 

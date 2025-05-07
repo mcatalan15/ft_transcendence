@@ -71,12 +71,14 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string', description: 'Currently a simple phrase, prod will have JWT token for authenticated user' }
+        token: { type: 'string', description: 'Currently a simple phrase, prod will have JWT token for authenticated user' },
+		user: { type: 'string' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
-        token: 'simple-phrase-token'
+        token: 'simple-phrase-token',
+		user: 'test-user'
       }
     },
     400: {
@@ -85,12 +87,14 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string' || null }
+        token: { type: 'string' || null },
+		user: {type: 'string' || null }
       },
       example: {
         success: false,
         message: 'User not found',
-        token: null
+        token: null,
+		user: null
       }
     },
     500: {
@@ -99,12 +103,14 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string' || null }
+        token: { type: 'string' || null },
+		user: {type: 'string' || null }
       },
       example: {
         success: false,
         message: 'Internal server error',
-        token: null
+        token: null,
+		user: null
       }
     }
   }

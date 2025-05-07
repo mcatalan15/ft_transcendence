@@ -23,7 +23,8 @@ RUN npm cache clean --force \
 	@fastify/cookie \
 	@fastify/session \
 	@fastify/swagger \
-	@fastify/swagger-ui
+	@fastify/swagger-ui \
+	jsonwebtoken
 
 COPY . .
 

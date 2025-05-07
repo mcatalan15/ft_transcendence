@@ -12,6 +12,7 @@
 		"@fastify/session": "^11.1.0",
 		"fastify": "^4.0.0",
 		"i18next": "^25.0.2",
+		"jsonwebtoken": "^9.0.2",
 		"sqlite3": "^5.0.0"
 	},
 	"author": "",

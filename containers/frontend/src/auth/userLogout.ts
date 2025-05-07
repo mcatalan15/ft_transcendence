@@ -18,8 +18,8 @@ export async function logUserOut(user: string): Promise<{success: boolean, messa
 		}
 
 		// Clear the user data from local storage
-		localStorage.removeItem('authToken');
-		console.log(localStorage.getItem('authToken'));
+		localStorage.removeItem('token');
+		localStorage.removeItem('user');
 		
 		return { 
 			success: true,

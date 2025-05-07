@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { saveUserToDatabase, 
   checkUserExists,
   getHashedPassword,
@@ -74,20 +75,30 @@ async function signinHandler(request, reply) {
       if (match) {
 
         const user = await getUserByEmail(email);
-      
+		const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+			expiresIn: process.env.JWT_EXPIRES_IN
+		  });
+
         request.session.set('user', {
           id: user.id,
-          username: user.username,
+          user: user.username,
           email: user.email,
+		  token: authToken
           //! Never store sensitive data like passwords !
-        });
+		});
+
+		console.log('Final response:', {
+			success: true,
+			message: 'Authentication successful',
+			user: user.username,
+			token: authToken
+		  });		  
 
         return reply.status(201).send({
           success: true,
           message: 'Authentication successful',
-          //! For development purposes only, use JWT or similar in production
-          //! Never expose sensitive data like tokens in production
-          token: 'simple-development-token'
+		  user: user.username,
+		  token: authToken
         });
       }
       

@@ -69,6 +69,8 @@ services:
       - "127.0.0.1:3100:3100"
     volumes:
       - userbase:/usr/src/app/db
+    env_file:
+      - .env
     restart: always
     networks:
       - transcendence

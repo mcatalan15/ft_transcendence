@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 11:05:56 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/07 17:16:08 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,8 +260,11 @@ export class PongGame {
 		this.entities.push(wallB);
 		console.log("Bottom wall created");
 
+
+		const Player1 = localStorage.getItem('user');
+
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'Player 1');
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, Player1!);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
