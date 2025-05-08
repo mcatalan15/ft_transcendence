@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:26:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 17:59:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 18:13:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ export class RuinBackgroundSpawner {
 		
 		const behaviorTop = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', 2);
 		const behaviorBottom = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', segmentCount);
-		console.log(behaviorBottom);
 	
 		for (let i = 0; i < depth; i++) {
 			// The height ratio is still used for other properties but not for shape generation
@@ -184,46 +183,95 @@ export class RuinBackgroundSpawner {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
 		const middleIndex = Math.floor(depth / 2);
 		
-		// Consistent parameters for this ruin pattern
 		const ruinSegmentsMin = 3;
 		const ruinSegmentsMax = 6;
-
+	
+		const typicalHeightRatio = 1;
+		
+		// Calculate segment counts for both top and bottom ruins
+		const segmentCount = Math.floor(
+			ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * typicalHeightRatio
+		);
+		
+		// Generate behaviors for the top ruin
+		const topRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', segmentCount);
+		const topRegularBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', 2);
+		
+		// Generate behaviors for the bottom ruin
+		const bottomRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', segmentCount);
+		const bottomRegularBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', 2);
+	
 		for (let i = 0; i < depth; i++) {
-			// Calculate the height ratio: higher in the middle, lower at edges
+			// The height ratio is still used for other properties but not for shape generation
 			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
 			
-			// Randomly determine number of segments for this line
-			// More segments for the center lines
-			const topSegmentCount = Math.floor(
-				ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * heightRatio
-			);
-			const bottomSegmentCount = Math.floor(
-				ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * heightRatio
-			);
+			// Generate unique IDs for each depth line
+			let topUniqueId, bottomUniqueId;
 			
-			// Create behaviors for top and bottom lines
-			const behaviorTop = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', topSegmentCount);
-			const behaviorBottom = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', bottomSegmentCount);
-
-			let uniqueId;
 			if (i === 0) {
-				uniqueId = `firstRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				topUniqueId = `firstTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				bottomUniqueId = `firstBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			} else if (i === depth - 1) {
-				uniqueId = `lastRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				topUniqueId = `lastTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				bottomUniqueId = `lastBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			} else {
-				uniqueId = `middleRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				topUniqueId = `middleTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				bottomUniqueId = `middleBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			}
-
-			// Create ruin depth lines at both top and bottom
-			let topLine = this.spawnRuinDepthLine(
-				worldSystem.game, uniqueId + "-top", width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
+	
+			// Create the top ruin depth line
+			let topRuinLine = this.spawnRuinDepthLine(
+				worldSystem.game, 
+				topUniqueId, 
+				width, 
+				height, 
+				topWallOffset, 
+				bottomWallOffset, 
+				wallThickness, 
+				'top', 
+				topRuinBehavior
 			);
-			worldSystem.depthLineQueue.push(topLine);
-
-			let bottomLine = this.spawnRuinDepthLine(
-				worldSystem.game, uniqueId + "-bottom", width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
+			worldSystem.depthLineQueue.push(topRuinLine);
+	
+			// Create the bottom regular depth line (part of top ruin structure)
+			let bottomRegularLine = this.spawnDepthLine(
+				worldSystem.game, 
+				width, 
+				height, 
+				topWallOffset, 
+				bottomWallOffset, 
+				wallThickness, 
+				'bottom', 
+				topRegularBehavior
 			);
-			worldSystem.depthLineQueue.push(bottomLine);
+			worldSystem.depthLineQueue.push(bottomRegularLine);
+	
+			// Create the bottom ruin depth line
+			let bottomRuinLine = this.spawnRuinDepthLine(
+				worldSystem.game, 
+				bottomUniqueId, 
+				width, 
+				height, 
+				topWallOffset, 
+				bottomWallOffset, 
+				wallThickness, 
+				'bottom', 
+				bottomRuinBehavior
+			);
+			worldSystem.depthLineQueue.push(bottomRuinLine);
+	
+			// Create the top regular depth line (part of bottom ruin structure)
+			let topRegularLine = this.spawnDepthLine(
+				worldSystem.game, 
+				width, 
+				height, 
+				topWallOffset, 
+				bottomWallOffset, 
+				wallThickness, 
+				'top', 
+				bottomRegularBehavior
+			);
+			worldSystem.depthLineQueue.push(topRegularLine);
 		}
 	}
 
