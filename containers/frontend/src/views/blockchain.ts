@@ -32,6 +32,9 @@ export function showBlockchain(container: HTMLElement): void {
         <button id="toBlockchainBtn" class="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded">
             To Blockchain
         </button>
+        <button id="deployContractBtn" class="w-full mt-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded">
+          Deploy Contract
+        </button>
         <div id="message" class="mt-4 text-white text-center"></div>
     `;
 
@@ -102,6 +105,32 @@ export function showBlockchain(container: HTMLElement): void {
                 messageDiv.textContent = 'Network error. Please try again.';
             }
         });
+    }
+
+    const deployButton = blockchainDiv.querySelector('#deployContractBtn');
+    if (deployButton) {
+      deployButton.addEventListener('click', async () => {
+        const messageDiv = blockchainDiv.querySelector('#message') as HTMLDivElement;
+        messageDiv.textContent = 'Deploying contract...';
+    
+        try {
+          const response = await fetch('http://localhost:3002/deploy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await response.json();
+    
+          if (response.ok) {
+            messageDiv.textContent = `Contract deployed at ${data.address}`;
+            console.log('Deployed contract at', data.address);
+          } else {
+            messageDiv.textContent = data.error || 'Deployment failed';
+          }
+        } catch (err) {
+          console.error('Deploy error:', err);
+          messageDiv.textContent = 'Failed to contact blockchain service';
+        }
+      });
     }
 
     container.appendChild(blockchainDiv);
