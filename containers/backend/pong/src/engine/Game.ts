@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:26:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 10:23:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,10 @@ export class PongGame {
 		powerup: Container;
 		powerdown: Container;
 		ballChange: Container;
+		crossCut: Container;
 		ui: Container;
 		pp: Container;
 	};
-	backgroundLayer: Container;
-	powerupLayer: Container;
-	powerdownLayer: Container;
-	ballChangeLayer: Container;
 	visualRoot: Container;
 	sounds!: GameSounds;
 	worldPool!: {
@@ -103,24 +100,18 @@ export class PongGame {
 			powerup: new Container(),
 			powerdown: new Container(),
 			ballChange: new Container(),
+			crossCut: new Container(),
 			ui: new Container(),
 			pp: new Container()
 		};
-		this.backgroundLayer = new Container();
-		this.powerupLayer = new Container();
-		this.powerdownLayer = new Container();
-		this.ballChangeLayer = new Container();
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
-			
-		this.backgroundLayer.addChild(this.renderLayers.background);
-		this.powerupLayer.addChild(this.renderLayers.powerup);
-		this.powerdownLayer.addChild(this.renderLayers.powerdown);
-		this.ballChangeLayer.addChild(this.renderLayers.ballChange);
-		this.app.stage.addChild(this.backgroundLayer);
-		this.app.stage.addChild(this.powerupLayer);
-		this.app.stage.addChild(this.powerdownLayer);
-		this.app.stage.addChild(this.ballChangeLayer);
+
+		this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.renderLayers.powerup);
+		this.app.stage.addChild(this.renderLayers.powerdown);
+		this.app.stage.addChild(this.renderLayers.ballChange);
+		this.app.stage.addChild(this.renderLayers.crossCut);
 		this.app.stage.addChild(this.visualRoot);
 
 		this.visualRoot.addChild(this.renderLayers.bounding);

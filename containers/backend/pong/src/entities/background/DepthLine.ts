@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:53:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 11:32:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import { AnimationComponent } from '../../components/AnimationComponent';
 import { DepthLineOptions, DepthLineBehavior } from '../../utils/Types';
 
 export class DepthLine extends Entity {
+	game: PongGame;
 	initialized: boolean;
 	initialY: number;
 	x: number;
@@ -55,6 +56,8 @@ export class DepthLine extends Entity {
 			despawn = '',
 			behavior = { movement: 'vertical', direction: 'upwards', fade: 'in' },
 		} = options;
+
+		this.game = game;
 
 		this.initialized = initialized;
 		this.initialY = initialY;

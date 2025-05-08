@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:20:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 09:51:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ export class TriangleCrossCut extends crossCut {
 		const data = {
 			x: x || 0,  // Ensure we never pass undefined values
 			y: y || 0,
-			width: 10,
-			height: 20,
+			width: 0,
+			height: 0,
 			velocityX: 0,
 			velocityY: 0,
 			isStatic: true,  // Changed to static since this is a visual element

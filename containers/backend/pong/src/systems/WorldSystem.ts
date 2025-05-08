@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:24:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 12:57:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ import { RenderComponent } from '../components/RenderComponent';
 
 import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
 import { DesertBackgroundSpawner } from '../spawners/DesertBackgroundSpawner';
+import { RuinBackgroundSpawner } from '../spawners/RuinBackgroundSpawner';
 
 import { FrameData, GameEvent, World, DepthLineBehavior } from '../utils/Types';
 import { isUI, isDepthLine } from '../utils/Guards';
@@ -178,7 +179,7 @@ export class WorldSystem implements System {
 			pyramidPeakOffset: -this.width / 4,
 		};
 		
-		MainBackgroundSpawner.spawnDepthLine(
+		/* MainBackgroundSpawner.spawnDepthLine(
 			this.game, 
 			this.width, 
 			this.height, 
@@ -198,6 +199,22 @@ export class WorldSystem implements System {
 			this.wallThickness, 
 			'bot', 
 			behaviorBottom
+		); */
+
+		RuinBackgroundSpawner.spawnRuinDepthLine(
+			this.game,
+			'RuinDepthLine',
+			this.game.width,
+			this.game.height,
+			this.game.topWallOffset,
+			this.game.bottomWallOffset,
+			this.game.wallThickness,
+			'bot',
+			{
+				movement: 'vertical',
+				direction: 'downwards',
+				fade: 'in',
+			},
 		);
 
 		if (this.isSpawningFigures) {

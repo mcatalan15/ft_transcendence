@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 18:13:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 12:26:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ export class PyramidDepthLine extends DepthLine {
 	}
 
 	private generatePyramidLine(width: number, color: number): Graphics {
-		const g = new Graphics();
+		const line = new Graphics();
 		const halfWidth = width / 2;
 
 		const baseY = this.behavior?.direction === 'downwards' ? -this.baseHeight : this.baseHeight;
@@ -74,13 +74,13 @@ export class PyramidDepthLine extends DepthLine {
 		];
 
 		// Draw using points
-		g.moveTo(this.points[0].x, this.points[0].y);
+		line.moveTo(this.points[0].x, this.points[0].y);
 		for (let i = 1; i < this.points.length; i++) {
-			g.lineTo(this.points[i].x, this.points[i].y);
+			line.lineTo(this.points[i].x, this.points[i].y);
 		}
 
 		// Stylize
-		g.stroke({
+		line.stroke({
 			width: 0.5,
 			color: color,
 			alpha: 1,
@@ -89,7 +89,7 @@ export class PyramidDepthLine extends DepthLine {
 			join: 'round',
 			miterLimit: 10
 		});
-		return g;
+		return line;
 	}
 
     getCuttingPoints(depthLine: PyramidDepthLine) {
