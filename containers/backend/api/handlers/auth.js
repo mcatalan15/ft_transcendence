@@ -127,13 +127,13 @@ async function logoutHandler(request, reply) {
 			return reply.status(200).send({
 				success: true,
 				message: 'User session destroyed'
-			  });
+			});
 		}
 
 		return reply.status(400).send({
 			success: false,
 			message: 'No user session found'
-		  });
+		});
 
 	} catch (error) {
 		console.error(error);

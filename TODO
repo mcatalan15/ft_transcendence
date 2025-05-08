@@ -4,7 +4,7 @@
 	-> Backend issues the JWT from the JWT_SECRET passed from .env, sends it to frontend which keeps it in local storage(?).
 
     Session Storage: The server stores the session data associated with this session ID in a server-side session store. This data can include user permissions, roles, and other session-specific details.
-	-> Along with JWT, backend sends username, id, profile info etc. Enables language preference!
+	-> Along with JWT, backend sends username, id, profile info etc. Enables language preference (but in localStorage)
 
     Validation and Session Data Retrieval: Each time a user makes a request with a JWT, the server validates the JWT and then uses the session ID within it to retrieve the corresponding session data from the server-side store.
 	-> Use JWT along with Middleware functions to protect API routes everytime the frontend makes a request to the backend.
