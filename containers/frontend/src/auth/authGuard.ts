@@ -1,5 +1,5 @@
 export function isUserAuthenticated(): boolean {
-	  const user = localStorage.getItem('authToken');
+	  const user = sessionStorage.getItem('authToken');
 	return user !== null;
 }
 
