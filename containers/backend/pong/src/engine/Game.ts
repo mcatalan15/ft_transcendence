@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 10:23:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:13:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ export class PongGame {
 		console.log('All Entities created');
 
 		this.populateWorlds();
-		this.currentWorld = this.worldPool.desertWorld;
+		this.currentWorld = this.worldPool.cityWorld;
 
 		this.initSystems();
 		console.log('All Systems initialiazed');
@@ -296,7 +296,7 @@ export class PongGame {
 	populateWorlds() {
 		this.worldPool = {
 			desertWorld: createWorld('desert', 'Desert of Spiked Reflections', WORLD_COLORS.fire),
-			cityWorld: createWorld('city', 'Ruins of Yonder', WORLD_COLORS.city),
+			cityWorld: createWorld('ruins', 'Ruins of Yonder', WORLD_COLORS.city),
 			abyssWorld: createWorld('abyss', 'Pelagic Netherscape', WORLD_COLORS.void),
 		};
 	}

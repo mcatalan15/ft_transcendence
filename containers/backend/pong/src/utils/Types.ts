@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 10:55:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 17:34:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,13 @@ export interface DepthLineBehavior {
     pyramidPeakHeight?: number;
     pyramidPeakOffset?: number;
 
+	// Ruin specicif properties
 	ruinHSegments?: number;
 	ruinTSegments?: number;
+	maxHeight?: number;
+	maxWidth?: number;
+	segmentWidths?: number[];
+    segmentHeights?: number[];
 }
 
 export type FrameData = {
@@ -141,8 +146,12 @@ export interface PyramidDepthLineOptions extends DepthLineOptions {
 }
 
 export interface RuinDepthLineOptions extends DepthLineOptions {
-	hSegments: number;
-
+	ruinHSegments?: number;
+	ruinTSegments?: number;
+	maxHeight?: number;
+	maxWidth?: number;
+	segmentWidths?: number[];
+    segmentHeights?: number[];
 }
 
 export type AnimationOptions = {

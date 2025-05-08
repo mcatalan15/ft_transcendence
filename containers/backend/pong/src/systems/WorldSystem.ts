@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 12:57:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/08 18:05:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,11 @@ export class WorldSystem implements System {
 		}
 
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
+			this.isSpawningFigures = true;
+			let depth = this.randomOdd(35, 49);
+			let idx = Math.floor(Math.random() * 5);
+			
 			if (this.game.currentWorld.theme === 'desert') {
-				this.isSpawningFigures = true;
-				let depth = this.randomOdd(35, 49);
-				let idx = Math.floor(Math.random() 	* 5);
 				switch (idx) {
 					case (0):
 						DesertBackgroundSpawner.buildTopPyramid(this, depth);
@@ -92,7 +93,22 @@ export class WorldSystem implements System {
 						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);
 						break;
 				} 
-				// DesertBackgroundSpawner.buildTopPyramid(this, depth);
+			} else if (this.game.currentWorld.theme === 'ruins') {
+				// Use smaller depth for ruin patterns to keep them manageable
+				depth = this.randomOdd(15, 25);
+				
+				switch (idx) {
+					case (0):
+						RuinBackgroundSpawner.buildTopRuin(this, depth);
+						break;
+					case (1):
+						RuinBackgroundSpawner.buildBottomRuin(this, depth);
+						break;
+					default:
+						RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth);
+						break;
+				}
+				/* RuinBackgroundSpawner.buildBottomRuin(this, depth); */
 			}
 		}
 
@@ -179,7 +195,7 @@ export class WorldSystem implements System {
 			pyramidPeakOffset: -this.width / 4,
 		};
 		
-		/* MainBackgroundSpawner.spawnDepthLine(
+		MainBackgroundSpawner.spawnDepthLine(
 			this.game, 
 			this.width, 
 			this.height, 
@@ -199,9 +215,9 @@ export class WorldSystem implements System {
 			this.wallThickness, 
 			'bot', 
 			behaviorBottom
-		); */
+		);
 
-		RuinBackgroundSpawner.spawnRuinDepthLine(
+		/* RuinBackgroundSpawner.spawnRuinDepthLine(
 			this.game,
 			'RuinDepthLine',
 			this.game.width,
@@ -215,7 +231,7 @@ export class WorldSystem implements System {
 				direction: 'downwards',
 				fade: 'in',
 			},
-		);
+		); */
 
 		if (this.isSpawningFigures) {
 			this.isSpawningFigures = false;
