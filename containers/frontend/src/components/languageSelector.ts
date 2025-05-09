@@ -4,7 +4,7 @@ export class LanguageSelector {
   private container: HTMLElement;
 
   constructor(onChange?: (lang: string) => void) {
-    const currentLang = i18n.language || 'en';
+    const currentLang = i18n.resolvedLanguage || 'en';
 
     this.container = document.createElement('div');
     this.container.className = 'absolute bottom-4 w-full flex justify-center z-30';
@@ -21,10 +21,10 @@ export class LanguageSelector {
         </button>
         <ul id="lang-menu"
           class="hidden absolute bottom-full mb-2 w-full bg-neutral-800 border border-neutral-700 rounded shadow text-center">
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="cat">${i18n.t('CAT')}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="en">${i18n.t('EN')}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="es">${i18n.t('ES')}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="fr">${(i18n.t('FR'))}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="cat">${i18n.t('language.cat', { ns: 'landing' })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="en">${i18n.t('language.en', { ns: 'landing' })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="es">${i18n.t('language.es', { ns: 'landing' })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="fr">${i18n.t('language.fr', { ns: 'landing' })}</li>
         </ul>
       </div>
     `;
@@ -47,21 +47,10 @@ export class LanguageSelector {
         i18n.changeLanguage(lang).then(() => {
           langSpan!.textContent = lang.toUpperCase();
           menu?.classList.add('hidden');
-          localStorage.setItem('lang', lang);
-    
-          menu?.querySelectorAll('li').forEach(item => {
-            const l = item.getAttribute('data-lang');
-            if (l === 'ca') item.textContent = (i18n.t('CAT')).toUpperCase();
-            if (l === 'en') item.textContent = (i18n.t('EN')).toUpperCase();
-            if (l === 'es') item.textContent = (i18n.t('ES')).toUpperCase();
-            if (l === 'fr') item.textContent = (i18n.t('FR')).toUpperCase();
-          });
-    
           if (onChange) onChange(lang);
         });
       });
     });
-    
   }
 
   public getElement(): HTMLElement {

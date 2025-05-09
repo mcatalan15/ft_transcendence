@@ -1,7 +1,10 @@
 {
-	"Sign in": "Iniciar sessió",
-	"Sign up": "Registrar-se",
-	"EN": "EN",
-	"ES": "ES",
-	"FR": "FR"
+	"signIn": "Iniciar sessió",
+	"signUp": "Registrar-se",
+	"language": {
+		"cat": "CAT",
+		"en": "EN",
+		"es": "ES",
+		"fr": "FR"
+	}
 }

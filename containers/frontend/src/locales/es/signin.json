@@ -1,8 +1,10 @@
 {
-    "Sign in": "Iniciar sesión",
-    "EN": "EN",
-    "ES": "ES",
-    "FR": "FR",
-    "E-mail": "Correo electrónico",
-    "Password": "Contraseña"
-}
+    "title": "¡Vamos a jugar!",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "errorAllFields": "¡Todos los campos son obligatorios!",
+    "errorInvalidCredentials": "Correo o contraseña inválidos.",
+    "success": "Inicio de sesión exitoso."
+  }
+  
