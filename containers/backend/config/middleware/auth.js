@@ -1,6 +1,8 @@
+const jwt = require('jsonwebtoken');
+
 /* Middleware function to check if the current user is authenticated */
 async function requireAuth(request, reply) {
-  const user = request.session.get('username');
+  const user = request.session.get('user');
   
   if (!user) {
     return reply.status(401).send({
@@ -16,8 +18,7 @@ async function verifyToken(request, reply) {
 
 	if (!token) {
 
-
-    return reply.status(400).send({
+    return reply.status(401).send({
       success: false,
       message: 'Authentication required',
     });
@@ -26,11 +27,7 @@ async function verifyToken(request, reply) {
   try {
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    return reply.status(200).send({
-        success: true,
-        message: decoded,
-    });
+    request.user = decoded;
 
   } catch {
 

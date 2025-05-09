@@ -97,8 +97,9 @@ export function showSignUp(container: HTMLElement): void {
 			errorMessageDiv.textContent = 'Password must be between 6 and 20 characters long!';
 			return;
 		}
-		if (!/^[a-zA-Z0-9]+$/.test(username)) {
-			errorMessageDiv.textContent = 'Username can only contain letters and numbers!';
+		
+		if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(username)) {
+			errorMessageDiv.textContent = 'Username can only contain letters, numbers and a single hyphen!';
 			return;
 		}		
 		

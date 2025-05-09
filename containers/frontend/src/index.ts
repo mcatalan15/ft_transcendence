@@ -45,12 +45,15 @@ function router(path: string): void {
     case'/':
       showLanding(app);
       break;
+
     case '/signin':
-	  showSignIn(app);
-	  break;
+      showSignIn(app);
+      break;
+
     case '/signup':
       showSignUp(app);
       break;
+
     case '/pong':
       if (!isUserAuthenticated()) {
         navigate('/');
@@ -58,22 +61,30 @@ function router(path: string): void {
       }
       showPong(app);
       break;
+
     case '/home':
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
       showHome(app);
       break;
+
     case '/profile':
-	  if (!isUserAuthenticated()) {
-      navigate('/');
-      return;
-		}
-      showProfile(app);
-      break;
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
+        showProfile(app);
+        break;
+
     case '/logout':
-	  if (isUserAuthenticated()){
-        logUserOut();
-	  }
-      navigate('/');
-      break;
+      if (isUserAuthenticated()){
+          logUserOut();
+      }
+        navigate('/');
+        break;
+
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;

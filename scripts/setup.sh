@@ -4,7 +4,7 @@ JWT_SECRET=$(openssl rand -hex 32)
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'
-JWT_EXPIRES_IN=90
+JWT_EXPIRES_IN='7d'
 
 ADMIN_EMAIL='ft.transcendence.42.pong@gmail.com'
 

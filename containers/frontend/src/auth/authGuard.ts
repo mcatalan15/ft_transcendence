@@ -1,5 +1,5 @@
 export function isUserAuthenticated(): boolean {
-	return sessionStorage.getItem('username') || false;
+	return sessionStorage.getItem('username') ? true : false;
 }
 
 export function protectRoute(): void {

@@ -9,7 +9,12 @@ export function showProfile(container: HTMLElement): void {
 	const profileInfo = profileDiv.querySelector('#profileInfo') as HTMLParagraphElement;
 
 	// Fetch and display user profile information
-	fetch('/api/profile')
+	fetch('/api/profile', {
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	})
 		.then(response => response.json())
 		.then(data => {
 			profileInfo.innerHTML = `

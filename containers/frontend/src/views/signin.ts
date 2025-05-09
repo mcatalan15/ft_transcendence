@@ -75,7 +75,7 @@ export function showSignIn(container: HTMLElement): void {
 			if (!result.success) {
 				errorMessageDiv.textContent = result.message;
 			} else {
-				alert('Sign-in successful!');
+				alert('Sign-in successful, welcome ' + result.user + '!');
 				navigate('/home');
 			}
 		} else {

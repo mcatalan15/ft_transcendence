@@ -82,7 +82,7 @@ async function signinHandler(request, reply) {
         request.session.set('token', authToken);
         request.session.set('user', { // used to display profile
           id: user.id,
-          user: user.username,
+          username: user.username,
           email: user.email,
           //! Never store sensitive data like passwords !
 		});
@@ -144,5 +144,4 @@ module.exports = {
   signupHandler,
   signinHandler,
   logoutHandler,
-  // Add other auth handlers here (loginHandler, logoutHandler, etc.)
 };

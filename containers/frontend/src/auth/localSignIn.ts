@@ -21,8 +21,8 @@ export async function localSignIn(email: string, password: string) {
 	} catch (error) {
 		console.error('Error during sign-in:', error);
 		return { 
-		success: false, 
-		message: 'Network error. Please check your connection and try again.' 
+			success: false, 
+			message: 'Network error. Please check your connection and try again.' 
 		};
 	}
 }
