@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/05/09 16:26:22 by nponchon         ###   ########.fr        #
+#    Updated: 2025/05/09 16:34:14 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,8 @@ stop:	# stops ALL containers running on the host, not just the ones in the compo
 clean:
 	docker compose -f ./containers/docker-compose.yml down --remove-orphans
 	docker system prune -f --volumes
+	@rm -f containers/.env
+	@rm -rf containers/nginx/ssl
 
 fclean:
 	@read -p "Are you sure? This will take down the whole network and you will lose the database. [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1

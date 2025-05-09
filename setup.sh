@@ -6,6 +6,8 @@ cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'
 JWT_EXPIRES_IN=90
 
+ADMIN_EMAIL='ft.transcendence.42.pong@gmail.com'
+
 # Database configuration
 DB_PATH='/usr/src/app/db/mydatabase.db'
 
