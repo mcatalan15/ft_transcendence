@@ -95,7 +95,7 @@ export function showSignIn(container: HTMLElement): void {
         const passwordInput = wrapper.querySelector('#password') as HTMLInputElement;
         const btn = wrapper.querySelector('button[type="submit"]') as HTMLButtonElement;
         const title = wrapper.querySelector('h2')!;
-        const link = wrapper.querySelector('a')!;
+        const link = wrapper.querySelector('a');
 
         emailInput.placeholder = i18n.t('email', { ns: 'signin' });
         passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
