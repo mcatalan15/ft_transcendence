@@ -1,5 +1,5 @@
 import './styles/tailwind.css';
-import './i18n';
+import i18n from './i18n';
 // import i18next from 'i18next';
 
 import { isUserAuthenticated } from './auth/authGuard';
@@ -28,6 +28,7 @@ let currentGame: PongGame | null = null;
 
 function router(path: string): void {
 
+  
   if (!app) return;
   
   app.innerHTML = '';
@@ -39,6 +40,13 @@ function router(path: string): void {
 	console.log('Current game destroyed');
   }
 
+/*  i18n
+    .loadNamespaces('signup')
+
+  i18n
+    .loadNamespaces('signin')
+  i18n  
+    .loadNamespaces('landing')*/
 
   switch(path)
   {

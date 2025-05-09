@@ -35,6 +35,33 @@ export function showSignIn(container: HTMLElement): void {
                 ${i18n.t('signIn', { ns: 'signin' })}
               </button>
             </form>
+            <div class="flex flex-col mt-4 text-sm text-center dark:text-gray-300">
+          <p>
+            Don't have an account?
+            <a href="/signup" class="text-blue-400 transition hover:underline"
+              >Sign Up</a
+            >
+          </p>
+        </div>
+            	<div class="flex items-center gap-2 text-sm text-gray-500">
+					<hr class="flex-1 border-gray-300" />
+				</div>
+
+          <div>
+            <div id="g_id_onload"
+              data-client_id="YOUR_GOOGLE_CLIENT_ID"
+              data-login_uri="https://your.domain/your_login_endpoint"
+              data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+              data-type="standard"
+              data-size="large"
+              data-theme="outline"
+              data-text="sign_in_with"
+              data-shape="rectangular"
+              data-logo_alignment="left">
+            </div>
+          </div>
           </div>
         </div>
       `;
@@ -80,4 +107,4 @@ export function showSignIn(container: HTMLElement): void {
       selectorWrapper.appendChild(langSelector.getElement());
       document.body.appendChild(selectorWrapper);
     });
-}
+  }
