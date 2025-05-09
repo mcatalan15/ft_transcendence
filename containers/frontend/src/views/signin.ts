@@ -39,7 +39,7 @@ export function showSignIn(container: HTMLElement): void {
           <p>
             Don't have an account?
             <a href="/signup" class="text-blue-400 transition hover:underline"
-              >Sign Up</a
+              >${i18n.t('signUp', { ns: 'signin' })}</a
             >
           </p>
         </div>
@@ -95,11 +95,13 @@ export function showSignIn(container: HTMLElement): void {
         const passwordInput = wrapper.querySelector('#password') as HTMLInputElement;
         const btn = wrapper.querySelector('button[type="submit"]') as HTMLButtonElement;
         const title = wrapper.querySelector('h2')!;
+        const link = wrapper.querySelector('a')!;
 
         emailInput.placeholder = i18n.t('email', { ns: 'signin' });
         passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
         btn.textContent = i18n.t('signIn', { ns: 'signin' });
         title.textContent = i18n.t('title', { ns: 'signin' });
+        link.textContent = i18n.t('signUp', { ns: 'signin'});
       });
 
       const selectorWrapper = document.createElement('div');

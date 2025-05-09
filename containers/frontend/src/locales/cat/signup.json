@@ -5,6 +5,7 @@
     "password": "Contrasenya",
     "confirmPassword": "Confirma la contrasenya",
     "signUp": "Registrar-se",
+    "signIn": "Inicia sessió",
     "errorAllFields": "Tots els camps són obligatoris!",
     "errorUsernameLength": "L'àlies ha de tenir entre 3 i 8 caràcters.",
     "errorUsernameChars": "L'àlies només pot contenir lletres i números.",

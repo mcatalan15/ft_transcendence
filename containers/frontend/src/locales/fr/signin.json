@@ -3,6 +3,7 @@
     "email": "Courriel",
     "password": "Mot de passe",
     "signIn": "Se connecter",
+	  "signUp": "S'enregistrer",
     "errorAllFields": "Tous les champs sont obligatoires !",
     "errorInvalidCredentials": "Courriel ou mot de passe incorrect.",
     "success": "Connexion réussie !"
