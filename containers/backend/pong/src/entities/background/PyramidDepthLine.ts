@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 12:26:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:40:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ export class PyramidDepthLine extends DepthLine {
 
 		// Stylize
 		line.stroke({
-			width: 0.5,
+			width: 2,
 			color: color,
 			alpha: 1,
 			alignment: 0.5,

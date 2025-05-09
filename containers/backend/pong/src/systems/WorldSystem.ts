@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 18:05:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:49:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ export class WorldSystem implements System {
 		game: PongGame, 
 	) {
 		this.game = game;
-		this.worldTimer = 300;
+		this.worldTimer = 1000;
 		this.width = game.width;
 		this.height = game.height;
 		this.topWallOffset = game.topWallOffset;
@@ -72,8 +72,8 @@ export class WorldSystem implements System {
 		this.figureTimer -= delta.deltaTime;
 
 		if (this.worldTimer <= 0){
-			//this.changeWorld();
-			this.worldTimer = 300;
+			this.changeWorld();
+			this.worldTimer = 1000;
 		}
 
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
@@ -95,20 +95,32 @@ export class WorldSystem implements System {
 				} 
 			} else if (this.game.currentWorld.theme === 'ruins') {
 				// Use smaller depth for ruin patterns to keep them manageable
-				depth = this.randomOdd(15, 25);
+				depth = this.randomOdd(50, 60);
+				let ruinDivisions = Math.floor(Math.random() * (5 - 3 + 1) + 6);
 				
-				switch (idx) {
-					case (0):
-						RuinBackgroundSpawner.buildTopRuin(this, depth);
-						break;
-					case (1):
-						RuinBackgroundSpawner.buildBottomRuin(this, depth);
-						break;
-					default:
-						RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth);
-						break;
+				for (let i = 0; i < ruinDivisions; i++) {
+					let innerPosition;
+					if (i == 0) {
+						innerPosition = 'first';
+					} else if (i == ruinDivisions - 1) {
+						innerPosition = 'last';
+					} else {
+						innerPosition = 'middle';
+					}
+					
+					switch (idx) {
+						case (0):
+							RuinBackgroundSpawner.buildTopRuin(this, depth / ruinDivisions, innerPosition);
+							break;
+						case (1):
+							RuinBackgroundSpawner.buildBottomRuin(this, depth / ruinDivisions, innerPosition);
+							break;
+						default:
+							RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth / ruinDivisions, innerPosition);
+							break;
+					}
+					/* RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth / ruinDivisions, innerPosition); */
 				}
-				/* RuinBackgroundSpawner.buildBottomRuin(this, depth); */
 			}
 		}
 
@@ -217,25 +229,9 @@ export class WorldSystem implements System {
 			behaviorBottom
 		);
 
-		/* RuinBackgroundSpawner.spawnRuinDepthLine(
-			this.game,
-			'RuinDepthLine',
-			this.game.width,
-			this.game.height,
-			this.game.topWallOffset,
-			this.game.bottomWallOffset,
-			this.game.wallThickness,
-			'bot',
-			{
-				movement: 'vertical',
-				direction: 'downwards',
-				fade: 'in',
-			},
-		); */
-
 		if (this.isSpawningFigures) {
 			this.isSpawningFigures = false;
-			this.figureTimer = 200;
+			this.figureTimer = 200 + (Math.random() * 200);
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 11:32:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:39:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ export class DepthLine extends Entity {
 
 	private generateLine(width: number, color: number): Graphics {
 		const line = new Graphics();
-		line.rect(-width / 2, 0, width, 0.5);
+		line.rect(-width / 2, 0, width, 2);
 		line.fill({ color: color, alpha: 1 });
 		return line;
 	}

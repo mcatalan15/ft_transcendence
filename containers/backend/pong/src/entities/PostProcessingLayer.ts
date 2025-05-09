@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 10:09:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:48:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ export class PostProcessingLayer extends Entity {
             noiseSize: 0.5,         // Size of noise grain (default: 1.0)
             seed: Math.random(),    // Seed for the noise randomness
             vignetting: 0.45,        // Vignette size (smaller = tighter vignette, default: 0.3)
-            vignettingAlpha: 0.4,   // Opacity of vignette (default: 1.0)
+            vignettingAlpha: 0.6,   // Opacity of vignette (default: 1.0)
             vignettingBlur: 0.1,    // Blur intensity of the vignette (default: 0.3)
             time: 0                 // For animating scanlines; increase over time in your game loop
         });
@@ -54,7 +54,7 @@ export class PostProcessingLayer extends Entity {
         const bulgePinch = new BulgePinchFilter({
             center: new Point(0.5, 0.5), // Normalized coordinates (0 to 1) if using relative center
             radius: Math.min(game.width, game.height) * 1.6,                      // Radius of effect in pixels
-            strength: (1 / game.width / game.height) * 30000,                     // Range: -1 (pinch) to 1 (bulge)
+            strength: (1 / game.width / game.height) * 40000,                     // Range: -1 (pinch) to 1 (bulge)
         });
 
         // Chromatic aberration
@@ -71,6 +71,31 @@ export class PostProcessingLayer extends Entity {
             innerStrength: 0,
             knockout: false,
             outerStrength: 2,
+            quality: 0.1,
+        });
+
+        // DepthLine filters
+        const depthLineCRTFilter = new CRTFilter({
+            curvature: (game.width * 0.0005 + game.height * 0.0005) / 2,    // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
+            lineWidth: 0.1,         // Thickness of scanlines (default: 1.0)
+            lineContrast: 0.2,      // Contrast between scanlines and base image (default: 0.25)
+            verticalLine: false,    // false = horizontal lines, true = vertical scanlines
+            noise: 0,             // Noise overlay intensity (default: 0.3)
+            noiseSize: 0.5,         // Size of noise grain (default: 1.0)
+            seed: Math.random(),    // Seed for the noise randomness
+            vignetting: 0.5,        // Vignette size (smaller = tighter vignette, default: 0.3)
+            vignettingAlpha: 1,   // Opacity of vignette (default: 1.0)
+            vignettingBlur: 0.2,    // Blur intensity of the vignette (default: 0.3)
+            time: 0                 // For animating scanlines; increase over time in your game loop
+        });
+
+        const depthLineGlow = new GlowFilter({
+            alpha: 0.1,
+            color: '#FFFBEB',
+            distance: 10,
+            innerStrength: 0,
+            knockout: false,
+            outerStrength: 1,
             quality: 0.1,
         });
 
@@ -173,6 +198,7 @@ export class PostProcessingLayer extends Entity {
         this.addComponent(new PostProcessingComponent({
             advancedBloom: advancedBloom,
 			crtFilter: crtFilter,
+            depthLineCRTFilter: depthLineCRTFilter,
             bulgePinch: bulgePinch,
             rgbSpilt: rgbSplit,
             powerupGlow: powerupGlow,
@@ -181,6 +207,7 @@ export class PostProcessingLayer extends Entity {
         }));
 
         //Apply filters to the powerup layer0
+        game.renderLayers.background.filters = [depthLineGlow, bulgePinch, depthLineCRTFilter];
         game.renderLayers.powerup.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
         game.renderLayers.powerdown.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur, powerupGlitch];
         game.renderLayers.ballChange.filters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow, powerupMotionBlur];

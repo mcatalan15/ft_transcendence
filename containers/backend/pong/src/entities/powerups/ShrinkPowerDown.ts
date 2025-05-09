@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:55:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:23:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ export class ShrinkPowerDown extends Powerup {
 
 	createPowerupGraphic(): Container {
 	const container = new Container();
+	
+	const outline = new Graphics();
+	outline.rect(-15, -15, 30, 30);
+	outline.fill(0x171717);
+	outline.pivot.set(-5, -5);
+	outline.angle = 45;
+	container.addChild(outline);
 
 	// Base diamond (rotated square)
 	const base = new Graphics();

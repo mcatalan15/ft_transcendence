@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 17:34:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:53:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ export interface DepthLineBehavior {
 	maxWidth?: number;
 	segmentWidths?: number[];
     segmentHeights?: number[];
+	hOffset?: number;
 }
 
 export type FrameData = {
@@ -88,6 +89,7 @@ export type BoundingBox = {
 export interface PostProcessingOptions {
     advancedBloom?: AdvancedBloomFilter | null;
 	crtFilter?: CRTFilter | null;
+	depthLineCRTFilter?: CRTFilter | null;
     bulgePinch?: BulgePinchFilter | null;
 	rgbSpilt?: RGBSplitFilter | null;
     powerupGlow?: GlowFilter | null;
@@ -152,6 +154,7 @@ export interface RuinDepthLineOptions extends DepthLineOptions {
 	maxWidth?: number;
 	segmentWidths?: number[];
     segmentHeights?: number[];
+	hOffset?: number;
 }
 
 export type AnimationOptions = {

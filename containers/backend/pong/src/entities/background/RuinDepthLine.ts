@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 17:48:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:41:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ export class RuinDepthLine extends DepthLine {
 		// Behavior-based parameters
 		this.hSegments = options.behavior?.ruinHSegments ?? 4;
 		this.vSegments = this.hSegments - 1;
-		this.hOffset = game.width / 8;
+		this.hOffset = options.hOffset!;
 
 		this.segmentWidths = options.segmentWidths!;
 		this.segmentHeights = options.segmentHeights!;
@@ -87,7 +87,7 @@ export class RuinDepthLine extends DepthLine {
 		// But stop before the last vertical segment to ensure controlled ending
 		for (let i = 0; i < this.vSegments - 1; i++) {
 			// Add vertical segment
-			currentY -= this.segmentHeights[i];
+			currentY = this.segmentHeights[i];
 			this.points.push(new Point(currentX, currentY));
 			
 			// Add horizontal segment if not at the end
@@ -123,7 +123,7 @@ export class RuinDepthLine extends DepthLine {
 	
 		// Style the line
 		line.stroke({
-			width: 0.5,
+			width: 2,
 			color: color,
 			alpha: 1,
 			alignment: 0.5,

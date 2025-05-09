@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:12:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:29:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@ import { Entity } from '../../engine/Entity';
 import { RenderComponent } from '../../components/RenderComponent';
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 
-import { isTriangleCut } from '../../utils/Guards';
+import { RuinCrossCut } from './RuinCrossCut';
 
-export abstract class crossCut extends Entity {
+import { isTriangleCut, isRuinCut } from '../../utils/Guards';
+
+export abstract class CrossCut extends Entity {
 	shape: string;
 	nPoints: number;
 	points: Point[];
@@ -46,30 +48,39 @@ export abstract class crossCut extends Entity {
 	abstract createCutGraphic(): Graphics;
 	abstract initCutPhysicsData(x: number, y: number): any;
 
-	transformCrossCut(cut: crossCut, transformPoints: Point[]): void {	
+	transformCrossCut(cut: CrossCut, transformPoints: Point[]): void {    
 		if (transformPoints.length !== this.nPoints) {
 			return;
 		}
-		
 		const renderComponent = cut.getComponent('render') as RenderComponent;
 		if (renderComponent && renderComponent.graphic instanceof Graphics) {
 			const graphic = renderComponent.graphic;
 			
+			// Update all points
 			for (let i = 0; i < this.nPoints; i++) {
 				cut.points[i].x = transformPoints[i].x;
 				cut.points[i].y = transformPoints[i].y;
 			}
 			
-
 			graphic.clear();
 			
 			if (isTriangleCut(cut)) {
 				const tip = cut.points[1];
-				// 	
 				const left = cut.points[0];
 				const right = cut.points[2];
 				
 				graphic.poly([tip, right, left], true);
+				graphic.fill(0xFFFBEB);
+			} else if (isRuinCut(cut)) {
+				const ruinCut = cut as RuinCrossCut;
+				
+				// Implement the same drawing logic as in RuinCrossCut.createCutGraphic()
+				graphic.moveTo(ruinCut.points[0].x, ruinCut.points[0].y);
+				
+				for (let i = 1; i < ruinCut.points.length; i++) {
+					graphic.lineTo(ruinCut.points[i].x, ruinCut.points[i].y);
+				}
+				
 				graphic.fill(0xFFFBEB);
 			}
 		}

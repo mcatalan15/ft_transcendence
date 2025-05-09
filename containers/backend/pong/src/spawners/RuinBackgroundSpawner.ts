@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:26:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 18:13:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:33:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,37 +86,27 @@ export class RuinBackgroundSpawner {
 			maxWidth: behavior.maxWidth,
 			segmentWidths: behavior.segmentWidths,
 			segmentHeights: behavior.segmentHeights,
+			hOffset: behavior.hOffset,
 		});
-		
-		// NOTE: Instead of adding directly to game entities,
-		// just return the line and let the WorldSystem handle adding it
+
+		console.log(depthLine.id);
+
 		return depthLine;
 	}
 
-	static buildBottomRuin(worldSystem: WorldSystem, depth: number): void {
+	static buildBottomRuin(worldSystem: WorldSystem, depth: number, innerPosition: string): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
-		const middleIndex = Math.floor(depth / 2);
-		
-		const ruinSegmentsMin = 3;
-		const ruinSegmentsMax = 6;
-	
-		const typicalHeightRatio = 1;
-		
-		const segmentCount = Math.floor(
-			ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * typicalHeightRatio
-		);
 		
 		const behaviorTop = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', 2);
-		const behaviorBottom = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', segmentCount);
+		const behaviorBottom = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', depth);
 	
-		for (let i = 0; i < depth; i++) {
-			// The height ratio is still used for other properties but not for shape generation
-			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
+		for (let i = 0; i < depth - 1; i++) {
+			console.log(`i:${i} - ${Math.floor(depth) - 1}`)
 			
 			let uniqueId;
-			if (i === 0) {
+			if (i === 0 && innerPosition == 'first') {
 				uniqueId = `firstRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-			} else if (i === depth - 1) {
+			} else if (i === Math.floor(depth) - 1 && innerPosition == 'last') {
 				uniqueId = `lastRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			} else {
 				uniqueId = `middleRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -136,30 +126,18 @@ export class RuinBackgroundSpawner {
 		}
 	}
 	
-	static buildTopRuin(worldSystem: WorldSystem, depth: number): void {
+	static buildTopRuin(worldSystem: WorldSystem, depth: number, innerPosition: string): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
-		const middleIndex = Math.floor(depth / 2);
 		
-		const ruinSegmentsMin = 3;
-		const ruinSegmentsMax = 6;
-	
-		const typicalHeightRatio = 1;
-		
-		const segmentCount = Math.floor(
-			ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * typicalHeightRatio
-		);
-		
-		const behaviorTop = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', segmentCount);
+		const behaviorTop = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', depth);
 		const behaviorBottom = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', 2);
 	
-		for (let i = 0; i < depth; i++) {
-			// The height ratio is still used for other properties but not for shape generation
-			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
-			
+		for (let i = 0; i < depth - 1; i++) {
 			let uniqueId;
-			if (i === 0) {
+			
+			if (i === 0 && innerPosition == 'first' ) {
 				uniqueId = `firstRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-			} else if (i === depth - 1) {
+			} else if (i === Math.floor(depth) - 1 && innerPosition == 'last') {
 				uniqueId = `lastRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			} else {
 				uniqueId = `middleRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -179,50 +157,30 @@ export class RuinBackgroundSpawner {
 		}
 	}
 	
-	static buildTopAndBottomRuin(worldSystem: WorldSystem, depth: number): void {
+	static buildTopAndBottomRuin(worldSystem: WorldSystem, depth: number, innerPosition: string): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
-		const middleIndex = Math.floor(depth / 2);
-		
-		const ruinSegmentsMin = 3;
-		const ruinSegmentsMax = 6;
-	
-		const typicalHeightRatio = 1;
-		
-		// Calculate segment counts for both top and bottom ruins
-		const segmentCount = Math.floor(
-			ruinSegmentsMin + (ruinSegmentsMax - ruinSegmentsMin) * typicalHeightRatio
-		);
-		
+
 		// Generate behaviors for the top ruin
-		const topRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', segmentCount);
-		const topRegularBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', 2);
+		const topRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', depth);
 		
 		// Generate behaviors for the bottom ruin
-		const bottomRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', segmentCount);
-		const bottomRegularBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'upwards', 'in', 2);
+		const bottomRuinBehavior = this.generateDepthLineBehavior(worldSystem.game, 'vertical', 'downwards', 'in', depth);
 	
-		for (let i = 0; i < depth; i++) {
-			// The height ratio is still used for other properties but not for shape generation
-			let heightRatio = 1 - Math.abs(i - middleIndex) / middleIndex;
-			
-			// Generate unique IDs for each depth line
-			let topUniqueId, bottomUniqueId;
-			
-			if (i === 0) {
-				topUniqueId = `firstTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-				bottomUniqueId = `firstBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-			} else if (i === depth - 1) {
-				topUniqueId = `lastTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-				bottomUniqueId = `lastBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+		for (let i = 0; i < depth - 1; i++) {
+			let uniqueId;
+
+			if (i === 0 && innerPosition == 'first') {
+				uniqueId = `firstRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			} else if (i === Math.floor(depth) - 1 && innerPosition == 'last') {
+				uniqueId = `lastRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			} else {
-				topUniqueId = `middleTopRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-				bottomUniqueId = `middleBottomRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+				uniqueId = `middleRuinDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			}
 	
 			// Create the top ruin depth line
 			let topRuinLine = this.spawnRuinDepthLine(
 				worldSystem.game, 
-				topUniqueId, 
+				uniqueId,
 				width, 
 				height, 
 				topWallOffset, 
@@ -233,23 +191,10 @@ export class RuinBackgroundSpawner {
 			);
 			worldSystem.depthLineQueue.push(topRuinLine);
 	
-			// Create the bottom regular depth line (part of top ruin structure)
-			let bottomRegularLine = this.spawnDepthLine(
-				worldSystem.game, 
-				width, 
-				height, 
-				topWallOffset, 
-				bottomWallOffset, 
-				wallThickness, 
-				'bottom', 
-				topRegularBehavior
-			);
-			worldSystem.depthLineQueue.push(bottomRegularLine);
-	
 			// Create the bottom ruin depth line
 			let bottomRuinLine = this.spawnRuinDepthLine(
 				worldSystem.game, 
-				bottomUniqueId, 
+				uniqueId,
 				width, 
 				height, 
 				topWallOffset, 
@@ -259,27 +204,16 @@ export class RuinBackgroundSpawner {
 				bottomRuinBehavior
 			);
 			worldSystem.depthLineQueue.push(bottomRuinLine);
-	
-			// Create the top regular depth line (part of bottom ruin structure)
-			let topRegularLine = this.spawnDepthLine(
-				worldSystem.game, 
-				width, 
-				height, 
-				topWallOffset, 
-				bottomWallOffset, 
-				wallThickness, 
-				'top', 
-				bottomRegularBehavior
-			);
-			worldSystem.depthLineQueue.push(topRegularLine);
 		}
 	}
 
 	// Utils
 	private static generateDepthLineBehavior(game: PongGame, movement: string, direction: string, fade: string, rhs: number): DepthLineBehavior {
-		const hOffset = game.width / 8;
-		const maxHeight = direction === 'downwards' ? game.height / 5 : -game.height / 5;
+		let hOffset = game.width / 16;
+		const maxHeight = direction === 'downwards' ? game.height / 7 : -game.height / 7;
 		const maxWidth = game.width - (hOffset * 2);
+		const hOffsetVariation = Math.random() * (game.width / 8);
+		hOffset = hOffsetVariation >= (game.width / 16) ? hOffset + hOffsetVariation : hOffset + (game.width / 16);
 
 		return {
 			movement: movement,
@@ -289,12 +223,15 @@ export class RuinBackgroundSpawner {
 			maxHeight: maxHeight,
 			maxWidth: maxWidth,
 			segmentWidths: this.generateSegmentWidths(maxWidth, rhs),
-			segmentHeights: this.generateSegmentHeights(maxHeight, rhs - 1),
+			segmentHeights: this.generateSegmentHeights(direction, maxHeight, rhs - 1),
+			hOffset: hOffset,
 		}
 	}
 
 	private static generateSegmentWidths(maxWidth: number, hSegments: number): number[] {
 		if (hSegments <= 1) return [maxWidth];
+
+		let lastWidth = 0;
 
 		// Calculate the segment width
 		const baseSegmentWidth = maxWidth / (hSegments - 1);
@@ -304,24 +241,35 @@ export class RuinBackgroundSpawner {
 		for (let i = 0; i < hSegments - 1; i++) {
 			// Random variation between 80% and 120% of base segment width
 			const variation = 0.8 + Math.random() * 0.4;
-			segmentWidths.push(baseSegmentWidth * variation);
+			let newWidth = baseSegmentWidth * variation;
+
+			if (newWidth - lastWidth < (maxWidth / 8)) {
+				newWidth = lastWidth;
+			}
+
+			segmentWidths.push(newWidth);
+			lastWidth = newWidth
 		}
 
 		return segmentWidths;
 	}
 
-	private static generateSegmentHeights(maxHeight: number, vSegments: number): number[] {
+	private static generateSegmentHeights(direction: string, maxHeight: number, vSegments: number): number[] {
 		if (vSegments <= 0) return [];
-
+	
 		const heights: number[] = [];
 		
 		// Create heights with some random variation
 		for (let i = 0; i < vSegments; i++) {
-			// If it's an odd segment, go up. If even, go down
-			const direction = i % 2 === 0 ? 1 : -1;
+
+			let height;
 			
-			// Random height between 40% and 100% of max height
-			const height = (0.4 + Math.random() * 0.6) * maxHeight * direction;
+			if (direction === "downwards") {
+				height = Math.random() * -maxHeight;
+			} else {
+				height = Math.random() * -maxHeight;
+			}
+			
 			heights.push(height);
 		}
 		

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:55:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:50:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,12 @@ export class MagnetizePowerup extends Powerup {
 
     createPowerupGraphic(): Container {
         const container = new Container();
-    
+        
+        const outline = new Graphics();
+        outline.rect(-15, -15, 30, 30);
+        outline.fill(0x171717);
+        container.addChild(outline);
+
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
         base.fill(0xFFFBEB);

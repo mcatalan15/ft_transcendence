@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:15:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 14:58:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@ import { Entity } from '../engine/Entity';
 import type { System } from '../engine/System'
 
 import { Paddle } from '../entities/Paddle'
+import { Powerup } from '../entities/powerups/Powerup';
+import { DepthLine } from '../entities/background/DepthLine';
+import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
+import { RuinDepthLine } from '../entities/background/RuinDepthLine';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -24,9 +28,7 @@ import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { FrameData, GameEvent } from '../utils/Types';
-import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine } from '../utils/Guards'
-import { DepthLine } from '../entities/background/DepthLine';
-import { Powerup } from '../entities/powerups/Powerup';
+import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isRuinDepthLine } from '../utils/Guards'
 
 export class AnimationSystem implements System {
 	private game: PongGame;
@@ -184,48 +186,9 @@ export class AnimationSystem implements System {
 				(entity.behavior.direction === 'downwards' && entity.y >= entity.lowerLimit)
 			) {
 				if (isPyramidDepthLine(entity)) {
-					let cutPoints: Point[] = [];
-
-					for (let i = 0; i < 3; i++) {
-						cutPoints.push(entity.points[i + 1]);
-					}
-
-					if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
-						this.game.eventQueue.push({
-							type: "spawnTopTriangleCrossCut",
-							points: cutPoints,
-							x: render.graphic.x,
-							y: render.graphic.y,
-						} as GameEvent);
-					} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
-						this.game.eventQueue.push({
-							type: "spawnBottomTriangleCrossCut",
-							points: cutPoints,
-							x: render.graphic.x,
-							y: render.graphic.y,
-						} as GameEvent);
-					} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
-						this.game.eventQueue.push({
-							type: "transformBottomTriangleCrossCut",
-							points: cutPoints,
-							x: render.graphic.x,
-							y: render.graphic.y,
-						} as GameEvent);
-					} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
-						this.game.eventQueue.push({
-							type: "transformTopTriangleCrossCut",
-							points: cutPoints,
-							x: render.graphic.x,
-							y: render.graphic.y,
-						} as GameEvent);
-					} else if (entity.id.startsWith('first')) {
-						this.game.eventQueue.push({
-							type: "despawnTriangleCrossCut",
-							points: cutPoints,
-							x: render.graphic.x,
-							y: render.graphic.y,
-						} as GameEvent);
-					}
+					this.manageTriangleCrossCutCreation(entity, render);					
+				} else if (isRuinDepthLine(entity)) {
+					this.manageRuinCrossCutCreation(entity, render);
 				}
 				entitiesToRemove.push(entity.id);
 			}
@@ -250,6 +213,96 @@ export class AnimationSystem implements System {
 			physics.y = floatY;
 			render.graphic.position.set(physics.x, floatY);
 		}	
+	}
+
+	manageTriangleCrossCutCreation(entity: PyramidDepthLine, render: RenderComponent) {
+		let cutPoints: Point[] = [];
+
+		for (let i = 0; i < 3; i++) {
+			cutPoints.push(entity.points[i + 1]);
+		}
+
+		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "spawnTopTriangleCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "spawnBottomTriangleCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "transformBottomTriangleCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "transformTopTriangleCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('first')) {
+			this.game.eventQueue.push({
+				type: "despawnTriangleCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		}
+	}
+
+	manageRuinCrossCutCreation(entity: RuinDepthLine, render: RenderComponent) {
+		let cutPoints: Point[] = [];
+
+		for (let i = 0; i < entity.points.length - 1; i++) {
+			cutPoints.push(entity.points[i + 1]);
+		}
+
+		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "spawnTopRuinCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "spawnBottomRuinCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "transformBottomRuinCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "transformTopRuinCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('first')) {
+			this.game.eventQueue.push({
+				type: "despawnRuinCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		}
 	}
 
 	private lerp(a: number, b: number, t: number): number {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 18:44:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:22:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,13 @@ import { Ball } from '../entities/balls/Ball';
 import { Wall } from '../entities/Wall';
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
+import { RuinDepthLine } from '../entities/background/RuinDepthLine';
 import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
 import { Powerup } from '../entities/powerups/Powerup'
-import { crossCut } from '../entities/crossCuts/crossCut';
+import { CrossCut } from '../entities/crossCuts/crossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
+import { RuinCrossCut } from '../entities/crossCuts/RuinCrossCut';
 
 import { SpinBall } from '../entities/balls/SpinBall';
 
@@ -64,8 +66,8 @@ export function isPyramidDepthLine(entity: Entity): entity is PyramidDepthLine {
 	return entity instanceof PyramidDepthLine;
 }
 
-export function isTriangleCut(cut: TriangleCrossCut): cut is TriangleCrossCut {
-	return cut instanceof TriangleCrossCut;
+export function isRuinDepthLine(entity: Entity): entity is RuinDepthLine {
+	return entity instanceof RuinDepthLine;
 }
 
 export function isParticle(entity: Entity): entity is Particle {
@@ -80,9 +82,18 @@ export function isPowerup(entity: Entity): entity is Powerup {
 	return entity instanceof Powerup;
 }
 
-export function isCrossCut(entity: Entity): entity is crossCut {
-	return entity instanceof crossCut;
+export function isCrossCut(entity: Entity): entity is CrossCut {
+	return entity instanceof CrossCut;
 }
+
+export function isTriangleCut(cut: CrossCut): cut is TriangleCrossCut {
+	return cut instanceof TriangleCrossCut;
+}
+
+export function isRuinCut(cut: CrossCut): cut is RuinCrossCut {
+	return cut instanceof RuinCrossCut;
+}
+
 
 export function isAnimationSystem(system: System): system is AnimationSystem {
 	return system instanceof AnimationSystem;

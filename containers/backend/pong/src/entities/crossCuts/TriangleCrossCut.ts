@@ -6,15 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/08 09:51:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:06:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
-import { crossCut } from './crossCut';
+import { CrossCut } from './crossCut';
 
-export class TriangleCrossCut extends crossCut {
+export class TriangleCrossCut extends CrossCut {
 	constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
 		super(id, layer, shape, position, nPoints, points, x, y);
 	}
