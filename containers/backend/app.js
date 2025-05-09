@@ -12,9 +12,7 @@ function buildApp() {
     logger: loggerConfig
   });
   
-  // Register cookie plugin first
   fastify.register(fastifyCookie);
-  // Then register session
   fastify.register(fastifySession, {
     cookieName: 'sessionId',
     secret: 'a-secret-key-that-should-be-in-env-file', // Use a strong secret

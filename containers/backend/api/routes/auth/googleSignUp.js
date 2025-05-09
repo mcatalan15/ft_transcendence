@@ -29,7 +29,7 @@ async function googleAuthRoutes(fastify, options) {
 
     	 return reply.status(200).send({
 			success: true,
-			message: 'Google sign-in successful',
+			message: 'Google authentication successful',
 			user: { name, email, provider } });
 
 		} catch (error) {

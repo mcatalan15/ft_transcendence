@@ -1,34 +1,23 @@
-export async function localSignIn(email: string, password: string):
-	Promise<{success: boolean, message: string, token?: string | null, user?: string | null}> {
+export async function localSignIn(email: string, password: string) {
 	try {
-		const response = await fetch('/api/auth/signin', {
+	  const response = await fetch('/api/auth/signin', {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({ email, password }),
-		});
-
-		const data = await response.json();
-
-		console.log('Frontend received:', data);
-
-		if (!response.ok) {
-			return { 
-				success: false, 
-				message: data.message || 'Sign-in failed. Please try again.',
-			};
-		}
-
-		localStorage.setItem('user', data.user);
-
-		return { 
-			success: true,
-			message: 'Sign-in successful!',
-			token: data.token,
-			user: data.user
-		};
-
+		credentials: 'include'
+	  });
+  
+	  const data = await response.json();
+	  
+	  if (response.ok) {
+		sessionStorage.setItem('username', data.user);
+	  }
+	  
+	  return {
+		success: response.ok,
+		message: data.message,
+		user: data.user
+	  };
 	} catch (error) {
 		console.error('Error during sign-in:', error);
 		return { 

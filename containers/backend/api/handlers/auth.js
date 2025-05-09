@@ -79,26 +79,18 @@ async function signinHandler(request, reply) {
 			    expiresIn: process.env.JWT_EXPIRES_IN
 		    });
 
-        request.session.set('user', {
+        request.session.set('token', authToken);
+        request.session.set('user', { // used to display profile
           id: user.id,
           user: user.username,
           email: user.email,
-		      token: authToken
           //! Never store sensitive data like passwords !
 		});
-
-		console.log('Final response:', {
-			success: true,
-			message: 'Authentication successful',
-			user: user.username,
-			token: authToken
-		  });		  
 
         return reply.status(201).send({
           success: true,
           message: 'Authentication successful',
-		  user: user.username,
-		  token: authToken
+		      user: user.username
         });
       }
       

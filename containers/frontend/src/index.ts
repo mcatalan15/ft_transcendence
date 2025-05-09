@@ -63,8 +63,8 @@ function router(path: string): void {
       break;
     case '/profile':
 	  if (!isUserAuthenticated()) {
-		navigate('/');
-		return;
+      navigate('/');
+      return;
 		}
       showProfile(app);
       break;
