@@ -20,8 +20,7 @@ export async function localSignIn(email: string, password: string):
 			};
 		}
 
-		sessionStorage.setItem('authToken', data.token);
-		sessionStorage.setItem('user', data.user);
+		localStorage.setItem('user', data.user);
 
 		return { 
 			success: true,

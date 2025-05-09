@@ -10,9 +10,11 @@
 	"dependencies": {
 		"@fastify/cookie": "^11.0.2",
 		"@fastify/session": "^11.1.0",
+		"@sendgrid/mail": "^8.1.5",
 		"fastify": "^4.0.0",
 		"i18next": "^25.0.2",
 		"jsonwebtoken": "^9.0.2",
+		"nodemailer": "^7.0.3",
 		"redis": "^5.0.1",
 		"sqlite3": "^5.0.0"
 	},

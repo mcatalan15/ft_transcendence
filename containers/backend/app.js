@@ -5,6 +5,7 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
+const sgMail = require('@sendgrid/mail');
 
 function buildApp() {
   const fastify = Fastify({
@@ -36,9 +37,9 @@ function buildApp() {
 			DELETE to remove\n \
 			PATCH for partial update\n \
 			POST for actions\n\n \
-			The client and API worked (success - 2xx response code)\n \
-			The client application behaved erroneously (client error - 4xx response code)\n \
-			The API behaved erroneously (server error - 5xx response code)\n \
+			2xx response code:\tsuccess, the client and API worked\n \
+			4xx response code:\tclient error, the client application behaved erroneously\n \
+			5xx response code:\tserver error, the API behaved erroneously\n \
 		',
         version: '1.0.0'
       },

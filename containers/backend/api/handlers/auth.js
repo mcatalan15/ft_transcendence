@@ -75,15 +75,15 @@ async function signinHandler(request, reply) {
       if (match) {
 
         const user = await getUserByEmail(email);
-		const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-			expiresIn: process.env.JWT_EXPIRES_IN
-		  });
+		    const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+			    expiresIn: process.env.JWT_EXPIRES_IN
+		    });
 
         request.session.set('user', {
           id: user.id,
           user: user.username,
           email: user.email,
-		  token: authToken
+		      token: authToken
           //! Never store sensitive data like passwords !
 		});
 

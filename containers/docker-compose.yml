@@ -104,7 +104,6 @@ services:
     environment:
       - PUID=1000  # Adjust to match your user ID (UID) if needed
       - PGID=1000  # Adjust to match your group ID (GID) if needed
-      - TZ=Etc/UTC  # Set timezone
     volumes:
       - userbase:/db
     ports:
