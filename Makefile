@@ -6,16 +6,17 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/05/09 16:34:14 by nponchon         ###   ########.fr        #
+#    Updated: 2025/05/09 16:52:20 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 prod:
-	@bash ./setup.sh
-	@bash ./generate_certs.sh
+	@bash ./scripts/setup.sh
+	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
 
 dev:
+	@bash ./scripts/setup.sh
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
 
 re:
