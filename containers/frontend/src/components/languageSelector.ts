@@ -1,13 +1,14 @@
-import i18n from '../i18n';
+import i18n from "../i18n";
+import { translateDOM } from "../utils/translateDOM";
 
 export class LanguageSelector {
   private container: HTMLElement;
 
   constructor(onChange?: (lang: string) => void) {
-    const currentLang = i18n.resolvedLanguage || 'en';
+    const currentLang = i18n.resolvedLanguage || "en";
 
-    this.container = document.createElement('div');
-    this.container.className = 'absolute bottom-4 w-full flex justify-center z-30';
+    this.container = document.createElement("div");
+    this.container.className = "absolute bottom-4 w-full flex justify-center z-30";
     this.container.innerHTML = `
       <div class="relative inline-block text-left">
         <button id="language-btn"
@@ -21,10 +22,10 @@ export class LanguageSelector {
         </button>
         <ul id="lang-menu"
           class="hidden absolute bottom-full mb-2 w-full bg-neutral-800 border border-neutral-700 rounded shadow text-center">
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="cat">${i18n.t('language.cat', { ns: 'landing' })}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="en">${i18n.t('language.en', { ns: 'landing' })}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="es">${i18n.t('language.es', { ns: 'landing' })}</li>
-          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="fr">${i18n.t('language.fr', { ns: 'landing' })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="cat">${i18n.t("language.cat", { ns: "landing" })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="en">${i18n.t("language.en", { ns: "landing" })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="es">${i18n.t("language.es", { ns: "landing" })}</li>
+          <li class="cursor-pointer hover:bg-neutral-700 px-4 py-2" data-lang="fr">${i18n.t("language.fr", { ns: "landing" })}</li>
         </ul>
       </div>
     `;
@@ -33,20 +34,21 @@ export class LanguageSelector {
   }
 
   private setupEvents(onChange?: (lang: string) => void) {
-    const btn = this.container.querySelector<HTMLButtonElement>('#language-btn');
-    const menu = this.container.querySelector<HTMLUListElement>('#lang-menu');
-    const langSpan = this.container.querySelector<HTMLSpanElement>('#current-lang');
+    const btn = this.container.querySelector<HTMLButtonElement>("#language-btn");
+    const menu = this.container.querySelector<HTMLUListElement>("#lang-menu");
+    const langSpan = this.container.querySelector<HTMLSpanElement>("#current-lang");
 
-    btn?.addEventListener('click', () => {
-      menu?.classList.toggle('hidden');
+    btn?.addEventListener("click", () => {
+      menu?.classList.toggle("hidden");
     });
 
-    menu?.querySelectorAll('li').forEach(item => {
-      item.addEventListener('click', () => {
-        const lang = item.getAttribute('data-lang') || 'en';
+    menu?.querySelectorAll("li").forEach((item) => {
+      item.addEventListener("click", () => {
+        const lang = item.getAttribute("data-lang") || "en";
         i18n.changeLanguage(lang).then(() => {
           langSpan!.textContent = lang.toUpperCase();
-          menu?.classList.add('hidden');
+          menu?.classList.add("hidden");
+          translateDOM();
           if (onChange) onChange(lang);
         });
       });
