@@ -18,6 +18,9 @@ volumes:
   certs:  # SSL certificates
     driver: local
 
+  redis_data:
+    driver: local
+
   prometheus_data:
     driver: local
   grafana_data:
@@ -92,6 +95,8 @@ services:
     restart: always
     networks:
       - transcendence
+    volumes:
+      - redis_data:/data
 
 #                       ADMINER                         #
 

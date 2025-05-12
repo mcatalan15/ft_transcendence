@@ -25,8 +25,7 @@ RUN npm cache clean --force \
 	@fastify/swagger \
 	@fastify/swagger-ui \
 	jsonwebtoken \
-	nodemailer \
-	@sendgrid/mail
+	redis
 
 COPY . .
 

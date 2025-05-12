@@ -5,7 +5,6 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
-const sgMail = require('@sendgrid/mail');
 
 function buildApp() {
   const fastify = Fastify({
