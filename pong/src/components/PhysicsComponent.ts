@@ -1,0 +1,48 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PhysicsComponent.ts                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/05/02 17:27:44 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+import type { Component } from '../engine/Component';
+
+import type { PhysicsData } from '../utils/Types';
+
+type PhysicsBehaviour = 'bounce' | 'block' | 'trigger' | 'none';
+
+export class PhysicsComponent implements Component {
+	type = 'physics';
+	instanceId?: string;
+
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	velocityX: number;
+	velocityY: number;
+	isStatic: boolean;
+	behaviour: PhysicsBehaviour;
+	restitution: number;
+	mass: number;
+	speed?: number;
+
+	constructor(physicsData: PhysicsData){
+		this.x = physicsData.x;
+		this.y = physicsData.y;
+		this.width = physicsData.width;
+		this.height = physicsData.height;
+		this.velocityX = physicsData.velocityX;
+		this.velocityY = physicsData.velocityY;
+		this.isStatic = physicsData.isStatic;
+		this.behaviour = physicsData.behaviour;
+		this.restitution = physicsData.restitution;
+		this.mass = physicsData.mass;
+		this.speed = physicsData.speed;
+	}
+}
