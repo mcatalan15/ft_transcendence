@@ -4,7 +4,7 @@ const { db } = require('./api/db/database');
 const { createClient } = require('redis');
 const { WebSocketServer } = require('ws');
 
-const redisUrl = process.env.REDIS_URL || 'redis://redis:6380';
+const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
 
 async function startServer() {
   const app = buildApp();
@@ -32,7 +32,7 @@ async function startServer() {
     app.log.info(`Server listening at ${address}`);
   });
 
-  const wss = new WebSocketServer({ server });
+  const wss = new WebSocketServer({ noServer: true });
 
   await redisSubscriber.subscribe('game-messages', (message) => {
     wss.clients.forEach(client => {
