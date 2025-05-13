@@ -68,4 +68,6 @@ function buildApp() {
   return fastify;
 }
 
-module.exports = buildApp;
+module.exports = { 
+	buildApp
+ };
