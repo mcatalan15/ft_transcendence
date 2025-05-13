@@ -25,7 +25,8 @@ RUN npm cache clean --force \
 	@fastify/swagger \
 	@fastify/swagger-ui \
 	jsonwebtoken \
-	redis
+	redis \
+	ws
 
 COPY . .
 

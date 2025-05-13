@@ -13,12 +13,14 @@
 		"@sendgrid/mail": "^8.1.5",
 		"@socket.io/redis-adapter": "^8.3.0",
 		"fastify": "^4.0.0",
+		"fastify-websocket": "^4.2.2",
 		"i18next": "^25.0.2",
 		"jsonwebtoken": "^9.0.2",
 		"nodemailer": "^7.0.3",
 		"redis": "^5.0.1",
 		"socket.io": "^4.8.1",
-		"sqlite3": "^5.0.0"
+		"sqlite3": "^5.0.0",
+		"ws": "^8.18.2"
 	},
 	"author": "",
 	"license": "ISC",

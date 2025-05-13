@@ -1,8 +1,9 @@
 const serverConfig = require('./config/serverConfiguration');
 const { buildApp } = require('./app');
 const { db } = require('./api/db/database');
+const { createServer } = require('http');
 const { createClient } = require('redis');
-const { WebSocketServer } = require('ws');
+const WebSocket = require('ws');
 
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
 
@@ -17,41 +18,46 @@ async function startServer() {
     await redisSubscriber.connect();
     console.log('Connected to Redis');
   } catch (err) {
-    console.error('Failed to connect to Redis:', err);
+    console.error('Redis connection failed:', err);
     process.exit(1);
   }
 
-  const server = app.listen({
-    host: serverConfig.ADDRESS,
-    port: serverConfig.PORT
-  }, (err, address) => {
-    if (err) {
-      app.log.error(err);
-      process.exit(1);
-    }
-    app.log.info(`Server listening at ${address}`);
-  });
-
-  const wss = new WebSocketServer({ noServer: true });
-
-  await redisSubscriber.subscribe('game-messages', (message) => {
-    wss.clients.forEach(client => {
-      if (client.readyState === client.OPEN) {
-        client.send(message);
-      }
-    });
-  });
+  // Create WebSocket server
+  const wss = new WebSocket.Server({ noServer: true });
 
   wss.on('connection', (ws) => {
-    console.log('New WebSocket connection');
+    console.log('WebSocket connection established');
 
-    ws.on('message', async (data) => {
-      console.log('Received:', data.toString());
-      await redisPublisher.publish('game-messages', data.toString());
+    ws.on('message', async (message) => {
+      await redisPublisher.publish('chat', message.toString());
     });
 
     ws.on('close', () => {
-      console.log('WebSocket disconnected');
+      console.log('WebSocket connection closed');
+    });
+  });
+
+  const nodeServer = createServer();
+
+  // Register Fastify with the existing HTTP server
+  await app.listen({ server: nodeServer, host: serverConfig.ADDRESS, port: serverConfig.PORT });
+  // Handle WebSocket upgrades
+  nodeServer.on('upgrade', (request, socket, head) => {
+    if (request.url === '/ws') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    } else {
+      socket.destroy();
+    }
+  });
+
+  // Redis message subscription
+  await redisSubscriber.subscribe('chat', (message) => {
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
     });
   });
 

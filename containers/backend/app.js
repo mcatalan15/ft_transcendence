@@ -5,6 +5,7 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
+const webSocket = require('fastify-websocket');
 
 function buildApp() {
   const fastify = Fastify({
