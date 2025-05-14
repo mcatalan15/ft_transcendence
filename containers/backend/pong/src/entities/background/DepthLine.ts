@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:39:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:29:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ export class DepthLine extends Entity {
 		this.height = height;
 
 		this.x = width / 2;
-		this.y = type === 'top' ? height / 2 - height / 10 : height / 2 + height / 10;
+		this.y = type === 'top' ? height / 2 - height / 4 : height / 2 + height / 4;
 
 		this.upperLimit = upperLimit;
 		this.lowerLimit = lowerLimit;

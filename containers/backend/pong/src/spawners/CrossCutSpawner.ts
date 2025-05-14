@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:30:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:11:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 13:52:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ export class CrossCutSpawner {
 		y: number
 	) {
 		let cut;
-		
+
 		const spawnPoints = points.length;
 		switch(spawnPoints) {
 			case (3):

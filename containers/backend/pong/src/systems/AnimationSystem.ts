@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 14:58:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:35:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ export class AnimationSystem implements System {
 		let cutPoints: Point[] = [];
 
 		for (let i = 0; i < 3; i++) {
-			cutPoints.push(entity.points[i + 1]);
+			cutPoints.push(entity.points[i]);
 		}
 
 		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {

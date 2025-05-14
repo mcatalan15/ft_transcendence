@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:40:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:36:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,14 @@ import { RenderComponent } from "../../components/RenderComponent";
 import { PyramidDepthLineOptions } from '../../utils/Types';
 
 export class PyramidDepthLine extends DepthLine {
-	baseHeight: number;
-	peakHeight: number;
-	peakOffset: number;
-	baseWidth: number;
+	peakHeight?: number;
 	type?: string ;
 	points: Point[] = [];
-    cuttingPoints: Point[] = [];
 
 	constructor(id: string, layer: string, game: PongGame, options: PyramidDepthLineOptions = {}) {
 		super(id, layer, game, options);
 
-		// Behavior-based parameters
-		if (options.behavior) {
-			this.baseHeight = options.behavior.pyramidBaseHeight ?? 4;
-			this.baseWidth = options.behavior.pyramidBaseWidth ?? (this.width / 12);
-			this.peakHeight = options.behavior.pyramidPeakHeight ?? 10;
-			this.peakOffset = options.behavior.pyramidPeakOffset ?? 0;
-		} else {
-			this.baseHeight = options.baseHeight ?? 4;
-			this.baseWidth = this.width / 12;
-			this.peakHeight = options.peakHeight ?? 10;
-			this.peakOffset = options.peakOffset ?? 0;
-		}
+		this.peakHeight = options.behavior!.pyramidPeakHeight;
 
 		this.type = options.type;
 
@@ -58,18 +43,12 @@ export class PyramidDepthLine extends DepthLine {
 		const line = new Graphics();
 		const halfWidth = width / 2;
 
-		const baseY = this.behavior?.direction === 'downwards' ? -this.baseHeight : this.baseHeight;
-		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight : this.peakHeight;
-		const peakX = this.peakOffset;
-
-		const baseLeftX = peakX - this.baseWidth / 2;
-		const baseRightX = peakX + this.baseWidth / 2;
+		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
+		const peakX = 0; //this.behavior?.direction === 'downwards' ? -300 : 300;;
 
 		this.points = [
 			new Point(-halfWidth, 0),
-			new Point(baseLeftX, baseY),
 			new Point(peakX, peakY),
-			new Point(baseRightX, baseY),
 			new Point(halfWidth, 0)
 		];
 
@@ -89,10 +68,7 @@ export class PyramidDepthLine extends DepthLine {
 			join: 'round',
 			miterLimit: 10
 		});
+
 		return line;
 	}
-
-    getCuttingPoints(depthLine: PyramidDepthLine) {
-        this.cuttingPoints = depthLine.points;
-    }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:23:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:21:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ export class PongGame {
 		console.log('All Entities created');
 
 		this.populateWorlds();
-		this.currentWorld = this.worldPool.cityWorld;
+		this.currentWorld = this.worldPool.desertWorld;
 
 		this.initSystems();
 		console.log('All Systems initialiazed');
@@ -167,7 +167,6 @@ export class PongGame {
 		const postProcessingSystem = new PostProcessingSystem();
 		const crossCutSystem = new CrossCutSystem(this);
 		
-		// this.systems.push(crossCutSystem);
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
 		this.systems.push(crossCutSystem);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 17:49:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:25:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ import { DepthLine } from '../entities/background/DepthLine';
 import { RenderComponent } from '../components/RenderComponent';
 
 import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
-import { DesertBackgroundSpawner } from '../spawners/DesertBackgroundSpawner';
-import { RuinBackgroundSpawner } from '../spawners/RuinBackgroundSpawner';
+import { WallFiguresSpawner } from '../spawners/WallFiguresSpawner';
 
 import { FrameData, GameEvent, World, DepthLineBehavior } from '../utils/Types';
 import { isUI, isDepthLine } from '../utils/Guards';
@@ -72,55 +71,22 @@ export class WorldSystem implements System {
 		this.figureTimer -= delta.deltaTime;
 
 		if (this.worldTimer <= 0){
-			this.changeWorld();
+			//this.changeWorld();
 			this.worldTimer = 1000;
 		}
 
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
 			this.isSpawningFigures = true;
-			let depth = this.randomOdd(35, 49);
+			let depth = this.randomOdd(101, 111);
 			let idx = Math.floor(Math.random() * 5);
 			
-			if (this.game.currentWorld.theme === 'desert') {
-				switch (idx) {
-					case (0):
-						DesertBackgroundSpawner.buildTopPyramid(this, depth);
-						break;
-					case (1):
-						DesertBackgroundSpawner.buildBottomPyramid(this, depth);
-						break;
-					default:
-						DesertBackgroundSpawner.buildTopAndBottomPyramid(this, depth);
-						break;
-				} 
-			} else if (this.game.currentWorld.theme === 'ruins') {
-				// Use smaller depth for ruin patterns to keep them manageable
-				depth = this.randomOdd(50, 60);
-				let ruinDivisions = Math.floor(Math.random() * (5 - 3 + 1) + 6);
-				
-				for (let i = 0; i < ruinDivisions; i++) {
-					let innerPosition;
-					if (i == 0) {
-						innerPosition = 'first';
-					} else if (i == ruinDivisions - 1) {
-						innerPosition = 'last';
-					} else {
-						innerPosition = 'middle';
-					}
-					
-					switch (idx) {
-						case (0):
-							RuinBackgroundSpawner.buildTopRuin(this, depth / ruinDivisions, innerPosition);
-							break;
-						case (1):
-							RuinBackgroundSpawner.buildBottomRuin(this, depth / ruinDivisions, innerPosition);
-							break;
-						default:
-							RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth / ruinDivisions, innerPosition);
-							break;
-					}
-					/* RuinBackgroundSpawner.buildTopAndBottomRuin(this, depth / ruinDivisions, innerPosition); */
-				}
+			switch(idx) {
+				case(1):
+					WallFiguresSpawner.buildPyramids(this, depth);
+					break;
+				default:
+					WallFiguresSpawner.buildPyramids(this, depth);
+					break;
 			}
 		}
 

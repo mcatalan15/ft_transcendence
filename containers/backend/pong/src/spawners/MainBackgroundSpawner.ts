@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:40:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/05 11:52:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 13:54:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ export class MainBackgroundSpawner {
 			type,
 			despawn: 'position',
 		});
-
+		console.log(depthLine);
 		game.addEntity(depthLine);
 
 		const render = depthLine.getComponent('render') as RenderComponent;
