@@ -6,13 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 15:06:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 16:09:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
-import { CrossCut } from './crossCut';
+import { CrossCut } from './CrossCut';
 
 export class TriangleCrossCut extends CrossCut {
 	constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
@@ -51,7 +51,7 @@ export class TriangleCrossCut extends CrossCut {
 		return data;
 	}
 
-	/* generateCutTriangleGraphic(points: Point[]): Graphics {
+	generateCutTriangleGraphic(points: Point[]): Graphics {
 		const triangleGraphic = new Graphics();
 		
 		if (!points || points.length < 4) {
@@ -114,5 +114,5 @@ export class TriangleCrossCut extends CrossCut {
 		};
 
 		return data;
-	} */
+	}
 }

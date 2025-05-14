@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RuinCrossCut.ts                                    :+:      :+:    :+:   */
+/*   RectangleCrossCut.ts                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 15:06:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:38:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
-import { CrossCut } from './crossCut';
+import { CrossCut } from './CrossCut';
 
-export class RuinCrossCut extends CrossCut {
+export class RectangleCrossCut extends CrossCut {
 	constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
 		super(id, layer, shape, position, nPoints, points, x, y);
 	}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 19:20:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:39:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,10 +177,9 @@ export class PhysicsSystem implements System {
 	}
 
 	//! WIP
-	handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+	/*handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
 		for (const [id, entity] of entitiesMap.entries()) {
-			if (!id.startsWith('cut_')) continue;
-	
+			if (!id.startsWith('cut-')) continue;
 			const cutPhysics = entity.getComponent('physics') as PhysicsComponent;
 			if (!cutPhysics) continue;
 	
@@ -234,7 +233,7 @@ export class PhysicsSystem implements System {
 				}
 			}
 		}
-	}
+	}*/
 	
 	handleBallShieldCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
 		let collided = false;

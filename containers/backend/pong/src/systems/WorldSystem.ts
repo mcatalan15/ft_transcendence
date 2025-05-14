@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 14:25:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:30:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,14 @@ export class WorldSystem implements System {
 		if (this.figureTimer <= 0 && !this.isSpawningFigures) {
 			this.isSpawningFigures = true;
 			let depth = this.randomOdd(101, 111);
-			let idx = Math.floor(Math.random() * 5);
+			let idx = Math.floor(Math.random() * 2);
 			
 			switch(idx) {
 				case(1):
 					WallFiguresSpawner.buildPyramids(this, depth);
 					break;
 				default:
-					WallFiguresSpawner.buildPyramids(this, depth);
+					WallFiguresSpawner.buildParapets(this, depth);
 					break;
 			}
 		}

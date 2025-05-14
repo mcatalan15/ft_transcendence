@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   crossCut.ts                                        :+:      :+:    :+:   */
+/*   CrossCut.ts                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 15:29:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:27:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ import { Entity } from '../../engine/Entity';
 import { RenderComponent } from '../../components/RenderComponent';
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 
-import { RuinCrossCut } from './RuinCrossCut';
+import { RectangleCrossCut } from './RectangleCrossCut';
 
-import { isTriangleCut, isRuinCut } from '../../utils/Guards';
+import { isTriangleCut, isRectangleCut } from '../../utils/Guards';
 
 export abstract class CrossCut extends Entity {
 	shape: string;
@@ -71,14 +71,14 @@ export abstract class CrossCut extends Entity {
 				
 				graphic.poly([tip, right, left], true);
 				graphic.fill(0xFFFBEB);
-			} else if (isRuinCut(cut)) {
-				const ruinCut = cut as RuinCrossCut;
+			} else if (isRectangleCut(cut)) {
+				const rectangleCut = cut as RectangleCrossCut;
 				
 				// Implement the same drawing logic as in RuinCrossCut.createCutGraphic()
-				graphic.moveTo(ruinCut.points[0].x, ruinCut.points[0].y);
+				graphic.moveTo(rectangleCut.points[0].x, rectangleCut.points[0].y);
 				
-				for (let i = 1; i < ruinCut.points.length; i++) {
-					graphic.lineTo(ruinCut.points[i].x, ruinCut.points[i].y);
+				for (let i = 1; i < rectangleCut.points.length; i++) {
+					graphic.lineTo(rectangleCut.points[i].x, rectangleCut.points[i].y);
 				}
 				
 				graphic.fill(0xFFFBEB);

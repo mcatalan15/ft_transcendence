@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 12:35:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:27:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ export class CrossCutSystem implements System {
 
 		while (this.game.eventQueue.length > 0) {
 			const event = this.game.eventQueue.shift() as GameEvent;
-			console.log(event.type);
+			
 			if (event.type.endsWith("CrossCut")) {
 				if (event.type.startsWith('spawnTop') && event.points && event.x && event.y) {
 					CrossCutSpawner.spawnCrossCut(this.game, event.points, "top", event.x, event.y);

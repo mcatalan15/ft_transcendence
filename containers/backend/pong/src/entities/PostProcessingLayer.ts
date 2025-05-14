@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 17:48:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:53:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ export class PostProcessingLayer extends Entity {
 
         const powerupGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.ice,
+            color: WORLD_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -126,7 +126,7 @@ export class PostProcessingLayer extends Entity {
 
         const powerdownGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.ice,
+            color: WORLD_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -136,7 +136,7 @@ export class PostProcessingLayer extends Entity {
 
         const ballChangeGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.ice,
+            color: WORLD_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -147,7 +147,7 @@ export class PostProcessingLayer extends Entity {
         const powerupDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.forest,
+            color: WORLD_COLORS.green,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,
@@ -157,7 +157,7 @@ export class PostProcessingLayer extends Entity {
         const powerdownDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.city,
+            color: WORLD_COLORS.red,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,
@@ -167,7 +167,7 @@ export class PostProcessingLayer extends Entity {
         const ballChangeDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.fire,
+            color: WORLD_COLORS.brown,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,

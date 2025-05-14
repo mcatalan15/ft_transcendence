@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:30:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 13:52:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 16:12:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ import { Point } from 'pixi.js';
 
 import { PongGame } from '../engine/Game';
 
-import { RuinCrossCut } from '../entities/crossCuts/RuinCrossCut';
+import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
 
 import { RenderComponent } from '../components/RenderComponent';
@@ -31,12 +31,17 @@ export class CrossCutSpawner {
 		let cut;
 
 		const spawnPoints = points.length;
+
 		switch(spawnPoints) {
 			case (3):
-				cut = new TriangleCrossCut(`triangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'foreground', 'triangle', position, spawnPoints, points, x, y);
+				cut = new TriangleCrossCut(`cut-triangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'triangle', position, spawnPoints, points, x, y);
+				break;
+			case (5):
+				cut = new RectangleCrossCut(`WallB-rectangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'rectangle', position, spawnPoints, points, x, y);
 				break;
 			default:
-				cut = new RuinCrossCut(`ruinCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'foreground', 'ruin', position, spawnPoints, points, x, y);
+				cut = new RectangleCrossCut(`cut-rectangleCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'rectangle', position, spawnPoints, points, x, y);
+				break;
 		}
 		
 		// Add entity to game
@@ -60,6 +65,6 @@ export class CrossCutSpawner {
 		}
 		
 		// Add to render layer
-		game.renderLayers.foreground.addChild(render.graphic);
+		game.renderLayers.midground.addChild(render.graphic);
 	}
 }

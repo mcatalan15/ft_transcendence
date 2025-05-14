@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:53:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:52:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,14 +113,21 @@ export interface World {
 }
 
 export const WORLD_COLORS = {
-	desert: 0xFBBF24,
+	red: 0xea3d37,
+	brown: 0xcf7f45,
+	rose: 0xd35461,
+	turquoise: 0x25849a,
+	violet: 0x835a83,
+	green: 0x2ea17c,
+	marine: 0x204c93
+	/* desert: 0xFBBF24,
 	city: 0xF32A4D,
 	abyss: 0xD946EF,
 	forest: 0x65A30D,
 	ice: 0x67E8F9,
 	fire: 0xEA580C,
 	sky: 0x38BDF8,
-	void: 0x7C3AED
+	void: 0x7C3AED */
 }
 
 export interface DepthLineOptions {

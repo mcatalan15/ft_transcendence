@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 12:21:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 16:04:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,9 +294,9 @@ export class PongGame {
 
 	populateWorlds() {
 		this.worldPool = {
-			desertWorld: createWorld('desert', 'Desert of Spiked Reflections', WORLD_COLORS.fire),
-			cityWorld: createWorld('ruins', 'Ruins of Yonder', WORLD_COLORS.city),
-			abyssWorld: createWorld('abyss', 'Pelagic Netherscape', WORLD_COLORS.void),
+			desertWorld: createWorld('desert', 'Desert of Spiked Reflections', WORLD_COLORS.marine),
+			cityWorld: createWorld('ruins', 'Ruins of Yonder', WORLD_COLORS.marine),
+			abyssWorld: createWorld('abyss', 'Pelagic Netherscape', WORLD_COLORS.marine),
 		};
 	}
 
