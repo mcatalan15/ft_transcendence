@@ -37,10 +37,12 @@ async function startServer() {
     });
   });
 
-  const nodeServer = createServer();
+ // const nodeServer = createServer();
 
   // Register Fastify with the existing HTTP server
-  await app.listen({ server: nodeServer, host: serverConfig.ADDRESS, port: serverConfig.PORT });
+  await app.listen({ host: serverConfig.ADDRESS, port: serverConfig.PORT });
+
+  const nodeServer = app.server;
   // Handle WebSocket upgrades
   nodeServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/ws') {

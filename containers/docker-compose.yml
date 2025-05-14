@@ -69,7 +69,7 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "127.0.0.1:3100:3100"
+      - "3100:3100"
     volumes:
       - userbase:/usr/src/app/db
     env_file:
