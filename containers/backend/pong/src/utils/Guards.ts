@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:26:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:51:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,15 @@ import { Wall } from '../entities/Wall';
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
+import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
+import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
 import { Particle } from '../entities/Particle'
 import { UI } from '../entities/UI'
 import { Powerup } from '../entities/powerups/Powerup'
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
 import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
+import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
 
 import { SpinBall } from '../entities/balls/SpinBall';
 
@@ -70,6 +73,14 @@ export function isParapetDepthLine(entity: Entity): entity is ParapetDepthLine {
 	return entity instanceof ParapetDepthLine;
 }
 
+export function isSawDepthLine(entity: Entity): entity is SawEdgeDepthLine {
+	return entity instanceof SawEdgeDepthLine;
+}
+
+export function isEscalatorDepthLine(entity: Entity): entity is EscalatorDepthLine {
+	return entity instanceof EscalatorDepthLine;
+}
+
 export function isParticle(entity: Entity): entity is Particle {
 	return entity instanceof Particle;
 }
@@ -94,6 +105,9 @@ export function isRectangleCut(cut: CrossCut): cut is RectangleCrossCut {
 	return cut instanceof RectangleCrossCut;
 }
 
+export function isSawCut(cut: CrossCut): cut is SawCrossCut {
+	return cut instanceof SawCrossCut;
+}
 
 export function isAnimationSystem(system: System): system is AnimationSystem {
 	return system instanceof AnimationSystem;

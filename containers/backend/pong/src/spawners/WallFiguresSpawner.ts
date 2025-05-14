@@ -6,123 +6,20 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:40:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:19:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:38:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from '../engine/Game';
-import { DepthLine } from '../entities/background/DepthLine';
-import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
-import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
+import { DepthLineFactory } from '../entities/background/DepthLineFactory';
 
 import { WorldSystem } from '../systems/WorldSystem';
 
 import { DepthLineBehavior } from '../utils/Types';
 
-export class WallFiguresSpawner {
-	static spawnDepthLine(
-		game: PongGame,
-		width: number,
-		height: number,
-		topWallOffset: number,
-		bottomWallOffset: number,
-		wallThickness: number,
-		type: 'top' | 'bottom' | string,
-		behavior: DepthLineBehavior
-	): DepthLine {
-		const uniqueId = `depthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-		const addedOffset = 10;
-
-		const upperLimit = topWallOffset + wallThickness - addedOffset;
-		const lowerLimit = height - bottomWallOffset + addedOffset;
-
-		const depthLine = new DepthLine(uniqueId, 'background', game, {
-			velocityX: 10,
-			velocityY: 10,
-			width,
-			height,
-			upperLimit,
-			lowerLimit,
-			alpha: 0,
-			behavior,
-			type,
-			despawn: 'position',
-		});
-
-		return (depthLine);
-	}
-
-	static spawnPyramidDepthLine(
-		game: PongGame,
-		id: string,
-		width: number,
-		height: number,
-		topWallOffset: number,
-		bottomWallOffset: number,
-		wallThickness: number,
-		type: 'top' | 'bot' | string,
-		behavior: DepthLineBehavior,
-		peakOffset: number = 0
-	): DepthLine {
-		const addedOffset = 10;
-
-		const upperLimit = topWallOffset + wallThickness - addedOffset;
-		const lowerLimit = height - bottomWallOffset + addedOffset;
-
-		const depthLine = new PyramidDepthLine(id, 'background', game, {
-			velocityX: 10,
-			velocityY: 10,
-			width,
-			height,
-			upperLimit,
-			lowerLimit,
-			alpha: 0,
-			behavior,
-			type,
-			despawn: 'position',
-			peakOffset,
-		});
-		
-		return depthLine;
-	}
-
-	static spawnParapetDepthLine(
-		game: PongGame,
-		id: string,
-		width: number,
-		height: number,
-		topWallOffset: number,
-		bottomWallOffset: number,
-		wallThickness: number,
-		type: 'top' | 'bot' | string,
-		behavior: DepthLineBehavior,
-		peakOffset: number = 0
-	): DepthLine {
-		const addedOffset = 10;
-
-		const upperLimit = topWallOffset + wallThickness - addedOffset;
-		const lowerLimit = height - bottomWallOffset + addedOffset;
-
-		const depthLine = new ParapetDepthLine(id, 'background', game, {
-			velocityX: 10,
-			velocityY: 10,
-			width,
-			height,
-			upperLimit,
-			lowerLimit,
-			alpha: 0,
-			behavior,
-			type,
-			despawn: 'position',
-			peakOffset,
-		});
-		
-		return depthLine;
-	}
-
+export class WallFiguresSpawner{
 	static buildPyramids(worldSystem: WorldSystem, depth: number): void {
 		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
-		const maxPyramidHeight = height / 2.7 - topWallOffset - wallThickness;
+		const maxPyramidHeight = height / 2.2 - topWallOffset - wallThickness;
 
 		const rampUpEnd = Math.floor(depth / 5);
         const rampDownStart = Math.floor(depth * 4 / 5);
@@ -152,13 +49,13 @@ export class WallFiguresSpawner {
 				uniqueId = `middlePyramidDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			}
 
-			let bottomLine = this.spawnPyramidDepthLine(
-				worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
+			let bottomLine = DepthLineFactory.createDepthLine(
+				'pyramid', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
 			);
 			worldSystem.depthLineQueue.push(bottomLine);
 	
-			let topLine = this.spawnPyramidDepthLine(
-				worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
+			let topLine = DepthLineFactory.createDepthLine(
+				'pyramid', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
 			);
 			worldSystem.depthLineQueue.push(topLine);
 		}
@@ -196,13 +93,101 @@ export class WallFiguresSpawner {
 				uniqueId = `middleParapetDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 			}
 
-			let bottomLine = this.spawnParapetDepthLine(
-				worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
+			let bottomLine = DepthLineFactory.createDepthLine(
+				'parapet', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
 			);
 			worldSystem.depthLineQueue.push(bottomLine);
 	
-			let topLine = this.spawnParapetDepthLine(
-				worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
+			let topLine = DepthLineFactory.createDepthLine(
+				'parapet', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
+			);
+			worldSystem.depthLineQueue.push(topLine);
+		}
+	}
+
+	static buildSawEdges(worldSystem: WorldSystem, depth: number): void {
+		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
+
+		const maxSawHeight = height / 2 - topWallOffset - wallThickness;
+		const rampUpEnd = Math.floor(depth / 5);
+        const rampDownStart = Math.floor(depth * 4 / 5);
+
+		for (let i = 0; i < depth; i++) {
+			let heightRatio;
+            
+            if (i < rampUpEnd) {
+                heightRatio = i / rampUpEnd;
+            } else if (i >= rampDownStart) {
+                heightRatio = (depth - i - 1) / (depth - rampDownStart);
+            } else {
+                heightRatio = 1.0;
+            }
+			
+			const sawHeight = heightRatio * maxSawHeight;
+	
+			const behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in', sawHeight);
+			const behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in', sawHeight);
+
+			let uniqueId;
+			if (i === 0) {
+				uniqueId = `firstSawEdgeDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			} else if (i === depth - 1) {
+				uniqueId = `lastSawEdgeLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			} else {
+				uniqueId = `middleSawEdgeLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			}
+
+			let bottomLine = DepthLineFactory.createDepthLine(
+				'sawEdge', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
+			);
+			worldSystem.depthLineQueue.push(bottomLine);
+	
+			let topLine = DepthLineFactory.createDepthLine(
+				'sawEdge', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
+			);
+			worldSystem.depthLineQueue.push(topLine);
+		}
+	}
+
+	static buildEscalator(worldSystem: WorldSystem, depth: number): void {
+		const { width, height, topWallOffset, bottomWallOffset, wallThickness } = worldSystem.game;
+
+		const maxEscalatorHeight = height / 2 - topWallOffset - wallThickness;
+		const rampUpEnd = Math.floor(depth / 5);
+        const rampDownStart = Math.floor(depth * 4 / 5);
+
+		for (let i = 0; i < depth; i++) {
+			let heightRatio;
+            
+            if (i < rampUpEnd) {
+                heightRatio = i / rampUpEnd;
+            } else if (i >= rampDownStart) {
+                heightRatio = (depth - i - 1) / (depth - rampDownStart);
+            } else {
+                heightRatio = 1.0;
+            }
+			
+			const escalatorHeight = heightRatio * maxEscalatorHeight;
+	
+			const behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in', escalatorHeight);
+			const behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in', escalatorHeight);
+
+			let uniqueId;
+			if (i === 0) {
+				uniqueId = `firstEscalatorDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			} else if (i === depth - 1) {
+				uniqueId = `lastEscalatorLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			} else {
+				uniqueId = `middleEscalatorLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			}
+
+			let bottomLine = DepthLineFactory.createDepthLine(
+				'escalator', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'bottom', behaviorBottom
+			);
+			worldSystem.depthLineQueue.push(bottomLine);
+	
+			let topLine = DepthLineFactory.createDepthLine(
+				'escalator', worldSystem.game, uniqueId, width, height, topWallOffset, bottomWallOffset, wallThickness, 'top', behaviorTop
 			);
 			worldSystem.depthLineQueue.push(topLine);
 		}
@@ -214,7 +199,7 @@ export class WallFiguresSpawner {
 			movement: movement,
 			direction: direction,
 			fade: fade,
-			pyramidPeakHeight: pph,
+			linePekHeight: pph,
 		}
 	}
 }

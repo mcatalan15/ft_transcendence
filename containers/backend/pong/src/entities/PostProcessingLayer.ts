@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:53:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 20:03:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ export class PostProcessingLayer extends Entity {
         const bulgePinch = new BulgePinchFilter({
             center: new Point(0.5, 0.5), // Normalized coordinates (0 to 1) if using relative center
             radius: Math.min(game.width, game.height) * 1.6,                      // Radius of effect in pixels
-            strength: (1 / game.width / game.height) * 40000,                     // Range: -1 (pinch) to 1 (bulge)
+            strength: (1 / game.width / game.height) * 60000,                     // Range: -1 (pinch) to 1 (bulge)
         });
 
         // Chromatic aberration

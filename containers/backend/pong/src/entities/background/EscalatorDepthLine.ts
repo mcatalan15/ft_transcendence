@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PyramidDepthLine.ts                                :+:      :+:    :+:   */
+/*   EscalatorDepthLine.ts                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:26:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:50:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ import { RenderComponent } from "../../components/RenderComponent";
 import { PyramidDepthLineOptions } from '../../utils/Types';
 import { drawPointPath } from '../../utils/Utils';
 
-export class PyramidDepthLine extends DepthLine {
+export class EscalatorDepthLine extends DepthLine {
 	peakHeight?: number;
 	type?: string;
 	points: Point[] = [];
@@ -34,22 +34,45 @@ export class PyramidDepthLine extends DepthLine {
 		const color = game.currentWorld.color;
 		const render = this.getComponent('render') as RenderComponent;
 		if (render) {
-			render.graphic = this.generatePyramidLine(this.width, color);
+			render.graphic = this.generateEscalatorLine(this.width, color, options.behavior!.direction!);
 			render.graphic.position.set(this.x, this.y);
 		}
 	}
 
-	private generatePyramidLine(width: number, color: number): Graphics {
+	private generateEscalatorLine(width: number, color: number, direction: string): Graphics {
 		const line = new Graphics();
-		const halfWidth = width / 2;
+		let sign = 1;
+		if (direction === 'upwards') {
+			sign = -1;
+		}
+
+		let halfWidth = width / 2  * sign;
+		let seventhWidth = width / 7 * sign;
+		let fourteenthWidth = width / 14 * sign;
 
 		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
 		const peakX = 0;
 
+		const fourthHeight = peakY / 5;
+
+
 		this.points = [
 			new Point(-halfWidth, 0),
-			new Point(peakX, peakY),
-			new Point(halfWidth, 0)
+			new Point(-halfWidth, fourthHeight),
+			new Point(-halfWidth + seventhWidth, fourthHeight),
+			new Point(-halfWidth + seventhWidth, fourthHeight * 2),
+			new Point(-halfWidth + (seventhWidth * 2), fourthHeight * 2),
+			new Point(-halfWidth + (seventhWidth * 2), fourthHeight * 3),
+			new Point(-halfWidth + (seventhWidth * 3), fourthHeight * 3),
+			new Point(-halfWidth + (seventhWidth * 3), fourthHeight * 4),
+			new Point(fourteenthWidth, fourthHeight * 4),
+			new Point(fourteenthWidth, fourthHeight * 3),
+			new Point(fourteenthWidth + seventhWidth, fourthHeight * 3),
+			new Point(fourteenthWidth + seventhWidth, fourthHeight * 2),
+			new Point(fourteenthWidth + (seventhWidth * 2), fourthHeight * 2),
+			new Point(fourteenthWidth + (seventhWidth * 2), fourthHeight),
+			new Point(fourteenthWidth + (seventhWidth * 3), fourthHeight),
+			new Point(fourteenthWidth + (seventhWidth * 3), 0),
 		];
 
 		// Use the utility function to draw the path

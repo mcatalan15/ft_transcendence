@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RectangleCrossCut.ts                               :+:      :+:    :+:   */
+/*   SawCrossCut.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 18:52:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:52:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
-export class RectangleCrossCut extends CrossCut {
+export class SawCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
     }
 
     createCutGraphic(): Graphics {
-        const rectangleGraphic = new Graphics();
-        this.redrawGraphic(rectangleGraphic);
-        return rectangleGraphic; 
+        const sawGraphic = new Graphics();
+        this.redrawGraphic(sawGraphic);
+        return sawGraphic; 
     }
-
+    
     protected redrawGraphic(graphic: Graphics): void {
         graphic.moveTo(this.points[0].x, this.points[0].y);
         

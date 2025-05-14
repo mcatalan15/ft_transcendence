@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:23:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:55:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,17 @@ import { DepthLine } from "./DepthLine";
 import { RenderComponent } from "../../components/RenderComponent";
 
 import { PyramidDepthLineOptions } from '../../utils/Types';
+import { drawPointPath } from '../../utils/Utils';
 
 export class ParapetDepthLine extends DepthLine {
 	peakHeight?: number;
-	type?: string ;
+	type?: string;
 	points: Point[] = [];
 
 	constructor(id: string, layer: string, game: PongGame, options: PyramidDepthLineOptions = {}) {
 		super(id, layer, game, options);
 
-		this.peakHeight = options.behavior!.pyramidPeakHeight;
-
+		this.peakHeight = options.behavior!.linePekHeight;
 		this.type = options.type;
 
 		const color = game.currentWorld.color;
@@ -52,31 +52,19 @@ export class ParapetDepthLine extends DepthLine {
 				new Point(peakX, peakY),
 				new Point(peakX, 0),
 				new Point(halfWidth, 0)
-		]} else {
+			];
+		} else {
 			this.points = [
 				new Point(halfWidth, 0),
 				new Point(halfWidth, peakY),
 				new Point(peakX, peakY),
 				new Point(peakX, 0),
 				new Point(-halfWidth, 0)
-		]};
-
-		// Draw using points
-		line.moveTo(this.points[0].x, this.points[0].y);
-		for (let i = 1; i < this.points.length; i++) {
-			line.lineTo(this.points[i].x, this.points[i].y);
+			];
 		}
 
-		// Stylize
-		line.stroke({
-			width: 2,
-			color: color,
-			alpha: 1,
-			alignment: 0.5,
-			cap: 'round',
-			join: 'round',
-			miterLimit: 10
-		});
+		// Use the utility function to draw the path
+		drawPointPath(line, this.points, color);
 
 		return line;
 	}

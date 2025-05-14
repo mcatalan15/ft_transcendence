@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:30:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 16:12:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:54:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ import { PongGame } from '../engine/Game';
 
 import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
+import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
+import { EscalatorCrossCut } from '../entities/crossCuts/EscalatorCrossCut';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -31,16 +33,23 @@ export class CrossCutSpawner {
 		let cut;
 
 		const spawnPoints = points.length;
+		console.log(spawnPoints);
 
 		switch(spawnPoints) {
 			case (3):
 				cut = new TriangleCrossCut(`cut-triangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'triangle', position, spawnPoints, points, x, y);
 				break;
 			case (5):
-				cut = new RectangleCrossCut(`WallB-rectangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'rectangle', position, spawnPoints, points, x, y);
+				cut = new RectangleCrossCut(`cut-rectangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'rectangle', position, spawnPoints, points, x, y);
+				break;
+			case (7):
+				cut = new SawCrossCut(`cut-rectangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'saw', position, spawnPoints, points, x, y);
+				break;
+			case (16):
+				cut = new EscalatorCrossCut(`cut-rectangleCrossCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'escalator', position, spawnPoints, points, x, y);
 				break;
 			default:
-				cut = new RectangleCrossCut(`cut-rectangleCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'rectangle', position, spawnPoints, points, x, y);
+				cut = new RectangleCrossCut(`cut-rectangleCut-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 'midground', 'estandard', position, spawnPoints, points, x, y);
 				break;
 		}
 		

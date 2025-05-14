@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:52:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:55:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export interface DepthLineBehavior {
 	// Pyramid specific properties
     pyramidBaseHeight?: number;
     pyramidBaseWidth?: number;
-    pyramidPeakHeight?: number;
+    linePekHeight?: number;
     pyramidPeakOffset?: number;
 
 	// Ruin specicif properties

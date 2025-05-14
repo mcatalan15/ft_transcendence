@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 16:04:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 20:11:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -346,10 +346,8 @@ export class PongGame {
 	createBoundingBox() {
 		const boundingBox = new Graphics();
 		boundingBox.rect(0, 0, this.width, this.height);
-		boundingBox.stroke('#171717');
-		//this.renderLayers.bounding.addChild(boundingBox);
-		this.renderLayers.powerup.addChild(boundingBox);
-		//this.renderLayers.powerdown.addChild(boundingBox);
-		//this.renderLayers.ballChange.addChild(boundingBox);
+		boundingBox.stroke({width: 0.1, color: '#171717'});
+		this.renderLayers.bounding.addChild(boundingBox);
+		
 	}
 }

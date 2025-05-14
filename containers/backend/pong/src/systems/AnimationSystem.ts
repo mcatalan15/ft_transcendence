@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:29:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:52:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
-import { RuinDepthLine } from '../entities/background/RuinDepthLine';
+import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
+import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
+import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -28,8 +30,8 @@ import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { FrameData, GameEvent } from '../utils/Types';
-import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isParapetDepthLine } from '../utils/Guards'
-import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
+import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isParapetDepthLine, isSawDepthLine, isEscalatorDepthLine } from '../utils/Guards'
+
 
 export class AnimationSystem implements System {
 	private game: PongGame;
@@ -190,6 +192,10 @@ export class AnimationSystem implements System {
 					this.manageTriangleCrossCutCreation(entity, render);					
 				} else if (isParapetDepthLine(entity)) {
 					this.manageRectangleCrossCutCreation(entity, render);
+				} else if (isSawDepthLine(entity)) {
+					this.manageSawCrossCutCreation(entity, render);
+				} else if (isEscalatorDepthLine(entity)) {
+					this.manageEscalatorCrossCutCreation(entity, render);
 				}
 				entitiesToRemove.push(entity.id);
 			}
@@ -299,6 +305,96 @@ export class AnimationSystem implements System {
 		} else if (entity.id.startsWith('first')) {
 			this.game.eventQueue.push({
 				type: "despawnParapetCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		}
+	}
+
+	manageSawCrossCutCreation(entity: SawEdgeDepthLine, render: RenderComponent) {
+		let cutPoints: Point[] = [];
+
+		for (let i = 0; i < entity.points.length; i++) {
+			cutPoints.push(entity.points[i]);
+		}
+
+		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "spawnTopSawCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "spawnBottomSawCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "transformBottomSawCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "transformTopSawCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('first')) {
+			this.game.eventQueue.push({
+				type: "despawnSawCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		}
+	}
+
+	manageEscalatorCrossCutCreation(entity: EscalatorDepthLine, render: RenderComponent) {
+		let cutPoints: Point[] = [];
+
+		for (let i = 0; i < entity.points.length; i++) {
+			cutPoints.push(entity.points[i]);
+		}
+
+		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "spawnTopEscalatorCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "spawnBottomEscalatorCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
+			this.game.eventQueue.push({
+				type: "transformBottomEscalatorCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
+			this.game.eventQueue.push({
+				type: "transformTopEscalatorCrossCut",
+				points: cutPoints,
+				x: render.graphic.x,
+				y: render.graphic.y,
+			} as GameEvent);
+		} else if (entity.id.startsWith('first')) {
+			this.game.eventQueue.push({
+				type: "despawnEscalatorCrossCut",
 				points: cutPoints,
 				x: render.graphic.x,
 				y: render.graphic.y,
