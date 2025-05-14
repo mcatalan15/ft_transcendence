@@ -107,10 +107,8 @@ export function showSignUp(container: HTMLElement): void {
 			const result = await localSignUp(username, email, password);
 			
 			if (!result.success) {
-				// Display the error message from the backend
 				errorMessageDiv.textContent = result.message;
 			} else {
-				// Registration successful - redirect or show success message
 				alert('Registration successful!');
 				navigate('/signin');
 			}

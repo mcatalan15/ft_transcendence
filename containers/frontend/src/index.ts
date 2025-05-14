@@ -10,6 +10,7 @@ import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
 import { showChat } from './views/chat';
+import { showLobby } from './views/lobby';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
 
 import { logUserOut } from './auth/userLogout';
@@ -94,6 +95,14 @@ function router(path: string): void {
         navigate('/');
         break;
 
+	case '/lobby':
+		if (!isUserAuthenticated()) {
+		  navigate('/');
+		  return;
+		}
+		  showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
+		  break;
+	
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;

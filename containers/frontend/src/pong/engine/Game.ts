@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 17:28:47 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:54:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player, PlayerData } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS } from '../utils/Types'
 import { createWorld } from '../utils/Utils'
 
 export class PongGame {
@@ -358,5 +358,78 @@ export class PongGame {
 		boundingBox.rect(0, 0, this.width, this.height);
 		boundingBox.stroke('#171717');
 		this.renderLayers.bounding.addChild(boundingBox);;
+	}
+
+	isHost: boolean = false;
+	remotePlayerInput: {moveUp: boolean, moveDown: boolean} = {moveUp: false, moveDown: false};
+	localPlayerPaddle: Paddle | null = null;
+	remotePlayerPaddle: Paddle | null = null;
+	
+	// Add method to set host status
+	setHostStatus(isHost: boolean): void {
+	  this.isHost = isHost;
+	}
+	
+	// Add method to handle remote player input
+	updateRemotePlayerInput(moveUp: boolean, moveDown: boolean): void {
+	  this.remotePlayerInput = {moveUp, moveDown};
+	  
+	  // Directly update the remote player's paddle based on their input
+	  if (this.remotePlayerPaddle) {
+		if (moveUp) this.remotePlayerPaddle.velocityY = -this.remotePlayerPaddle.speed;
+		else if (moveDown) this.remotePlayerPaddle.velocityY = this.remotePlayerPaddle.speed;
+		else this.remotePlayerPaddle.velocityY = 0;
+	  }
+	}
+	
+	// Add method to get game state (for host to send)
+	getSerializableState(): any {
+	  // Extract only the essential state to minimize data transfer
+	  return {
+		ballPosition: {
+		  x: this.ball.x,
+		  y: this.ball.y
+		},
+		ballVelocity: {
+		  x: this.ball.velocityX,
+		  y: this.ball.velocityY
+		},
+		player1Position: {
+		  y: this.player1.y
+		},
+		player2Position: {
+		  y: this.player2.y
+		},
+		score: {
+		  player1: this.player1Score,
+		  player2: this.player2Score
+		}
+	  };
+	}
+	
+	// Add method to apply received game state (for client)
+	applyRemoteState(state: any): void {
+	  // Only the client (non-host) uses this to sync with host's state
+	  if (this.isHost) return;
+	  
+	  // Update ball position and velocity
+	  this.ball.x = state.ballPosition.x;
+	  this.ball.y = state.ballPosition.y;
+	  this.ball.velocityX = state.ballVelocity.x;
+	  this.ball.velocityY = state.ballVelocity.y;
+	  
+	  // Update opponent paddle position only
+	  // Keep local paddle under local control for responsiveness
+	  if (this.remotePlayerPaddle) {
+		const remotePos = this.isPlayer1 ? state.player2Position : state.player1Position;
+		this.remotePlayerPaddle.y = remotePos.y;
+	  }
+	  
+	  // Update score
+	  this.player1Score = state.score.player1;
+	  this.player2Score = state.score.player2;
+	  
+	  // Update score display
+	  this.updateScoreDisplay();
 	}
 }
