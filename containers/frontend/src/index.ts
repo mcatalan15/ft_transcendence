@@ -9,6 +9,7 @@ import { showPong } from './views/pong';
 import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
+import { showChat } from './views/chat';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
 
 import { logUserOut } from './auth/userLogout';
@@ -76,6 +77,14 @@ function router(path: string): void {
         return;
       }
         showProfile(app);
+        break;
+
+    case '/chat':
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
+        showChat(app);
         break;
 
     case '/logout':

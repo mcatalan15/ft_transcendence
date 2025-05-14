@@ -1,12 +1,10 @@
-export function showHome(container: HTMLElement): void {
+export function showChat(container: HTMLElement): void {
 	const homeDiv = document.createElement('div');
 	homeDiv.innerHTML = `
-		<h1>Home</h1>
-		<div><button onclick="navigate('/pong')">Play</button></div>
-		<div><button onclick="navigate('/profile')">Profile</button></div>
-		<div><button onclick="navigate('/blockchain')">Blockchain</button></div>
-		<div><button onclick="navigate('/chat')">Chat</button></div>
-		<div><button onclick="navigate('/logout')">Logout</button></div>
+		<h1>Redis WebSocket Chat</h1>
+		<input id="message" type="text" placeholder="Type a message" />
+		<button id="send">Send</button>
+		<ul id="chat"></ul>
 		<select id="lang-switcher">
 		<option value="fr">🇫🇷 FR</option>
 		<option value="en">🇬🇧 EN</option>

@@ -2,47 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Redis Chat Test</title>
+  <link rel="stylesheet" href="https://use.typekit.net/rla1kou.css" />
+  <title>ft_transcendence</title>
+  <link rel="icon" type="image/png" href="/favicon.ico" />
+  <!-- <link rel="stylesheet" href="/styles/tailwind.css" /> -->
+  
+  <style>
+    html, body {
+      background-color: #171717;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Redis WebSocket Chat</h1>
-  <input id="message" type="text" placeholder="Type a message" />
-  <button id="send">Send</button>
-  <ul id="chat"></ul>
 
-  <script>
-    const socket = new WebSocket('ws://localhost:3100/ws');
+  <script type="module" src="auth/googleSignUp.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    const chat = document.getElementById('chat');
-    const sendBtn = document.getElementById('send');
-    const msgInput = document.getElementById('message');
-
-    socket.addEventListener('open', () => {
-      console.log('WebSocket connected');
-    });
-
-    socket.addEventListener('message', (event) => {
-      const li = document.createElement('li');
-      li.textContent = event.data;
-      chat.appendChild(li);
-    });
-
-    socket.addEventListener('close', () => {
-      console.log('WebSocket closed');
-    });
-
-    socket.addEventListener('error', (e) => {
-      console.error('WebSocket error', e);
-    });
-
-    sendBtn.addEventListener('click', () => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(msgInput.value);
-        msgInput.value = '';
-      } else {
-        alert('WebSocket is not connected.');
-      }
-    });
-  </script>
+  <div id="g_id_onload"
+     data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
+     data-context="signin"
+     data-login_uri="https://mrlouf.studio"
+     data-auto_select="true"
+     data-itp_support="true"
+     data-auto_prompt="false">
+  </div>
+  <div id="app" role="main">
+  </div>
+  <script type="module" src="index.js"></script>
 </body>
 </html>

@@ -1,7 +1,6 @@
 const serverConfig = require('./config/serverConfiguration');
 const { buildApp } = require('./app');
 const { db } = require('./api/db/database');
-const { createServer } = require('http');
 const { createClient } = require('redis');
 const WebSocket = require('ws');
 
@@ -37,13 +36,11 @@ async function startServer() {
     });
   });
 
- // const nodeServer = createServer();
-
   // Register Fastify with the existing HTTP server
   await app.listen({ host: serverConfig.ADDRESS, port: serverConfig.PORT });
 
   const nodeServer = app.server;
-  // Handle WebSocket upgrades
+
   nodeServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/ws') {
       wss.handleUpgrade(request, socket, head, (ws) => {
@@ -54,7 +51,6 @@ async function startServer() {
     }
   });
 
-  // Redis message subscription
   await redisSubscriber.subscribe('chat', (message) => {
     wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
