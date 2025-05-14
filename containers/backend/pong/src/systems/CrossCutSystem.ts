@@ -6,15 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:27:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 16:41:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Point } from 'pixi.js';
 import { PongGame } from '../engine/Game';
-import type { Entity } from '../engine/Entity';
-import type { System } from '../engine/System'
-
-import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
+import type { System } from '../engine/System';
 
 import { CrossCutSpawner } from '../spawners/CrossCutSpawner';
 
@@ -22,48 +20,75 @@ import { isCrossCut } from '../utils/Guards';
 import { GameEvent } from '../utils/Types';
 
 export class CrossCutSystem implements System {
-	game: PongGame;
+    game: PongGame;
 
-	constructor (game: PongGame) {
-		this.game = game;
-	}
-	
-	update(): void {
-		const unhandledEvents = [];
+    constructor(game: PongGame) {
+        this.game = game;
+    }
+    
+    update(): void {
+        const unhandledEvents: GameEvent[] = [];
+        
+        // Event handler mapping
+        const handlers: Record<string, (event: GameEvent) => void> = {
+            'spawnTop': (e) => {
+                if (e.points && e.x !== undefined && e.y !== undefined) {
+                    CrossCutSpawner.spawnCrossCut(this.game, e.points, "top", e.x, e.y);
+                }
+            },
+            'spawnBottom': (e) => {
+                if (e.points && e.x !== undefined && e.y !== undefined) {
+                    CrossCutSpawner.spawnCrossCut(this.game, e.points, "bottom", e.x, e.y);
+                }
+            },
+            'transformTop': (e) => {
+                if (e.points) {
+                    this.transformCutsByPosition('top', e.points);
+                }
+            },
+            'transformBottom': (e) => {
+                if (e.points) {
+                    this.transformCutsByPosition('bottom', e.points);
+                }
+            },
+            'despawn': () => {
+                this.despawnAllCuts();
+            }
+        };
 
-		while (this.game.eventQueue.length > 0) {
-			const event = this.game.eventQueue.shift() as GameEvent;
-			
-			if (event.type.endsWith("CrossCut")) {
-				if (event.type.startsWith('spawnTop') && event.points && event.x && event.y) {
-					CrossCutSpawner.spawnCrossCut(this.game, event.points, "top", event.x, event.y);
-				} else if (event.type.startsWith('spawnBottom') && event.points && event.x && event.y) {
-					CrossCutSpawner.spawnCrossCut(this.game, event.points, "bottom", event.x, event.y);
-				} else if (event.type.startsWith('transformTop') && event.points) {
-					for (const entity of this.game.entities) {
-						if (isCrossCut(entity) && entity.position === 'top') {
-							entity.transformCrossCut(entity, event.points);
-						}
-					}
-				} else if (event.type.startsWith('transformBottom') && event.points) {
-					for (const entity of this.game.entities) {
-						if (isCrossCut(entity) && entity.position === 'bottom') {
-							entity.transformCrossCut(entity, event.points);
-						}
-					}
-				}
-				else if (event.type.startsWith('despawn')) {
-					for (const entity of this.game.entities) {
-						if (isCrossCut(entity)) {
-							this.game.removeEntity(entity.id);
-						}
-					}
-				}
-			} else {
-				unhandledEvents.push(event);
-			}
-		}
+        while (this.game.eventQueue.length > 0) {
+            const event = this.game.eventQueue.shift() as GameEvent;
+            
+            if (event.type.endsWith("CrossCut")) {
+                // Extract the handler key
+                const handlerKey = Object.keys(handlers).find(key => event.type.startsWith(key));
+                
+                if (handlerKey) {
+                    handlers[handlerKey](event);
+                } else {
+                    unhandledEvents.push(event);
+                }
+            } else {
+                unhandledEvents.push(event);
+            }
+        }
 
-		this.game.eventQueue.push(...unhandledEvents);
-	}
+        this.game.eventQueue.push(...unhandledEvents);
+    }
+    
+    private transformCutsByPosition(position: string, points: Point[]): void {
+        for (const entity of this.game.entities) {
+            if (isCrossCut(entity) && entity.position === position) {
+                entity.transformCrossCut(points);
+            }
+        }
+    }
+    
+    private despawnAllCuts(): void {
+        for (const entity of this.game.entities) {
+            if (isCrossCut(entity)) {
+                this.game.removeEntity(entity.id);
+            }
+        }
+    }
 }
