@@ -3,31 +3,23 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Install essential build tools
-RUN apk add --no-cache python3 make g++ git
+RUN apk add --no-cache python3 make g++ git curl
 
-# Create directory structure
-RUN mkdir -p contracts scripts
-
-# First copy only package files
+# Copy package files first for caching
 COPY package*.json ./
 COPY hardhat.config.js ./
 
-# Install dependencies
+# Install exact versions to prevent conflicts
 RUN npm install --include=dev \
-    hardhat \
+	express --save \
+	hardhat \
     @nomicfoundation/hardhat-toolbox \
     dotenv
 
-# Now copy contract and script files
-COPY contracts/GameContract.sol ./contracts/
-COPY scripts/deploy.js ./scripts/
-
-# Create .env template
-RUN if [ ! -f .env ]; then \
-    echo "PRIVATE_KEY=" > .env && \
-    echo "FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc" >> .env; \
-    fi
+# Copy application files
+COPY contracts/ ./contracts/
+COPY scripts/ ./scripts/
+COPY server.js ./
 
 EXPOSE 3002
-
-CMD ["npm", "run", "deploy"]
+CMD ["npm", "start"]

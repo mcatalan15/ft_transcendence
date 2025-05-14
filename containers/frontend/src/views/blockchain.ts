@@ -119,7 +119,7 @@ export function showBlockchain(container: HTMLElement): void {
                 const gameData = await gameResponse.json();
                 
                 // Then send deployment request
-                const response = await fetch('/api/blockchain', {
+                const response = await fetch('/api/deploy', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',

@@ -1,25 +1,39 @@
-// scripts/deploy.js
-const { ethers } = require("hardhat");
+// const hre = require("hardhat");
+
+// async function main() {
+//   // Deploy the contract
+//   const GameContract = await hre.ethers.getContractFactory("GameContract");
+//   const gameContract = await GameContract.deploy();
+
+//   await gameContract.deployed();
+
+//   console.log("GameContract deployed to:", gameContract.address);
+// }
+
+// main().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });
+// deploy.js (Deploying contract to Fuji Testnet)
+
+const hre = require("hardhat");
 
 async function main() {
-  const GameContract = await ethers.getContractFactory("GameContract");
-  
-  // Correct deployment method for ethers.js v6
-  const contract = await GameContract.deploy();
-  
-  // Wait for deployment transaction to be mined
-  await contract.waitForDeployment();
-  
-  // Get the contract address
-  const contractAddress = await contract.getAddress();
-  
-  console.log("Contract deployed to:", contractAddress);
-  console.log("CONTRACT_ADDRESS=" + contractAddress);
+  // Get the contract factory
+  const GameContract = await hre.ethers.getContractFactory("GameContract");
+
+  // Deploy the contract to Fuji Testnet
+  const gameContract = await GameContract.deploy();
+
+  // Wait for the contract to be deployed
+  await gameContract.deployed();
+
+  console.log("GameContract deployed to Fuji Testnet at address:", gameContract.address);
+  console.log("Transaction Hash:", gameContract.deployTransaction.hash);
 }
 
 main()
-  .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
-    process.exit(1);
+    process.exitCode = 1;
   });

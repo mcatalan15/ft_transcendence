@@ -1,7 +1,20 @@
 {
+  "name": "blockchain-service",
+  "version": "1.0.0",
+  "main": "server.js",
   "scripts": {
-    "deploy": "hardhat run scripts/deploy.js --network fuji",
-    "test": "hardhat test",
-    "compile": "hardhat compile"
+    "start": "node server.js",
+    "deploy": "hardhat run scripts/deploy.js --network fuji"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "hardhat": "^2.24.0"
   }
 }
