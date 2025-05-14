@@ -109,29 +109,42 @@ export function showBlockchain(container: HTMLElement): void {
 
     const deployButton = blockchainDiv.querySelector('#deployContractBtn');
     if (deployButton) {
-      deployButton.addEventListener('click', async () => {
-        const messageDiv = blockchainDiv.querySelector('#message') as HTMLDivElement;
-        messageDiv.textContent = 'Deploying contract...';
-    
-        try {
-          const response = await fetch('http://localhost:3002/deploy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          const data = await response.json();
-    
-          if (response.ok) {
-            messageDiv.textContent = `Contract deployed at ${data.address}`;
-            console.log('Deployed contract at', data.address);
-          } else {
-            messageDiv.textContent = data.error || 'Deployment failed';
-          }
-        } catch (err) {
-          console.error('Deploy error:', err);
-          messageDiv.textContent = 'Failed to contact blockchain service';
-        }
-      });
-    }
+        deployButton.addEventListener('click', async () => {
+            const messageDiv = blockchainDiv.querySelector('#message') as HTMLDivElement;
+            messageDiv.textContent = 'Deploying contract...';
+            
+            try {
+                // Get current game data first if needed
+                const gameResponse = await fetch('/api/games/latest');
+                const gameData = await gameResponse.json();
+                
+                // Then send deployment request
+                const response = await fetch('/api/blockchain', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        // Add auth headers if needed
+                    },
+                    body: JSON.stringify({
+                        // Include any necessary game data
+                        gameId: gameData.id_game
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.textContent = `Contract deployment initiated. Address: ${data.address}`;
+                    console.log('Deployment initiated:', data);
+                } else {
+                    messageDiv.textContent = data.message || 'Deployment failed';
+                }
+            } catch (err) {
+                console.error('Deploy error:', err);
+                messageDiv.textContent = 'Failed to contact deployment service';
+            }
+        });
+    } 
 
     container.appendChild(blockchainDiv);
 }

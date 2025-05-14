@@ -133,6 +133,20 @@ async function saveGameToDatabase(player1_name, player1_score,player2_name, play
 	});
 }
 
+async function getLatestGame() {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
+        db.get(query, (err, row) => {
+            if (err) {
+                console.error('[DB FETCH ERROR]', err);
+                reject(err);
+            } else {
+                resolve(row || null);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -140,6 +154,7 @@ module.exports = {
 	isDatabaseHealthy,
 	getHashedPassword,
 	getUserByEmail,
-	saveGameToDatabase
+	saveGameToDatabase,
+	getLatestGame
 	// Add other database functions here as needed
 };
