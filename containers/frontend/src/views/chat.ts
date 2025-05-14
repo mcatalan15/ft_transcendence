@@ -1,7 +1,7 @@
 export function showChat(container: HTMLElement): void {
 	const homeDiv = document.createElement('div');
 	homeDiv.innerHTML = `
-		<h1>Redis WebSocket Chat</h1>
+		<h1>Transcendence Chat</h1>
 		<input id="message" type="text" placeholder="Type a message" />
 		<button id="send">Send</button>
 		<ul id="chat"></ul>

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Paddle.ts                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 16:34:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/14 16:05:20 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ export class Paddle extends Entity {
         this.baseWidth = physicsComponent.width;
         this.originalWidth = this.baseWidth;
         this.baseHeight = physicsComponent.height;
-        this.originalHeight = this.baseHeight; 
+        this.originalHeight = this.baseHeight;
         this.addComponent(physicsComponent);
 
+		// to be modified to use websockets instead of local keyboard directly
         const keys = this.setUpPaddleKeys(isLeftPaddle);
         const inputComponent = new InputComponent(keys);
         inputComponent.side = isLeftPaddle ? 'left' : 'right';

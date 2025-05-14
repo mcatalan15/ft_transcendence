@@ -32,14 +32,6 @@ async function initGame(canvas: HTMLCanvasElement): Promise<void> {
   
 	let canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
 
-/*	if (!canvas) {
-		canvas = document.createElement('canvas');
-		canvas.id = 'game-canvas';
-		canvas.width = 1500;
-		canvas.height = 500;
-		container.appendChild(canvas);
-	  }*/
-
 	if (canvas) {
 	  initGame(canvas);
 	} else {
