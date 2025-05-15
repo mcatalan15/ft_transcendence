@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 17:55:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:41:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export class ParapetDepthLine extends DepthLine {
 	type?: string;
 	points: Point[] = [];
 
-	constructor(id: string, layer: string, game: PongGame, options: PyramidDepthLineOptions = {}) {
+	constructor(id: string, layer: string, game: PongGame, options: PyramidDepthLineOptions = {}, flip: number) {
 		super(id, layer, game, options);
 
 		this.peakHeight = options.behavior!.linePekHeight;
@@ -34,12 +34,12 @@ export class ParapetDepthLine extends DepthLine {
 		const color = game.currentWorld.color;
 		const render = this.getComponent('render') as RenderComponent;
 		if (render) {
-			render.graphic = this.generateParapetLine(this.width, color);
+			render.graphic = this.generateParapetLine(this.width, color, flip);
 			render.graphic.position.set(this.x, this.y);
 		}
 	}
 
-	private generateParapetLine(width: number, color: number): Graphics {
+	private generateParapetLine(width: number, color: number, flip: number): Graphics {
 		const line = new Graphics();
 		const halfWidth = width / 2;
 		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
@@ -62,6 +62,13 @@ export class ParapetDepthLine extends DepthLine {
 				new Point(-halfWidth, 0)
 			];
 		}
+
+		if (flip) {
+			for (const point of this.points) {
+				point.x *= -1;
+			}
+		}
+		
 
 		// Use the utility function to draw the path
 		drawPointPath(line, this.points, color);

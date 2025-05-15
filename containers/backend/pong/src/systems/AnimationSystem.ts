@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 09:32:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 15:59:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,25 @@ import type { System } from '../engine/System'
 import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
 import { DepthLine } from '../entities/background/DepthLine';
-import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
-import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
-import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
-import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
-import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../entities/crossCuts/CrossCutFactory';
+import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
-import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isParapetDepthLine, isSawDepthLine, isEscalatorDepthLine } from '../utils/Guards'
+import { isPaddle,
+		isDepthLine,
+		isPowerup,
+		isPyramidDepthLine,
+		isParapetDepthLine,
+		isSawDepthLine,
+		isEscalatorDepthLine,
+		isAcceleratorDepthLine,
+		isMawDepthLine,
+		isRakeDepthLine,
+} from '../utils/Guards'
 
 
 export class AnimationSystem implements System {
@@ -202,27 +208,20 @@ export class AnimationSystem implements System {
 		
 		if (!render || !animation || !physics) return;
 		
-		// Calculate the new Y position using a sine wave
 		if (animation.options) {
 			const animationOptions = animation.options;
 			const floatY = animationOptions.initialY as number + 
 			Math.sin((Date.now() / 800 * (animationOptions.floatSpeed as number)) + (animationOptions.floatOffset as number)) * 
 			(animationOptions.floatAmplitude as number);
 		
-			// Update the position of the powerup
 			physics.y = floatY;
 			render.graphic.position.set(physics.x, floatY);
 		}	
 	}
 
-	/**
-	 * Central method to handle cross-cut creation for all depth line types
-	 */
 	manageCrossCutCreation(entity: DepthLine, render: RenderComponent) {
-		// Extract the points from the entity
 		let points: Point[] = [];
 		
-		// Determine cross-cut type and position
 		let cutType: CrossCutType;
 		const direction = entity.behavior?.direction;
 		const position: CrossCutPosition = direction === 'upwards' ? 'top' : 'bottom';
@@ -230,7 +229,7 @@ export class AnimationSystem implements System {
 		// Extract points based on entity type
 		if (isPyramidDepthLine(entity)) {
 			cutType = 'Triangle';
-			points = [...entity.points.slice(0, 3)];
+			points = [...entity.points];
 		} else if (isParapetDepthLine(entity)) {
 			cutType = 'Parapet';
 			points = [...entity.points];
@@ -240,11 +239,19 @@ export class AnimationSystem implements System {
 		} else if (isEscalatorDepthLine(entity)) {
 			cutType = 'Escalator';
 			points = [...entity.points];
+		} else if (isAcceleratorDepthLine(entity)) {
+			cutType = 'Accelerator';
+			points = [...entity.points];
+		} else if (isMawDepthLine(entity)) {
+			cutType = 'Maw';
+			points = [...entity.points];
+		} else if (isRakeDepthLine(entity)) {
+			cutType = 'Rake';
+			points = [...entity.points];
 		} else {
-			return; // Unknown depth line type
+			return;
 		}
 		
-		// Determine action based on entity ID
 		let action: CrossCutAction;
 		if (entity.id.startsWith('last')) {
 			action = 'spawn';
@@ -253,17 +260,15 @@ export class AnimationSystem implements System {
 		} else if (entity.id.startsWith('first')) {
 			action = 'despawn';
 		} else {
-			return; // Unknown entity ID pattern
+			return;
 		}
 		
-		// Generate event name
 		const eventName = CrossCutFactory.generateEventName(
 			action, 
 			action === 'despawn' ? null : position, 
 			cutType
 		);
 		
-		// Create and queue the event
 		this.game.eventQueue.push({
 			type: eventName,
 			points: points,

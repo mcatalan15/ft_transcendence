@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 20:11:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 14:48:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ export class PongGame {
     bottomWallOffset: number;
     wallThickness: number;
 	paddleOffset: number;
+	paddleWidth: number;
+	paddleHeight: number;
 	renderLayers: {
 		bounding: Container;
 		background: Container;
@@ -90,7 +92,9 @@ export class PongGame {
         this.topWallOffset = 60;
         this.bottomWallOffset = 80;
         this.wallThickness = 20;
-		this.paddleOffset = 50;
+		this.paddleOffset = 60;
+		this.paddleWidth = 10;
+		this.paddleHeight = 80;
 
 		this.renderLayers = {
 			bounding: new Container(),

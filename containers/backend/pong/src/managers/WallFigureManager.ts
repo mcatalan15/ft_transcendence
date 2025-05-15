@@ -6,21 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:55:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:02:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from '../engine/Game';
 import { WallFiguresSpawner } from '../spawners/WallFiguresSpawner';
 import { FrameData } from '../utils/Types';
 
 export class WallFigureManager {
-    private game: PongGame;
     private isSpawningFigures: boolean = false;
     private figureTimer: number = 200;
     
-    constructor(game: PongGame) {
-        this.game = game;
+    constructor() {
     }
     
     update(delta: FrameData, worldSystem: any): void {
@@ -29,8 +26,8 @@ export class WallFigureManager {
         if (this.figureTimer <= 0 && !this.isSpawningFigures) {
             this.isSpawningFigures = true;
             let depth = this.randomOdd(101, 111);
-            let idx = Math.floor(Math.random() * 4);
-            
+            let idx = Math.floor(Math.random() * 7);
+
             switch(idx) {
                 case (1):
                     WallFiguresSpawner.buildPyramids(worldSystem, depth);
@@ -41,8 +38,17 @@ export class WallFigureManager {
 				case (3):
 					WallFiguresSpawner.buildSawEdges(worldSystem, depth);
 					break;
-                default:
+                case (4):
                     WallFiguresSpawner.buildEscalator(worldSystem, depth);
+                    break;
+                case (5):
+                    WallFiguresSpawner.buildAccelerator(worldSystem, depth);
+                    break;
+                case (6):
+                    WallFiguresSpawner.buildMaw(worldSystem, depth);
+                    break;
+                default:
+                    WallFiguresSpawner.buildRakes(worldSystem, depth);
             }
         }
     }

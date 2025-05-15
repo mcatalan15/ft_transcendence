@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 17:37:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:44:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ export class WorldSystem implements System {
         this.worldTimer = 1000;
         
         this.depthLineManager = new DepthLineManager(game, this);
-        this.wallFigureManager = new WallFigureManager(game);
+        this.wallFigureManager = new WallFigureManager();
         
         this.game.entities.forEach(entity => {
             if (isUI(entity)) {
@@ -42,7 +42,6 @@ export class WorldSystem implements System {
     }
 
     update(entities: Entity[], delta: FrameData) {
-        // Handle World timer
         this.worldTimer -= delta.deltaTime;
 
         if (this.worldTimer <= 0) {

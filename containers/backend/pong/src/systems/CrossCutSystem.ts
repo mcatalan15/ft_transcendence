@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 09:32:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:01:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ import { Point } from 'pixi.js';
 import { PongGame } from '../engine/Game';
 import type { System } from '../engine/System';
 
-import { CrossCutFactory, CrossCutPosition } from '../entities/crossCuts/CrossCutFactory';
+import { CrossCutFactory, CrossCutPosition } from '../factories/CrossCutFactory';
 import { GameEvent } from '../utils/Types';
 
 export class CrossCutSystem implements System {
@@ -72,15 +72,38 @@ export class CrossCutSystem implements System {
         
         // Determine position from event type
         const position: CrossCutPosition = event.type.includes('Top') ? 'top' : 'bottom';
+
+        const cutType = this.detectCutType(event.type);
         
         // Create the cross-cut
         CrossCutFactory.createCrossCut(
             this.game,
             event.points as Point[],
             position,
+            cutType,
             event.x,
             event.y
         );
+    }
+
+    private detectCutType(name: string): string {
+        if (name.includes('Triangle')) {
+            return ('triangle')
+        } else if (name.includes('Parapet')) {
+            return ('parapet');
+        } else if (name.includes('Saw')) {
+            return ('saw');
+        } else if (name.includes('Accelerator')) {
+            return ('accelerator');
+        } else if (name.includes('Maw')) {
+            return ('maw');
+        } else if (name.includes('Escalator')) {
+            return ('escalator');
+        } else if (name.includes('Rake')) {
+            return ('rake');
+        } else {
+            return ('unknown');
+        }
     }
     
     /**

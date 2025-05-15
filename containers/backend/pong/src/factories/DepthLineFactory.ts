@@ -6,23 +6,34 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:39:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:20:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from '../../engine/Game';
+import { PongGame } from '../engine/Game';
 
-import { DepthLineBehavior } from '../../utils/Types';
+import { DepthLine } from '../entities/background/DepthLine';
+import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
+import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
+import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
+import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
+import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
+import { MawDepthLine } from '../entities/background/MawDepthLine';
+import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 
-import { DepthLine } from './DepthLine';
-import { PyramidDepthLine } from './PyramidDepthLine';
-import { ParapetDepthLine } from './ParapetDepthLine';
-import { SawEdgeDepthLine } from './SawEdgeDepthLine';
-import { EscalatorDepthLine } from './EscalatorDepthLine';
+import { DepthLineBehavior } from '../utils/Types';
 
 export class DepthLineFactory {
     static createDepthLine(
-        type: 'standard' | 'pyramid' | 'parapet' | 'sawEdge' | 'escalator',
+        type: 'standard' |
+            'pyramid' |
+            'parapet' |
+            'sawEdge' |
+            'escalator' |
+            'accelerator' |
+            'maw'|
+            'rake'|
+            string,
         game: PongGame,
         id: string,
         width: number,
@@ -32,6 +43,7 @@ export class DepthLineFactory {
         wallThickness: number,
         position: 'top' | 'bot' | string,
         behavior: DepthLineBehavior,
+        flip?: number,
     ): DepthLine {
         const addedOffset = 10;
         const upperLimit = topWallOffset + wallThickness - addedOffset;
@@ -48,17 +60,24 @@ export class DepthLineFactory {
             behavior,
             type: position,
             despawn: 'position',
+            flip: flip,
         };
         
         switch (type) {
             case ('pyramid'):
                 return new PyramidDepthLine(id, 'background', game, options);
             case ('parapet'):
-                return new ParapetDepthLine(id, 'background', game, options);
+                return new ParapetDepthLine(id, 'background', game, options, flip!);
 			case ('sawEdge'):
-				return new SawEdgeDepthLine(id, 'background', game, options);
+				return new SawEdgeDepthLine(id, 'background', game, options, flip!);
 			case ('escalator'):
 				return new EscalatorDepthLine(id, 'background', game, options);
+            case ('accelerator'):
+                return new AcceleratorDepthLine(id, 'background', game, options);
+            case ('maw'):
+                return new MawDepthLine(id, 'background', game, options);
+            case ('rake'):
+                return new RakeDepthLine(id, 'background', game, options);
             default:
                 return new DepthLine(id, 'background', game, options);
         }

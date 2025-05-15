@@ -6,24 +6,27 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 09:31:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:06:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Point } from 'pixi.js';
 
-import { PongGame } from '../../engine/Game';
+import { PongGame } from '../engine/Game';
 
-import { CrossCut } from '../../entities/crossCuts/CrossCut';
-import { TriangleCrossCut } from '../../entities/crossCuts/TriangleCrossCut';
-import { RectangleCrossCut } from '../../entities/crossCuts/RectangleCrossCut';
-import { SawCrossCut } from '../../entities/crossCuts/SawCrossCut';
-import { EscalatorCrossCut } from '../../entities/crossCuts/EscalatorCrossCut';
+import { CrossCut } from '../entities/crossCuts/CrossCut';
+import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
+import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
+import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
+import { EscalatorCrossCut } from '../entities/crossCuts/EscalatorCrossCut';
+import { AcceleratorCrossCut } from '../entities/crossCuts/AcceleratorCrossCut';
+import { MawCrossCut } from '../entities/crossCuts/MawCrossCut';
+import { RakeCrossCut } from '../entities/crossCuts/RakeCrossCut';
 
-import { RenderComponent } from '../../components/RenderComponent';
-import { PhysicsComponent } from '../../components/PhysicsComponent';
+import { RenderComponent } from '../components/RenderComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
 
-export type CrossCutType = 'Triangle' | 'Parapet' | 'Saw' | 'Escalator';
+export type CrossCutType = 'Triangle' | 'Parapet' | 'Saw' | 'Escalator' | 'Accelerator' | 'Maw' | 'Rake';
 
 export type CrossCutPosition = 'top' | 'bottom';
 
@@ -34,18 +37,19 @@ export class CrossCutFactory {
         game: PongGame,
         points: Point[],
         position: CrossCutPosition,
+        type: string,
         x: number,
         y: number
     ): CrossCut | null {
         let cut: CrossCut | null = null;
         const numPoints = points.length;
         
-        switch(numPoints) {
-            case (3):
+        switch(type) {
+            case ('triangle'):
                 cut = new TriangleCrossCut(
                     `cut-triangle-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
-                    'triangle', 
+                    'triangle',
                     position, 
                     numPoints, 
                     points, 
@@ -53,7 +57,7 @@ export class CrossCutFactory {
                     y
                 );
                 break;
-            case (5):
+            case ('parapet'):
                 cut = new RectangleCrossCut(
                     `cut-rectangle-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
@@ -65,7 +69,7 @@ export class CrossCutFactory {
                     y
                 );
                 break;
-            case (7):
+            case ('saw'):
                 cut = new SawCrossCut(
                     `cut-saw-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
@@ -77,7 +81,31 @@ export class CrossCutFactory {
                     y
                 );
                 break;
-            case (16):
+            case ('accelerator'):
+                cut = new AcceleratorCrossCut(
+                    `cut-accelerator-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    'midground', 
+                    'accelerator', 
+                    position, 
+                    numPoints, 
+                    points, 
+                    x, 
+                    y
+                );
+                break;
+            case ('maw'):
+                cut = new MawCrossCut(
+                    `cut-maw-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    'midground', 
+                    'maw', 
+                    position, 
+                    numPoints, 
+                    points, 
+                    x, 
+                    y
+                );
+                break;
+            case ('escalator'):
                 cut = new EscalatorCrossCut(
                     `cut-escalator-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
@@ -89,8 +117,20 @@ export class CrossCutFactory {
                     y
                 );
                 break;
+            case ('rake'):
+                cut = new RakeCrossCut(
+                    `cut-rake-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    'midground', 
+                    'escalator', 
+                    position, 
+                    numPoints, 
+                    points, 
+                    x, 
+                    y
+                );
+                break;
             default:
-                console.warn(`Unknown cross-cut type with ${numPoints} points`);
+                console.warn(`Unknown cross-cut type with ${type} type`);
                 return null;
         }
         
@@ -154,6 +194,8 @@ export class CrossCutFactory {
         if (id.includes('rectangle')) return 'Parapet';
         if (id.includes('saw')) return 'Saw';
         if (id.includes('escalator')) return 'Escalator';
+        if (id.includes('accelerator')) return 'Accelerator';
+        if (id.includes('maw')) return 'Maw';
         return null;
     }
 }

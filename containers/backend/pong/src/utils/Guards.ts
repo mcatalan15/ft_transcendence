@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:51:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:50:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,21 @@ import { System } from '../engine/System';
 import { Paddle } from '../entities/Paddle';
 import { Ball } from '../entities/balls/Ball';
 import { Wall } from '../entities/Wall';
+import { Particle } from '../entities/Particle'
+import { UI } from '../entities/UI'
+import { Powerup } from '../entities/powerups/Powerup'
+
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
 import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
 import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
-import { Particle } from '../entities/Particle'
-import { UI } from '../entities/UI'
-import { Powerup } from '../entities/powerups/Powerup'
+import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
+import { MawDepthLine } from '../entities/background/MawDepthLine';
+import { RakeDepthLine } from '../entities/background/RakeDepthLine';
+
+import { Obstacle } from '../entities/obstacles/Obstacle';
+
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
 import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
@@ -79,6 +86,22 @@ export function isSawDepthLine(entity: Entity): entity is SawEdgeDepthLine {
 
 export function isEscalatorDepthLine(entity: Entity): entity is EscalatorDepthLine {
 	return entity instanceof EscalatorDepthLine;
+}
+
+export function isAcceleratorDepthLine(entity: Entity): entity is AcceleratorDepthLine {
+	return entity instanceof AcceleratorDepthLine;
+}
+
+export function isMawDepthLine(entity: Entity): entity is MawDepthLine {
+	return entity instanceof MawDepthLine;
+}
+
+export function isRakeDepthLine(entity: Entity): entity is RakeDepthLine {
+	return entity instanceof RakeDepthLine;
+}
+
+export function isObstacle(entity: Entity): entity is Obstacle {
+	return entity instanceof Obstacle;
 }
 
 export function isParticle(entity: Entity): entity is Particle {

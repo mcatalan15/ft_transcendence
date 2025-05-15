@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:36:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 17:50:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:41:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@ import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
 import { DepthLine } from '../entities/background/DepthLine';
 import { RenderComponent } from '../components/RenderComponent';
-import { MainBackgroundSpawner } from '../spawners/MainBackgroundSpawner';
-import { DepthLineFactory } from '../entities/background/DepthLineFactory';
+import { DepthLineFactory } from '../factories/DepthLineFactory';
 
 import { WorldSystem } from '../systems/WorldSystem';
 
@@ -28,20 +27,11 @@ export class DepthLineManager {
     private depthLineCooldown: number = 10;
     private lastLineSpawnTime: number = 0;
     private depthLineQueue: DepthLine[] = [];
-    private width: number;
-    private height: number;
-    private topWallOffset: number;
-    private bottomWallOffset: number;
-    private wallThickness: number;
+
 
     constructor(game: PongGame, worldSystem: WorldSystem) {
         this.game = game;
-		this.worldSystem = worldSystem,
-        this.width = game.width;
-        this.height = game.height;
-        this.topWallOffset = game.topWallOffset;
-        this.bottomWallOffset = game.bottomWallOffset;
-        this.wallThickness = game.wallThickness;
+		this.worldSystem = worldSystem;
     }
     
     update(delta: FrameData, entities: Entity[]): void {

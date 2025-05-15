@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EscalatorCrossCut.ts                               :+:      :+:    :+:   */
+/*   AcceleratorCrossCut.ts                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 12:00:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 12:06:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
-export class EscalatorCrossCut extends CrossCut {
+export class AcceleratorCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
     }
 
     createCutGraphic(): Graphics {
-        const escalatorGraphic = new Graphics();
-        this.redrawGraphic(escalatorGraphic);
-        return escalatorGraphic; 
+        const acceleratorGraphic = new Graphics();
+        this.redrawGraphic(acceleratorGraphic);
+        return acceleratorGraphic; 
     }
     
     protected redrawGraphic(graphic: Graphics): void {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 16:40:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:50:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,12 @@ export class TriangleCrossCut extends CrossCut {
     }
     
     protected redrawGraphic(graphic: Graphics): void {
-        const tip = this.points[1];
-        const left = this.points[0];
-        const right = this.points[2];
+        graphic.moveTo(this.points[0].x, this.points[0].y);
         
-        graphic.poly([tip, right, left], true);
+        for (let i = 1; i < this.points.length; i++) {
+            graphic.lineTo(this.points[i].x, this.points[i].y);
+        }
+        
         graphic.fill(0xFFFBEB);
     }
 }

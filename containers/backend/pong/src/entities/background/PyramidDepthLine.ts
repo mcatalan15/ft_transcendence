@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:26:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 14:49:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,13 @@ export class PyramidDepthLine extends DepthLine {
 
 		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
 		const peakX = 0;
+		const offset = this.game.paddleOffset + (this.game.paddleWidth / 2);
 
 		this.points = [
 			new Point(-halfWidth, 0),
+			new Point(-halfWidth + offset, 0),
 			new Point(peakX, peakY),
+			new Point(halfWidth - offset, 0),
 			new Point(halfWidth, 0)
 		];
 

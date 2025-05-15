@@ -10,29 +10,22 @@
 import { Point } from 'pixi.js';
 
 import { PongGame } from '../engine/Game';
-import { CrossCutFactory, CrossCutPosition } from '../entities/crossCuts/CrossCutFactory';
+import { CrossCutFactory, CrossCutPosition } from '../factories/CrossCutFactory';
 
-/**
- * @deprecated Use CrossCutFactory directly instead
- * This class is kept for backwards compatibility but delegates to CrossCutFactory
- */
 export class CrossCutSpawner {
-	/**
-	 * Creates a cross-cut and adds it to the game
-	 * @deprecated Use CrossCutFactory.createCrossCut instead
-	 */
 	static spawnCrossCut(
 		game: PongGame,
 		points: Point[],
 		position: string,
+		type: string,
 		x: number,
 		y: number
 	) {
-		console.warn('CrossCutSpawner.spawnCrossCut is deprecated. Use CrossCutFactory.createCrossCut instead.');
 		return CrossCutFactory.createCrossCut(
 			game,
 			points, 
 			position as CrossCutPosition,
+			type,
 			x,
 			y
 		);
