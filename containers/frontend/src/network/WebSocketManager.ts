@@ -139,14 +139,11 @@ export class WebSocketManager {
         this.socket = null;
     }
 	  
-	// Send paddle input to server (both host and client use this)
-	sendPaddleInput(moveUp: boolean, moveDown: boolean) {
-		this.send({
-			type: 'PADDLE_INPUT',
-			playerId: this.playerId,
-			gameId: this.gameId,
-			moveUp,
-			moveDown
-		});
-	}
+    sendPaddleInput(player: number, direction: number) {
+        this.send({
+            type: 'PADDLE_INPUT',
+            player: player,
+            dir: direction
+        });
+    }
 }

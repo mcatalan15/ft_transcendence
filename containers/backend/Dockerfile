@@ -11,6 +11,7 @@ COPY package*.json ./
 
 RUN npm cache clean --force \
 	&& npm install fastify@^5.0.0 \
+	typescript @types/node ts-node \
 	pino-pretty \
 	sqlite3 \
 	fastify-multipart \
@@ -33,5 +34,7 @@ COPY . .
 RUN chmod +x tools/init_db.sh
 
 EXPOSE 3100
+
+RUN npm run build
 
 ENTRYPOINT ["sh", "tools/init_db.sh"]

@@ -3,11 +3,14 @@ const { buildApp } = require('./app');
 const { db } = require('./api/db/database');
 const { createClient } = require('redis');
 const WebSocket = require('ws');
+const { GameSession } = require('../dist/pong/GameSession');
+
 let redisPublisher;
 
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
 
 const gameWss = new WebSocket.Server({ noServer: true });
+
 const gameSessions = new Map();
 
 async function startServer() {
@@ -110,14 +113,13 @@ async function startServer() {
 						break;
 
 					case 'PADDLE_INPUT':
-						// Relay paddle input to the other player in the same game
-						relayToGame(currentGameId, message.toString(), playerId);
+						const entry = gameSessions.get(currentGameId);
+						if (entry) {
+							// data.player should be 1 or 2, data.dir should be -1, 0, or 1
+							entry.session.setInput(data.player, data.dir);
+						}
 						break;
 
-					case 'GAME_STATE_UPDATE':
-						// Relay game state to the other player in the same game
-						relayToGame(currentGameId, message.toString(), playerId);
-						break;
 				}
 			} catch (err) {
 				console.error('Error handling game message:', err);
@@ -150,11 +152,14 @@ async function handleCreateGame(ws, data) {
 		created: Date.now()
 	}));
 
-	// Store connection in memory
 	if (!gameSessions.has(gameId)) {
-		gameSessions.set(gameId, new Map());
+		gameSessions.set(gameId, {
+			session: new GameSession(),
+			sockets: new Map(),
+			interval: null
+		});
 	}
-	gameSessions.get(gameId).set(hostId, ws);
+	gameSessions.get(gameId).sockets.set(hostId, ws);
 
 	// Send confirmation to creator
 	ws.send(JSON.stringify({
@@ -196,11 +201,14 @@ async function handleJoinGame(ws, data) {
 		game.status = 'active';
 		await redisPublisher.set(`game:${gameId}`, JSON.stringify(game));
 
-		// Store connection in memory
 		if (!gameSessions.has(gameId)) {
-			gameSessions.set(gameId, new Map());
+			gameSessions.set(gameId, {
+				session: new GameSession(),
+				sockets: new Map(),
+				interval: null
+			});
 		}
-		gameSessions.get(gameId).set(playerId, ws);
+		gameSessions.get(gameId).sockets.set(playerId, ws);
 
 		// Notify joiner
 		ws.send(JSON.stringify({
@@ -208,7 +216,7 @@ async function handleJoinGame(ws, data) {
 		}));
 
 		// Notify host that someone joined
-		const hostWs = gameSessions.get(gameId).get(game.hostId);
+		const hostWs = gameSessions.get(gameId).sockets.get(game.hostId);
 		if (hostWs && hostWs.readyState === WebSocket.OPEN) {
 			hostWs.send(JSON.stringify({
 				type: 'PLAYER_JOINED',
@@ -218,6 +226,22 @@ async function handleJoinGame(ws, data) {
 
 		// Tell both players to start the game
 		notifyGameStart(gameId);
+
+		// Start the backend game loop if not already started
+		const entry = gameSessions.get(gameId);
+		if (!entry.interval) {
+			entry.interval = setInterval(() => {
+				const state = entry.session.tick();
+				entry.sockets.forEach((clientWs) => {
+					if (clientWs.readyState === WebSocket.OPEN) {
+						clientWs.send(JSON.stringify({
+							type: 'GAME_STATE_UPDATE',
+							data: state
+						}));
+					}
+				});
+			}, 1000 / 60); // 60 FPS
+		}
 
 		console.log(`Player ${playerId} joined game ${gameId}`);
 	} catch (err) {
@@ -229,27 +253,13 @@ async function handleJoinGame(ws, data) {
 	}
 }
 
-// Relay message to other players in the same game
-function relayToGame(gameId, message, senderId) {
-	if (!gameId || !gameSessions.has(gameId)) return;
-
-	const gameSession = gameSessions.get(gameId);
-
-	gameSession.forEach((clientWs, clientId) => {
-		// Only send to other players in the same game
-		if (clientId !== senderId && clientWs.readyState === WebSocket.OPEN) {
-			clientWs.send(message);
-		}
-	});
-}
-
 // Notify both players to start the game
 function notifyGameStart(gameId) {
 	if (!gameId || !gameSessions.has(gameId)) return;
 
-	const gameSession = gameSessions.get(gameId);
+	const entry = gameSessions.get(gameId);
 
-	gameSession.forEach((clientWs) => {
+	entry.sockets.forEach((clientWs) => {
 		if (clientWs.readyState === WebSocket.OPEN) {
 			clientWs.send(JSON.stringify({
 				type: 'GAME_START'
@@ -260,35 +270,29 @@ function notifyGameStart(gameId) {
 
 // Handle player disconnection
 async function handlePlayerDisconnect(playerId, gameId) {
-	if (!gameId || !playerId) return;
+	if (gameSessions.has(gameId)) {
+		const entry = gameSessions.get(gameId);
 
-	try {
-		// Notify other player
-		if (gameSessions.has(gameId)) {
-			const gameSession = gameSessions.get(gameId);
-
-			gameSession.forEach((clientWs, clientId) => {
-				if (clientId !== playerId && clientWs.readyState === WebSocket.OPEN) {
-					clientWs.send(JSON.stringify({
-						type: 'PLAYER_DISCONNECTED',
-						playerId: playerId
-					}));
-				}
-			});
-
-			// Remove player from game session
-			gameSession.delete(playerId);
-
-			// If game is empty, remove game session
-			if (gameSession.size === 0) {
-				gameSessions.delete(gameId);
-				await redisPublisher.del(`game:${gameId}`);
+		entry.sockets.forEach((clientWs, clientId) => {
+			if (clientId !== playerId && clientWs.readyState === WebSocket.OPEN) {
+				clientWs.send(JSON.stringify({
+					type: 'PLAYER_DISCONNECTED',
+					playerId: playerId
+				}));
 			}
-		}
+		});
 
-		console.log(`Player ${playerId} disconnected from game ${gameId}`);
-	} catch (err) {
-		console.error(`Error handling disconnection: ${err}`);
+		// Remove player from game session
+		entry.sockets.delete(playerId);
+
+		// If game is empty, clear interval and remove session
+		if (entry.sockets.size === 0) {
+			if (entry.interval) {
+				clearInterval(entry.interval);
+			}
+			gameSessions.delete(gameId);
+			await redisPublisher.del(`game:${gameId}`);
+		}
 	}
 }
 

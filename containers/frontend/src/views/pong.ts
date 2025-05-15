@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
-import { PongGame } from '../pong/engine/Game';
-import { WebSocketManager } from '../network/WebSocketManager';
+/* import { PongGame } from '../pong/engine/Game';
+ */import { WebSocketManager } from '../network/WebSocketManager';
 
 async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
 
@@ -15,7 +15,7 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 		  autoDensity: true,
 		});
 
-		const game = new PongGame(app);
+		/* const game = new PongGame(app);
   
 		// Initialize WebSocket connection
 		const wsManager = new WebSocketManager(sessionStorage.getItem('username') ?? 'undefined');
@@ -63,7 +63,7 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 		  
 		}).catch(err => {
 		  console.error('Failed to connect to game session', err);
-		});
+		}); */
 	
   }
   
