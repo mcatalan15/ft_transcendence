@@ -11,7 +11,7 @@ export class WebSocketManager {
     
     constructor(playerId: string) {
         this.playerId = playerId;
-        this.url = `ws://${window.location.host}/ws/socket/game`;
+        this.url = `ws://localhost:3100/ws/socket/game`;
     }
     
 	connect(gameId?: string): Promise<boolean> {
