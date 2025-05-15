@@ -30,7 +30,6 @@ export class WebSocketManager {
 				console.log('WebSocket connection established');
 				this.reconnectAttempts = 0;
 					
-				// Send initial identification
 				this.send({
 					type: 'PLAYER_CONNECTED',
 					playerId: this.playerId,
@@ -69,7 +68,7 @@ export class WebSocketManager {
             const message = JSON.parse(event.data);
             
             if (this.messageHandlers.has(message.type)) {
-                this.messageHandlers.get(message.type)!(message);
+                this.messageHandlers.get(message.type)!(message.data);
             } else {
                 console.warn('No handler for message type:', message.type);
             }
@@ -139,43 +138,15 @@ export class WebSocketManager {
         this.socket?.close();
         this.socket = null;
     }
-
-	initializeAsHost(game: PongGame) {
-		game.setHostStatus(true);
-		
-		// Listen for opponent inputs
-		this.registerHandler('PADDLE_INPUT', (data) => {
-		  if (data.playerId !== this.playerId) {
-			game.updateRemotePlayerInput(data.moveUp, data.moveDown);
-		  }
-		});
-		
-		// Send game state to client periodically
-		setInterval(() => {
-		  this.send({
-			type: 'GAME_STATE_UPDATE',
-			gameState: game.getSerializableState()
-		  });
-		}, 50); // 20 times per second
-	  }
 	  
-	  initializeAsClient(game: PongGame) {
-		game.setHostStatus(false);
-		
-		// Receive and apply game state from host
-		this.registerHandler('GAME_STATE_UPDATE', (data) => {
-		  game.applyRemoteState(data.gameState);
-		});
-	  }
-	  
-	  // Send paddle input to server (both host and client use this)
-	  sendPaddleInput(moveUp: boolean, moveDown: boolean) {
+	// Send paddle input to server (both host and client use this)
+	sendPaddleInput(moveUp: boolean, moveDown: boolean) {
 		this.send({
-		  type: 'PADDLE_INPUT',
-		  playerId: this.playerId,
-		  gameId: this.gameId,
-		  moveUp,
-		  moveDown
+			type: 'PADDLE_INPUT',
+			playerId: this.playerId,
+			gameId: this.gameId,
+			moveUp,
+			moveDown
 		});
-	  }
+	}
 }

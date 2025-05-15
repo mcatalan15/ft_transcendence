@@ -39,8 +39,8 @@ export function showChat(container: HTMLElement): void {
     });
 
     sendBtn.addEventListener('click', () => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(msgInput.value);
+      if (socket.readyState === WebSocket.OPEN) {        
+        socket.send(sessionStorage.getItem('username') + ': ' + msgInput.value);
         msgInput.value = '';
       } else {
         alert('WebSocket is not connected.');

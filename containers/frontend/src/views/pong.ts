@@ -19,33 +19,31 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
   
 		// Initialize WebSocket connection
 		const wsManager = new WebSocketManager(sessionStorage.getItem('username') ?? 'undefined');
+
 		wsManager.connect(gameId).then(() => {
 		  console.log('Connected to game session');
 		  
-		  // Set up who controls which paddle based on host status
 		  const isLeftPaddle = isHost;
 		  
-		  // Register handlers for game events
 		  wsManager.registerHandler('GAME_STATE_UPDATE', (data) => {
-			game.updateState(data.ballPosition, data.player1Position, data.player2Position);
+			console.log('Game state update received:', data);
+			game.updateState(data.player1Position, data.player2Position);
 		  });
 		  
-		  // Register handler for paddle input from opponent
 		  wsManager.registerHandler('PADDLE_INPUT', (data) => {
-			game.updateState(data.ballPosition, data.player1Position, data.player2Position);
+			console.log('Paddle input received:', data);
+			game.updateState(data.player1Position, data.player2Position);
 		  });
 		  
-		  // Handle game starting
 		  wsManager.registerHandler('GAME_START', () => {
+			console.log('Game started');
 			game.start();
 		  });
 		  
-		  // Handle player disconnection
 		  wsManager.registerHandler('PLAYER_DISCONNECTED', () => {
 			// Show message and handle gracefully
 		  });
 		  
-		  // Modify keyboard input to send over network
 		  document.addEventListener('keydown', (e) => {
 			if ((isLeftPaddle && (e.key === 'w' || e.key === 's')) || 
 				(!isLeftPaddle && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
@@ -69,7 +67,7 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	
   }
   
-  export function showPong(container: HTMLElement): void {
+  export function showPong(container: HTMLElement, gameId: string, isHost: boolean): void {
 	const gameDiv = document.createElement('div');
 	gameDiv.innerHTML = `
 	  <h2>Pong</h2>
@@ -81,7 +79,8 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	let canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
 
 	if (canvas) {
-	  initGame(canvas);
+	  console.log('Game should start now');
+	  initGame(canvas, gameId, !!isHost);
 	} else {
 	  console.error('Container element not found');
 	}

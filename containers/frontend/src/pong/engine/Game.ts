@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 17:54:56 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:36:11 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ export class PongGame {
 		this.currentWorld = this.worldPool.desertWorld;
 
 		this.initSystems();
-		console.log('All Systems initialiazed');
+		console.log('All Systems initialized');
 
 		this.initSounds();
 		console.log('Sounds loaded');
@@ -360,76 +360,41 @@ export class PongGame {
 		this.renderLayers.bounding.addChild(boundingBox);;
 	}
 
-	isHost: boolean = false;
-	remotePlayerInput: {moveUp: boolean, moveDown: boolean} = {moveUp: false, moveDown: false};
-	localPlayerPaddle: Paddle | null = null;
-	remotePlayerPaddle: Paddle | null = null;
-	
-	// Add method to set host status
-	setHostStatus(isHost: boolean): void {
-	  this.isHost = isHost;
+	gameStarted: boolean = false;
+
+	start(): void {
+		if (this.gameStarted) return;
+
+		// get UI to reset the score
+		const ui = this.entities.find(e => e.id === 'ui') as UI;
+		
+		this.gameStarted = true;
+		this.resetBall();
+		ui.leftScore = 0;
+		ui.rightScore = 0;
+		
+		console.log("Game started!");
 	}
-	
-	// Add method to handle remote player input
-	updateRemotePlayerInput(moveUp: boolean, moveDown: boolean): void {
-	  this.remotePlayerInput = {moveUp, moveDown};
-	  
-	  // Directly update the remote player's paddle based on their input
-	  if (this.remotePlayerPaddle) {
-		if (moveUp) this.remotePlayerPaddle.velocityY = -this.remotePlayerPaddle.speed;
-		else if (moveDown) this.remotePlayerPaddle.velocityY = this.remotePlayerPaddle.speed;
-		else this.remotePlayerPaddle.velocityY = 0;
-	  }
+
+	resetBall(): void {
+
+		const ball = this.entities.find(e => e.id === 'ball') as Ball;
+		ball.initBallPhysicsData(this.width / 2, this.height / 2);
+
 	}
-	
-	// Add method to get game state (for host to send)
-	getSerializableState(): any {
-	  // Extract only the essential state to minimize data transfer
-	  return {
-		ballPosition: {
-		  x: this.ball.x,
-		  y: this.ball.y
-		},
-		ballVelocity: {
-		  x: this.ball.velocityX,
-		  y: this.ball.velocityY
-		},
-		player1Position: {
-		  y: this.player1.y
-		},
-		player2Position: {
-		  y: this.player2.y
-		},
-		score: {
-		  player1: this.player1Score,
-		  player2: this.player2Score
-		}
-	  };
+
+	updateState(
+		player1Position: { x: number, y: number },
+		player2Position: { x: number, y: number },
+	): void {
+
+		//const ball = this.entities.find(e => e.id === 'ball') as Ball;
+		const player1 = this.entities.find(e => e.id === 'paddleL') as Paddle;
+		const player2 = this.entities.find(e => e.id === 'paddleR') as Paddle;
+		
+		player1.updatePaddlePosition(player1Position.x, player1Position.y);
+		player2.updatePaddlePosition(player2Position.x, player2Position.y);
+		// Optionally, update velocities or other state if sent
 	}
-	
-	// Add method to apply received game state (for client)
-	applyRemoteState(state: any): void {
-	  // Only the client (non-host) uses this to sync with host's state
-	  if (this.isHost) return;
-	  
-	  // Update ball position and velocity
-	  this.ball.x = state.ballPosition.x;
-	  this.ball.y = state.ballPosition.y;
-	  this.ball.velocityX = state.ballVelocity.x;
-	  this.ball.velocityY = state.ballVelocity.y;
-	  
-	  // Update opponent paddle position only
-	  // Keep local paddle under local control for responsiveness
-	  if (this.remotePlayerPaddle) {
-		const remotePos = this.isPlayer1 ? state.player2Position : state.player1Position;
-		this.remotePlayerPaddle.y = remotePos.y;
-	  }
-	  
-	  // Update score
-	  this.player1Score = state.score.player1;
-	  this.player2Score = state.score.player2;
-	  
-	  // Update score display
-	  this.updateScoreDisplay();
-	}
+  
 }

@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 16:05:20 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:33:41 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,10 @@ export class Paddle extends Entity {
         this.addComponent(physicsComponent);
 
 		// to be modified to use websockets instead of local keyboard directly
-        const keys = this.setUpPaddleKeys(isLeftPaddle);
+/*         const keys = this.setUpPaddleKeys(isLeftPaddle);
         const inputComponent = new InputComponent(keys);
         inputComponent.side = isLeftPaddle ? 'left' : 'right';
-        this.addComponent(inputComponent);
+        this.addComponent(inputComponent); */
         
         const paddleName = this.setPaddleName(isLeftPaddle, name);
         const textComponent = new TextComponent(paddleName);
@@ -99,6 +99,14 @@ export class Paddle extends Entity {
         };
 
         return data;
+    }
+
+    updatePaddlePosition(x: number, y: number): void {
+        const physicsComponent = this.getComponent('physics') as PhysicsComponent;
+        if (physicsComponent) {
+            physicsComponent.x = x;
+            physicsComponent.y = y;
+        }
     }
 
     setUpPaddleKeys(isLeftPaddle: boolean): { up: string[], down: string[] } {

@@ -31,7 +31,6 @@ let currentGame: PongGame | null = null;
 function router(path: string): void {
 
   if (!app) return;
-  
   app.innerHTML = '';
 
   //TODO destroy game when leaving /pong
@@ -41,6 +40,15 @@ function router(path: string): void {
 	console.log('Current game destroyed');
   }
 
+  const url = new URL(window.location.href);
+  const pathname = url.pathname;
+
+  if (pathname === '/pong') {
+    const gameId = url.searchParams.get('gameId');
+    const isHost = url.searchParams.get('isHost') === 'true';
+    showPong(app, gameId, isHost);
+    return;
+  }
 
   switch(path)
   {
