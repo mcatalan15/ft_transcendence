@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 18:55:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 09:32:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@ import { Point } from 'pixi.js';
 import { PongGame } from '../engine/Game';
 import type { System } from '../engine/System';
 
-import { CrossCutSpawner } from '../spawners/CrossCutSpawner';
-
-import { isCrossCut } from '../utils/Guards';
+import { CrossCutFactory, CrossCutPosition } from '../entities/crossCuts/CrossCutFactory';
 import { GameEvent } from '../utils/Types';
 
 export class CrossCutSystem implements System {
@@ -29,45 +27,11 @@ export class CrossCutSystem implements System {
     update(): void {
         const unhandledEvents: GameEvent[] = [];
         
-        // Event handler mapping
-        const handlers: Record<string, (event: GameEvent) => void> = {
-            'spawnTop': (e) => {
-                if (e.points && e.x !== undefined && e.y !== undefined) {
-                    CrossCutSpawner.spawnCrossCut(this.game, e.points, "top", e.x, e.y);
-                }
-            },
-            'spawnBottom': (e) => {
-                if (e.points && e.x !== undefined && e.y !== undefined) {
-                    CrossCutSpawner.spawnCrossCut(this.game, e.points, "bottom", e.x, e.y);
-                }
-            },
-            'transformTop': (e) => {
-                if (e.points) {
-                    this.transformCutsByPosition('top', e.points);
-                }
-            },
-            'transformBottom': (e) => {
-                if (e.points) {
-                    this.transformCutsByPosition('bottom', e.points);
-                }
-            },
-            'despawn': () => {
-                this.despawnAllCuts();
-            }
-        };
-
         while (this.game.eventQueue.length > 0) {
             const event = this.game.eventQueue.shift() as GameEvent;
             
             if (event.type.endsWith("CrossCut")) {
-                // Extract the handler key
-                const handlerKey = Object.keys(handlers).find(key => event.type.startsWith(key));
-                
-                if (handlerKey) {
-                    handlers[handlerKey](event);
-                } else {
-                    unhandledEvents.push(event);
-                }
+                this.handleCrossCutEvent(event);
             } else {
                 unhandledEvents.push(event);
             }
@@ -76,19 +40,61 @@ export class CrossCutSystem implements System {
         this.game.eventQueue.push(...unhandledEvents);
     }
     
-    private transformCutsByPosition(position: string, points: Point[]): void {
-        for (const entity of this.game.entities) {
-            if (isCrossCut(entity) && entity.position === position) {
-                entity.transformCrossCut(points);
-            }
+    /**
+     * Process a cross-cut event from the event queue
+     */
+    private handleCrossCutEvent(event: GameEvent): void {
+        // Check if we have the required properties
+        if (!event.points) {
+            console.warn('Cross-cut event missing points:', event);
+            return;
+        }
+        
+        // Parse the event type to determine the action
+        if (event.type.startsWith('spawn')) {
+            this.handleSpawnEvent(event);
+        } else if (event.type.startsWith('transform')) {
+            this.handleTransformEvent(event);
+        } else if (event.type.startsWith('despawn')) {
+            // Handle despawn event
+            CrossCutFactory.despawnAllCrossCuts(this.game);
         }
     }
     
-    private despawnAllCuts(): void {
-        for (const entity of this.game.entities) {
-            if (isCrossCut(entity)) {
-                this.game.removeEntity(entity.id);
-            }
+    /**
+     * Handle spawn events for cross-cuts
+     */
+    private handleSpawnEvent(event: GameEvent): void {
+        if (event.x === undefined || event.y === undefined) {
+            console.warn('Spawn event missing position coordinates:', event);
+            return;
         }
+        
+        // Determine position from event type
+        const position: CrossCutPosition = event.type.includes('Top') ? 'top' : 'bottom';
+        
+        // Create the cross-cut
+        CrossCutFactory.createCrossCut(
+            this.game,
+            event.points as Point[],
+            position,
+            event.x,
+            event.y
+        );
+    }
+    
+    /**
+     * Handle transform events for cross-cuts
+     */
+    private handleTransformEvent(event: GameEvent): void {
+        // Determine position from event type
+        const position: CrossCutPosition = event.type.includes('Top') ? 'top' : 'bottom';
+        
+        // Transform the cross-cuts
+        CrossCutFactory.transformCrossCuts(
+            this.game,
+            position,
+            event.points as Point[]
+        );
     }
 }

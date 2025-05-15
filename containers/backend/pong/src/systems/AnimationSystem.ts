@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 19:52:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 09:32:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 
+import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../entities/crossCuts/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
 import { isPaddle, isDepthLine, isPowerup, isPyramidDepthLine, isParapetDepthLine, isSawDepthLine, isEscalatorDepthLine } from '../utils/Guards'
 
@@ -188,15 +189,7 @@ export class AnimationSystem implements System {
 				(entity.behavior.direction === 'upwards' && entity.y <= entity.upperLimit) ||
 				(entity.behavior.direction === 'downwards' && entity.y >= entity.lowerLimit)
 			) {
-				if (isPyramidDepthLine(entity)) {
-					this.manageTriangleCrossCutCreation(entity, render);					
-				} else if (isParapetDepthLine(entity)) {
-					this.manageRectangleCrossCutCreation(entity, render);
-				} else if (isSawDepthLine(entity)) {
-					this.manageSawCrossCutCreation(entity, render);
-				} else if (isEscalatorDepthLine(entity)) {
-					this.manageEscalatorCrossCutCreation(entity, render);
-				}
+				this.manageCrossCutCreation(entity, render);
 				entitiesToRemove.push(entity.id);
 			}
 		}
@@ -222,184 +215,61 @@ export class AnimationSystem implements System {
 		}	
 	}
 
-	manageTriangleCrossCutCreation(entity: PyramidDepthLine, render: RenderComponent) {
-		let cutPoints: Point[] = [];
-
-		for (let i = 0; i < 3; i++) {
-			cutPoints.push(entity.points[i]);
+	/**
+	 * Central method to handle cross-cut creation for all depth line types
+	 */
+	manageCrossCutCreation(entity: DepthLine, render: RenderComponent) {
+		// Extract the points from the entity
+		let points: Point[] = [];
+		
+		// Determine cross-cut type and position
+		let cutType: CrossCutType;
+		const direction = entity.behavior?.direction;
+		const position: CrossCutPosition = direction === 'upwards' ? 'top' : 'bottom';
+		
+		// Extract points based on entity type
+		if (isPyramidDepthLine(entity)) {
+			cutType = 'Triangle';
+			points = [...entity.points.slice(0, 3)];
+		} else if (isParapetDepthLine(entity)) {
+			cutType = 'Parapet';
+			points = [...entity.points];
+		} else if (isSawDepthLine(entity)) {
+			cutType = 'Saw';
+			points = [...entity.points];
+		} else if (isEscalatorDepthLine(entity)) {
+			cutType = 'Escalator';
+			points = [...entity.points];
+		} else {
+			return; // Unknown depth line type
 		}
-
-		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "spawnTopTriangleCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "spawnBottomTriangleCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "transformBottomTriangleCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "transformTopTriangleCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
+		
+		// Determine action based on entity ID
+		let action: CrossCutAction;
+		if (entity.id.startsWith('last')) {
+			action = 'spawn';
+		} else if (entity.id.startsWith('middle')) {
+			action = 'transform';
 		} else if (entity.id.startsWith('first')) {
-			this.game.eventQueue.push({
-				type: "despawnTriangleCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
+			action = 'despawn';
+		} else {
+			return; // Unknown entity ID pattern
 		}
-	}
-
-	manageRectangleCrossCutCreation(entity: ParapetDepthLine, render: RenderComponent) {
-		let cutPoints: Point[] = [];
-
-		for (let i = 0; i < entity.points.length; i++) {
-			cutPoints.push(entity.points[i]);
-		}
-
-		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "spawnTopParapetCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "spawnBottomParapetCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "transformBottomParapetCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "transformTopParapetCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('first')) {
-			this.game.eventQueue.push({
-				type: "despawnParapetCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		}
-	}
-
-	manageSawCrossCutCreation(entity: SawEdgeDepthLine, render: RenderComponent) {
-		let cutPoints: Point[] = [];
-
-		for (let i = 0; i < entity.points.length; i++) {
-			cutPoints.push(entity.points[i]);
-		}
-
-		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "spawnTopSawCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "spawnBottomSawCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "transformBottomSawCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "transformTopSawCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('first')) {
-			this.game.eventQueue.push({
-				type: "despawnSawCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		}
-	}
-
-	manageEscalatorCrossCutCreation(entity: EscalatorDepthLine, render: RenderComponent) {
-		let cutPoints: Point[] = [];
-
-		for (let i = 0; i < entity.points.length; i++) {
-			cutPoints.push(entity.points[i]);
-		}
-
-		if (entity.id.startsWith('last') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "spawnTopEscalatorCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('last') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "spawnBottomEscalatorCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'downwards') {
-			this.game.eventQueue.push({
-				type: "transformBottomEscalatorCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('middle') && entity.behavior.direction === 'upwards') {
-			this.game.eventQueue.push({
-				type: "transformTopEscalatorCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		} else if (entity.id.startsWith('first')) {
-			this.game.eventQueue.push({
-				type: "despawnEscalatorCrossCut",
-				points: cutPoints,
-				x: render.graphic.x,
-				y: render.graphic.y,
-			} as GameEvent);
-		}
+		
+		// Generate event name
+		const eventName = CrossCutFactory.generateEventName(
+			action, 
+			action === 'despawn' ? null : position, 
+			cutType
+		);
+		
+		// Create and queue the event
+		this.game.eventQueue.push({
+			type: eventName,
+			points: points,
+			x: render.graphic.x,
+			y: render.graphic.y,
+		} as GameEvent);
 	}
 
 	private lerp(a: number, b: number, t: number): number {
