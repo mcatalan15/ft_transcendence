@@ -5,95 +5,48 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 16:36:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 17:54:18 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/05/15 18:41:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from '../engine/Game';
-import { Entity } from '../engine/Entity';
-import { Obstacle } from '../entities/obstacles/Obstacle';
-import { RenderComponent } from '../components/RenderComponent';
-import { DepthLineFactory } from '../factories/DepthLineFactory';
-
-import { WorldSystem } from '../systems/WorldSystem';
-
-import { ObstacleBehavior, FrameData } from '../utils/Types';
-import { isObstacle } from '../utils/Guards';
+import { ObstacleSpawner } from '../spawners/ObstacleSpawner';
+import { FrameData } from '../utils/Types';
 
 export class ObstacleManager {
-    private game: PongGame;
-	private worldSystem: WorldSystem;
-    private obstacleCooldown: number = 10;
-    private lastObstacleSpawnTime: number = 0;
-    private obstacleQueue: Obstacle[] = [];
-
-
-    constructor(game: PongGame, worldSystem: WorldSystem) {
-        this.game = game;
-		this.worldSystem = worldSystem;
+    private isSpawningObstacles: boolean = false;
+    private obstacleTimer: number = 200;
+    
+    constructor() {
     }
     
-    update(delta: FrameData, entities: Entity[]): void {
-        this.obstacleCooldown -= delta.deltaTime;
+    update(delta: FrameData, worldSystem: any): void {
+        this.obstacleTimer -= delta.deltaTime;
+
+        if (this.obstacleTimer <= 0 && !this.isSpawningObstacles) {
+            this.isSpawningObstacles = true;
+            let depth = this.randomOdd(101, 111);
+            
+            ObstacleSpawner.buildLedge(worldSystem, depth);
+        }
+    }
+    
+    finishedSpawning(): void {
+        this.isSpawningObstacles = false;
+        this.obstacleTimer = 200 + (Math.random() * 200);
+    }
+    
+    isSpawning(): boolean {
+        return this.isSpawningObstacles;
+    }
+    
+    randomOdd(min: number, max: number): number {
+        min = min % 2 === 0 ? min + 1 : min;
         
-        if (this.obstacleCooldown <= 0) {
-            if (this.obstacleQueue.length > 0) {
-                this.spawnFromQueue();
-                this.spawnFromQueue();
-            } else {
-                return ;
-            }
-            this.obstacleCooldown = 8;
-        }
+        max = max % 2 === 0 ? max - 1 : max;
         
-        this.initializeObstacles(entities);
+        const oddNumberCount = Math.floor((max - min) / 2) + 1;
+        
+        return min + 2 * Math.floor(Math.random() * oddNumberCount);
     }
-
-    spawnFromQueue(): void {
-        let obstacle = this.obstacleQueue.pop();
-
-        if (obstacle) {
-            this.game.addEntity(obstacle);
-
-            const render = obstacle.getComponent('render') as RenderComponent;
-            if (render) {
-                this.game.renderLayers.background.addChild(render.graphic);
-            }
-        }
-    }
-    
-    private initializeObstacles(entities: Entity[]): void {
-        for (const entity of entities) {
-            if (isObstacle(entity)) {
-                const idParts = entity.id.split('-');
-                const timestamp = parseInt(idParts[1]);
-                if (!entity.initialized && timestamp >= this.lastObstacleSpawnTime - 100) {
-                    const render = entity.getComponent('render') as RenderComponent;
-                    if (render) {
-                        entity.initialized = true;
-                        entity.initialY = entity.y;
-                        entity.alpha = 0;
-                        render.graphic.alpha = 0;
-                    }
-                }
-            }
-        }
-    }
-    
-    addToQueue(obstacle: Obstacle): void {
-        this.obstacleQueue.push(obstacle);
-    }
-    
-    getQueue(): Obstacle[] {
-        return this.obstacleQueue;
-    }
-
-	// Utils
-	private generateObstacleBehavior(animation: string, fade: string): ObstacleBehavior {
-		return {
-			animation: animation,
-			fade: fade,
-		}
-	}
 }

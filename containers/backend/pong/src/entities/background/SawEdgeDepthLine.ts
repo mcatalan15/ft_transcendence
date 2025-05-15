@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 16:59:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 18:28:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ export class SawEdgeDepthLine extends DepthLine {
 			new Point(halfWidth, 0)
 		];
 
-		/* if (flip) {
+		if (flip) {
 			for (const point of this.points) {
 				point.x *= -1;
 			}
-		} */
+		}
 
 		// Use the utility function to draw the path
 		drawPointPath(line, this.points, color);

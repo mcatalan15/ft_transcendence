@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 16:44:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/15 18:47:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@ import type { System } from '../engine/System';
 
 import { DepthLineManager } from '../managers/DepthLineManager';
 import { WallFigureManager } from '../managers/WallFigureManager';
+import { ObstacleManager } from '../managers/ObstacleManager';
 
 import { FrameData, GameEvent, World } from '../utils/Types';
 import { isUI } from '../utils/Guards';
+import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
     game: PongGame;
@@ -26,6 +28,7 @@ export class WorldSystem implements System {
     
     private depthLineManager: DepthLineManager;
     private wallFigureManager: WallFigureManager;
+    private obstacleManager: ObstacleManager;
     
     constructor(game: PongGame) {
         this.game = game;
@@ -33,6 +36,7 @@ export class WorldSystem implements System {
         
         this.depthLineManager = new DepthLineManager(game, this);
         this.wallFigureManager = new WallFigureManager();
+        this.obstacleManager = new ObstacleManager();
         
         this.game.entities.forEach(entity => {
             if (isUI(entity)) {
@@ -52,6 +56,7 @@ export class WorldSystem implements System {
         // Update managers
         this.wallFigureManager.update(delta, this);
         this.depthLineManager.update(delta, entities);
+        //!this.obstacleManager.update(delta, this);
         
         // If wall figure manager has finished spawning, update depth lines
         if (this.wallFigureManager.isSpawning() && this.depthLineManager.getQueue().length === 0) {
