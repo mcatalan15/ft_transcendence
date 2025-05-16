@@ -1,5 +1,5 @@
 import { Application, Graphics, Text } from 'pixi.js';
- import { WebSocketManager } from '../network/WebSocketManager';
+import { WebSocketManager } from '../network/WebSocketManager';
 
 async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
   const app = new Application();
@@ -96,9 +96,20 @@ canvas.parentElement?.appendChild(testButton);
   // Initialize WebSocket connection
   const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
 
+  let playerNumber = 0;
+
   // IMPORTANT: Register handlers BEFORE connecting
  wsManagerPong.registerHandler('GAME_START', () => {
     console.log('Game started!');
+  });
+
+  wsManagerPong.registerHandler('PLAYER_ASSIGNED', (message) => {
+    playerNumber = message.playerNumber;
+    console.log('Server assigned player number:', playerNumber);
+  });
+
+ wsManagerPong.registerHandler('PLAYER_DISCONNECTED', () => {
+    console.log('Other player disconnected');
   });
   
  wsManagerPong.registerHandler('GAME_STATE_UPDATE', (message) => {
@@ -106,7 +117,6 @@ canvas.parentElement?.appendChild(testButton);
       clearInterval(testInterval);
       console.log('Clearing test animation, real game state arrived');
 	  }
-
 	// Log the entire message to see its structure
 	console.log('Received game state update', message);
 
@@ -130,10 +140,6 @@ canvas.parentElement?.appendChild(testButton);
 	app.renderer.render(app.stage);
 	});
 
- wsManagerPong.registerHandler('PLAYER_DISCONNECTED', () => {
-    console.log('Other player disconnected');
-  });
-
   // Now connect after registering handlers
   try {
     await wsManagerPong.connect(gameId);
@@ -150,9 +156,6 @@ canvas.parentElement?.appendChild(testButton);
 	ball.x = 100;
 	ball.y = 100;
 	}, 5000);
-
-    // Player number based on host status
-    const playerNumber = isHost ? 1 : 2;
 
     // Handle keyboard input
     document.addEventListener('keydown', (e) => {

@@ -2,22 +2,32 @@ export class WebSocketManager {
     private socket: WebSocket | null = null;
     private url: string;
     private gameId: string | null = null;
-    private playerId: string;
+    private hostId: string;
+    private guestId: string;
+    private playerRole: 'host' | 'guest' | null = null;
     private messageHandlers: Map<string, (data: any) => void> = new Map();
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
     
     private static instance: WebSocketManager | null = null;
 
+    setPlayerRole(role: 'host' | 'guest') {
+        this.playerRole = role;
+        console.log('Player role set to:', this.playerRole);
+    }
+
     public static getInstance(playerId: string): WebSocketManager {
         if (!WebSocketManager.instance) {
             WebSocketManager.instance = new WebSocketManager(playerId);
+        } else {
+            WebSocketManager.instance.hostId = playerId;
         }
         return WebSocketManager.instance;
     }
 
     private constructor(playerId: string) {
-        this.playerId = playerId;
+        this.hostId = playerId;
+        this.guestId = playerId;
         this.url = `ws://localhost:3100/ws/socket/game`;
     }
     
@@ -96,7 +106,9 @@ export class WebSocketManager {
         }
     }
 private handleMessage(event: MessageEvent) {
-  console.log('🔍 HANDLER examining message...');
+
+  console.log(`🔍 HANDLER received message for game ${this.gameId}, local player: ${this.hostId}`);
+
   try {
     const message = JSON.parse(event.data);
     
@@ -189,7 +201,7 @@ private handleMessage(event: MessageEvent) {
 			
 			this.send({
 				type: 'CREATE_GAME',
-				playerId: this.playerId
+				playerId: this.hostId
 			});
 			
 		});
@@ -207,7 +219,7 @@ private handleMessage(event: MessageEvent) {
             
             this.send({
                 type: 'JOIN_GAME',
-                playerId: this.playerId,
+                playerId: this.hostId,
                 gameId
             });
         });
@@ -222,6 +234,7 @@ private handleMessage(event: MessageEvent) {
         this.send({
             type: 'PADDLE_INPUT',
             player: player,
+            playerId: this.hostId,
             dir: direction
         });
     }

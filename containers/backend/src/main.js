@@ -22,6 +22,7 @@ const gameWss = new WebSocket.Server({ noServer: true });
 const gameSessions = new Map();
 
 async function startServer() {
+
 	const app = buildApp();
 
 	redisPublisher = createClient({ url: redisUrl });
@@ -224,6 +225,8 @@ async function handleJoinGame(ws, data) {
 			type: 'JOIN_SUCCESS'
 		}));
 
+
+
 		// Notify host that someone joined
 		const hostWs = gameSessions.get(gameId).sockets.get(game.hostId);
 		if (hostWs && hostWs.readyState === WebSocket.OPEN) {
@@ -233,9 +236,13 @@ async function handleJoinGame(ws, data) {
 			}));
 		}
 
-		notifyGameStart(gameId);
+		const playerNumber = playerId === game.hostId ? 1 : 2;
+			ws.send(JSON.stringify({
+				type: 'PLAYER_ASSIGNED',
+				playerNumber: playerNumber
+		}));
 
-		console.log('cucufu');
+		notifyGameStart(gameId);
 
 		// Start the backend game loop if not already started
 		const entry = gameSessions.get(gameId);
@@ -264,11 +271,16 @@ async function handleJoinGame(ws, data) {
 				console.log('Tick completed successfully:', state);
 				
 				let sentCount = 0;
-				hostWs.send(JSON.stringify({
-					type: 'GAME_STATE_UPDATE',
-					data: state
-				}));
-				sentCount++;
+				entry.sockets.forEach((clientWs) => {
+					if (clientWs.readyState === WebSocket.OPEN) {
+						console.log('Sending game state to client');
+						clientWs.send(JSON.stringify({
+							type: 'GAME_STATE_UPDATE',
+							data: state
+						}));
+						sentCount++;
+					}
+				});
 				
 				console.log('Sending state update:', JSON.stringify(state));
 
