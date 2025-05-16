@@ -1,7 +1,9 @@
 WEBSOCKETS:
 	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
 	- Backend updates ball position as well as paddle positions every frame (60FPS).
-	
+	- CLEAN THE CODE!! Remove all unnecessary console.log()
+	- Refactor main.js: gameSession.js, gameServer.js, etc.
+		
 
 GOOGLE SIGN-IN:
 	- After user successfully logs in with their Google account, send a an API request to the backend with the email address in the data.
