@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 15:59:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 20:41:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import type { System } from '../engine/System'
 import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
 import { DepthLine } from '../entities/background/DepthLine';
+import { Obstacle } from '../entities/obstacles/Obstacle';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -29,6 +30,7 @@ import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from 
 import { FrameData, GameEvent } from '../utils/Types';
 import { isPaddle,
 		isDepthLine,
+		isObstacle,
 		isPowerup,
 		isPyramidDepthLine,
 		isParapetDepthLine,
@@ -37,6 +39,8 @@ import { isPaddle,
 		isAcceleratorDepthLine,
 		isMawDepthLine,
 		isRakeDepthLine,
+		isLedgeSegment,
+		isPachinkoSegment
 } from '../utils/Guards'
 
 
@@ -82,6 +86,8 @@ export class AnimationSystem implements System {
 			} else if (this.frameCounter <= 0) {
 				if (isDepthLine(entity)) {
 					this.animateDepthline(delta, entitiesToRemove, entity);
+				} else if (isObstacle(entity)) {
+					this.animateObstacle(delta, entitiesToRemove, entity);
 				} else if (isPowerup(entity)) {
 					this.animatePowerup(entity);
 				}
@@ -201,6 +207,37 @@ export class AnimationSystem implements System {
 		}
 	}
 
+	animateObstacle(delta: FrameData, entitiesToRemove: string[], entity: Obstacle) {
+		const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
+		const render = entity.getComponent('render') as RenderComponent;
+		
+		if (!lifetime || !render) {
+			return;
+		}
+
+		if (!lifetime.duration) {
+			lifetime.duration = lifetime.remaining;
+		}
+		
+		const progress = Math.max(0, Math.min(1, 1 - (lifetime.remaining / lifetime.duration)));
+		
+		entity.alpha = progress * entity.targetAlpha;
+		render.graphic.alpha = entity.alpha;
+		
+		const currentScale = entity.initialScale + (entity.targetScale - entity.initialScale) * progress;
+		
+		const easedScale = Math.pow(currentScale, 1.2);
+		
+		render.graphic.scale.set(easedScale, easedScale);
+		
+		lifetime.remaining -= delta.deltaTime;
+		
+		if (lifetime.despawn === 'time' && lifetime.remaining <= 0) {
+			this.manageCrossCutCreation(entity, render);
+			entitiesToRemove.push(entity.id);
+		}
+	}
+
 	animatePowerup(entity: Powerup) {
 		const render = entity.getComponent('render') as RenderComponent;
 		const animation = entity.getComponent('animation') as AnimationComponent;
@@ -219,13 +256,16 @@ export class AnimationSystem implements System {
 		}	
 	}
 
-	manageCrossCutCreation(entity: DepthLine, render: RenderComponent) {
+	manageCrossCutCreation(entity: DepthLine | Obstacle, render: RenderComponent) {
 		let points: Point[] = [];
+		let direction;
 		
 		let cutType: CrossCutType;
-		const direction = entity.behavior?.direction;
+		if (isDepthLine(entity)) {
+			direction = entity.behavior?.direction;
+		}
 		const position: CrossCutPosition = direction === 'upwards' ? 'top' : 'bottom';
-		
+
 		// Extract points based on entity type
 		if (isPyramidDepthLine(entity)) {
 			cutType = 'Triangle';
@@ -247,6 +287,12 @@ export class AnimationSystem implements System {
 			points = [...entity.points];
 		} else if (isRakeDepthLine(entity)) {
 			cutType = 'Rake';
+			points = [...entity.points];
+		} else if (isLedgeSegment(entity)) {
+			cutType = 'Ledge';
+			points = [...entity.points];
+		} else if (isPachinkoSegment(entity)) {
+			cutType = 'Pachinko';
 			points = [...entity.points];
 		} else {
 			return;

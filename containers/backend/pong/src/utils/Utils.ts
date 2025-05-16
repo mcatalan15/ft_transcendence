@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 17:03:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 20:59:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,55 @@ export function drawPointPath(graphic: Graphics, points: Point[], color: number,
     }
 }
 
-/**
- * Process events from the game's event queue based on a matcher function
- * and handle them with provided handlers
- * 
- * @param game The game instance with the event queue
- * @param handlers Object mapping event types to handler functions
- * @param matcher Function to determine if an event should be processed
- */
+export function generateCirclePoints(
+    centerX: number, 
+    centerY: number, 
+    radius: number, 
+    segments: number = 32,
+    startAngle: number = 0,
+    endAngle: number = Math.PI * 2,
+    clockwise: boolean = true
+): Point[] {
+    const points: Point[] = [];
+    
+    // Normalize angles to be within 0 to 2π
+    startAngle = startAngle % (Math.PI * 2);
+    if (startAngle < 0) startAngle += Math.PI * 2;
+    
+    endAngle = endAngle % (Math.PI * 2);
+    if (endAngle < 0) endAngle += Math.PI * 2;
+    
+    // Ensure endAngle is greater than startAngle for calculations
+    if (!clockwise && startAngle <= endAngle) {
+        endAngle -= Math.PI * 2;
+    } else if (clockwise && endAngle <= startAngle) {
+        endAngle += Math.PI * 2;
+    }
+    
+    // Calculate total angle to cover
+    const totalAngle = clockwise ? endAngle - startAngle : startAngle - endAngle;
+    
+    // Adjust segments based on the arc length
+    const arcSegments = Math.max(2, Math.ceil(segments * Math.abs(totalAngle) / (Math.PI * 2)));
+    
+    // Generate points along the circumference
+    for (let i = 0; i <= arcSegments; i++) {
+        // Calculate the angle for this segment
+        const t = i / arcSegments;
+        const angle = clockwise 
+            ? startAngle + t * (endAngle - startAngle)
+            : startAngle - t * (startAngle - endAngle);
+        
+        // Calculate x and y using the parametric equation of a circle
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        
+        points.push(new Point(x, y));
+    }
+    
+    return points;
+}
+
 export function processEvents<T extends GameEvent>(
     game: PongGame,
     handlers: Record<string, (event: T) => void>,

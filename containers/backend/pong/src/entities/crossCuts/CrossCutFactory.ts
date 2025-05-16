@@ -6,27 +6,27 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:22:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 18:06:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Point } from 'pixi.js';
 
-import { PongGame } from '../engine/Game';
+import { PongGame } from '../../engine/Game';
 
-import { CrossCut } from '../entities/crossCuts/CrossCut';
-import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
-import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
-import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
-import { EscalatorCrossCut } from '../entities/crossCuts/EscalatorCrossCut';
-import { AcceleratorCrossCut } from '../entities/crossCuts/AcceleratorCrossCut';
-import { MawCrossCut } from '../entities/crossCuts/MawCrossCut';
-import { RakeCrossCut } from '../entities/crossCuts/RakeCrossCut';
-import { LedgeCrossCut } from '../entities/crossCuts/LedgeCrossCut';
-import { PachinkoCrossCut } from '../entities/crossCuts/PachinkoCrossCut';
+import { CrossCut } from '../../entities/crossCuts/CrossCut';
+import { TriangleCrossCut } from '../../entities/crossCuts/TriangleCrossCut';
+import { RectangleCrossCut } from '../../entities/crossCuts/RectangleCrossCut';
+import { SawCrossCut } from '../../entities/crossCuts/SawCrossCut';
+import { EscalatorCrossCut } from '../../entities/crossCuts/EscalatorCrossCut';
+import { AcceleratorCrossCut } from '../../entities/crossCuts/AcceleratorCrossCut';
+import { MawCrossCut } from '../../entities/crossCuts/MawCrossCut';
+import { RakeCrossCut } from '../../entities/crossCuts/RakeCrossCut';
+import { LedgeCrossCut } from '../../entities/crossCuts/LedgeCrossCut';
+import { PachinkoCrossCut } from './PachinkoCrossCut';
 
-import { RenderComponent } from '../components/RenderComponent';
-import { PhysicsComponent } from '../components/PhysicsComponent';
+import { RenderComponent } from '../../components/RenderComponent';
+import { PhysicsComponent } from '../../components/PhysicsComponent';
 
 export type CrossCutType = 'Triangle' | 'Parapet' | 'Saw' | 'Escalator' | 'Accelerator' | 'Maw' | 'Rake' |
                             'Ledge' | 'Pachinko';
@@ -128,7 +128,7 @@ export class CrossCutFactory {
                     position, 
                     numPoints, 
                     points, 
-                    x, 
+                    x,
                     y
                 );
                 break;
@@ -145,10 +145,11 @@ export class CrossCutFactory {
                 );
                 break;
             case ('pachinko'):
+                console.log('cucufu');
                 cut = new PachinkoCrossCut(
                     `cut-ledge-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
-                    'pachinko', 
+                    'escalator', 
                     position, 
                     numPoints, 
                     points, 

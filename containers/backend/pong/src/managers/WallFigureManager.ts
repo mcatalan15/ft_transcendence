@@ -6,56 +6,66 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 17:02:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:53:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { WallFiguresSpawner } from '../spawners/WallFiguresSpawner';
-import { FrameData } from '../utils/Types';
 
 export class WallFigureManager {
     private isSpawningFigures: boolean = false;
-    private figureTimer: number = 200;
+    private mustSpawn: boolean = false;
     
     constructor() {
     }
     
-    update(delta: FrameData, worldSystem: any): void {
-        this.figureTimer -= delta.deltaTime;
-
-        if (this.figureTimer <= 0 && !this.isSpawningFigures) {
+    update(worldSystem: any): void {
+        if (this.mustSpawn) {
             this.isSpawningFigures = true;
             let depth = this.randomOdd(101, 111);
             let idx = Math.floor(Math.random() * 7);
 
             switch(idx) {
                 case (1):
-                    WallFiguresSpawner.buildPyramids(worldSystem, depth);
+                console.log('Spawning pyramids obstacle');    
+                WallFiguresSpawner.buildPyramids(worldSystem, depth);
                     break;
                 case (2):
+                    console.log('Spawning parapets obstacle');    
                     WallFiguresSpawner.buildParapets(worldSystem, depth);
                     break;
 				case (3):
-					WallFiguresSpawner.buildSawEdges(worldSystem, depth);
+					console.log('Spawning sawedge obstacle');
+                    WallFiguresSpawner.buildSawEdges(worldSystem, depth);
 					break;
                 case (4):
+                    console.log('Spawning escalator obstacle');
                     WallFiguresSpawner.buildEscalator(worldSystem, depth);
                     break;
                 case (5):
+                    console.log('Spawning accelerator obstacle');
                     WallFiguresSpawner.buildAccelerator(worldSystem, depth);
                     break;
                 case (6):
+                    console.log('Spawning maw obstacle');
                     WallFiguresSpawner.buildMaw(worldSystem, depth);
                     break;
                 default:
+                    console.log('Spawning rakes obstacle');
                     WallFiguresSpawner.buildRakes(worldSystem, depth);
             }
         }
+
+        this.mustSpawn = false;
+    }
+
+    activateSpawning(): void {
+        this.mustSpawn = true;
     }
     
     finishedSpawning(): void {
         this.isSpawningFigures = false;
-        this.figureTimer = 200 + (Math.random() * 200);
+        this.mustSpawn = false;
     }
     
     isSpawning(): boolean {

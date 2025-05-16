@@ -1,4 +1,4 @@
-import { DepthLineFactory } from '../factories/DepthLineFactory';
+import { FigureFactory } from '../factories/FigureFactory';
 import { WorldSystem } from '../systems/WorldSystem';
 import { DepthLineBehavior } from '../utils/Types';
 
@@ -42,9 +42,8 @@ export class WallFiguresSpawner {
 
       let position = i === 0 ? 'first' : i === depth - 1 ? 'last' : 'middle';
       let uniqueId = `${position}${figureType}DepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      let bottomLine = DepthLineFactory.createDepthLine(
-        figureType.toLowerCase(),
+      let bottomLine = FigureFactory.createDepthLine(
+        figureType,
         worldSystem.game,
         uniqueId,
         width,
@@ -58,8 +57,8 @@ export class WallFiguresSpawner {
       );
       worldSystem.depthLineQueue.push(bottomLine);
 
-      let topLine = DepthLineFactory.createDepthLine(
-        figureType.toLowerCase(),
+      let topLine = FigureFactory.createDepthLine(
+        figureType,
         worldSystem.game,
         uniqueId,
         width,
@@ -76,31 +75,31 @@ export class WallFiguresSpawner {
   }
 
   static buildPyramids(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Pyramid', { maxHeightDivisor: 2.2 });
+    this.buildWallFigure(worldSystem, depth, 'pyramid', { maxHeightDivisor: 2.2 });
   }
 
   static buildParapets(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Parapet', { useFlip: true, maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'parapet', { useFlip: true, maxHeightDivisor: 2 });
   }
 
   static buildSawEdges(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'SawEdge', { useFlip: true, maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'saw', { useFlip: true, maxHeightDivisor: 2 });
   }
 
   static buildEscalator(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Escalator', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'escalator', { maxHeightDivisor: 2 });
   }
 
   static buildAccelerator(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Accelerator', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'accelerator', { maxHeightDivisor: 2 });
   }
 
   static buildMaw(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Maw', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'maw', { maxHeightDivisor: 2 });
   }
 
   static buildRakes(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'Rake', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'rake', { maxHeightDivisor: 2 });
   }
 
   // Utils

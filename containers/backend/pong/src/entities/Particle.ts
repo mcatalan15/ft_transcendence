@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 17:27:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 18:09:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ export class Particle extends Entity {
 		const {
 			velocityX = 0,
 			velocityY = 0,
-			lifetime = 30,
+			lifetime = 8,
 			size = 4,
 			type = 'square',
 			color = 0xFFFBEB,

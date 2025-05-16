@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 18:24:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 15:03:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,62 +29,52 @@ export class Obstacle extends Entity {
 	y: number;
 	width: number;
 	height: number;
-	velocityX: number;
-	velocityY: number;
-	upperLimit: number;
-	lowerLimit: number;
 	alpha: number;
 	targetAlpha: number;
+	initialScale: number;
+    targetScale: number;
 	alphaIncrease: number;
 	behavior: ObstacleBehavior;
+	type: string;
 
-	constructor(id: string, layer: string, game: PongGame, options: ObstacleOptions = {} ) {
+	constructor(game: PongGame, id: string, layer: string, options: ObstacleOptions) {
 		super(id, layer);
 
-		const {
-			initialized = false,
-			initialY = 0,
-			velocityX = 0,
-			velocityY = 0,
-			width = 0,
-			height = 0,
-			upperLimit = 0,
-			lowerLimit = 0,
-			alpha = 1,
-			lifetime = 90,
-			type = '',
-			despawn = '',
-			behavior = { animation: 'none', fade: 'in' },
-		} = options;
+		this.initialized = options.initialized;
+        this.initialY = options.initialY;
+        this.width = options.width;
+        this.height = options.height;
+        this.alpha = options.alpha;
+        this.targetAlpha = options.targetAlpha;
+        this.initialScale = options.initialScale;
+        this.targetScale = options.targetScale;
+        this.behavior = options.behavior;
+        this.type = options.type;
+
+		this.behavior = options.behavior;
 
 		this.game = game;
 
-		this.initialized = initialized;
-		this.initialY = initialY;
+		this.initialized = options.initialized;
+		this.initialY = options.initialY;
 		
-		this.width = width;
-		this.height = height;
+		this.width = game.width;
+		this.height = game.height;
 
-		this.x = width / 2;
-		this.y = type === 'top' ? height / 2 - height / 4 : height / 2 + height / 4;
-
-		this.upperLimit = upperLimit;
-		this.lowerLimit = lowerLimit;
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
-		this.behavior = behavior;
+		this.x = game.width / 2;
+		this.y = game.height / 2;
 
 		this.alpha = 0;
-		this.targetAlpha = alpha || 1;
+		this.targetAlpha = options.alpha || 1;
 		this.alphaIncrease = this.targetAlpha / 50;
 
-		const graphic = this.generateLine(width, game.currentWorld.color);
+		const graphic = this.generateLine(this.width, game.currentWorld.color);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 
 		render.graphic.position.set(this.x, this.y);
 
-		const lifetimeComp = new LifetimeComponent(lifetime, despawn);
+		const lifetimeComp = new LifetimeComponent(options.lifetime, options.despawn);
 		this.addComponent(lifetimeComp);
 
 		const animationComp = new AnimationComponent();

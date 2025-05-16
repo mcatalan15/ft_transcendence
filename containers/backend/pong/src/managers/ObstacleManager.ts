@@ -6,34 +6,46 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 18:41:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:40:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { ObstacleSpawner } from '../spawners/ObstacleSpawner';
-import { FrameData } from '../utils/Types';
 
 export class ObstacleManager {
     private isSpawningObstacles: boolean = false;
-    private obstacleTimer: number = 200;
+    private mustSpawn: boolean = false;
     
     constructor() {
     }
     
-    update(delta: FrameData, worldSystem: any): void {
-        this.obstacleTimer -= delta.deltaTime;
-
-        if (this.obstacleTimer <= 0 && !this.isSpawningObstacles) {
+    update(worldSystem: any): void {
+        if (this.mustSpawn) {
             this.isSpawningObstacles = true;
-            let depth = this.randomOdd(101, 111);
-            
-            ObstacleSpawner.buildLedge(worldSystem, depth);
+            let depth = this.randomOdd(71, 81);
+            let idx = Math.floor(Math.random() * 2);
+
+            switch(idx) {
+                case (1):
+                    console.log('Spawning a ledge obstacle');
+                    ObstacleSpawner.buildLedge(worldSystem, depth);
+                    break;
+                default:
+                    console.log('Spawning a pachinko obstacle');
+                    ObstacleSpawner.buildPachinko(worldSystem, depth);
+            }
         }
+
+        this.mustSpawn = false;
     }
     
+    activateSpawning(): void {
+        this.mustSpawn = true;
+    }
+
     finishedSpawning(): void {
         this.isSpawningObstacles = false;
-        this.obstacleTimer = 200 + (Math.random() * 200);
+        this.mustSpawn = false;
     }
     
     isSpawning(): boolean {

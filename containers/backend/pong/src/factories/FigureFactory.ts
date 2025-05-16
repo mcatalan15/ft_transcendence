@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   DepthLineFactory.ts                                :+:      :+:    :+:   */
+/*   FigureFactory.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 17:20:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:56:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 
 import { DepthLineBehavior } from '../utils/Types';
 
-export class DepthLineFactory {
+export class FigureFactory {
     static createDepthLine(
         type: 'standard' |
             'pyramid' |
             'parapet' |
-            'sawEdge' |
+            'saw' |
             'escalator' |
             'accelerator' |
             'maw'|
@@ -48,7 +48,6 @@ export class DepthLineFactory {
         const addedOffset = 10;
         const upperLimit = topWallOffset + wallThickness - addedOffset;
         const lowerLimit = height - bottomWallOffset + addedOffset;
-        
         const options = {
             velocityX: 10,
             velocityY: 10,
@@ -68,8 +67,8 @@ export class DepthLineFactory {
                 return new PyramidDepthLine(id, 'background', game, options);
             case ('parapet'):
                 return new ParapetDepthLine(id, 'background', game, options, flip!);
-			case ('sawEdge'):
-				return new SawEdgeDepthLine(id, 'background', game, options, flip!);
+			case ('saw'):
+                return new SawEdgeDepthLine(id, 'background', game, options, flip!);
 			case ('escalator'):
 				return new EscalatorDepthLine(id, 'background', game, options);
             case ('accelerator'):

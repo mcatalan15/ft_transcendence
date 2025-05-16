@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:36:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 13:41:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 14:34:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@ import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
 import { DepthLine } from '../entities/background/DepthLine';
 import { RenderComponent } from '../components/RenderComponent';
-import { DepthLineFactory } from '../factories/DepthLineFactory';
+import { FigureFactory } from '../factories/FigureFactory';
+
+import { Obstacle } from '../entities/obstacles/Obstacle';
 
 import { WorldSystem } from '../systems/WorldSystem';
 
@@ -26,7 +28,8 @@ export class DepthLineManager {
 	private worldSystem: WorldSystem;
     private depthLineCooldown: number = 10;
     private lastLineSpawnTime: number = 0;
-    private depthLineQueue: DepthLine[] = [];
+    private figureQueue: DepthLine[] = [];
+    private obstacleQueue: Obstacle[] = [];
 
 
     constructor(game: PongGame, worldSystem: WorldSystem) {
@@ -38,11 +41,14 @@ export class DepthLineManager {
         this.depthLineCooldown -= delta.deltaTime;
         
         if (this.depthLineCooldown <= 0) {
-            if (this.depthLineQueue.length > 0) {
-                this.spawnFromQueue();
-                this.spawnFromQueue();
+            if (this.figureQueue.length > 0) {
+                this.spawnFromFigureQueue();
+                this.spawnFromFigureQueue();
             } else {
                 this.spawnDepthLines();
+                if (this.obstacleQueue.length > 0) {
+                    this.spawnFromObstacleQueue();
+                }
             }
             this.depthLineCooldown = 8;
         }
@@ -59,24 +65,37 @@ export class DepthLineManager {
 		let behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in');
 		let behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in');
 
-        let bottomLine = DepthLineFactory.createDepthLine(
+        let bottomLine = FigureFactory.createDepthLine(
 			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'bottom', behaviorBottom
 		);
 		this.worldSystem.depthLineQueue.push(bottomLine);
 
-		let topLine = DepthLineFactory.createDepthLine(
+		let topLine = FigureFactory.createDepthLine(
 			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'top', behaviorTop
 		);
 		this.worldSystem.depthLineQueue.push(topLine);
     }
 
-    spawnFromQueue(): void {
-        let line = this.depthLineQueue.pop();
+    spawnFromFigureQueue(): void {
+        let line = this.figureQueue.pop();
 
         if (line) {
             this.game.addEntity(line);
 
             const render = line.getComponent('render') as RenderComponent;
+            if (render) {
+                this.game.renderLayers.background.addChild(render.graphic);
+            }
+        }
+    }
+
+    spawnFromObstacleQueue(): void {
+        let obstacle = this.obstacleQueue.pop();
+
+        if (obstacle) {
+            this.game.addEntity(obstacle);
+
+            const render = obstacle.getComponent('render') as RenderComponent;
             if (render) {
                 this.game.renderLayers.background.addChild(render.graphic);
             }
@@ -102,11 +121,15 @@ export class DepthLineManager {
     }
     
     addToQueue(line: DepthLine): void {
-        this.depthLineQueue.push(line);
+        this.figureQueue.push(line);
     }
     
-    getQueue(): DepthLine[] {
-        return this.depthLineQueue;
+    getFigureQueue(): DepthLine[] {
+        return this.figureQueue;
+    }
+
+    getObstacleQueue(): Obstacle[] {
+        return this.obstacleQueue;
     }
 
 	// Utils

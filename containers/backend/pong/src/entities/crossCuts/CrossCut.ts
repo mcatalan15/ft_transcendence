@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 16:40:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 19:41:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Point } from 'pixi.js';
+import { Graphics, Container, Point } from 'pixi.js';
 
 import { Entity } from '../../engine/Entity';
 
@@ -25,7 +25,7 @@ export abstract class CrossCut extends Entity {
     
     constructor (id: string, layer: string, shape: string, position:string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer);
-
+        
         this.shape = shape;
         this.nPoints = nPoints;
         this.points = points;
@@ -40,7 +40,7 @@ export abstract class CrossCut extends Entity {
         this.addComponent(physicsComponent);
     }
 
-    abstract createCutGraphic(): Graphics;
+    abstract createCutGraphic(): Graphics | Container;
     
     initCutPhysicsData(x: number, y: number): any {
         return {

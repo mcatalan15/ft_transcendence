@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 18:47:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 12:20:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ export class WorldSystem implements System {
     private depthLineManager: DepthLineManager;
     private wallFigureManager: WallFigureManager;
     private obstacleManager: ObstacleManager;
+
+    private spawningMode: number = -1;
+    private spawningTimer: number = 200;
     
     constructor(game: PongGame) {
         this.game = game;
@@ -47,19 +50,30 @@ export class WorldSystem implements System {
 
     update(entities: Entity[], delta: FrameData) {
         this.worldTimer -= delta.deltaTime;
+        this.spawningTimer -= delta.deltaTime;
 
-        if (this.worldTimer <= 0) {
-            // this.changeWorld();
+        /* if (this.worldTimer <= 0) {
+            this.changeWorld();
             this.worldTimer = 1000;
+        } */
+
+        if (this.spawningTimer <= 0) {
+            if (this.spawningMode === 1) {
+                this.wallFigureManager.activateSpawning();
+            } else if (this.spawningMode === -1) {
+                this.obstacleManager.activateSpawning();
+            }
+            this.spawningMode *= -1;
+            this.spawningTimer = 1500;
         }
 
         // Update managers
-        this.wallFigureManager.update(delta, this);
+        this.wallFigureManager.update(this);
         this.depthLineManager.update(delta, entities);
-        //!this.obstacleManager.update(delta, this);
+        this.obstacleManager.update(this);
         
         // If wall figure manager has finished spawning, update depth lines
-        if (this.wallFigureManager.isSpawning() && this.depthLineManager.getQueue().length === 0) {
+        if (this.wallFigureManager.isSpawning() && this.depthLineManager.getFigureQueue().length === 0) {
             this.wallFigureManager.finishedSpawning();
         }
 
@@ -108,10 +122,14 @@ export class WorldSystem implements System {
     }
     
     get depthLineQueue() {
-        return this.depthLineManager.getQueue();
+        return this.depthLineManager.getFigureQueue();
+    }
+
+    get obstacleQueue() {
+        return this.depthLineManager.getObstacleQueue();
     }
     
     spawnFromQueue() {
-        this.depthLineManager.spawnFromQueue();
+        this.depthLineManager.spawnFromFigureQueue();
     }
 }

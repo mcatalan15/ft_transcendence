@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 17:50:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:29:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ import { MawDepthLine } from '../entities/background/MawDepthLine';
 import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 
 import { Obstacle } from '../entities/obstacles/Obstacle';
+import { LedgeSegment } from '../entities/obstacles/LedgeSegment';
+import { PachinkoSegment } from '../entities/obstacles/PachinkoSegment';
 
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
@@ -102,6 +104,14 @@ export function isRakeDepthLine(entity: Entity): entity is RakeDepthLine {
 
 export function isObstacle(entity: Entity): entity is Obstacle {
 	return entity instanceof Obstacle;
+}
+
+export function isLedgeSegment(entity: Entity): entity is LedgeSegment {
+	return entity instanceof LedgeSegment;
+}
+
+export function isPachinkoSegment(entity: Entity): entity is PachinkoSegment {
+	return entity instanceof PachinkoSegment;
 }
 
 export function isParticle(entity: Entity): entity is Particle {

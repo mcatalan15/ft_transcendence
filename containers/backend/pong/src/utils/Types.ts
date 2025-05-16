@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 18:04:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/16 14:53:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,19 +188,16 @@ export interface ObstacleBehavior {
 }
 
 export interface ObstacleOptions {
-	initialized?: boolean;
-    initialY?: number;
-    velocityX?: number;
-    velocityY?: number;
-    width?: number;
-    height?: number;
-    upperLimit?: number;
-    lowerLimit?: number;
-    alpha?: number;
-    alphaDecay?: number;
-    alphaIncrease?: number;
-    lifetime?: number;
-    type?: string;
-    despawn?: string;
-    behavior?: ObstacleBehavior;
+    initialized: boolean,
+    initialY: number,
+    width: number,
+    height: number,
+    alpha: number,
+    targetAlpha: number,
+    initialScale: number,
+    targetScale: number,
+    lifetime: number,
+    type: string,
+    despawn: string,
+    behavior: ObstacleBehavior,
 }
