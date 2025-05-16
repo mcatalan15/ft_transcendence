@@ -123,13 +123,19 @@ async function startServer() {
 						break;
 
 					case 'PADDLE_INPUT':
-						console.log('paddle input received at backend');
-						const entry = gameSessions.get(currentGameId);
-						if (entry) {
-							// data.player should be 1 or 2, data.dir should be -1, 0, or 1
-							entry.session.setInput(data.player, data.dir);
-						}
-						break;
+					console.log('🎮 PADDLE INPUT RECEIVED:', {
+						player: data.player,
+						direction: data.dir,
+						playerId: data.playerId
+					});
+					const entry = gameSessions.get(currentGameId);
+					if (entry) {
+						entry.session.setInput(data.player, data.dir);
+						console.log('Input set for session');
+					} else {
+						console.log('No game session found!');
+					}
+					break;
 
 				}
 			} catch (err) {
@@ -178,6 +184,11 @@ async function handleCreateGame(ws, data) {
 		gameId: gameId
 	}));
 
+    ws.send(JSON.stringify({
+        type: 'PLAYER_ASSIGNED',
+        playerNumber: 1  // Host is always Player 1
+    }));
+
 	console.log(`Game created: ${gameId} by player: ${hostId}`);
 }
 
@@ -224,8 +235,6 @@ async function handleJoinGame(ws, data) {
 		ws.send(JSON.stringify({
 			type: 'JOIN_SUCCESS'
 		}));
-
-
 
 		// Notify host that someone joined
 		const hostWs = gameSessions.get(gameId).sockets.get(game.hostId);

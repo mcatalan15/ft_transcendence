@@ -3,7 +3,7 @@ export class WebSocketManager {
     private url: string;
     private gameId: string | null = null;
     private hostId: string;
-    private guestId: string;
+    private localPlayerId: string;
     private playerRole: 'host' | 'guest' | null = null;
     private messageHandlers: Map<string, (data: any) => void> = new Map();
     private reconnectAttempts = 0;
@@ -20,14 +20,14 @@ export class WebSocketManager {
         if (!WebSocketManager.instance) {
             WebSocketManager.instance = new WebSocketManager(playerId);
         } else {
-            WebSocketManager.instance.hostId = playerId;
+            WebSocketManager.instance.localPlayerId = playerId;
         }
         return WebSocketManager.instance;
     }
 
     private constructor(playerId: string) {
         this.hostId = playerId;
-        this.guestId = playerId;
+        this.localPlayerId = playerId;
         this.url = `ws://localhost:3100/ws/socket/game`;
     }
     
@@ -234,7 +234,7 @@ private handleMessage(event: MessageEvent) {
         this.send({
             type: 'PADDLE_INPUT',
             player: player,
-            playerId: this.hostId,
+            playerId: this.localPlayerId,
             dir: direction
         });
     }

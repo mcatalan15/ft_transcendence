@@ -2,6 +2,9 @@ import { Application, Graphics, Text } from 'pixi.js';
 import { WebSocketManager } from '../network/WebSocketManager';
 
 async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
+
+  let playerNumber = 0;
+
   const app = new Application();
   await app.init({
     view: canvas,
@@ -95,8 +98,6 @@ canvas.parentElement?.appendChild(testButton);
 
   // Initialize WebSocket connection
   const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
-
-  let playerNumber = 0;
 
   // IMPORTANT: Register handlers BEFORE connecting
  wsManagerPong.registerHandler('GAME_START', () => {
