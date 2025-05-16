@@ -122,6 +122,7 @@ async function startServer() {
 						break;
 
 					case 'PADDLE_INPUT':
+						console.log('paddle input received at backend');
 						const entry = gameSessions.get(currentGameId);
 						if (entry) {
 							// data.player should be 1 or 2, data.dir should be -1, 0, or 1
@@ -263,9 +264,9 @@ async function handleJoinGame(ws, data) {
 				console.log('Tick completed successfully:', state);
 				
 				let sentCount = 0;
-				clientWs.send(JSON.stringify({
-				type: 'GAME_STATE_UPDATE',
-				data: state
+				hostWs.send(JSON.stringify({
+					type: 'GAME_STATE_UPDATE',
+					data: state
 				}));
 				sentCount++;
 				

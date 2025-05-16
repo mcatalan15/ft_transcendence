@@ -2,7 +2,7 @@
 import { WebSocketManager } from '../network/WebSocketManager';
 
 export function showLobby(container: HTMLElement, userId: string) {
-  const wsManager = new WebSocketManager(userId);
+  const wsManager = WebSocketManager.getInstance(userId);
   let gameId: string | null = null;
   
   const lobbyDiv = document.createElement('div');

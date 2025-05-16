@@ -1,0 +1,10 @@
+WEBSOCKETS:
+	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
+	- Backend updates ball position as well as paddle positions every frame (60FPS).
+	
+
+GOOGLE SIGN-IN:
+	- After user successfully logs in with their Google account, send a an API request to the backend with the email address in the data.
+	- Check their email and the provider is 'google': if true, then log them in.
+	- If the user does not exist, create a new user in the database and log them in.
+

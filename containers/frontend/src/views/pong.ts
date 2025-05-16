@@ -94,18 +94,18 @@ testButton.onclick = () => {
 canvas.parentElement?.appendChild(testButton);
 
   // Initialize WebSocket connection
-  const wsManager = new WebSocketManager(sessionStorage.getItem('username') ?? 'undefined');
+  const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
 
   // IMPORTANT: Register handlers BEFORE connecting
-  wsManager.registerHandler('GAME_START', () => {
+ wsManagerPong.registerHandler('GAME_START', () => {
     console.log('Game started!');
   });
   
-	wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
-	if (testInterval) {
-	clearInterval(testInterval);
-	console.log('Clearing test animation, real game state arrived');
-	}
+ wsManagerPong.registerHandler('GAME_STATE_UPDATE', (message) => {
+    if (testInterval) {
+      clearInterval(testInterval);
+      console.log('Clearing test animation, real game state arrived');
+	  }
 
 	// Log the entire message to see its structure
 	console.log('Received game state update', message);
@@ -130,13 +130,13 @@ canvas.parentElement?.appendChild(testButton);
 	app.renderer.render(app.stage);
 	});
 
-  wsManager.registerHandler('PLAYER_DISCONNECTED', () => {
+ wsManagerPong.registerHandler('PLAYER_DISCONNECTED', () => {
     console.log('Other player disconnected');
   });
 
   // Now connect after registering handlers
   try {
-    await wsManager.connect(gameId);
+    await wsManagerPong.connect(gameId);
     console.log('Connected to game session');
 
 	console.log('Manually triggering test animation clear');
@@ -166,7 +166,7 @@ canvas.parentElement?.appendChild(testButton);
         
 		    console.log('Sending paddle input:', playerNumber, dir);
 
-        wsManager.sendPaddleInput(playerNumber, dir);
+       wsManagerPong.sendPaddleInput(playerNumber, dir);
       }
     });
     
@@ -174,7 +174,7 @@ canvas.parentElement?.appendChild(testButton);
       if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 
           (playerNumber === 2 && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
         
-        wsManager.sendPaddleInput(playerNumber, 0); // Stop moving when key is released
+       wsManagerPong.sendPaddleInput(playerNumber, 0); // Stop moving when key is released
       }
     });
   } catch (err) {

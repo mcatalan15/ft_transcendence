@@ -64,13 +64,13 @@ function router(path: string): void {
       showSignUp(app);
       break;
 
-    case '/pong':
+/*     case '/pong':
       if (!isUserAuthenticated()) {
         navigate('/');
         return;
       }
       showPong(app);
-      break;
+      break; */
 
     case '/home':
       if (!isUserAuthenticated()) {
@@ -103,14 +103,14 @@ function router(path: string): void {
         navigate('/');
         break;
 
-	case '/lobby':
-		if (!isUserAuthenticated()) {
-		  navigate('/');
-		  return;
-		}
-		  showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
-		  break;
-	
+    case '/lobby':
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
+        showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
+        break;
+    
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;

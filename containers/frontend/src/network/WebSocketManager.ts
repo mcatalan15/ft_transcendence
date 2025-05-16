@@ -7,7 +7,16 @@ export class WebSocketManager {
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
     
-    constructor(playerId: string) {
+    private static instance: WebSocketManager | null = null;
+
+    public static getInstance(playerId: string): WebSocketManager {
+        if (!WebSocketManager.instance) {
+            WebSocketManager.instance = new WebSocketManager(playerId);
+        }
+        return WebSocketManager.instance;
+    }
+
+    private constructor(playerId: string) {
         this.playerId = playerId;
         this.url = `ws://localhost:3100/ws/socket/game`;
     }
