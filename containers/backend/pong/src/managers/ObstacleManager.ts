@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 21:40:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:55:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ export class ObstacleManager {
                     break;
                 default:
                     console.log('Spawning a pachinko obstacle');
-                    ObstacleSpawner.buildPachinko(worldSystem, depth);
+                    const pattern = Math.floor(Math.random() * 3);
+                    ObstacleSpawner.buildPachinko(worldSystem, depth, pattern);
             }
         }
 

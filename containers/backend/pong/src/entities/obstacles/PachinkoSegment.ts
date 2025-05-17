@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 21:31:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:54:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ import { Obstacle } from './Obstacle';
 
 import { RenderComponent } from "../../components/RenderComponent";
 
-import { PachinkoPatterns } from './PachinkoPatterns';
+import { PachinkoPatternManager } from '../../managers/PachinkoPatternManager';
 
 import { ObstacleBehavior, ObstacleOptions } from '../../utils/Types';
 import { drawPointPath, generateCirclePoints } from '../../utils/Utils';
@@ -25,88 +25,36 @@ import { drawPointPath, generateCirclePoints } from '../../utils/Utils';
 export class PachinkoSegment extends Obstacle {
 	points: Point[] = [];
 
-	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string) {
+	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string, pattern: number) {
 		super(game, id, layer, options);
 		
 		const color = this.game.currentWorld.color;
 		const render = this.getComponent('render') as RenderComponent;
-
+		
 		if (render) {
-			render.graphic = this.generatePachinkoLine(game, color);
+			render.graphic = this.generatePachinkoLine(game, color, pattern);
 			render.graphic.position.set(this.x, this.y);
 		}
 	}
 
 	
-	private generatePachinkoLine(game: PongGame, color: number): Graphics {
+	private generatePachinkoLine(game: PongGame, color: number, pattern: number): Graphics {
 		const line = new Graphics();
 		
 		const radius = Math.min(game.width / 20, game.height / 80); // Size of each circle
 		
-		// Define positions for multiple circles
-		const circlePositions = [
-			{ x: 0, y: 0 },
-			{ x: 0, y: radius * 10 },
-			{ x: 0, y: -radius * 10 },
-			{ x: 0, y: radius * 20 },
-			{ x: 0, y: -radius * 20 },
-			{ x: 0, y: radius * 30 },
-			{ x: 0, y: -radius * 30 },
-
-			{ x: radius * 5, y: radius * 5 },
-			{ x: radius * 5, y: -radius * 5 },
-			{ x: radius * 5, y: radius * 15 },
-			{ x: radius * 5, y: -radius * 15 },
-			{ x: radius * 5, y: radius * 25 },
-			{ x: radius * 5, y: -radius * 25 },
-
-			{ x: radius * 10, y: 0 },
-			{ x: radius * 10, y: radius * 10 },
-			{ x: radius * 10, y: -radius * 10 },
-			{ x: radius * 10, y: radius * 20 },
-			{ x: radius * 10, y: -radius * 20 },
-
-			{ x: radius * 15, y: radius * 5 },
-			{ x: radius * 15, y: -radius * 5 },
-			{ x: radius * 15, y: radius * 15 },
-			{ x: radius * 15, y: -radius * 15 },
-
-			{ x: radius * 20, y: 0 },
-			{ x: radius * 20, y: radius * 10 },
-			{ x: radius * 20, y: -radius * 10 },
-			
-			{ x: radius * 25, y: radius * 5 },
-			{ x: radius * 25, y: -radius * 5 },
-
-			{ x: radius * 30, y: 0 },
-
-			{ x: -radius * 5, y: -radius * 5 },
-			{ x: -radius * 5, y: radius * 5 },
-			{ x: -radius * 5, y: -radius * 15 },
-			{ x: -radius * 5, y: radius * 15 },
-			{ x: -radius * 5, y: -radius * 25 },
-			{ x: -radius * 5, y: radius * 25 },
-
-			{ x: -radius * 10, y: 0 },
-			{ x: -radius * 10, y: -radius * 10 },
-			{ x: -radius * 10, y: radius * 10 },
-			{ x: -radius * 10, y: -radius * 20 },
-			{ x: -radius * 10, y: radius * 20 },
-
-			{ x: -radius * 15, y: -radius * 5 },
-			{ x: -radius * 15, y: radius * 5 },
-			{ x: -radius * 15, y: -radius * 15 },
-			{ x: -radius * 15, y: radius * 15 },
-
-			{ x: -radius * 20, y: 0 },
-			{ x: -radius * 20, y: -radius * 10 },
-			{ x: -radius * 20, y: radius * 10 },
-			
-			{ x: -radius * 25, y: -radius * 5 },
-			{ x: -radius * 25, y: radius * 5 },
-
-			{ x: -radius * 30, y: 0 },
-		];
+		let circlePositions;
+		switch (pattern) {
+			case (0):
+				circlePositions = PachinkoPatternManager.createDiamondPattern(radius);
+				break;
+			case (1):
+				circlePositions = PachinkoPatternManager.createSpiralPattern(radius);
+				break;
+			default:
+				circlePositions = PachinkoPatternManager.createZigzagPattern(radius);
+				break;
+		}
 		
 		// Store all points for all circles
 		this.points = [];

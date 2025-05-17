@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 14:53:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:15:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,4 +200,5 @@ export interface ObstacleOptions {
     type: string,
     despawn: string,
     behavior: ObstacleBehavior,
+	pattern?: number
 }

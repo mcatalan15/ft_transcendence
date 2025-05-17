@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:57:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:17:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ import { PachinkoSegment } from '../entities/obstacles/PachinkoSegment';
 import { ObstacleBehavior, ObstacleOptions } from '../utils/Types';
 
 export class ObstacleFactory {
-    static createObstacle(game: PongGame, behavior: ObstacleBehavior, type: string, id: string): Obstacle {
+    static createObstacle(game: PongGame, behavior: ObstacleBehavior, type: string, id: string, pattern?: number): Obstacle {
 		let options = {
 			initialized: false,
 			initialY: 0,
@@ -37,7 +37,7 @@ export class ObstacleFactory {
 	
 		switch (type) {
 			case ('pachinko'):
-				return new PachinkoSegment(game, options, type, id, 'background');
+				return new PachinkoSegment(game, options, type, id, 'background', pattern!);
 			default:
 				return new LedgeSegment(game, options, type, id, 'background');
 		} 

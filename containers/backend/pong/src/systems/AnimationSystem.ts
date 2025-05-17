@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:41:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/17 21:01:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,24 +214,38 @@ export class AnimationSystem implements System {
 		if (!lifetime || !render) {
 			return;
 		}
-
+	
+		// Initialize duration if not already set
 		if (!lifetime.duration) {
 			lifetime.duration = lifetime.remaining;
 		}
 		
+		// Get the animation speed multiplier (default to 1.0 if not set)
+		const animSpeed = 1
+		
+		// Apply speed to delta time
+		const adjustedDelta = delta.deltaTime * animSpeed;
+		
+		// Calculate animation progress (0 to 1)
 		const progress = Math.max(0, Math.min(1, 1 - (lifetime.remaining / lifetime.duration)));
 		
-		entity.alpha = progress * entity.targetAlpha;
+		// Optional: Add easing curves for different animation phases
+		// This lets you control timing of different parts of the animation
+		const alphaEase = 1.9;
+		const scaleEase = 1.9;
+		
+		// Apply alpha with custom easing
+		entity.alpha = Math.pow(progress, alphaEase) * entity.targetAlpha;
 		render.graphic.alpha = entity.alpha;
 		
-		const currentScale = entity.initialScale + (entity.targetScale - entity.initialScale) * progress;
+		// Apply scale with custom easing
+		const currentScale = entity.initialScale + (entity.targetScale - entity.initialScale) * Math.pow(progress, scaleEase);
+		render.graphic.scale.set(currentScale, currentScale);
 		
-		const easedScale = Math.pow(currentScale, 1.2);
+		// Reduce remaining lifetime based on adjusted delta time
+		lifetime.remaining -= adjustedDelta;
 		
-		render.graphic.scale.set(easedScale, easedScale);
-		
-		lifetime.remaining -= delta.deltaTime;
-		
+		// Handle despawning
 		if (lifetime.despawn === 'time' && lifetime.remaining <= 0) {
 			this.manageCrossCutCreation(entity, render);
 			entitiesToRemove.push(entity.id);
