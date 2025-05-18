@@ -106,8 +106,8 @@ async function startServer() {
 		ws.on('message', async (message) => {
 			try {
 				const data = JSON.parse(message.toString());
-			    console.log('Received WebSocket message:', data);
-
+/* 			    console.log('Received WebSocket message:', data);
+ */
 				// Extract player ID and game ID from message
 				if (data.playerId) playerId = data.playerId;
 				if (data.gameId) currentGameId = data.gameId;
@@ -123,17 +123,17 @@ async function startServer() {
 						break;
 
 					case 'PADDLE_INPUT':
-					console.log('🎮 PADDLE INPUT RECEIVED:', {
+/* 					console.log('🎮 PADDLE INPUT RECEIVED:', {
 						player: data.player,
 						direction: data.dir,
 						playerId: data.playerId
-					});
+					}); */
 					const entry = gameSessions.get(currentGameId);
 					if (entry) {
 						entry.session.setInput(data.player, data.dir);
-						console.log('Input set for session');
+/* 						console.log('Input set for session'); */
 					} else {
-						console.log('No game session found!');
+						console.log('No game session found');
 					}
 					break;
 
@@ -256,78 +256,31 @@ async function handleJoinGame(ws, data) {
 		// Start the backend game loop if not already started
 		const entry = gameSessions.get(gameId);
 
-			console.log('Entry object structure:', {
-			sessionExists: !!entry.session,
-			socketsSize: entry.sockets.size,
-			intervalValue: entry.interval
-			});
-
 		if (!entry.interval) {
-		  console.log('Starting game loop for game:', gameId);
 			entry.interval = setInterval(() => {
-			try {
-				console.log('Game tick START for game:', gameId);
-				
+			try {				
 				// Check if session exists
 				if (!entry.session) {
-				console.error('No session object found!');
-				return;
+					console.error('No session object found!');
+					return;
 				}
 				
-				// Call tick and log any issues
-				console.log('Calling tick method...');
-				const state = entry.session.tick();
-				console.log('Tick completed successfully:', state);
-				
-				let sentCount = 0;
+ 				const state = entry.session.tick();
+
 				entry.sockets.forEach((clientWs) => {
 					if (clientWs.readyState === WebSocket.OPEN) {
-						console.log('Sending game state to client');
 						clientWs.send(JSON.stringify({
 							type: 'GAME_STATE_UPDATE',
 							data: state
 						}));
-						sentCount++;
 					}
 				});
 				
-				console.log('Sending state update:', JSON.stringify(state));
-
-				if (sentCount === 1) {
-					console.log('🎯 EXACT MESSAGE SENT:', JSON.stringify({
-						type: 'GAME_STATE_UPDATE',
-						data: state
-					}));
+				} catch (error) {
+					console.error('ERROR IN GAME LOOP:', error);
 				}
-				console.log(`Game state sent to ${sentCount} clients`);
-			} catch (error) {
-				console.error('ERROR IN GAME LOOP:', error);
-			}
 			}, 1000 / 60);
-		  console.log('Game loop started with interval ID:', entry.interval);
 		}
-
-		console.log(`Player ${playerId} joined game ${gameId}`);
-
-			setTimeout(() => {
-			console.log('Sending test GAME_STATE_UPDATE to all clients');
-			try {
-				entry.sockets.forEach((clientWs) => {
-				if (clientWs.readyState === WebSocket.OPEN) {
-					clientWs.send(JSON.stringify({
-					type: 'GAME_STATE_UPDATE',
-					data: {
-						ball: { x: 500, y: 250 },
-						paddle1: { y: 250 },
-						paddle2: { y: 250 }
-					}
-					}));
-				}
-				});
-			} catch (e) {
-				console.error('Error sending test message:', e);
-			}
-			}, 3000);
 
 	} catch (err) {
 		console.error(`Error joining game: ${err}`);
@@ -345,10 +298,7 @@ function notifyGameStart(gameId) {
     return;
   }
 
-  console.log('SENDING GAME_START to all players in game:', gameId);
-
   const entry = gameSessions.get(gameId);
-  let sentCount = 0;
 
   entry.sockets.forEach((clientWs) => {
     if (clientWs.readyState === WebSocket.OPEN) {
@@ -356,13 +306,10 @@ function notifyGameStart(gameId) {
       clientWs.send(JSON.stringify({
         type: 'GAME_START'
       }));
-      sentCount++;
     } else {
       console.log('Client WebSocket not open, readyState:', clientWs.readyState);
     }
   });
-  
-  console.log(`GAME_START sent to ${sentCount} clients`);
 }
 
 // Handle player disconnection

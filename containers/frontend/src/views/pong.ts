@@ -52,7 +52,6 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	testTick++;
 	ball.x = 750 + Math.sin(testTick/10) * 300;
 	ball.y = 250 + Math.cos(testTick/10) * 100;
-	console.log('Test animation tick');
 	}, 1000/60);
 
 
@@ -61,41 +60,7 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
     // No need to do anything here, just having the ticker active
     // ensures PIXI keeps rendering the stage
   });
-
-  const testButton = document.createElement('button');
-testButton.textContent = 'Test Handler';
-testButton.style.position = 'absolute';
-testButton.style.top = '10px';
-testButton.style.right = '10px';
-testButton.style.zIndex = '1000';
-testButton.onclick = () => {
-  console.log('🧪 Testing handler manually');
   
-  // Clear test animation
-  if (testInterval) {
-    clearInterval(testInterval);
-    console.log('Cleared test animation');
-  }
-  
-  // Force the handler to run with test data
-  const testData = {
-    ball: { x: 200, y: 200 },
-    paddle1: { y: 150 },
-    paddle2: { y: 350 }
-  };
-  
-  console.log('📝 Setting test positions:', testData);
-  ball.x = testData.ball.x;
-  ball.y = testData.ball.y;
-  paddle1.y = testData.paddle1.y;
-  paddle2.y = testData.paddle2.y;
-  
-  // Force render
-  app.renderer.render(app.stage);
-  console.log('🎨 Forced render');
-};
-canvas.parentElement?.appendChild(testButton);
-
   // Initialize WebSocket connection
   const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
 
@@ -118,9 +83,6 @@ canvas.parentElement?.appendChild(testButton);
       clearInterval(testInterval);
       console.log('Clearing test animation, real game state arrived');
 	  }
-	// Log the entire message to see its structure
-	console.log('Received game state update', message);
-
 	// Extract the actual game state data (handle both possible structures)
 	const gameState = message.data || message;
 
@@ -146,21 +108,8 @@ canvas.parentElement?.appendChild(testButton);
     await wsManagerPong.connect(gameId);
     console.log('Connected to game session');
 
-	console.log('Manually triggering test animation clear');
-	setTimeout(() => {
-	if (testInterval) {
-		clearInterval(testInterval);
-		console.log('Test interval should be cleared now');
-	}
-	
-	// Try forcing a local update to see if rendering works
-	ball.x = 100;
-	ball.y = 100;
-	}, 5000);
-
     // Handle keyboard input
     document.addEventListener('keydown', (e) => {
-		  console.log('Key pressed:', e.key);
 
       if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 
           (playerNumber === 2 && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
@@ -168,9 +117,7 @@ canvas.parentElement?.appendChild(testButton);
         const isUp = e.key === 'w' || e.key === 'ArrowUp';
         const dir = isUp ? -1 : 1;
         
-		    console.log('Sending paddle input:', playerNumber, dir);
-
-       wsManagerPong.sendPaddleInput(playerNumber, dir);
+        wsManagerPong.sendPaddleInput(playerNumber, dir);
       }
     });
     
@@ -178,7 +125,7 @@ canvas.parentElement?.appendChild(testButton);
       if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 
           (playerNumber === 2 && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
         
-       wsManagerPong.sendPaddleInput(playerNumber, 0); // Stop moving when key is released
+        wsManagerPong.sendPaddleInput(playerNumber, 0);
       }
     });
   } catch (err) {
@@ -198,10 +145,9 @@ export function showPong(container: HTMLElement, gameId: string, isHost: boolean
 	let canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
 
 	if (canvas) {
-	  console.log('Game should start now');
 	  initGame(canvas, gameId, !!isHost);
 	} else {
 	  console.error('Container element not found');
 	}
-  }
+}
   

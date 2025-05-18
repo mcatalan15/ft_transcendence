@@ -24,7 +24,7 @@ export function showLobby(container: HTMLElement, userId: string) {
   container.appendChild(lobbyDiv);
   
   // Connect to WebSocket
-  wsManager.connect().then(() => {
+  wsManager.connect(gameId).then(() => {
     console.log('Connected to game server');
     updateStatus('Connected to server');
   }).catch(err => {
