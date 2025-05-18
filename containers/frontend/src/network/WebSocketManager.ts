@@ -46,7 +46,7 @@ export class WebSocketManager {
             };
             
             this.socket.onclose = (event) => {
-                console.error('WebSocket connection CLOSED', event);
+                console.log('WebSocket connection CLOSED', event);
                 this.handleDisconnect(event);
                 reject(new Error('WebSocket connection closed'));
             };
@@ -107,7 +107,7 @@ export class WebSocketManager {
             if (message.type && message.type.includes('GAME_STATE_UPDATE')) {
                 const gameUpdateHandler = this.messageHandlers.get('GAME_STATE_UPDATE');
                 if (gameUpdateHandler) {
-                gameUpdateHandler(message.data || message);
+                    gameUpdateHandler(message.data || message);
                 }
             }
             }

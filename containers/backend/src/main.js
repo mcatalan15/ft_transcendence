@@ -5,14 +5,6 @@ const { createClient } = require('redis');
 const WebSocket = require('ws');
 const { GameSession } = require('../dist/pong/GameSession');
 
-console.log('GameSession class imported:', typeof GameSession);
-try {
-  const testSession = new GameSession();
-  console.log('GameSession created successfully:', testSession);
-} catch (e) {
-  console.error('Failed to create GameSession:', e);
-}
-
 let redisPublisher;
 
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
@@ -106,8 +98,7 @@ async function startServer() {
 		ws.on('message', async (message) => {
 			try {
 				const data = JSON.parse(message.toString());
-/* 			    console.log('Received WebSocket message:', data);
- */
+
 				// Extract player ID and game ID from message
 				if (data.playerId) playerId = data.playerId;
 				if (data.gameId) currentGameId = data.gameId;
@@ -123,19 +114,13 @@ async function startServer() {
 						break;
 
 					case 'PADDLE_INPUT':
-/* 					console.log('🎮 PADDLE INPUT RECEIVED:', {
-						player: data.player,
-						direction: data.dir,
-						playerId: data.playerId
-					}); */
-					const entry = gameSessions.get(currentGameId);
-					if (entry) {
-						entry.session.setInput(data.player, data.dir);
-/* 						console.log('Input set for session'); */
-					} else {
-						console.log('No game session found');
-					}
-					break;
+						const entry = gameSessions.get(currentGameId);
+						if (entry) {
+							entry.session.setInput(data.player, data.dir);
+						} else {
+							console.log('No game session found');
+						}
+						break;
 
 				}
 			} catch (err) {
