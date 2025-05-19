@@ -13,7 +13,8 @@ RUN npm install --include=dev \
     express \
     hardhat \
     @nomicfoundation/hardhat-toolbox \
-    dotenv
+    catapulta \
+	dotenv
 
 # Copy application files
 COPY contracts/ ./contracts/
