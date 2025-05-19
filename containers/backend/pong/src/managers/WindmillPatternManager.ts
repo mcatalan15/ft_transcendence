@@ -6,21 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:08:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 12:06:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:49:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Point } from "pixi.js";
-
 import { PongGame } from "../engine/Game";
-
-const PATH_BREAK = { x: Number.NaN, y: Number.NaN };
 
 export class WindmillPatternManager {
 	static createDoubleTopPattern(game: PongGame, position: number) {
-		const longSide = 100;
-		const shortSide = 20;
-		const heightOffset = game.height / 5;
+		const longSide = 180;
+		const shortSide = 35;
+		const heightOffset = game.height / 9;
 		const widthOffset = game.width / 4;
 		const rotationAngle = Math.PI / 20; // 15 degrees rotation per position unit
 		const PATH_BREAK = { x: NaN, y: NaN }; 
@@ -122,9 +118,9 @@ export class WindmillPatternManager {
 	}
 
 	static createDoubleBottomPattern(game: PongGame, position: number) {
-		const longSide = 100;
-		const shortSide = 20;
-		const heightOffset = game.height / 5;
+		const longSide = 180;
+		const shortSide = 45;
+		const heightOffset = game.height / 9;
 		const widthOffset = game.width / 4;
 		const rotationAngle = Math.PI / 20;
 		const PATH_BREAK = { x: NaN, y: NaN };

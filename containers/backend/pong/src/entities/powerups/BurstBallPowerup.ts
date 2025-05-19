@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 16:50:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ export class BurstBallPowerup extends Powerup {
         
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(0xFFFBEB);
+        base.fill(0xf7eebc);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: 0xFFFBEB, width: 1.2 });
+        ornament.stroke({ color: 0xf7eebc, width: 1.2 });
         container.addChild(ornament);
 
         const innerSign = new Graphics();

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:58:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 12:33:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:08:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ export class Wall extends Entity {
     createWallGraphic(width: number, thickness: number): Graphics {
         const wallGraphic = new Graphics();
         wallGraphic.rect(0, 0, width, thickness);
-        wallGraphic.fill('#FFFBEB');
+        wallGraphic.fill('0xf7eebc');
         wallGraphic.pivot.set(width / 2, thickness / 2);
         return wallGraphic;
     }

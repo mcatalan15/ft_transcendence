@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 18:09:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ export class Particle extends Entity {
 			lifetime = 8,
 			size = 4,
 			type = 'square',
-			color = 0xFFFBEB,
+			color = 0xf7eebc,
 			shrink = false,
 			rotate = false,
 			alpha = 1,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 10:40:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 13:00:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ export class CrossCutFactory {
                 break;
             case ('ledge'):
                 cut = new LedgeCrossCut(
-                    `cut-ledge-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    `cut-obstacle-ledge-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'escalator', 
                     position, 
@@ -147,7 +147,7 @@ export class CrossCutFactory {
                 break;
             case ('pachinko'):
                 cut = new PachinkoCrossCut(
-                    `cut-pachinko-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    `cut-obstacle-pachinko-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'pachinko', 
                     position, 
@@ -159,7 +159,7 @@ export class CrossCutFactory {
                 break;
             case ('windmill'):
                 cut = new WindmillCrossCut(
-                    `cut-windmill-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    `cut-obstacle-windmill-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'windmill', 
                     position, 

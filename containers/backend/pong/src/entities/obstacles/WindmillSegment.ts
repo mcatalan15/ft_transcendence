@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 12:07:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:19:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,15 @@ import { drawPointPath, generateWindmillPoints } from '../../utils/Utils';
 export class WindmillSegment extends Obstacle {
 	points: Point[] = [];
 	segmentIndices: { start: number; count: number; }[] = [];
-	color: number = 0;
+	color: number = this.game.currentWorld.color;
 
 	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string, pattern: number, position: number) {
 		super(game, id, layer, options);
 		
-		const color = this.game.currentWorld.color;
 		const render = this.getComponent('render') as RenderComponent;
 		
 		if (render) {
-			render.graphic = this.generateWindmillLine(game, color, pattern, position);
+			render.graphic = this.generateWindmillLine(game, this.color, pattern, position);
 			render.graphic.position.set(this.x, this.y);
 		}
 	}

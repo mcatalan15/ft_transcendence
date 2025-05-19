@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:50:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:06:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ export class BurstBall extends Ball {
 		const right = { x: 20, y: 0 };
 
 		ballGraphic.poly([tip, right, left], true);
-		ballGraphic.fill(0xFFFFFF);
+		ballGraphic.fill(0xf7eebc);
 		ballGraphic.pivot.set(10, 10);
 		return ballGraphic;
 	}

@@ -6,13 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 10:37:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:59:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Point } from 'pixi.js';
+
 import { PongGame } from '../engine/Game';
 import type { System } from '../engine/System';
+import { CrossCut } from '../entities/crossCuts/CrossCut';
 
 import { CrossCutFactory, CrossCutPosition } from '../factories/CrossCutFactory';
 import { GameEvent } from '../utils/Types';
@@ -53,7 +55,24 @@ export class CrossCutSystem implements System {
         } else if (event.type.startsWith('transform')) {
             this.handleTransformEvent(event);
         } else if (event.type.startsWith('despawn')) {
-            CrossCutFactory.despawnAllCrossCuts(this.game);
+            if (event.type.includes('Pachinko') || event.type.includes('Ledge') || event.type.includes('Windmill')) {
+                let crossCut;
+
+                for (const entity of this.game.entities) {
+                    if (entity.id.includes('obstacle')) {
+                        crossCut = entity as CrossCut;
+                    }
+                }
+
+                const despawnCrossCutEvent: GameEvent = {
+                    type: 'DESPAWN_CROSSCUT',
+                    target: crossCut,
+                };
+
+                this.game.eventQueue.push(despawnCrossCutEvent);
+            } else {
+                CrossCutFactory.despawnAllCrossCuts(this.game);
+            }
         }
     }
     

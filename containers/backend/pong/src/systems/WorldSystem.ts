@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 12:20:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:53:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,27 @@ import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
 import type { System } from '../engine/System';
 
-import { DepthLineManager } from '../managers/DepthLineManager';
+import { DepthLine } from '../entities/background/DepthLine';
+
+import { RenderComponent } from '../components/RenderComponent';
+
 import { WallFigureManager } from '../managers/WallFigureManager';
 import { ObstacleManager } from '../managers/ObstacleManager';
 
-import { FrameData, GameEvent, World } from '../utils/Types';
-import { isUI } from '../utils/Guards';
+import { FigureFactory } from '../factories/FigureFactory';
+
+import { DepthLineBehavior, FrameData, GameEvent, World } from '../utils/Types';
+import { isUI, isDepthLine } from '../utils/Guards';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
     game: PongGame;
     worldTimer: number;
-    
-    private depthLineManager: DepthLineManager;
+    private depthLineCooldown: number = 10;
+    private lastLineSpawnTime: number = 0;
+    figureQueue: DepthLine[] = [];
+    obstacleQueue: Obstacle[] = [];
+        
     private wallFigureManager: WallFigureManager;
     private obstacleManager: ObstacleManager;
 
@@ -37,7 +45,6 @@ export class WorldSystem implements System {
         this.game = game;
         this.worldTimer = 1000;
         
-        this.depthLineManager = new DepthLineManager(game, this);
         this.wallFigureManager = new WallFigureManager();
         this.obstacleManager = new ObstacleManager();
         
@@ -51,34 +58,51 @@ export class WorldSystem implements System {
     update(entities: Entity[], delta: FrameData) {
         this.worldTimer -= delta.deltaTime;
         this.spawningTimer -= delta.deltaTime;
+        this.depthLineCooldown -= delta.deltaTime;
 
         /* if (this.worldTimer <= 0) {
             this.changeWorld();
             this.worldTimer = 1000;
         } */
 
+        if (this.depthLineCooldown <= 0) {
+            if (this.figureQueue.length > 0) {
+                this.spawnFromFigureQueue();
+            } else {
+                this.spawnDepthLines();
+                if (this.obstacleQueue.length > 0) {
+                    this.spawnFromObstacleQueue();
+                }
+            }
+            this.depthLineCooldown = 8;
+        }
+
         if (this.spawningTimer <= 0) {
             if (this.spawningMode === 1) {
                 this.wallFigureManager.activateSpawning();
+                this.spawningTimer = 2000;
             } else if (this.spawningMode === -1) {
                 this.obstacleManager.activateSpawning();
+                this.spawningTimer = 1500;
             }
             this.spawningMode *= -1;
-            this.spawningTimer = 1500;
         }
 
         // Update managers
         this.wallFigureManager.update(this);
-        this.depthLineManager.update(delta, entities);
         this.obstacleManager.update(this);
         
-        // If wall figure manager has finished spawning, update depth lines
-        if (this.wallFigureManager.isSpawning() && this.depthLineManager.getFigureQueue().length === 0) {
+        if (this.wallFigureManager.isSpawning() && this.figureQueue.length === 0) {
+            this.wallFigureManager.finishedSpawning();
+        }
+
+        if (this.obstacleManager.isSpawning() && this.figureQueue.length === 0) {
             this.wallFigureManager.finishedSpawning();
         }
 
         // Process events
         this.processEvents(entities);
+        this.initializeDepthLines(entities);
     }
 
     changeWorld() {
@@ -121,15 +145,86 @@ export class WorldSystem implements System {
         this.game.eventQueue.push(...unhandledEvents);
     }
     
-    get depthLineQueue() {
-        return this.depthLineManager.getFigureQueue();
+    private spawnDepthLines(): void {
+        this.lastLineSpawnTime = Date.now();
+
+		let uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+		let behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in');
+		let behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in');
+
+        let bottomLine = FigureFactory.createDepthLine(
+			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'bottom', behaviorBottom
+		);
+
+		let topLine = FigureFactory.createDepthLine(
+			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'top', behaviorTop
+		);
+
+        this.game.addEntity(bottomLine);
+        this.game.addEntity(topLine);
+
+        const bottomRender = topLine.getComponent('render') as RenderComponent;
+        const topRender = topLine.getComponent('render') as RenderComponent;
+
+        this.game.renderLayers.background.addChild(bottomRender.graphic);
+        this.game.renderLayers.background.addChild(topRender.graphic);
+
     }
 
-    get obstacleQueue() {
-        return this.depthLineManager.getObstacleQueue();
-    }
+    spawnFromFigureQueue() {
+        {
+            let line = this.figureQueue.pop();
     
-    spawnFromQueue() {
-        this.depthLineManager.spawnFromFigureQueue();
+            if (line) {
+                this.game.addEntity(line);
+    
+                const render = line.getComponent('render') as RenderComponent;
+                if (render) {
+                    this.game.renderLayers.background.addChild(render.graphic);
+                }
+            }
+        }
+    }
+
+    spawnFromObstacleQueue() {
+        {
+            let line = this.obstacleQueue.pop();
+    
+            if (line) {
+                this.game.addEntity(line);
+    
+                const render = line.getComponent('render') as RenderComponent;
+                if (render) {
+                    this.game.renderLayers.background.addChild(render.graphic);
+                }
+            }
+        }
+    }
+
+    private generateDepthLineBehavior(movement: string, direction: string, fade: string): DepthLineBehavior {
+		return {
+			movement: movement,
+			direction: direction,
+			fade: fade,
+		}
+	}
+
+    private initializeDepthLines(entities: Entity[]): void {
+        for (const entity of entities) {
+            if (isDepthLine(entity)) {
+                const idParts = entity.id.split('-');
+                const timestamp = parseInt(idParts[1]);
+                if (!entity.initialized && timestamp >= this.lastLineSpawnTime - 100) {
+                    const render = entity.getComponent('render') as RenderComponent;
+                    if (render) {
+                        entity.initialized = true;
+                        entity.initialY = entity.y;
+                        entity.alpha = 0;
+                        render.graphic.alpha = 0;
+                    }
+                }
+            }
+        }
     }
 }

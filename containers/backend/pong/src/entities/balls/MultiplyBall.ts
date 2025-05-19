@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 10:08:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 11:18:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:06:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ export class MultiplyBall extends Ball {
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
 		ballGraphic.circle(5, 5, 5);
-		ballGraphic.fill(0xFFFFFF);
+		ballGraphic.fill(0xf7eebc);
 		ballGraphic.pivot.set(2.5, 2.5);
 		return ballGraphic;
 	}

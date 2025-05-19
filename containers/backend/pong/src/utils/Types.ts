@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/17 20:15:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:01:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowF
 
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
+import { CrossCut } from '../entities/crossCuts/CrossCut';
 
 export interface DepthLineBehavior {
     movement?: 'vertical' | 'horizontal' | string;
@@ -71,7 +72,7 @@ export type TextData = {
 export type GameEvent = {
     type: string;
     side?: 'left' | 'right'; // For example, for the SCORE event
-	target?: Paddle | World;
+	target?: Paddle | World | CrossCut;
 	entitiesMap?: Map<string, Entity>;
 	points?: Point[];
 	x?: number;
@@ -171,6 +172,15 @@ export type AnimationOptions = {
     floatAmplitude?: number;
     floatSpeed?: number;
     floatOffset?: number;
+	startTime?: number;
+	duration?: number;
+	initialAlpha?: number;
+	targetAlpha?: number;
+	despawnStartTime?: number;
+	despawnDuration?: number;
+	initialDespawnAlpha?: number;
+	targetDespawnAlpha?: number;
+	easeExponent?: number;
 }
 
 export type Player = {

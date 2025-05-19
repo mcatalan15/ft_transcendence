@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:57:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFBEB,
+				fill: 0xf7eebc,
 				fontSize: 20,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -69,7 +69,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFBEB,
+				fill: 0xf7eebc,
 				fontSize: 10,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -84,7 +84,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFBEB,
+				fill: 0xf7eebc,
 				fontSize: 10,
 				fontWeight: 'bold',
 			} as TextStyle,

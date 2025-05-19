@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 16:41:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 15:55:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ import { DepthLine } from "./DepthLine";
 import { RenderComponent } from "../../components/RenderComponent";
 
 import { PyramidDepthLineOptions } from '../../utils/Types';
-import { drawPointPath } from '../../utils/Utils';
+import { drawPointOpenPath } from '../../utils/Utils';
 
 export class ParapetDepthLine extends DepthLine {
 	peakHeight?: number;
@@ -71,7 +71,7 @@ export class ParapetDepthLine extends DepthLine {
 		
 
 		// Use the utility function to draw the path
-		drawPointPath(line, this.points, color);
+		drawPointOpenPath(line, this.points, color);
 
 		return line;
 	}

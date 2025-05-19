@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 11:44:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:08:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import type { System } from '../engine/System'
 import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
 import { DepthLine } from '../entities/background/DepthLine';
+import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 
 import { RenderComponent } from '../components/RenderComponent';
@@ -42,9 +43,8 @@ import { isPaddle,
 		isLedgeSegment,
 		isPachinkoSegment,
 		isWindmillSegment,
+		isCrossCut,
 } from '../utils/Guards'
-import { WindmillSegment } from '../entities/obstacles/WindmillSegment';
-
 
 export class AnimationSystem implements System {
 	private game: PongGame;
@@ -52,6 +52,7 @@ export class AnimationSystem implements System {
 	private frameCounter: number = 0;
 	private depthLineUpdateRate: number = 1;
 	lastCutId: string | null = null;
+	isDespawningCrossCut: boolean = false;
 
 	constructor(
 		game: PongGame,
@@ -75,12 +76,18 @@ export class AnimationSystem implements System {
 				event.type === 'RESET_PADDLE'
 			) {
 				this.transformPaddle(event);
+			} else if (event.type === 'DESPAWN_CROSSCUT') {
+				this.isDespawningCrossCut = true;
 			} else {
 				unhandledEvents.push(event);
 			}
 		}
 		this.game.eventQueue.push(...unhandledEvents);
-	
+
+		if (this.isDespawningCrossCut === true) {
+			this.animateDespawnCrossCut();
+		}
+
 		// 2. Update entities
 		for (const entity of entities) {
 			if (isPaddle(entity) && entity.targetHeight && entity.enlargeProgress < 1) {
@@ -92,6 +99,8 @@ export class AnimationSystem implements System {
 					this.animateObstacle(delta, entitiesToRemove, entity);
 				} else if (isPowerup(entity)) {
 					this.animatePowerup(entity);
+				} else if (isCrossCut(entity) && this.isDespawningCrossCut !== true) {
+					this.animateCrossCut(entity);
 				}
 			}
 		}
@@ -109,7 +118,6 @@ export class AnimationSystem implements System {
 
 		paddle.originalHeight = physics.height;
 
-		// Set target height
 		if (event.type === 'ENLARGE_PADDLE') {
 			paddle.targetHeight = paddle.baseHeight * 2;
 			paddle.overshootTarget = paddle.targetHeight * 1.2; // Overshoot by growing 20% larger
@@ -160,7 +168,7 @@ export class AnimationSystem implements System {
 			const graphic = render.graphic as Graphics;
 			graphic.clear();
 			graphic.rect(0, 0, physics.width, targetHeight);
-			graphic.fill('#FFFBEB');
+			graphic.fill('0xf7eebc');
 			graphic.pivot.set(physics.width / 2, targetHeight / 2);
 		}
 	}
@@ -220,10 +228,6 @@ export class AnimationSystem implements System {
 		if (!lifetime.duration) {
 			lifetime.duration = lifetime.remaining;
 		}
-
-		/* if (isWindmillSegment(entity)) {
-			this.animateWindmill(entity, delta.deltaTime);
-		} */
 		
 		const animSpeed = 1
 		
@@ -248,107 +252,6 @@ export class AnimationSystem implements System {
 		}
 	}
 
-	animateWindmill(entity: WindmillSegment, delta: number) {
-		// Define rotation speeds (in radians per second)
-		const clockwiseSpeed = 0.02; 
-		const counterClockwiseSpeed = -0.015;
-		
-		// If we don't have segment indices, we can't animate
-		if (!entity.segmentIndices || entity.segmentIndices.length === 0) {
-			console.warn('No segment indices found for windmill animation');
-			return;
-		}
-		
-		// Process each segment
-		for (let segIdx = 0; segIdx < entity.segmentIndices.length; segIdx++) {
-			const segment = entity.segmentIndices[segIdx];
-			const isClockwise = segIdx % 2 === 0; // Alternate directions
-			
-			// Calculate center of this segment
-			let centerX = 0, centerY = 0;
-			const startIdx = segment.start;
-			const endIdx = startIdx + segment.count;
-			
-			// Find the center point by averaging all points in the segment
-			for (let i = startIdx; i < endIdx; i++) {
-				centerX += entity.points[i].x;
-				centerY += entity.points[i].y;
-			}
-			
-			centerX /= segment.count;
-			centerY /= segment.count;
-			
-			// Apply rotation to each point in this segment
-			const rotationSpeed = isClockwise ? clockwiseSpeed : counterClockwiseSpeed;
-			const rotationAngle = rotationSpeed * delta;
-			const cos = Math.cos(rotationAngle);
-			const sin = Math.sin(rotationAngle);
-			
-			for (let i = startIdx; i < endIdx; i++) {
-				const point = entity.points[i];
-				
-				// Translate to origin
-				const dx = point.x - centerX;
-				const dy = point.y - centerY;
-				
-				// Rotate
-				point.x = centerX + (dx * cos - dy * sin);
-				point.y = centerY + (dx * sin + dy * cos);
-			}
-		}
-		
-		// Update the graphics to reflect the new points
-		this.updateWindmillGraphics(entity);
-	}
-
-	private updateWindmillGraphics(entity: WindmillSegment) {
-		const render = entity.getComponent('render') as RenderComponent;
-		const graphic = render.graphic as Graphics;
-		if (!render || !render.graphic) return;
-		
-		// Clear existing graphics
-		graphic.clear();
-		
-		// If we don't have segment indices, we can't redraw
-		if (!entity.segmentIndices || entity.segmentIndices.length === 0) {
-			return;
-		}
-		
-		// Draw each segment
-		for (const segment of entity.segmentIndices) {
-			graphic.beginPath();
-			
-			// Get segment points
-			const startIdx = segment.start;
-			const endIdx = startIdx + segment.count;
-			
-			// Draw the path
-			if (endIdx > startIdx) {
-				graphic.moveTo(entity.points[startIdx].x, entity.points[startIdx].y);
-				
-				for (let i = startIdx + 1; i < endIdx; i++) {
-					graphic.lineTo(entity.points[i].x, entity.points[i].y);
-				}
-				
-				// Close the path by connecting back to the first point
-				graphic.lineTo(entity.points[startIdx].x, entity.points[startIdx].y);
-			}
-			
-			// Apply the same stroke style as in your drawPointPath function
-			graphic.stroke({
-				width: 2,
-				color: entity.color || 0xFFFFFF, // Use entity color or default to white
-				alpha: 1,
-				alignment: 0.5,
-				cap: 'round',
-				join: 'round',
-				miterLimit: 10
-			});
-			
-			graphic.closePath();
-		}
-	}
-
 	animatePowerup(entity: Powerup) {
 		const render = entity.getComponent('render') as RenderComponent;
 		const animation = entity.getComponent('animation') as AnimationComponent;
@@ -365,6 +268,95 @@ export class AnimationSystem implements System {
 			physics.y = floatY;
 			render.graphic.position.set(physics.x, floatY);
 		}	
+	}
+
+	animateCrossCut(entity: CrossCut) {
+		const render = entity.getComponent('render') as RenderComponent;
+		const animation = entity.getComponent('animation') as AnimationComponent;
+		
+		if (!render || !animation) return;
+		
+		if (!animation.initialized) {
+		  animation.options = {
+			...animation.options,
+			startTime: Date.now(),
+			duration: 100,
+			initialAlpha: 0,
+			targetAlpha: 1,
+			targetDespawnAlpha: 0,
+			easeExponent: 1,
+			initialized: true
+		  };
+		  animation.initialized = true;
+		}
+		
+		if (!animation.options) return;
+		
+		const startTime = animation.options.startTime as number;
+		const duration = animation.options.duration as number;
+		const initialAlpha = animation.options.initialAlpha as number;
+		const targetAlpha = animation.options.targetAlpha as number;
+		const easeExponent = animation.options.easeExponent as number;
+		
+		const elapsedTime = Date.now() - startTime;
+		const progress = Math.min(1, elapsedTime / duration);
+		
+		const easedProgress = Math.pow(progress, easeExponent);
+		
+		const currentAlpha = initialAlpha + (targetAlpha - initialAlpha) * easedProgress;
+		
+		render.graphic.alpha = currentAlpha;
+	}
+	
+	animateDespawnCrossCut() {
+		let crossCut;
+		
+		for (const entity of this.game.entities) {
+			if (isCrossCut(entity)) {
+				crossCut = entity;
+			}
+		}
+
+		if (!crossCut) return;
+		
+		const render = crossCut.getComponent('render') as RenderComponent;
+		const animation = crossCut.getComponent('animation') as AnimationComponent;
+		
+		if (!render || !animation) return;
+		
+		if (!animation.despawnStarted) {
+		  animation.options = {
+			...animation.options,
+			despawnStartTime: Date.now(),
+			despawnDuration: 100,
+			initialDespawnAlpha: render.graphic.alpha,
+			targetDespawnAlpha: 0,
+			easeExponent: animation.options?.easeExponent || 1
+		  };
+		  animation.despawnStarted = true;
+		}
+		
+		if (!animation.options) return;
+		
+		const startTime = animation.options.despawnStartTime as number;
+		const duration = animation.options.despawnDuration as number;
+		const initialAlpha = animation.options.initialDespawnAlpha as number;
+		const targetAlpha = animation.options.targetDespawnAlpha as number;
+		const easeExponent = animation.options.easeExponent as number;
+		
+		const elapsedTime = Date.now() - startTime;
+		const progress = Math.min(1, elapsedTime / duration);
+		
+		const easedProgress = Math.pow(progress, easeExponent);
+		
+		const currentAlpha = initialAlpha + (targetAlpha - initialAlpha) * easedProgress;
+		
+		render.graphic.alpha = currentAlpha;
+		
+		if (progress >= 1) {
+		  CrossCutFactory.despawnAllCrossCuts(this.game);
+		  this.isDespawningCrossCut = false;
+		}
 	}
 
 	manageCrossCutCreation(entity: DepthLine | Obstacle, render: RenderComponent) {

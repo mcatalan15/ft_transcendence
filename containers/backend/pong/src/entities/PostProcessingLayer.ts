@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 20:03:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:08:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ export class PostProcessingLayer extends Entity {
 
         const glow = new GlowFilter({
             alpha: 0.1,
-            color: '#FFFBEB',
+            color: '0xf7eebc',
             distance: 10,
             innerStrength: 0,
             knockout: false,
@@ -91,7 +91,7 @@ export class PostProcessingLayer extends Entity {
 
         const depthLineGlow = new GlowFilter({
             alpha: 0.1,
-            color: '#FFFBEB',
+            color: '0xf7eebc',
             distance: 10,
             innerStrength: 0,
             knockout: false,

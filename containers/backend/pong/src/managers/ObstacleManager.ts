@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 12:07:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:50:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ export class ObstacleManager {
     update(worldSystem: any): void {
         if (this.mustSpawn) {
             this.isSpawningObstacles = true;
-            let depth = this.randomOdd(71, 81);
+            let depth = this.randomOdd(81, 91);
             let idx = Math.floor(Math.random() * 3);
 
             switch(idx) {

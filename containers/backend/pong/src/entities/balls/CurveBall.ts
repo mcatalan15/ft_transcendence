@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 11:32:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/30 11:19:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:06:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export class CurveBall extends Ball {
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
 		ballGraphic.ellipse(10, 10, 14, 8); // Horizontal ellipse = football shape
-		ballGraphic.fill(0xFFFFFF); // Brownish football color
+		ballGraphic.fill(0xf7eebc); // Brownish football color
 		ballGraphic.pivot.set(10, 10);
 		return ballGraphic;
 	}

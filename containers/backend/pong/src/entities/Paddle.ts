@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 14:47:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:08:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ export class Paddle extends Entity {
     createPaddleGraphic(): Graphics {
         const paddleGraphic = new Graphics();
         paddleGraphic.rect(0, 0, this.game.paddleWidth, this.game.paddleHeight);
-        paddleGraphic.fill('#FFFBEB');
+        paddleGraphic.fill('0xf7eebc');
         paddleGraphic.pivot.set(5, 40);
         return paddleGraphic;
     }
@@ -140,7 +140,7 @@ export class Paddle extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFBEB,
+				fill: 0xf7eebc,
 				fontSize: 10,
 				fontWeight: 'bold' as const,
 			},

@@ -26,12 +26,28 @@ export class LedgeCrossCut extends CrossCut {
     }
     
     protected redrawGraphic(graphic: Graphics): void {
-        graphic.moveTo(this.points[0].x, this.points[0].y);
+        graphic.clear();
         
-        for (let i = 1; i < this.points.length; i++) {
-            graphic.lineTo(this.points[i].x, this.points[i].y);
+        if (this.points && this.points.length > 0) {
+            const pointsPerLedge = 5;
+            
+            const ledgeCount = 3;
+            
+            for (let c = 0; c < ledgeCount; c++) {
+                const startIdx = c * pointsPerLedge;
+                const endIdx = startIdx + pointsPerLedge;
+                
+                graphic.beginPath();
+                graphic.moveTo(this.points[startIdx].x, this.points[startIdx].y);
+                
+                for (let i = startIdx + 1; i < endIdx && i < this.points.length; i++) {
+                    graphic.lineTo(this.points[i].x, this.points[i].y);
+                }
+                
+                // Close the path and fill
+                graphic.closePath();
+                graphic.fill(0xf7eebc);
+            }
         }
-        
-        graphic.fill(0xFFFBEB);
     }
 }

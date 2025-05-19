@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 19:41:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 14:08:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@ import { Entity } from '../../engine/Entity';
 
 import { RenderComponent } from '../../components/RenderComponent';
 import { PhysicsComponent } from '../../components/PhysicsComponent';
+import { AnimationComponent } from '../../components/AnimationComponent';
+
+import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
 
 export abstract class CrossCut extends Entity {
     shape: string;
@@ -38,6 +41,9 @@ export abstract class CrossCut extends Entity {
         const physicsData = this.initCutPhysicsData(x, y);
         const physicsComponent = new PhysicsComponent(physicsData);
         this.addComponent(physicsComponent);
+
+        const animationOptions = this.defineAnimationOptions(physicsComponent);
+        this.addComponent(new AnimationComponent(animationOptions));
     }
 
     abstract createCutGraphic(): Graphics | Container;
@@ -76,6 +82,16 @@ export abstract class CrossCut extends Entity {
             graphic.clear();
             this.redrawGraphic(graphic);
         }
+    }
+
+    protected defineAnimationOptions(physics: PhysicsComponent): AnimationOptions {
+        return {
+            initialY: physics.y,
+            floatAmplitude: 5,
+            floatSpeed: 2,
+            floatOffset: Math.random() * Math.PI * 2,
+            initialized: true,
+        };
     }
     
     protected abstract redrawGraphic(graphic: Graphics): void;

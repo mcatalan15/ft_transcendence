@@ -55,7 +55,7 @@ export class WallFiguresSpawner {
         behaviorBottom,
         flip
       );
-      worldSystem.depthLineQueue.push(bottomLine);
+      worldSystem.figureQueue.push(bottomLine);
 
       let topLine = FigureFactory.createDepthLine(
         figureType,
@@ -70,7 +70,7 @@ export class WallFiguresSpawner {
         behaviorTop, 
         flip
       );
-      worldSystem.depthLineQueue.push(topLine);
+      worldSystem.figureQueue.push(topLine);
     }
   }
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:54:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ export class TextComponent implements Component {
 		const defaultStyle: Partial<TextStyle> = {
 			fontFamily: '"Roboto Mono", monospace',
 			fontSize: 10,
-			fill: 0xFFFBEB,
+			fill: 0xf7eebc,
 			align: 'center',
 			fontWeight: 'lighter',
 			letterSpacing: 1,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 15:49:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 15:56:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ import { DepthLine } from "./DepthLine";
 import { RenderComponent } from "../../components/RenderComponent";
 
 import { PyramidDepthLineOptions } from '../../utils/Types';
-import { drawPointPath } from '../../utils/Utils';
+import { drawPointOpenPath } from '../../utils/Utils';
 
 export class RakeDepthLine extends DepthLine {
 	peakHeight?: number;
@@ -80,8 +80,7 @@ export class RakeDepthLine extends DepthLine {
 			new Point(halfWidth, 0),
 		];
 
-		// Use the utility function to draw the path
-		drawPointPath(line, this.points, color);
+		drawPointOpenPath(line, this.points, color);
 
 		return line;
 	}
