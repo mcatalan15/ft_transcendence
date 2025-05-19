@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:32:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 10:37:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ export class CrossCutSystem implements System {
             return ('ledge');
         } else if (name.includes('Pachinko')) {
             return ('pachinko');
+        } else if (name.includes('Windmill')) {
+            return ('windmill');
         }else {
             return ('unknown');
         }

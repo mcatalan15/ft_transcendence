@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 17:29:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 10:34:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 import { LedgeSegment } from '../entities/obstacles/LedgeSegment';
 import { PachinkoSegment } from '../entities/obstacles/PachinkoSegment';
+import { WindmillSegment } from '../entities/obstacles/WindmillSegment';
 
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
@@ -112,6 +113,10 @@ export function isLedgeSegment(entity: Entity): entity is LedgeSegment {
 
 export function isPachinkoSegment(entity: Entity): entity is PachinkoSegment {
 	return entity instanceof PachinkoSegment;
+}
+
+export function isWindmillSegment(entity: Entity): entity is WindmillSegment {
+	return entity instanceof WindmillSegment;
 }
 
 export function isParticle(entity: Entity): entity is Particle {

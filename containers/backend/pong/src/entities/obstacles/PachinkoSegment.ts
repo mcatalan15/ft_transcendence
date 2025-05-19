@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/17 20:54:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 09:24:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,10 @@ export class PachinkoSegment extends Obstacle {
 		}
 	}
 
-	
 	private generatePachinkoLine(game: PongGame, color: number, pattern: number): Graphics {
 		const line = new Graphics();
 		
-		const radius = Math.min(game.width / 20, game.height / 80); // Size of each circle
+		const radius = Math.min(game.width / 20, game.height / 80);
 		
 		let circlePositions;
 		switch (pattern) {
@@ -56,18 +55,13 @@ export class PachinkoSegment extends Obstacle {
 				break;
 		}
 		
-		// Store all points for all circles
 		this.points = [];
 		
-		// Generate and draw each circle
 		circlePositions.forEach(pos => {
-			// Generate points for this circle
 			const circlePoints = generateCirclePoints(pos.x, pos.y, radius, 32);
 			
-			// Add these points to our collection
 			this.points.push(...circlePoints);
 			
-			// Begin a new path for each circle
 			line.beginPath();
 			drawPointPath(line, circlePoints, color, false);
 			line.closePath();

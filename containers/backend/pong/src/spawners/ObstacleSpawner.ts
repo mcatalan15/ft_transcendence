@@ -15,7 +15,7 @@ export class ObstacleSpawner {
 		let position = i === 0 ? 'first' : i === depth - 1 ? 'last' : 'middle';
 		let uniqueId = `${position}${figureType}Obstacle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-		let obstacle = ObstacleFactory.createObstacle(worldSystem.game, obstacleBehavior, figureType, uniqueId, pattern);
+		let obstacle = ObstacleFactory.createObstacle(worldSystem.game, obstacleBehavior, figureType, uniqueId, pattern, i);
 
 		worldSystem.obstacleQueue.push(obstacle);
 		}
@@ -27,6 +27,10 @@ export class ObstacleSpawner {
 
 	static buildPachinko(worldSystem: WorldSystem, depth: number, pattern: number): void {
 		this.buildObstacle(worldSystem, depth, 'pachinko', pattern);
+	}
+
+	static buildWindmills(worldSystem: WorldSystem, depth: number, pattern: number): void {
+		this.buildObstacle(worldSystem, depth, 'windmill', pattern);
 	}
 
 	// Utils

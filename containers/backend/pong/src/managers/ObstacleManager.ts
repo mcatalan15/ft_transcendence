@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/17 20:55:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:07:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,22 @@ export class ObstacleManager {
         if (this.mustSpawn) {
             this.isSpawningObstacles = true;
             let depth = this.randomOdd(71, 81);
-            let idx = Math.floor(Math.random() * 2);
+            let idx = Math.floor(Math.random() * 3);
 
             switch(idx) {
-                case (1):
+                case (0):
                     console.log('Spawning a ledge obstacle');
                     ObstacleSpawner.buildLedge(worldSystem, depth);
                     break;
-                default:
+                case (1):
                     console.log('Spawning a pachinko obstacle');
-                    const pattern = Math.floor(Math.random() * 3);
-                    ObstacleSpawner.buildPachinko(worldSystem, depth, pattern);
+                    const pachinkoPattern = Math.floor(Math.random() * 3);
+                    ObstacleSpawner.buildPachinko(worldSystem, depth, pachinkoPattern);
+                    break;
+                default:
+                    console.log('Spawning windmills');
+                    const windmillPattern = Math.floor(Math.random() * 2)
+                    ObstacleSpawner.buildWindmills(worldSystem, depth, windmillPattern);
             }
         }
 

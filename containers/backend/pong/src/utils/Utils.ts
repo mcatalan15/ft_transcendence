@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:59:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 10:19:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,16 @@ export function createWorld(theme: string, name: string, color: number): World {
 }
 
 export function drawPointPath(graphic: Graphics, points: Point[], color: number, fill: boolean = false): void {
+    if (points.length < 2) return;
+    
     graphic.moveTo(points[0].x, points[0].y);
     
     for (let i = 1; i < points.length; i++) {
         graphic.lineTo(points[i].x, points[i].y);
+    }
+    
+    if (points[0].x !== points[points.length - 1].x || points[0].y !== points[points.length - 1].y) {
+        graphic.lineTo(points[0].x, points[0].y);
     }
     
     if (fill) {
@@ -95,6 +101,16 @@ export function generateCirclePoints(
         const y = centerY + radius * Math.sin(angle);
         
         points.push(new Point(x, y));
+    }
+    
+    return points;
+}
+
+export function generateWindmillPoints(positions: {x: number, y: number}[]): Point[] {
+    const points: Point[] = [];
+    
+    for (const position of positions) {
+        points.push(new Point(position.x, position.y));
     }
     
     return points;

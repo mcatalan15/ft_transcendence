@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PachinkoPatternManager.ts                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 09:08:08 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/05/19 09:08:09 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 export class PachinkoPatternManager {
 
 	static createDiamondPattern(radius: number) {

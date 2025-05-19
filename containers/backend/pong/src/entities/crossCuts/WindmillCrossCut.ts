@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PachinkoCrossCut.ts                                :+:      :+:    :+:   */
+/*   WindmillCrossCut.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 10:39:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 11:50:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,28 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
-export class PachinkoCrossCut extends CrossCut {
+export class WindmillCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
     }
 
     createCutGraphic(): Graphics {
-        const pachinkoGraphic = new Graphics();
-        this.redrawGraphic(pachinkoGraphic);
-        return pachinkoGraphic; 
+        const windmillGraphic = new Graphics();
+        this.redrawGraphic(windmillGraphic);
+        return windmillGraphic; 
     }
     
     protected redrawGraphic(graphic: Graphics): void {
         graphic.clear();
         
         if (this.points && this.points.length > 0) {
-            const pointsPerCircle = 33;
+            const pointsPerWindmill = 13;
             
-            const circleCount = Math.floor(this.points.length / pointsPerCircle);
+            const windmillCount = 3;
             
-            for (let c = 0; c < circleCount; c++) {
-                const startIdx = c * pointsPerCircle;
-                const endIdx = startIdx + pointsPerCircle;
+            for (let c = 0; c < windmillCount; c++) {
+                const startIdx = c * pointsPerWindmill;
+                const endIdx = startIdx + pointsPerWindmill;
                 
                 graphic.beginPath();
                 graphic.moveTo(this.points[startIdx].x, this.points[startIdx].y);

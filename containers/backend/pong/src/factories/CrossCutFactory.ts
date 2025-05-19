@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 20:22:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/19 10:40:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@ import { MawCrossCut } from '../entities/crossCuts/MawCrossCut';
 import { RakeCrossCut } from '../entities/crossCuts/RakeCrossCut';
 import { LedgeCrossCut } from '../entities/crossCuts/LedgeCrossCut';
 import { PachinkoCrossCut } from '../entities/crossCuts/PachinkoCrossCut';
+import { WindmillCrossCut } from '../entities/crossCuts/WindmillCrossCut';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 
 export type CrossCutType = 'Triangle' | 'Parapet' | 'Saw' | 'Escalator' | 'Accelerator' | 'Maw' | 'Rake' |
-                            'Ledge' | 'Pachinko';
+                            'Ledge' | 'Pachinko' | 'Windmill';
 
 export type CrossCutPosition = 'top' | 'bottom';
 
@@ -146,9 +147,21 @@ export class CrossCutFactory {
                 break;
             case ('pachinko'):
                 cut = new PachinkoCrossCut(
-                    `cut-ledge-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    `cut-pachinko-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'pachinko', 
+                    position, 
+                    numPoints, 
+                    points, 
+                    x, 
+                    y
+                );
+                break;
+            case ('windmill'):
+                cut = new WindmillCrossCut(
+                    `cut-windmill-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
+                    'midground', 
+                    'windmill', 
                     position, 
                     numPoints, 
                     points, 
