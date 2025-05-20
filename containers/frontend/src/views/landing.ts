@@ -1,5 +1,6 @@
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
+import { navigate } from '../utils/router';
 
 export function showLanding(container: HTMLElement): void {
   i18n
@@ -49,12 +50,12 @@ export function showLanding(container: HTMLElement): void {
 
       signInBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        window.location.href = '/signin';
+        navigate('/signin');
       });
 
       signUpBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        window.location.href = '/signup';
+        navigate('/signup');
       });
 
       const balls: HTMLDivElement[] = [];

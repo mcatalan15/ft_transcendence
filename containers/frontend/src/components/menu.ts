@@ -1,4 +1,5 @@
 import { LanguageSelector } from './languageSelector';
+import { navigate } from '../utils/router';
 
 export class Menu {
   private container: HTMLElement;
@@ -21,8 +22,8 @@ export class Menu {
       <!-- Overlay -->
       <div id="menu-overlay" class="hidden fixed inset-0 bg-black/50 z-30"></div>
 
-      <!-- Menú de pantalla completa -->
-      <div id="dropdown" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md text-white z-40 flex flex-col">
+      <!-- Menú de pantalla completa con animación -->
+      <div id="dropdown" class="fixed inset-0 bg-black/70 backdrop-blur-md text-white z-40 flex flex-col transform translate-x-full opacity-0 transition-all duration-300 ease-in-out">
         <!-- Header del menú -->
         <div class="flex items-center justify-between px-6 py-6 border-b border-white/20">
           <div id="language-slot" class="flex justify-start"></div>
@@ -38,20 +39,20 @@ export class Menu {
 
         <!-- Cuerpo del menú -->
         <div class="grid grid-cols-12 gap-x-12 px-10 py-12 text-xl flex-grow">
-          <!-- Columna izquierda (Perfil) -->
+          <!-- Columna izquierda -->
           <div class="col-span-3 space-y-6">
             <a href="/profile" class="block hover:text-amber-300">Perfil</a>
           </div>
 
-          <!-- Columna centro (Pong) -->
+          <!-- Columna centro -->
           <div class="col-span-3 space-y-6">
             <a href="/pong" class="block hover:text-amber-300">Pong</a>
           </div>
 
-          <!-- Columna derecha (Logout, About, FAQ) -->
+          <!-- Columna derecha -->
           <div class="col-span-4 space-y-6 text-right">
             <a href="/logout"
-               class="inline-block border border-amber-50 text-amber-50 px-4 py-2 rounded-full text-sm hover:bg-amber-50 hover:text-black transition-colors">
+              class="inline-block border border-amber-50 text-amber-50 px-4 py-2 rounded-full text-sm hover:bg-amber-50 hover:text-black transition-colors">
               Logout
             </a>
             <div class="h-8"></div>
@@ -75,18 +76,31 @@ export class Menu {
     if (!menuButton || !closeButton || !dropdown || !overlay) return;
 
     const openMenu = () => {
-      dropdown.classList.remove("hidden");
+      dropdown.classList.remove("translate-x-full", "opacity-0");
       overlay.classList.remove("hidden");
     };
 
     const closeMenu = () => {
-      dropdown.classList.add("hidden");
+      dropdown.classList.add("translate-x-full", "opacity-0");
       overlay.classList.add("hidden");
     };
 
     menuButton.addEventListener("click", openMenu);
     closeButton.addEventListener("click", closeMenu);
     overlay.addEventListener("click", closeMenu);
+
+    // Navegación SPA
+    const links = this.container.querySelectorAll('a[href^="/"]');
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const path = link.getAttribute('href');
+        if (path) {
+          navigate(path);
+          closeMenu();
+        }
+      });
+    });
   }
 
   private insertLanguageSelector() {

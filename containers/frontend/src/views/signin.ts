@@ -1,6 +1,7 @@
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
 import { localSignIn } from '../auth/localSignIn';
+import { navigate } from '../utils/router';
 
 function loadGoogleScript(): void {
   if (document.getElementById('google-script')) return;
@@ -16,9 +17,7 @@ function loadGoogleScript(): void {
 export function showSignIn(container: HTMLElement): void {
   i18n
     .loadNamespaces('signin')
-    .then(() => {
-      return i18n.changeLanguage(i18n.language);
-    })
+    .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       loadGoogleScript();
 
@@ -36,35 +35,35 @@ export function showSignIn(container: HTMLElement): void {
               </button>
             </form>
             <div class="flex flex-col mt-4 text-sm text-center dark:text-gray-300">
-          <p>
-            Don't have an account?
-            <a href="/signup" class="text-blue-400 transition hover:underline"
-              >${i18n.t('signUp', { ns: 'signin' })}</a
-            >
-          </p>
-        </div>
-            	<div class="flex items-center gap-2 text-sm text-gray-500">
-					<hr class="flex-1 border-gray-300" />
-				</div>
-
-          <div>
-            <div id="g_id_onload"
-              data-client_id="YOUR_GOOGLE_CLIENT_ID"
-              data-login_uri="https://your.domain/your_login_endpoint"
-              data-auto_prompt="false">
+              <p>
+                Don't have an account?
+                <a href="/signup" class="text-blue-400 transition hover:underline">
+                  ${i18n.t('signUp', { ns: 'signin' })}
+                </a>
+              </p>
             </div>
-            <div class="g_id_signin"
-              data-type="standard"
-              data-size="large"
-              data-theme="outline"
-              data-text="sign_in_with"
-              data-shape="rectangular"
-              data-logo_alignment="left">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+              <hr class="flex-1 border-gray-300" />
             </div>
-          </div>
+            <div>
+              <div id="g_id_onload"
+                data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                data-login_uri="https://your.domain/your_login_endpoint"
+                data-auto_prompt="false">
+              </div>
+              <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="sign_in_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+              </div>
+            </div>
           </div>
         </div>
       `;
+
       container.appendChild(wrapper);
 
       const form = wrapper.querySelector('#login-form') as HTMLFormElement;
@@ -86,9 +85,16 @@ export function showSignIn(container: HTMLElement): void {
           errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
         } else {
           alert(i18n.t('success', { ns: 'signin' }));
-          window.location.href = '/home';
+          navigate('/home'); // ✅ SPA redirection
         }
       };
+
+      // SPA link to signup
+      const signUpLink = wrapper.querySelector('a[href="/signup"]');
+      signUpLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('/signup');
+      });
 
       const langSelector = new LanguageSelector(() => {
         const emailInput = wrapper.querySelector('#email') as HTMLInputElement;
@@ -101,7 +107,7 @@ export function showSignIn(container: HTMLElement): void {
         passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
         btn.textContent = i18n.t('signIn', { ns: 'signin' });
         title.textContent = i18n.t('title', { ns: 'signin' });
-        link.textContent = i18n.t('signUp', { ns: 'signin'});
+        link!.textContent = i18n.t('signUp', { ns: 'signin' });
       });
 
       const selectorWrapper = document.createElement('div');
@@ -109,4 +115,4 @@ export function showSignIn(container: HTMLElement): void {
       selectorWrapper.appendChild(langSelector.getElement());
       document.body.appendChild(selectorWrapper);
     });
-  }
+}

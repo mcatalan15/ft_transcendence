@@ -1,6 +1,7 @@
 import { localSignUp } from "../auth/localSignUp";
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
+import { navigate } from '../utils/router'; // ✅ Importar navegación SPA
 
 function loadGoogleScript(): void {
   if (document.getElementById('google-script')) return;
@@ -16,9 +17,7 @@ function loadGoogleScript(): void {
 export function showSignUp(container: HTMLElement): void {
   i18n
     .loadNamespaces('signup')
-    .then(() => {
-      return i18n.changeLanguage(i18n.language); 
-    })
+    .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       loadGoogleScript();
 
@@ -39,32 +38,29 @@ export function showSignUp(container: HTMLElement): void {
             <div class="flex flex-col mt-4 text-sm text-center dark:text-gray-300">
               <p>
                 Already have an account?
-                <a href="/signin" class="text-blue-400 transition hover:underline"
-                  >Sign In</a
-                >
+                <a href="/signin" class="text-blue-400 transition hover:underline">
+                  Sign In
+                </a>
               </p>
             </div>
-            	<div class="flex items-center gap-2 text-sm text-gray-500">
-						<hr class="flex-1 border-gray-300" />
-					</div>
-
-          <div>			
-            <div id="g_id_onload"
-              data-client_id="YOUR_GOOGLE_CLIENT_ID"
-              data-login_uri="https://your.domain/your_login_endpoint"
-              data-auto_prompt="false">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+              <hr class="flex-1 border-gray-300" />
             </div>
-
-            <div class="g_id_signin"
-              data-type="standard"
-              data-size="large"
-              data-theme="outline"
-              data-text="sign_in_with"
-              data-shape="rectangular"
-              data-logo_alignment="left">
+            <div>
+              <div id="g_id_onload"
+                data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                data-login_uri="https://your.domain/your_login_endpoint"
+                data-auto_prompt="false">
+              </div>
+              <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="sign_in_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+              </div>
             </div>
-
-          </div>
             <div id="errorMessage" class="text-red-500 text-sm"></div>
           </div>
         </div>
@@ -109,9 +105,16 @@ export function showSignUp(container: HTMLElement): void {
           errorMessageDiv.textContent = result.message;
         } else {
           alert('Registration successful!');
-          window.location.href = '/signin';
+          navigate('/signin'); // ✅ SPA redirection
         }
       };
+
+      // SPA: interceptar enlace Sign In
+      const signInLink = wrapper.querySelector('a[href="/signin"]');
+      signInLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('/signin');
+      });
 
       const langSelector = new LanguageSelector(() => {
         const nickname = wrapper.querySelector('#nickname') as HTMLInputElement;
