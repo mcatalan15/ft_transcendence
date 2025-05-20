@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ export class SpinBallPowerup extends Powerup {
 
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(0xf7eebc);
+        base.fill(0xfff8e3);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: 0xf7eebc, width: 1.2 });
+        ornament.stroke({ color: 0xfff8e3, width: 1.2 });
         container.addChild(ornament);
 
         const innerSign = new Graphics();
@@ -58,7 +58,7 @@ export class SpinBallPowerup extends Powerup {
         
         innerSign.moveTo(4.5, 0);
         innerSign.arc(0, 0, 4, 0, 1.75 * Math.PI, false);
-        innerSign.stroke({ color: 0xf7eebc, width: 1.5 });
+        innerSign.stroke({ color: 0xfff8e3, width: 1.5 });
         
         const angle = 1.75 * Math.PI;
         const arrowX = Math.cos(angle) * 5;
@@ -75,7 +75,7 @@ export class SpinBallPowerup extends Powerup {
             arrowY + Math.sin(angle + Math.PI / 2) * tipSize
         );
         innerSign.closePath();
-        innerSign.fill(0xf7eebc);
+        innerSign.fill(0xfff8e3);
         
         container.addChild(innerSign);
 

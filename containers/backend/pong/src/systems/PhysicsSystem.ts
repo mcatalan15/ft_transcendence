@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/14 15:39:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 09:11:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,64 +176,9 @@ export class PhysicsSystem implements System {
 		}
 	}
 
-	//! WIP
-	/*handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
-		for (const [id, entity] of entitiesMap.entries()) {
-			if (!id.startsWith('cut-')) continue;
-			const cutPhysics = entity.getComponent('physics') as PhysicsComponent;
-			if (!cutPhysics) continue;
-	
-			const ballRadius = physics.width / 2;
-			const ballCenter = { x: physics.x, y: physics.y };
-	
-			// Define triangle points based on center + dimensions
-			const baseWidth = cutPhysics.width;
-			const height = cutPhysics.height;
-			const centerX = cutPhysics.x;
-			const centerY = cutPhysics.y;
-	
-			// Assuming upward-pointing isosceles triangle
-			const A = { x: centerX, y: centerY - height / 2 }; // top
-			const B = { x: centerX - baseWidth / 2, y: centerY + height / 2 }; // bottom-left
-			const C = { x: centerX + baseWidth / 2, y: centerY + height / 2 }; // bottom-right
-	
-			// Check against each edge
-			const edges = [
-				[A, B],
-				[B, C],
-				[C, A],
-			];
-	
-			for (const [p1, p2] of edges) {
-				if (this.circleIntersectsSegment(ballCenter, ballRadius, p1, p2)) {
-					const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
-					const normal = { x: -edge.y, y: edge.x }; // perpendicular vector
-					const normalLen = Math.hypot(normal.x, normal.y);
-					const nx = normal.x / normalLen;
-					const ny = normal.y / normalLen;
-	
-					// Reflect ball velocity across normal
-					const dot = physics.velocityX * nx + physics.velocityY * ny;
-					physics.velocityX -= 2 * dot * nx;
-					physics.velocityY -= 2 * dot * ny;
-	
-					// Apply spin effect if SpinBall
-					if (isSpinBall(ball)) {
-						(ball as SpinBall).applySpinToBounce(physics);
-					}
-	
-					// VFX
-					const vfx = ball.getComponent('vfx') as VFXComponent;
-					if (vfx) {
-						vfx.startFlash(0xFFFF00, 5);
-					}
-					ParticleSpawner.spawnBasicExplosion(this.game, physics.x, physics.y, 0xFFFFAA);
-					this.game.sounds.pong.play();
-					break;
-				}
-			}
-		}
-	}*/
+	handleBallCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
+		//HANDLE HERE THE BALL-CUT COLLISIONS
+	}
 	
 	handleBallShieldCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
 		let collided = false;

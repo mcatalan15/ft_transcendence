@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:08:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ export class AnimationSystem implements System {
 			const graphic = render.graphic as Graphics;
 			graphic.clear();
 			graphic.rect(0, 0, physics.width, targetHeight);
-			graphic.fill('0xf7eebc');
+			graphic.fill('0xfff8e3');
 			graphic.pivot.set(physics.width / 2, targetHeight / 2);
 		}
 	}

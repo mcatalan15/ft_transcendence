@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ export class InvertPowerDown extends Powerup {
 		// Base diamond (rotated square)
 		const base = new Graphics();
 		base.rect(-10, -10, 20, 20);
-		base.fill(0xf7eebc);
+		base.fill(0xfff8e3);
 		base.pivot.set(-5, -5);
 		base.angle = 45;
 		container.addChild(base);
@@ -53,7 +53,7 @@ export class InvertPowerDown extends Powerup {
 		// Ornament stroke, matching the base rotation
 		const ornament = new Graphics();
 		ornament.rect(-15, -15, 30, 30);
-		ornament.stroke({ color: 0xf7eebc, width: 1.2 });
+		ornament.stroke({ color: 0xfff8e3, width: 1.2 });
 		ornament.pivot.set(-5, -5);
 		ornament.angle = 45;
 		container.addChild(ornament);
@@ -66,14 +66,14 @@ export class InvertPowerDown extends Powerup {
 		const topStar = new Graphics();
 		topStar.star(1.3, 1.6, 5, 5.5);
 		topStar.fill(0x171717);
-		topStar.stroke({width: 1, color: 0xf7eebc})
+		topStar.stroke({width: 1, color: 0xfff8e3})
 		
 		container.addChild(topStar);
 		
 		const botStar = new Graphics();
 		botStar.star(-1.1, 13, 5, 4);
 		botStar.fill(0x171717);
-		botStar.stroke({width: 1, color: 0xf7eebc})
+		botStar.stroke({width: 1, color: 0xfff8e3})
 		container.addChild(botStar);
 	
 		return container;

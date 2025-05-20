@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 18:53:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:59:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ export class WorldSystem implements System {
     private wallFigureManager: WallFigureManager;
     private obstacleManager: ObstacleManager;
 
-    private spawningMode: number = -1;
+    private spawningMode: number = 1;
     private spawningTimer: number = 200;
     
     constructor(game: PongGame) {
@@ -85,7 +85,7 @@ export class WorldSystem implements System {
                 this.obstacleManager.activateSpawning();
                 this.spawningTimer = 1500;
             }
-            this.spawningMode *= -1;
+            //!this.spawningMode *= -1;
         }
 
         // Update managers

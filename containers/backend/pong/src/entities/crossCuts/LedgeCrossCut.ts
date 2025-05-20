@@ -46,7 +46,7 @@ export class LedgeCrossCut extends CrossCut {
                 
                 // Close the path and fill
                 graphic.closePath();
-                graphic.fill(0xf7eebc);
+                graphic.fill(0xfff8e3);
             }
         }
     }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 14:08:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 09:03:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ export abstract class CrossCut extends Entity {
 
     abstract createCutGraphic(): Graphics | Container;
     
-    initCutPhysicsData(x: number, y: number): any {
+    initCutPhysicsData(x: number, y: number): PhysicsData {
         return {
             x: x || 0,
             y: y || 0,
@@ -61,6 +61,9 @@ export abstract class CrossCut extends Entity {
             restitution: 1.0,
             mass: 1,
             speed: 10,
+
+            isPolygonal: true,
+            physicsPoints: this.points,
         };
     }
 

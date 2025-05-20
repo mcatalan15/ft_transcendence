@@ -6,9 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 17:27:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 09:06:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Point } from 'pixi.js';
 
 import type { Component } from '../engine/Component';
 
@@ -31,6 +33,8 @@ export class PhysicsComponent implements Component {
 	restitution: number;
 	mass: number;
 	speed?: number;
+	isPolygonal?: boolean;
+	physicsPoints?: Point[];
 
 	constructor(physicsData: PhysicsData){
 		this.x = physicsData.x;
@@ -44,5 +48,7 @@ export class PhysicsComponent implements Component {
 		this.restitution = physicsData.restitution;
 		this.mass = physicsData.mass;
 		this.speed = physicsData.speed;
+		this.isPolygonal = physicsData.isPolygonal;
+		this.physicsPoints = physicsData.physicsPoints;
 	}
 }

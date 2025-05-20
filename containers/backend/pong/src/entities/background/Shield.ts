@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ export class Shield extends Entity {
 		this.x = side === 'left' ? 15 : game.width - 15;
 		this.y = game.height / 2;
 
-		const graphic = this.generateLine(0xf7eebc);
+		const graphic = this.generateLine(0xfff8e3);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 

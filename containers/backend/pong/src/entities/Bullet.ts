@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:05:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ export class Bullet extends Entity {
 		const right = { x: 10, y: 0 };
 
 		ballGraphic.poly([tip, right, left], true);
-		ballGraphic.fill(0xf7eebc);
+		ballGraphic.fill(0xfff8e3);
 		return ballGraphic;
 	}
 
