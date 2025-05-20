@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 09:02:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 11:09:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,9 @@ export type PhysicsData = {
 	speed: number;
 
 	// Crosscut related attributes
-	isPolygonal: boolean;
-	physicsPoints: Point[];
+	isPolygonal?: boolean;
+	nPolygons?: number;
+	physicsPoints?: Point[][];
 };
 
 export type TextData = {

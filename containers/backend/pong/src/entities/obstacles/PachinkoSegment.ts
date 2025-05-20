@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 09:24:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 17:22:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ import { RenderComponent } from "../../components/RenderComponent";
 
 import { PachinkoPatternManager } from '../../managers/PachinkoPatternManager';
 
-import { ObstacleBehavior, ObstacleOptions } from '../../utils/Types';
+import { ObstacleOptions } from '../../utils/Types';
 import { drawPointPath, generateCirclePoints } from '../../utils/Utils';
 
 export class PachinkoSegment extends Obstacle {
@@ -40,7 +40,7 @@ export class PachinkoSegment extends Obstacle {
 	private generatePachinkoLine(game: PongGame, color: number, pattern: number): Graphics {
 		const line = new Graphics();
 		
-		const radius = Math.min(game.width / 20, game.height / 80);
+		const radius = Math.min(game.width / 20, game.height / 80) * 1.5;
 		
 		let circlePositions;
 		switch (pattern) {
@@ -48,10 +48,10 @@ export class PachinkoSegment extends Obstacle {
 				circlePositions = PachinkoPatternManager.createDiamondPattern(radius);
 				break;
 			case (1):
-				circlePositions = PachinkoPatternManager.createSpiralPattern(radius);
+				circlePositions = PachinkoPatternManager.createHexGridPattern(radius);
 				break;
 			default:
-				circlePositions = PachinkoPatternManager.createZigzagPattern(radius);
+				circlePositions = PachinkoPatternManager.createDoubleFunnelPattern(radius);
 				break;
 		}
 		

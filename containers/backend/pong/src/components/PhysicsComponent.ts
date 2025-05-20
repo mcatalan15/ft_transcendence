@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 09:06:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 11:38:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ export class PhysicsComponent implements Component {
 	mass: number;
 	speed?: number;
 	isPolygonal?: boolean;
-	physicsPoints?: Point[];
+	nPolygons?: number;
+	physicsPoints?: Point[][];
 
 	constructor(physicsData: PhysicsData){
 		this.x = physicsData.x;
@@ -49,6 +50,7 @@ export class PhysicsComponent implements Component {
 		this.mass = physicsData.mass;
 		this.speed = physicsData.speed;
 		this.isPolygonal = physicsData.isPolygonal;
+		this.nPolygons = physicsData.nPolygons;
 		this.physicsPoints = physicsData.physicsPoints;
 	}
 }

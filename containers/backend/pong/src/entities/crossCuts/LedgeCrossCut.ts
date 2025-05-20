@@ -14,6 +14,8 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
+import { PhysicsData } from '../../utils/Types';
+
 export class LedgeCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
@@ -22,7 +24,43 @@ export class LedgeCrossCut extends CrossCut {
     createCutGraphic(): Graphics {
         const ledgeGraphic = new Graphics();
         this.redrawGraphic(ledgeGraphic);
+        this.buildPolygonalPhysics();
         return ledgeGraphic; 
+    }
+
+    buildPolygonalPhysics(): void {
+        const pointsPerPolygon = 5
+        const nPolygons = 4;
+
+        const polygons: Point[][] = [];
+
+        for (let i = 0; i < nPolygons; i++) {
+            const startIdx = i * pointsPerPolygon;
+            const endIdx = startIdx + pointsPerPolygon;
+            const polygonPoints = this.points.slice(startIdx, endIdx);
+
+            polygons.push(polygonPoints);
+        }
+
+        const physics: PhysicsData = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            velocityX: 0,
+            velocityY: 0,
+            isStatic: true,
+            behaviour: 'bounce',
+            restitution: 1.0,
+            mass: 1,
+            speed: 10,
+
+            isPolygonal: true,
+            nPolygons: nPolygons,
+            physicsPoints: polygons,
+        };
+
+	    this.addPolygonalPhysics(physics);
     }
     
     protected redrawGraphic(graphic: Graphics): void {
@@ -31,7 +69,7 @@ export class LedgeCrossCut extends CrossCut {
         if (this.points && this.points.length > 0) {
             const pointsPerLedge = 5;
             
-            const ledgeCount = 3;
+            const ledgeCount = 4;
             
             for (let c = 0; c < ledgeCount; c++) {
                 const startIdx = c * pointsPerLedge;

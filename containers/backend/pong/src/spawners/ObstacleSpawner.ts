@@ -16,6 +16,7 @@ export class ObstacleSpawner {
 		let uniqueId = `${position}${figureType}Obstacle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
 		let obstacle = ObstacleFactory.createObstacle(worldSystem.game, obstacleBehavior, figureType, uniqueId, pattern, i);
+		console.log(obstacle)
 
 		worldSystem.obstacleQueue.push(obstacle);
 		}

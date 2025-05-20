@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:42:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 09:03:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 11:55:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,13 @@ export abstract class CrossCut extends Entity {
         const cutGraphic = this.createCutGraphic();
         const renderComponent = new RenderComponent(cutGraphic);
         this.addComponent(renderComponent);
-
-        const physicsData = this.initCutPhysicsData(x, y);
-        const physicsComponent = new PhysicsComponent(physicsData);
-        this.addComponent(physicsComponent);
+        
+        let physicsComponent = this.getComponent('physics') as PhysicsComponent;
+        if (!physicsComponent) {
+            const physicsData = this.initCutPhysicsData(x, y);
+            physicsComponent = new PhysicsComponent(physicsData);
+            this.addComponent(physicsComponent);
+        }
 
         const animationOptions = this.defineAnimationOptions(physicsComponent);
         this.addComponent(new AnimationComponent(animationOptions));
@@ -49,6 +52,11 @@ export abstract class CrossCut extends Entity {
     abstract createCutGraphic(): Graphics | Container;
     
     initCutPhysicsData(x: number, y: number): PhysicsData {
+        let nPolygons = 1;
+        let polygons: Point[][] = []
+
+        polygons.push(this.points);
+
         return {
             x: x || 0,
             y: y || 0,
@@ -63,7 +71,8 @@ export abstract class CrossCut extends Entity {
             speed: 10,
 
             isPolygonal: true,
-            physicsPoints: this.points,
+            nPolygons: nPolygons,
+            physicsPoints: polygons,
         };
     }
 
@@ -95,6 +104,12 @@ export abstract class CrossCut extends Entity {
             floatOffset: Math.random() * Math.PI * 2,
             initialized: true,
         };
+    }
+
+    protected addPolygonalPhysics(physicsData: PhysicsData): void {
+        this.removeComponent('physics');
+        const physicsComponent = new PhysicsComponent(physicsData);
+        this.addComponent(physicsComponent);
     }
     
     protected abstract redrawGraphic(graphic: Graphics): void;
