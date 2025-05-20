@@ -2,7 +2,7 @@
 	"name": "transcendence-fastify",
 	"version": "1.0.0",
 	"description": "Fastify server to host the 42 transcendence project",
-	"main": "server.js",
+	"main": "main.js",
 	"scripts": {
 	  "build": "tsc",
 	  "start": "node src/main.js",

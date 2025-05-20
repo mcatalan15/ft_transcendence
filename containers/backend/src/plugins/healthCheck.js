@@ -2,7 +2,6 @@ const underPressure = require('@fastify/under-pressure');
 const { db, isDatabaseHealthy } = require('../api/db/database');
 
 module.exports = async function (fastify) {
-  // Ensure database connection is established
   await new Promise((resolve) => {
     db.serialize(() => {
       fastify.register(underPressure, {

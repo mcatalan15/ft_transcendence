@@ -1,6 +1,6 @@
 const Fastify = require('fastify');
 const fastifyMultipart = require('fastify-multipart');
-const loggerConfig = require('./config/logsConfiguration');
+const loggerConfig = require('./logsConfiguration');
 const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
@@ -58,12 +58,12 @@ function buildApp() {
   fastify.register(fastifyMultipart);
   
   // Register custom plugins
-  fastify.register(require('./plugins/setupCors'));
-  fastify.register(require('./plugins/healthCheck'));
-  fastify.register(require('./plugins/prometheusMetrics'));
+  fastify.register(require('../plugins/setupCors'));
+  fastify.register(require('../plugins/healthCheck'));
+  fastify.register(require('../plugins/prometheusMetrics'));
   
   // Register routes
-  fastify.register(require('./api/routes/routeLoader'));
+  fastify.register(require('../api/routes/routeLoader'));
 
   return fastify;
 }

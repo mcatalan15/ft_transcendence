@@ -10,3 +10,65 @@ GOOGLE SIGN-IN:
 	- Check their email and the provider is 'google': if true, then log them in.
 	- If the user does not exist, create a new user in the database and log them in.
 
+
+
+<!-- class TournamentManager {
+  constructor(gameManager, redisService) {
+    this.tournaments = new Map();
+    this.gameManager = gameManager;
+    this.redisService = redisService;
+  }
+
+  createTournament(players, config = {}) {
+    const tournamentId = this.generateTournamentId();
+    const bracket = this.generateBracket(players);
+    
+    // Store tournament info
+    this.tournaments.set(tournamentId, {
+      bracket,
+      status: 'registration',
+      players: new Set(players),
+      currentRound: 0,
+      config
+    });
+    
+    return tournamentId;
+  }
+  
+  startTournament(tournamentId) {
+    const tournament = this.tournaments.get(tournamentId);
+    if (!tournament) return false;
+    
+    tournament.status = 'in_progress';
+    
+    // Start first round of games
+    this.scheduleRound(tournamentId, 0);
+    
+    return true;
+  }
+  
+  handleGameCompletion(gameId, winnerId) {
+    // Find which tournament this game belongs to
+    const tournamentId = this.findTournamentByGameId(gameId);
+    if (!tournamentId) return;
+    
+    const tournament = this.tournaments.get(tournamentId);
+    
+    // Update bracket with winner
+    this.advancePlayer(tournamentId, winnerId);
+    
+    // Check if round complete, start next round if needed
+    if (this.isRoundComplete(tournamentId)) {
+      const nextRound = tournament.currentRound + 1;
+      if (this.isTournamentComplete(tournamentId)) {
+        this.finishTournament(tournamentId);
+      } else {
+        tournament.currentRound = nextRound;
+        this.scheduleRound(tournamentId, nextRound);
+      }
+    }
+  }
+  
+  // Additional tournament management methods
+  // ...
+} -->
