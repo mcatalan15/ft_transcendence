@@ -32,9 +32,6 @@ export function showBlockchain(container: HTMLElement): void {
         <button id="toBlockchainBtn" class="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded">
             To Blockchain
         </button>
-        <button id="deployContractBtn" class="w-full mt-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded">
-          Deploy Contract
-        </button>
         <div id="message" class="mt-4 text-white text-center"></div>
     `;
 
@@ -51,17 +48,17 @@ export function showBlockchain(container: HTMLElement): void {
             const player1Score = parseInt(player1ScoreInput.value);
             const player2Name = player2NameInput.value.trim();
             const player2Score = parseInt(player2ScoreInput.value);
-
+    
             if (!player1Name || !player2Name) {
                 messageDiv.textContent = 'Please enter names for both players';
                 return;
             }
-
+    
             if (isNaN(player1Score) || isNaN(player2Score)) {
                 messageDiv.textContent = 'Please enter valid scores for both players';
                 return;
             }
-
+    
             // Determine the winner
             let winner_name: string;
             if (player1Score > player2Score) {
@@ -74,8 +71,9 @@ export function showBlockchain(container: HTMLElement): void {
                 winner_name = 'tie';
                 console.log('The game ended in a tie');
             }
-
+    
             try {
+                // First save the game data
                 const response = await fetch('/api/games', {
                     method: 'POST',
                     headers: {
@@ -89,62 +87,47 @@ export function showBlockchain(container: HTMLElement): void {
                         winner_name: winner_name 
                     })
                 });
-
+    
                 if (response.ok) {
-                    messageDiv.textContent = 'Game saved successfully!';
+                    messageDiv.textContent = 'Game saved successfully! Deploying contract...';
                     player1NameInput.value = '';
                     player1ScoreInput.value = '';
                     player2NameInput.value = '';
                     player2ScoreInput.value = '';
+                    
+                    // After saving game, get latest game data
+                    const gameResponse = await fetch('/api/games/latest');
+                    const gameData = await gameResponse.json();
+                    
+                    // Then deploy contract
+                    const deployResponse = await fetch('/api/deploy', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            gameId: gameData.id_game
+                        })
+                    });
+                    
+                    const deployData = await deployResponse.json();
+                    
+                    if (deployResponse.ok) {
+                        messageDiv.textContent = `Game saved and contract deployment initiated. Address: ${deployData.address}`;
+                        console.log('Deployment initiated:', deployData);
+                    } else {
+                        messageDiv.textContent = deployData.message || 'Game saved but deployment failed';
+                    }
                 } else {
                     const errorData = await response.json();
                     messageDiv.textContent = errorData.message || 'Failed to save game';
                 }
             } catch (error) {
-                console.error('Error saving game:', error);
+                console.error('Error saving game or deploying contract:', error);
                 messageDiv.textContent = 'Network error. Please try again.';
             }
         });
     }
-
-    const deployButton = blockchainDiv.querySelector('#deployContractBtn');
-    if (deployButton) {
-        deployButton.addEventListener('click', async () => {
-            const messageDiv = blockchainDiv.querySelector('#message') as HTMLDivElement;
-            messageDiv.textContent = 'Deploying contract...';
-            
-            try {
-                // Get current game data first if needed
-                const gameResponse = await fetch('/api/games/latest');
-                const gameData = await gameResponse.json();
-                
-                // Then send deployment request
-                const response = await fetch('/api/deploy', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        // Add auth headers if needed
-                    },
-                    body: JSON.stringify({
-                        // Include any necessary game data
-                        gameId: gameData.id_game
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    messageDiv.textContent = `Contract deployment initiated. Address: ${data.address}`;
-                    console.log('Deployment initiated:', data);
-                } else {
-                    messageDiv.textContent = data.message || 'Deployment failed';
-                }
-            } catch (err) {
-                console.error('Deploy error:', err);
-                messageDiv.textContent = 'Failed to contact deployment service';
-            }
-        });
-    } 
 
     container.appendChild(blockchainDiv);
 }
