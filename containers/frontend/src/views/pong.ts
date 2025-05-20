@@ -45,21 +45,6 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	paddle1.y = 250;
 	paddle2.x = 1470;
 	paddle2.y = 250;
-
-
-	let testTick = 0;
-	const testInterval = setInterval(() => {
-	testTick++;
-	ball.x = 750 + Math.sin(testTick/10) * 300;
-	ball.y = 250 + Math.cos(testTick/10) * 100;
-	}, 1000/60);
-
-
-	  app.ticker.add(() => {
-    // This function is called every frame
-    // No need to do anything here, just having the ticker active
-    // ensures PIXI keeps rendering the stage
-  });
   
   // Initialize WebSocket connection
   const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
@@ -79,10 +64,7 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
   });
   
  wsManagerPong.registerHandler('GAME_STATE_UPDATE', (message) => {
-    if (testInterval) {
-      clearInterval(testInterval);
-      console.log('Clearing test animation, real game state arrived');
-	  }
+
 	// Extract the actual game state data (handle both possible structures)
 	const gameState = message.data || message;
 
