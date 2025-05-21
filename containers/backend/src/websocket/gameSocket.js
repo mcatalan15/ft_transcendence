@@ -15,6 +15,18 @@ function setupGameWebSocket(gameWss, redisService, gameManager) {
       try {
         const data = JSON.parse(message.toString());
 
+		if (data.type === 'IDENTIFY' && data.gameId) {
+			currentGameId = data.gameId;
+			playerId = data.playerId;
+			
+			// Re-join socket to game session if it exists
+			const gameSession = gameManager.getSession(currentGameId);
+			if (gameSession) {
+			  gameManager.addPlayerToSession(currentGameId, playerId, ws);
+			  console.log(`Player ${playerId} reconnected to game ${currentGameId}`);
+			}
+		  }
+
         // Extract player ID and game ID from message
         if (data.playerId) playerId = data.playerId;
         if (data.gameId) currentGameId = data.gameId;

@@ -30,29 +30,61 @@ export class WebSocketManager {
         this.localPlayerId = playerId;
         this.url = `ws://localhost:3100/ws/socket/game`;
     }
-    
+
+	private isConnecting: boolean = false;
+
     connect(gameId: string | null): Promise<void> {
+
+		if (this.isConnecting) {
+			console.log('Connection attempt already in progress');
+			return Promise.reject(new Error('Connection in progress'));
+		  }
+		  
+		this.isConnecting = true;
+
         return new Promise((resolve, reject) => {
+			if (this.socket) {
+				console.log(`Closing existing connection before connecting with gameId: ${gameId}`);
+				this.socket.onclose = null; // Prevent reconnect attempts during intentional close
+				this.socket.close();
+				this.socket = null;
+			  }
+			  
+			// Reset reconnection counter when intentionally connecting
+			this.reconnectAttempts = 0;
             this.gameId = gameId;
             
             // Log the exact URL
-            const wsUrl = `ws://localhost:3100/ws/socket/game/${gameId}`;       
-            this.socket = new WebSocket(wsUrl);
+            const wsUrl = `ws://localhost:3100/ws/socket/game/`;
+			
+			this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = () => {
                 console.log('WebSocket connection OPENED successfully');
-                this.reconnectAttempts = 0;
+                this.isConnecting = false;
+
+				this.send({
+					type: 'IDENTIFY',
+					playerId: this.localPlayerId,
+					gameId: this.gameId 
+				  });
+
                 resolve();
             };
             
             this.socket.onclose = (event) => {
                 console.log('WebSocket connection CLOSED', event);
-                this.handleDisconnect(event);
+				this.isConnecting = false;
+				// Only handle automatic reconnects for unexpected closures
+				if (event.code !== 1000) { // Normal closure
+				  this.handleDisconnect(event);
+				}
                 reject(new Error('WebSocket connection closed'));
             };
             
             this.socket.onerror = (error) => {
                 console.error('WebSocket ERROR occurred:', error);
+				this.isConnecting = false;
                 reject(error);
             };
             
@@ -86,17 +118,13 @@ export class WebSocketManager {
             
             // Try all combinations to find a match
             let handler = null;
-            let matchedType = null;
             
             if (this.messageHandlers.has(msgType)) {
                 handler = this.messageHandlers.get(msgType);
-                matchedType = msgType;
             } else if (msgTypeLower && this.messageHandlers.has(msgTypeLower)) {
                 handler = this.messageHandlers.get(msgTypeLower);
-                matchedType = msgTypeLower;
             } else if (msgTypeBase && this.messageHandlers.has(msgTypeBase)) {
                 handler = this.messageHandlers.get(msgTypeBase);
-                matchedType = msgTypeBase;
             }
             
             if (handler) {
@@ -132,7 +160,14 @@ export class WebSocketManager {
         }
     }
     
-	createGame(): Promise<string> {
+	async createGame(): Promise<string> {
+
+		try {
+			await this.connect(null);
+		  } catch (err) {
+			console.error('Failed to connect before creating game:', err);
+		  }
+
 		return new Promise((resolve, reject) => {
 
 			const timeoutId = setTimeout(() => {
@@ -143,8 +178,9 @@ export class WebSocketManager {
 			this.registerHandler('GAME_CREATED', (data) => {
 				clearTimeout(timeoutId); // Cancel timeout
 				this.unregisterHandler('GAME_CREATED'); // Cleanup handler
-				this.gameId = data.gameId;
-				resolve(data.gameId);
+				const newGameId = data.gameId;
+				this.gameId = newGameId;
+				resolve(newGameId);
 			});
 			
 			this.send({

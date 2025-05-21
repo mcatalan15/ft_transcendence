@@ -81,8 +81,6 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	paddle2.y = gameState.paddle2.y;
 	}
 
-	// Force a render update
-	app.renderer.render(app.stage);
 	});
 
   // Now connect after registering handlers
