@@ -72,3 +72,190 @@ GOOGLE SIGN-IN:
   // Additional tournament management methods
   // ...
 } -->
+
+# WebSocket Flow Diagram for Multiplayer Pong
+
+## WebSocketManager Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     WebSocketManager (Singleton)                │
+├─────────────────────────────────────────────────────────────────┤
+│ Properties:                                                     │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ socket      │  │ messageHandlers│  │ gameId/playerId   │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+├─────────────────────────────────────────────────────────────────┤
+│ Methods:                                                        │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ connect()   │  │ createGame()  │  │ joinGame()         │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ send()      │  │registerHandler│  │ sendPaddleInput()  │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Connection Lifecycle
+
+```
+┌────────┐      ┌────────────┐      ┌────────────┐      ┌───────┐
+│ Browser│      │  Frontend  │      │  Backend   │      │ Redis │
+└───┬────┘      └─────┬──────┘      └─────┬──────┘      └───┬───┘
+    │    Load Lobby     │                 │                 │
+    │────────────────>  │                 │                 │
+    │                   │                 │                 │
+    │                   │  WS Connect     │                 │
+    │                   │───────────────> │                 │
+    │                   │ (ws://localhost:3100/ws/socket/game/)  │
+    │                   │                 │                 │
+    │                   │ Connection OK   │                 │
+    │                   │ <───────────────│                 │
+    │                   │                 │                 │
+    │                   │ IDENTIFY        │                 │
+    │                   │───────────────> │                 │
+    │                   │                 │                 │
+```
+
+## Game Creation Flow
+
+```
+┌────────┐      ┌────────────┐      ┌────────────┐      ┌───────┐
+│Player 1│      │WebSocketMgr│      │  Backend   │      │ Redis │
+└───┬────┘      └─────┬──────┘      └─────┬──────┘      └───┬───┘
+    │  Click Create    │                  │                 │
+    │────────────────> │                  │                 │
+    │                  │  CREATE_GAME     │                 │
+    │                  │────────────────> │                 │
+    │                  │                  │ Create Game ID  │
+    │                  │                  │ Store Game Data │
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │ Create Session  │
+    │                  │  GAME_CREATED    │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │ Display Game ID  │                  │                 │
+    │ <───────────────────                │                 │
+    │ Register          │                 │                 │
+    │ PLAYER_JOINED     │                 │                 │
+    │ handler           │                 │                 │
+    │                  │                  │                 │
+```
+
+## Game Joining Flow
+
+```
+┌────────┐      ┌────────────┐      ┌────────────┐      ┌────────┐
+│Player 2│      │WebSocketMgr│      │  Backend   │      │Player 1│
+└───┬────┘      └─────┬──────┘      └─────┬──────┘      └───┬────┘
+    │  Enter Game ID   │                  │                 │
+    │  Click Join      │                  │                 │
+    │────────────────> │                  │                 │
+    │                  │   JOIN_GAME      │                 │
+    │                  │────────────────> │                 │
+    │                  │                  │                 │
+    │                  │                  │ Update Redis    │
+    │                  │                  │ Store player2   │
+    │                  │  JOIN_SUCCESS    │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │                  │                  │  PLAYER_JOINED  │
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │                 │
+    │                  │   PLAYER_ASSIGNED│                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │  PLAYER_ASSIGNED│
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │  GAME_START     │
+    │                  │                  │───────────────> │
+    │                  │   GAME_START     │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │  Navigate to     │                  │    Navigate to  │
+    │  Game Screen     │                  │    Game Screen  │
+    │                  │                  │                 │
+```
+
+## Game State Synchronization (60 FPS)
+
+```
+┌────────────┐      ┌────────────┐      ┌────────────┐      ┌────────────┐
+│  Player 1  │      │   Backend   │      │  Player 2  │      │ Game Loop  │
+└─────┬──────┘      └──────┬─────┘      └─────┬──────┘      └─────┬──────┘
+      │                    │                  │                   │
+      │                    │                  │     Tick (60 FPS) │
+      │                    │ <────────────────────────────────────│
+      │                    │                  │                   │
+      │                    │ Update Game State│                   │
+      │                    │─────────────────>│                   │
+      │                    │                  │                   │
+      │  GAME_STATE_UPDATE │                  │                   │
+      │ <─────────────────────────────────────────────────────────│
+      │                    │                  │                   │
+      │                    │  GAME_STATE_UPDATE                   │
+      │                    │─────────────────>│                   │
+      │                    │                  │                   │
+      │   Render Game      │                  │    Render Game    │
+      │                    │                  │                   │
+```
+
+## Input Handling Flow
+
+```
+┌────────┐      ┌────────────┐      ┌────────────┐      ┌────────────┐
+│Player 1 │      │WebSocketMgr │      │  Backend   │      │Game Session│
+└───┬────┘      └─────┬──────┘      └─────┬──────┘      └─────┬──────┘
+    │  Press 'W' key   │                  │                   │
+    │────────────────> │                  │                   │
+    │                  │                  │                   │
+    │                  │  PADDLE_INPUT    │                   │
+    │                  │ (player: 1, dir: -1)                 │
+    │                  │────────────────> │                   │
+    │                  │                  │                   │
+    │                  │                  │ setPlayerInput()  │
+    │                  │                  │──────────────────>│
+    │                  │                  │                   │
+    │                  │                  │                   │
+    │                  │                  │  Update paddle    │
+    │                  │                  │  position         │
+    │                  │                  │ <────────────────│
+    │                  │                  │                   │
+    │                  │                  │                   │
+```
+
+## Cross-Browser Issue in Joining Flow
+
+```
+┌─────────┐         ┌───────────┐         ┌────────────┐         ┌─────────┐
+│Firefox  │         │  Backend  │         │  Chrome    │         │  Redis  │
+│(Host)   │         │           │         │(Player 2)  │         │         │
+└────┬────┘         └─────┬─────┘         └─────┬──────┘         └────┬────┘
+     │  Create Game       │                     │                     │
+     │──────────────────> │                     │                     │
+     │                    │                     │                     │
+     │ GAME_CREATED       │                     │                     │
+     │ <──────────────────│                     │                     │
+     │                    │  Store Game         │                     │
+     │                    │────────────────────>│                     │
+     │                    │                     │                     │
+     │ Register for       │                     │                     │
+     │ 'PLAYER_JOINED'    │                     │                     │
+     │                    │                     │                     │
+     │                    │                     │ Join Game           │
+     │                    │ <────────────────────────────────────────>│
+     │                    │                     │                     │
+     │                    │ JOIN_SUCCESS        │                     │
+     │                    │──────────────────> │                     │
+     │                    │                     │                     │
+     │                    │ PLAYER_JOINED       │                     │
+     │                    │ to Firefox          │                     │
+     ├ - - - - - - - - - >│                     │                     │
+     │ ✗ ISSUE: Handler   │                     │                     │
+     │ doesn't catch      │                     │                     │
+     │ due to             │                     │                     │
+     │ case sensitivity   │                     │                     │
+     │ or socket issues   │                     │                     │
+     │                    │                     │                     │
