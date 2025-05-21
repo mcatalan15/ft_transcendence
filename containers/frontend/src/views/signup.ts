@@ -111,7 +111,7 @@ export function showSignUp(container: HTMLElement): void {
 			} else {
 				// Registration successful - redirect or show success message
 				alert('Registration successful!');
-				navigate('/signin');
+				window.location.href = '/auth?from=signup';
 			}
 		} else {
 			errorMessageDiv.textContent = 'Passwords do not match!';

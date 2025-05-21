@@ -11,6 +11,7 @@ import { showSignIn } from './views/signin';
 import { showSignUp } from './views/signup';
 import { showProfile} from './views/profile';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
+import { showAuth } from './views/auth'; 
 
 import { logUserOut } from './auth/userLogout';
 
@@ -73,6 +74,9 @@ function router(path: string): void {
       break;
 		case '/blockchain': //Delete when blockchain working!!
 			showBlockchain(app);
+			break;
+		case '/auth':
+			showAuth(app);
 			break;
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>

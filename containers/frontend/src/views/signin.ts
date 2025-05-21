@@ -79,7 +79,9 @@ export function showSignIn(container: HTMLElement): void {
 				// Sign-in successful - show success message and redirect
 				alert('Sign-in successful!');
 				localStorage.setItem('token', result.token);
-				navigate('/home');
+				window.location.href = '/auth?from=signup';
+				// navigate('/auth?from=signin');
+				// navigate('/home');
 			}
 		} else {
 			errorMessageDiv.textContent = 'Invalid email or password';
