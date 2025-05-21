@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 10:08:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:02:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { Ball } from './Ball'
 
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 
-import { WORLD_COLORS } from '../../utils/Types';
+import { GAME_COLORS } from '../../utils/Types';
 
 
 export class MultiplyBall extends Ball {
@@ -25,7 +25,7 @@ export class MultiplyBall extends Ball {
 	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {
 		super(id, layer, x, y, isGoodBall);
 
-		this.flashColor = WORLD_COLORS.forest;
+		this.flashColor = GAME_COLORS.forest;
 	}
 
 	createBallGraphic(): Graphics {

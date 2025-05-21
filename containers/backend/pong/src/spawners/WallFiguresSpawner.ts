@@ -75,23 +75,23 @@ export class WallFiguresSpawner {
   }
 
   static buildPyramids(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'pyramid', { maxHeightDivisor: 2.2 });
+    this.buildWallFigure(worldSystem, depth, 'pyramid', { maxHeightDivisor: 2.5 }); //! Pyramid free width
   }
 
-  static buildParapets(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'parapet', { useFlip: true, maxHeightDivisor: 2 });
+  static buildTrenches(worldSystem: WorldSystem, depth: number): void {
+    this.buildWallFigure(worldSystem, depth, 'trenches', { useFlip: true, maxHeightDivisor: 2 });
   }
 
-  static buildSawEdges(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'saw', { useFlip: true, maxHeightDivisor: 2 });
+  static buildLightning(worldSystem: WorldSystem, depth: number): void {
+    this.buildWallFigure(worldSystem, depth, 'lightning', { useFlip: true, maxHeightDivisor: 2 });
   }
 
-  static buildEscalator(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'escalator', { maxHeightDivisor: 2 });
+  static buildSteps(worldSystem: WorldSystem, depth: number): void {
+    this.buildWallFigure(worldSystem, depth, 'steps', { maxHeightDivisor: 2 });
   }
 
   static buildAccelerator(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'accelerator', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'bang', { maxHeightDivisor: 2 });
   }
 
   static buildMaw(worldSystem: WorldSystem, depth: number): void {

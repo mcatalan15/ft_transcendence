@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 15:55:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:08:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,26 +53,23 @@ export class EscalatorDepthLine extends DepthLine {
 		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
 		const peakX = 0;
 
-		const fourthHeight = peakY / 5;
-
+		const fifthHeight = peakY / 5;
 
 		this.points = [
 			new Point(-halfWidth, 0),
-			new Point(-halfWidth, fourthHeight),
-			new Point(-halfWidth + seventhWidth, fourthHeight),
-			new Point(-halfWidth + seventhWidth, fourthHeight * 2),
-			new Point(-halfWidth + (seventhWidth * 2), fourthHeight * 2),
-			new Point(-halfWidth + (seventhWidth * 2), fourthHeight * 3),
-			new Point(-halfWidth + (seventhWidth * 3), fourthHeight * 3),
-			new Point(-halfWidth + (seventhWidth * 3), fourthHeight * 4),
-			new Point(fourteenthWidth, fourthHeight * 4),
-			new Point(fourteenthWidth, fourthHeight * 3),
-			new Point(fourteenthWidth + seventhWidth, fourthHeight * 3),
-			new Point(fourteenthWidth + seventhWidth, fourthHeight * 2),
-			new Point(fourteenthWidth + (seventhWidth * 2), fourthHeight * 2),
-			new Point(fourteenthWidth + (seventhWidth * 2), fourthHeight),
-			new Point(fourteenthWidth + (seventhWidth * 3), fourthHeight),
-			new Point(fourteenthWidth + (seventhWidth * 3), 0),
+			new Point(-halfWidth + seventhWidth, 0),
+			new Point(-halfWidth + seventhWidth, fifthHeight),
+			new Point(-halfWidth + (2 * seventhWidth), fifthHeight),
+			new Point(-halfWidth + (2 * seventhWidth), 2 * fifthHeight),
+			new Point(-halfWidth + (3 * seventhWidth), 2 * fifthHeight),
+			new Point(-halfWidth + (3 * seventhWidth), 3 * fifthHeight),
+			new Point(-halfWidth + (4 * seventhWidth), 3 * fifthHeight),
+			new Point(-halfWidth + (4 * seventhWidth), 2 * fifthHeight),
+			new Point(-halfWidth + (5 * seventhWidth), 2 * fifthHeight),
+			new Point(-halfWidth + (5 * seventhWidth), fifthHeight),
+			new Point(-halfWidth + (6 * seventhWidth), fifthHeight),
+			new Point(-halfWidth + (6 * seventhWidth), 0),
+			new Point(halfWidth, 0),
 		];
 
 		// Use the utility function to draw the path

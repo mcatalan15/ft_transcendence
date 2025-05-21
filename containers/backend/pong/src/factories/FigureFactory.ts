@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 11:56:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:30:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@ import { PongGame } from '../engine/Game';
 
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
-import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
-import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
+import { TrenchesDepthLine } from '../entities/background/TrenchesDepthLine';
+import { LightningDepthLine } from '../entities/background/LightningDepthLine';
 import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
 import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
 import { MawDepthLine } from '../entities/background/MawDepthLine';
@@ -27,10 +27,10 @@ export class FigureFactory {
     static createDepthLine(
         type: 'standard' |
             'pyramid' |
-            'parapet' |
-            'saw' |
-            'escalator' |
-            'accelerator' |
+            'trenches' |
+            'lightning' |
+            'steps' |
+            'bang' |
             'maw'|
             'rake'|
             string,
@@ -45,7 +45,7 @@ export class FigureFactory {
         behavior: DepthLineBehavior,
         flip?: number,
     ): DepthLine {
-        const addedOffset = 10;
+        const addedOffset = 20;
         const upperLimit = topWallOffset + wallThickness - addedOffset;
         const lowerLimit = height - bottomWallOffset + addedOffset;
         const options = {
@@ -65,13 +65,13 @@ export class FigureFactory {
         switch (type) {
             case ('pyramid'):
                 return new PyramidDepthLine(id, 'background', game, options);
-            case ('parapet'):
-                return new ParapetDepthLine(id, 'background', game, options, flip!);
-			case ('saw'):
-                return new SawEdgeDepthLine(id, 'background', game, options, flip!);
-			case ('escalator'):
+            case ('trenches'):
+                return new TrenchesDepthLine(id, 'background', game, options, flip!);
+			case ('lightning'):
+                return new LightningDepthLine(id, 'background', game, options, flip!);
+			case ('steps'):
 				return new EscalatorDepthLine(id, 'background', game, options);
-            case ('accelerator'):
+            case ('bang'):
                 return new AcceleratorDepthLine(id, 'background', game, options);
             case ('maw'):
                 return new MawDepthLine(id, 'background', game, options);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 14:25:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 18:25:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 09:30:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,7 @@ export function circleIntersectsSegment(
     }
     return { intersects: false };
 }
+
 export function lineSegmentsIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number): boolean {
 	const dx1 = x2 - x1;
 	const dy1 = y2 - y1;

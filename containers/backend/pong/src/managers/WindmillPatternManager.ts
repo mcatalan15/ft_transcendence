@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:08:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 18:49:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:59:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@ import { PongGame } from "../engine/Game";
 export class WindmillPatternManager {
 	static createDoubleTopPattern(game: PongGame, position: number) {
 		const longSide = 180;
-		const shortSide = 35;
-		const heightOffset = game.height / 9;
-		const widthOffset = game.width / 4;
+		const shortSide = 17;
+		const heightOffset = game.height / 8;
+		const widthOffset = game.width / 3.5;
 		const rotationAngle = Math.PI / 20; // 15 degrees rotation per position unit
 		const PATH_BREAK = { x: NaN, y: NaN }; 
 	
@@ -119,9 +119,9 @@ export class WindmillPatternManager {
 
 	static createDoubleBottomPattern(game: PongGame, position: number) {
 		const longSide = 180;
-		const shortSide = 45;
-		const heightOffset = game.height / 9;
-		const widthOffset = game.width / 4;
+		const shortSide = 17;
+		const heightOffset = game.height / 10;
+		const widthOffset = game.width / 3.5;
 		const rotationAngle = Math.PI / 20;
 		const PATH_BREAK = { x: NaN, y: NaN };
 	

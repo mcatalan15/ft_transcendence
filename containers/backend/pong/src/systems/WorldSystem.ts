@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 14:44:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:33:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ import { RenderComponent } from '../components/RenderComponent';
 
 import { WallFigureManager } from '../managers/WallFigureManager';
 import { ObstacleManager } from '../managers/ObstacleManager';
+import { WorldManager } from '../managers/WorldManager';
 
 import { FigureFactory } from '../factories/FigureFactory';
 
@@ -29,7 +30,6 @@ import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
     game: PongGame;
-    worldTimer: number;
     private depthLineCooldown: number = 10;
     private lastLineSpawnTime: number = 0;
     figureQueue: DepthLine[] = [];
@@ -37,16 +37,21 @@ export class WorldSystem implements System {
         
     private wallFigureManager: WallFigureManager;
     private obstacleManager: ObstacleManager;
+    private worldManager: WorldManager;
 
     private spawningMode: number = -1;
     private spawningTimer: number = 200;
     
     constructor(game: PongGame) {
         this.game = game;
-        this.worldTimer = 1000;
         
         this.wallFigureManager = new WallFigureManager();
         this.obstacleManager = new ObstacleManager();
+        this.worldManager = new WorldManager();
+
+        this.worldManager.populateWorlds(game.worldPool);
+        game.currentWorld = game.worldPool[0];
+        //game.renderLayers.ui.addChild(game.currentWorld.graphic);
         
         this.game.entities.forEach(entity => {
             if (isUI(entity)) {
@@ -56,14 +61,8 @@ export class WorldSystem implements System {
     }
 
     update(entities: Entity[], delta: FrameData) {
-        this.worldTimer -= delta.deltaTime;
         this.spawningTimer -= delta.deltaTime;
         this.depthLineCooldown -= delta.deltaTime;
-
-        /* if (this.worldTimer <= 0) {
-            this.changeWorld();
-            this.worldTimer = 1000;
-        } */
 
         if (this.depthLineCooldown <= 0) {
             if (this.figureQueue.length > 0) {
@@ -105,19 +104,14 @@ export class WorldSystem implements System {
         this.initializeDepthLines(entities);
     }
 
-    changeWorld() {
-        const worldKeys = Object.keys(this.game.worldPool) as Array<keyof typeof this.game.worldPool>;
-        
-        const randomWorldKey = worldKeys[Math.floor(Math.random() * worldKeys.length)];
-        
-        const randomWorld = this.game.worldPool[randomWorldKey];
-        
+    changeWorld(id: string) {
+        const idx = this.worldManager.selectWorld(id);
+        const nextWorld = this.game.worldPool[idx];
         const changeWorldEvent: GameEvent = {
             type: "CHANGE_WORLD",
-            target: randomWorld
-        };
-        
-        this.game.eventQueue.push(changeWorldEvent);
+            target: nextWorld
+          };
+          this.game.eventQueue.push(changeWorldEvent);
     }
     
     processEvents(entities: Entity[]): void {
@@ -149,6 +143,7 @@ export class WorldSystem implements System {
         this.lastLineSpawnTime = Date.now();
 
 		let uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        this.changeWorld(uniqueId);
 
 		let behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in');
 		let behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in');
@@ -175,6 +170,7 @@ export class WorldSystem implements System {
     spawnFromFigureQueue() {
         {
             let line = this.figureQueue.pop();
+            this.changeWorld(line!.id);
     
             if (line) {
                 this.game.addEntity(line);
@@ -190,6 +186,7 @@ export class WorldSystem implements System {
     spawnFromObstacleQueue() {
         {
             let line = this.obstacleQueue.pop();
+            this.changeWorld(line!.id);
     
             if (line) {
                 this.game.addEntity(line);

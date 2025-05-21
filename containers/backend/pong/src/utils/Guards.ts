@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 10:34:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:27:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ import { Powerup } from '../entities/powerups/Powerup'
 
 import { DepthLine } from '../entities/background/DepthLine';
 import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
-import { ParapetDepthLine } from '../entities/background/ParapetDepthLine';
-import { SawEdgeDepthLine } from '../entities/background/SawEdgeDepthLine';
+import { TrenchesDepthLine } from '../entities/background/TrenchesDepthLine';
+import { LightningDepthLine } from '../entities/background/LightningDepthLine';
 import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
 import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
 import { MawDepthLine } from '../entities/background/MawDepthLine';
@@ -36,8 +36,8 @@ import { WindmillSegment } from '../entities/obstacles/WindmillSegment';
 
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
-import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
-import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
+import { RectangleCrossCut } from '../entities/crossCuts/TrenchesCrossCut';
+import { LightningCrossCut } from '../entities/crossCuts/LightningCrossCut';
 
 import { SpinBall } from '../entities/balls/SpinBall';
 
@@ -79,12 +79,12 @@ export function isPyramidDepthLine(entity: Entity): entity is PyramidDepthLine {
 	return entity instanceof PyramidDepthLine;
 }
 
-export function isParapetDepthLine(entity: Entity): entity is ParapetDepthLine {
-	return entity instanceof ParapetDepthLine;
+export function isParapetDepthLine(entity: Entity): entity is TrenchesDepthLine {
+	return entity instanceof TrenchesDepthLine;
 }
 
-export function isSawDepthLine(entity: Entity): entity is SawEdgeDepthLine {
-	return entity instanceof SawEdgeDepthLine;
+export function isLightningDepthLine(entity: Entity): entity is LightningDepthLine {
+	return entity instanceof LightningDepthLine;
 }
 
 export function isEscalatorDepthLine(entity: Entity): entity is EscalatorDepthLine {
@@ -143,8 +143,8 @@ export function isRectangleCut(cut: CrossCut): cut is RectangleCrossCut {
 	return cut instanceof RectangleCrossCut;
 }
 
-export function isSawCut(cut: CrossCut): cut is SawCrossCut {
-	return cut instanceof SawCrossCut;
+export function isSawCut(cut: CrossCut): cut is LightningCrossCut {
+	return cut instanceof LightningCrossCut;
 }
 
 export function isAnimationSystem(system: System): system is AnimationSystem {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:50:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ import { isPaddle,
 		isPowerup,
 		isPyramidDepthLine,
 		isParapetDepthLine,
-		isSawDepthLine,
+		isLightningDepthLine,
 		isEscalatorDepthLine,
 		isAcceleratorDepthLine,
 		isMawDepthLine,
@@ -376,7 +376,7 @@ export class AnimationSystem implements System {
 		} else if (isParapetDepthLine(entity)) {
 			cutType = 'Parapet';
 			points = [...entity.points];
-		} else if (isSawDepthLine(entity)) {
+		} else if (isLightningDepthLine(entity)) {
 			cutType = 'Saw';
 			points = [...entity.points];
 		} else if (isEscalatorDepthLine(entity)) {

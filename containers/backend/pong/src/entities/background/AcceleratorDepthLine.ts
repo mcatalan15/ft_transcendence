@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 15:55:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:28:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,26 +51,27 @@ export class AcceleratorDepthLine extends DepthLine {
 
 		const halfWidth = width / 2  * sign;
 		const fourthWidth = width / 4 * sign;
-		const eigthWidth = width / 8 * sign;
+		const eigthWidth = width / 16 * sign;
 
 		const peakY = this.behavior?.direction === 'downwards' ? -this.peakHeight! : this.peakHeight!;
 
-		const fourthHeight = peakY / 4;
+		const halfHeight = peakY / 1.2;
+		const thirdHeight = peakY / 3.5;
 		const eigthHeight = peakY / 8;
-
 
 		this.points = [
 			new Point(-halfWidth, 0),
-			new Point(-halfWidth, fourthHeight * 2),
-			new Point(-halfWidth + offset, fourthHeight * 2),
-			new Point(-halfWidth + (fourthWidth / 2), eigthHeight),
-			new Point(-halfWidth + fourthWidth + eigthWidth / 2, eigthHeight * 7),
-			new Point(fourthWidth - eigthWidth / 2, eigthHeight * 7),
+			new Point(-halfWidth + eigthWidth, 0),
+			new Point(-halfWidth + (2 * eigthWidth), thirdHeight),
+			new Point(-halfWidth + (3 * eigthWidth), eigthHeight),
+			new Point(-halfWidth + (4 * eigthWidth), halfHeight),
+			new Point(fourthWidth, halfHeight),
 			new Point(fourthWidth + eigthWidth, eigthHeight),
-			new Point(halfWidth - offset, fourthHeight * 2),
-			new Point(halfWidth, fourthHeight * 2),
+			new Point(fourthWidth + 2 * eigthWidth, thirdHeight),
+			new Point(fourthWidth + 3 * eigthWidth, 0),
 			new Point(halfWidth, 0),
 		];
+
 
 		// Use the utility function to draw the path
 		drawPointOpenPath(line, this.points, color);

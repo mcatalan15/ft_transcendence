@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 19:09:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:59:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import type { TextComponent } from '../components/TextComponent';
 
 import { isUI } from '../utils/Guards';
 import { GameEvent } from '../utils/Types'
+
 
 export class UISystem implements System {
 	private game: PongGame;
@@ -64,13 +65,13 @@ export class UISystem implements System {
 
 					if (tag === 'score' || textComponent.instanceId === 'score') {
 						textObject.x = this.game.width / 2;
-						textObject.y = entity.topOffset - 5;
+						textObject.y = entity.topOffset + 10;
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
 						textObject.x = entity.width - 50;
-						textObject.y = entity.topOffset + 5;
+						textObject.y = entity.topOffset + 20;
 					} else if (tag == 'world' || textComponent.instanceId === 'world') {
-						textObject.x = 30;
-						textObject.y = entity.topOffset + 5;
+						textObject.x = 20;
+						textObject.y = entity.topOffset + 20;
 					}
 
 					this.ensureTextIsRendered(textComponent, textObject);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 15:35:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:00:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 
+// Import pertinent managers
+import { WorldManager } from '../managers/WorldManager';
+
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
 import { InputSystem } from '../systems/InputSystem';
@@ -45,8 +48,7 @@ import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { BallSpawner } from '../spawners/BallSpawner'
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player } from '../utils/Types'
-import { createWorld } from '../utils/Utils'
+import { FrameData, GameEvent, GameSounds, World, Player } from '../utils/Types'
 
 export class PongGame {
 	app: Application;
@@ -75,11 +77,7 @@ export class PongGame {
 	};
 	visualRoot: Container;
 	sounds!: GameSounds;
-	worldPool!: {
-		desertWorld: World,
-		cityWorld: World,
-		abyssWorld: World,
-	};
+	worldPool: World[] = [];
 	currentWorld!: World;
 
 	constructor(app: Application) {
@@ -131,9 +129,6 @@ export class PongGame {
 		
 		await this.createEntities();
 		console.log('All Entities created');
-
-		this.populateWorlds();
-		this.currentWorld = this.worldPool.desertWorld;
 
 		this.initSystems();
 		console.log('All Systems initialiazed');
@@ -294,14 +289,6 @@ export class PongGame {
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);
-	}
-
-	populateWorlds() {
-		this.worldPool = {
-			desertWorld: createWorld('desert', 'Desert of Spiked Reflections', WORLD_COLORS.marine),
-			cityWorld: createWorld('ruins', 'Ruins of Yonder', WORLD_COLORS.marine),
-			abyssWorld: createWorld('abyss', 'Pelagic Netherscape', WORLD_COLORS.marine),
-		};
 	}
 
 	addEntity(entity: Entity): void {

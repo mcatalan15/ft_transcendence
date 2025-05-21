@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:02:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../engine/Game'
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from "../components/RenderComponent";
 import { PostProcessingComponent } from "../components/PostProcessingComponent";
-import { WORLD_COLORS } from '../utils/Types';
+import { GAME_COLORS } from '../utils/Types';
 
 export class PostProcessingLayer extends Entity {
     constructor(id: string, layer: string, game: PongGame) {
@@ -116,7 +116,7 @@ export class PostProcessingLayer extends Entity {
 
         const powerupGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.marine,
+            color: GAME_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -126,7 +126,7 @@ export class PostProcessingLayer extends Entity {
 
         const powerdownGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.marine,
+            color: GAME_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -136,7 +136,7 @@ export class PostProcessingLayer extends Entity {
 
         const ballChangeGlow = new GlowFilter({
             alpha: 0.2,
-            color: WORLD_COLORS.marine,
+            color: GAME_COLORS.marine,
             distance: 10,
             innerStrength: 3,
             knockout: false,
@@ -147,7 +147,7 @@ export class PostProcessingLayer extends Entity {
         const powerupDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.green,
+            color: GAME_COLORS.green,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,
@@ -157,7 +157,7 @@ export class PostProcessingLayer extends Entity {
         const powerdownDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.red,
+            color: GAME_COLORS.red,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,
@@ -167,7 +167,7 @@ export class PostProcessingLayer extends Entity {
         const ballChangeDropShadow = new DropShadowFilter({
             alpha: 0.75,
             blur: 1,
-            color: WORLD_COLORS.brown,
+            color: GAME_COLORS.brown,
             offset: {x: 4,y: 4},
             pixelSize: {x:1,y:1},
             quality: 4,

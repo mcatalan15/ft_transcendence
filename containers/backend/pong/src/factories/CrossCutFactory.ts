@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 09:07:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:49:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ import { PongGame } from '../engine/Game';
 
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
-import { RectangleCrossCut } from '../entities/crossCuts/RectangleCrossCut';
-import { SawCrossCut } from '../entities/crossCuts/SawCrossCut';
+import { RectangleCrossCut } from '../entities/crossCuts/TrenchesCrossCut';
+import { LightningCrossCut } from '../entities/crossCuts/LightningCrossCut';
 import { EscalatorCrossCut } from '../entities/crossCuts/EscalatorCrossCut';
 import { AcceleratorCrossCut } from '../entities/crossCuts/AcceleratorCrossCut';
 import { MawCrossCut } from '../entities/crossCuts/MawCrossCut';
@@ -74,7 +74,7 @@ export class CrossCutFactory {
                 );
                 break;
             case ('saw'):
-                cut = new SawCrossCut(
+                cut = new LightningCrossCut(
                     `cut-saw-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'saw', 

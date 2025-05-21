@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:57:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:02:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ import { RenderComponent } from '../components/RenderComponent'
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
 
-import { WORLD_COLORS } from '../utils/Types';
+import { GAME_COLORS } from '../utils/Types';
 
 export class BallSpawner {
 	static spawnDefaultBall(game: PongGame): void {
@@ -96,9 +96,9 @@ export class BallSpawner {
 
             const vfx = clone.getComponent('vfx') as VFXComponent;
             if (clone.isGoodBall) {
-                vfx.startFlash(WORLD_COLORS.forest, 20);
+                vfx.startFlash(GAME_COLORS.forest, 20);
             } else {
-                vfx.startFlash(WORLD_COLORS.city, 20);
+                vfx.startFlash(GAME_COLORS.city, 20);
             }
     
             console.log(`${isGoodBall ? "REAL" : "FAKE"} MultiplyBall spawned at (${clonePhysics.x}, ${clonePhysics.y})`);

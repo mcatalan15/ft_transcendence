@@ -27,11 +27,27 @@ export class ObstacleSpawner {
 	}
 
 	static buildPachinko(worldSystem: WorldSystem, depth: number, pattern: number): void {
-		this.buildObstacle(worldSystem, depth, 'pachinko', pattern);
+		switch (pattern) {
+			case (0):
+				this.buildObstacle(worldSystem, depth, 'diamondPachinko', pattern);
+				break;
+			case (1):
+				this.buildObstacle(worldSystem, depth, 'honeycombPachinko', pattern);
+				break;
+			default:
+				this.buildObstacle(worldSystem, depth, 'funnelPachinko', pattern);
+		}
 	}
 
 	static buildWindmills(worldSystem: WorldSystem, depth: number, pattern: number): void {
-		this.buildObstacle(worldSystem, depth, 'windmill', pattern);
+		switch (pattern) {
+			case (0):
+				this.buildObstacle(worldSystem, depth, 'topWindmill', pattern);
+				break;
+			default:
+				this.buildObstacle(worldSystem, depth, 'bottomWindmill', pattern);
+		}
+		
 	}
 
 	// Utils

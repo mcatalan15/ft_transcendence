@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 15:54:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:17:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Graphics, Point} from 'pixi.js'
 import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
 
-import { World, GameEvent } from './Types'
+import { GameEvent } from './Types'
 
 export function createEntitiesMap(entities: Entity[]): Map<string, Entity> {
 	const map = new Map<string, Entity>();
@@ -23,10 +23,6 @@ export function createEntitiesMap(entities: Entity[]): Map<string, Entity> {
 		map.set(entity.id, entity);
 	}
 	return map;
-}
-
-export function createWorld(theme: string, name: string, color: number): World {
-	return { theme, name, color };
 }
 
 export function drawPointPath(graphic: Graphics, points: Point[], color: number, fill: boolean = false): void {

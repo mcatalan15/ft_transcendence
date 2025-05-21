@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SawCrossCut.ts                                     :+:      :+:    :+:   */
+/*   LightningCrossCut.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,7 +14,7 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
-export class SawCrossCut extends CrossCut {
+export class LightningCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
     }

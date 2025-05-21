@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 09:57:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:26:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ export class WallFigureManager {
                     break;
                 case (2):
                     console.log('Spawning parapets obstacle');    
-                    WallFiguresSpawner.buildParapets(worldSystem, depth);
+                    WallFiguresSpawner.buildTrenches(worldSystem, depth);
                     break;
 				case (3):
 					console.log('Spawning sawedge obstacle');
-                    WallFiguresSpawner.buildSawEdges(worldSystem, depth);
+                    WallFiguresSpawner.buildLightning(worldSystem, depth);
 					break;
                 case (4):
                     console.log('Spawning escalator obstacle');
-                    WallFiguresSpawner.buildEscalator(worldSystem, depth);
+                    WallFiguresSpawner.buildSteps(worldSystem, depth);
                     break;
                 case (5):
                     console.log('Spawning accelerator obstacle');

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/16 18:06:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:48:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ import { PongGame } from '../../engine/Game';
 
 import { CrossCut } from '../../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../../entities/crossCuts/TriangleCrossCut';
-import { RectangleCrossCut } from '../../entities/crossCuts/RectangleCrossCut';
-import { SawCrossCut } from '../../entities/crossCuts/SawCrossCut';
+import { RectangleCrossCut } from './TrenchesCrossCut';
+import { SawCrossCut } from './LightningCrossCut';
 import { EscalatorCrossCut } from '../../entities/crossCuts/EscalatorCrossCut';
 import { AcceleratorCrossCut } from '../../entities/crossCuts/AcceleratorCrossCut';
 import { MawCrossCut } from '../../entities/crossCuts/MawCrossCut';

@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 11:09:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:02:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Point, TextStyle } from 'pixi.js'
+import { Graphics, Point, TextStyle } from 'pixi.js'
 
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter } from 'pixi-filters'
 
@@ -113,12 +113,12 @@ export interface GameSounds {
 }
 
 export interface World {
-	theme: string;
+	tag: string;
 	name: string;
 	color: number;
 }
 
-export const WORLD_COLORS = {
+export const GAME_COLORS = {
 	red: 0xea3d37,
 	brown: 0xcf7f45,
 	rose: 0xd35461,
@@ -126,14 +126,6 @@ export const WORLD_COLORS = {
 	violet: 0x835a83,
 	green: 0x2ea17c,
 	marine: 0x204c93
-	/* desert: 0xFBBF24,
-	city: 0xF32A4D,
-	abyss: 0xD946EF,
-	forest: 0x65A30D,
-	ice: 0x67E8F9,
-	fire: 0xEA580C,
-	sky: 0x38BDF8,
-	void: 0x7C3AED */
 }
 
 export interface DepthLineOptions {

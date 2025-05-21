@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 18:26:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:52:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,161 +64,56 @@ export class PhysicsSystem implements System {
 
 	updatePaddle(paddle: Paddle, entitiesMap: Map<string, Entity>) {
 		const input = paddle.getComponent('input') as InputComponent;
-		const physics = paddle.getComponent('physics') as PhysicsComponent;
-		
-		if (!input || !physics) return;
-	
-		const originalY = physics.y;
-		
-		this.applyInputToPaddle(input, physics, paddle);
-		
-		physics.y += physics.velocityY;
-		
-		let collided = this.handlePaddleCutCollisions(physics, entitiesMap, paddle);
-		if (!collided) {
-			collided = this.constrainPaddleToWalls(physics, entitiesMap);
-		}
-	
-		if (collided) {
-			physicsUtils.findExactCollisionPosition(this, paddle, physics, originalY, entitiesMap);
-		}
-	}
+        const physics = paddle.getComponent('physics') as PhysicsComponent;
+        
+        if (!input || !physics) return;
 
-	handlePaddleCutCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, paddle: Paddle): boolean {
-		const paddleHalfWidth = physics.width / 2;
-		const paddleHalfHeight = physics.height / 2;
-		
-		const paddleBox = {
-			left: physics.x - paddleHalfWidth,
-			right: physics.x + paddleHalfWidth,
-			top: physics.y - paddleHalfHeight,
-			bottom: physics.y + paddleHalfHeight
-		};
-		
-		for (const entity of entitiesMap.values()) {
-			if (entity instanceof CrossCut) {
-				const cutPhysics = entity.getComponent('physics') as PhysicsComponent;
-				
-				if (!cutPhysics || !cutPhysics.isPolygonal || !cutPhysics.physicsPoints) {
-					continue;
-				}
-
-				const cutOffsetX = cutPhysics.x;
-				const cutOffsetY = cutPhysics.y;
-
-				for (let i = 0; i < cutPhysics.nPolygons!; i++) {
-					const polygon = cutPhysics.physicsPoints[i];
-					
-					if (!polygon || polygon.length < 3) {
-						continue;
-					}
-					
-					const paddleCorners = [
-						{ x: paddleBox.left, y: paddleBox.top },
-						{ x: paddleBox.right, y: paddleBox.top },
-						{ x: paddleBox.right, y: paddleBox.bottom },
-						{ x: paddleBox.left, y: paddleBox.bottom }
-					];
-					
-					let collided = false;
-					
-					for (let j = 0; j < polygon.length; j++) {
-						const pointA = { 
-							x: polygon[j].x + cutOffsetX, 
-							y: polygon[j].y + cutOffsetY 
-						};
-						const pointB = { 
-							x: polygon[(j + 1) % polygon.length].x + cutOffsetX, 
-							y: polygon[(j + 1) % polygon.length].y + cutOffsetY 
-						};
-						
-						for (let k = 0; k < paddleCorners.length; k++) {
-							const cornerA = paddleCorners[k];
-							const cornerB = paddleCorners[(k + 1) % paddleCorners.length];
-							
-							if (physicsUtils.lineSegmentsIntersect(
-								cornerA.x, cornerA.y, cornerB.x, cornerB.y,
-								pointA.x, pointA.y, pointB.x, pointB.y
-							)) {
-								collided = true;
-								break;
-							}
-						}
-						
-						if (collided) break;
-					}
-					
-					if (!collided) {
-						for (const corner of paddleCorners) {
-							if (physicsUtils.pointInPolygon(corner.x, corner.y, polygon, cutOffsetX, cutOffsetY)) {
-								collided = true;
-								break;
-							}
-						}
-					}
-					
-					if (!collided) {
-						for (const point of polygon) {
-							const worldX = point.x + cutOffsetX;
-							const worldY = point.y + cutOffsetY;
-							
-							if (worldX >= paddleBox.left && worldX <= paddleBox.right &&
-								worldY >= paddleBox.top && worldY <= paddleBox.bottom) {
-								collided = true;
-								break;
-							}
-						}
-					}
-					
-					if (collided) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
+        this.applyInputToPaddle(input, physics, paddle);
+        
+        this.constrainPaddleToWalls(physics, entitiesMap);
 	}
 
 	applyInputToPaddle(input: InputComponent, physics: PhysicsComponent, paddle: Paddle) {
-		const speed = paddle.isStunned? 0 : physics.speed || 5;
-	
-		if (input.upPressed) {
-			physics.velocityY = -speed * paddle.inversion * paddle.slowness;
-		} else if (input.downPressed) {
-			physics.velocityY = speed * paddle.inversion * paddle.slowness;
-		} else {
-			physics.velocityY = 0;
-		}
-	}
+        const speed = paddle.isStunned? 0 : physics.speed || 5;
 
-    constrainPaddleToWalls(physics: PhysicsComponent, entitiesMap: Map<string, Entity>): boolean {
-		let collided = false;
-		
-		const wallT = entitiesMap.get('wallT');
+        if (input.upPressed) {
+            physics.velocityY = -speed * paddle.inversion * paddle.slowness;
+        } else if (input.downPressed) {
+            physics.velocityY = speed * paddle.inversion * paddle.slowness;
+        } else {
+            physics.velocityY = 0;
+        }
+
+        physics.y += physics.velocityY;
+    }
+
+    constrainPaddleToWalls(physics: PhysicsComponent, entitiesMap: Map<string, Entity>) {
+        // Top wall collision
+        const wallT = entitiesMap.get('wallT');
 		if (wallT) {
-			const wallPhysics = wallT.getComponent('physics') as PhysicsComponent;
-			const wallBottom = wallPhysics.y + (wallPhysics.height / 2);
-			const paddleTop = physics.y - (physics.height / 2);
-	
-			if (paddleTop < wallBottom) {
-				collided = true;
-			}
-		}
-	
-		const wallB = entitiesMap.get('wallB');
-		if (wallB) {
-			const wallPhysics = wallB.getComponent('physics') as PhysicsComponent;
-			const wallTop = wallPhysics.y - (wallPhysics.height / 2);
+            const wallPhysics = wallT.getComponent('physics') as PhysicsComponent;
+            const wallBottom = wallPhysics.y + (wallPhysics.height / 2)
+            const paddleTop = physics.y - (physics.height / 2);
+
+            if (paddleTop < wallBottom) {
+                physics.y = wallBottom + (physics.height / 2);
+                physics.velocityY = 0;
+            }
+        }
+
+        // Bottom wall collision
+		const wallB = entitiesMap.get('wallB')
+        if (wallB) {
+            const wallPhysics = wallB.getComponent('physics') as PhysicsComponent;
+            const wallTop = wallPhysics.y - (wallPhysics.height / 2);
 			const paddleBottom = physics.y + (physics.height / 2);
-	
-			if (paddleBottom > wallTop) {
-				collided = true;
-			}
-		}
-		
-		return collided;
-	}
+
+            if (paddleBottom > wallTop) {
+                physics.y = wallTop - (physics.height / 2);
+                physics.velocityY = 0;
+            }
+        }
+    }
 
 	updateBall(ball: Ball, entities: Entity[], entitiesMap: Map<string, Entity>) {
 		const physics = ball.getComponent('physics') as PhysicsComponent;
@@ -301,7 +196,6 @@ export class PhysicsSystem implements System {
 						continue;
 					}
 					
-					// First check for vertex collisions (most critical for corners)
 					for (let j = 0; j < polygon.length; j++) {
 						const vertex = { 
 							x: polygon[j].x + cutOffsetX, 
@@ -313,16 +207,13 @@ export class PhysicsSystem implements System {
 						const distanceSq = dx * dx + dy * dy;
 						
 						if (distanceSq <= ballRadius * ballRadius) {
-							// Vertex collision
 							const distance = Math.sqrt(distanceSq);
 							const nx = distance > 0 ? dx / distance : 0;
 							const ny = distance > 0 ? dy / distance : 0;
 							
-							// Position the ball outside the vertex
-							physics.x = vertex.x + nx * (ballRadius + 0.1); // Small buffer
+							physics.x = vertex.x + nx * (ballRadius + 0.1);
 							physics.y = vertex.y + ny * (ballRadius + 0.1);
 							
-							// Reflect velocity
 							const dotVelocity = physics.velocityX * nx + physics.velocityY * ny;
 							physics.velocityX -= 2 * dotVelocity * nx;
 							physics.velocityY -= 2 * dotVelocity * ny;
@@ -335,7 +226,6 @@ export class PhysicsSystem implements System {
 					
 					if (collided) break;
 					
-					// Then check for edge collisions
 					for (let j = 0; j < polygon.length; j++) {
 						const pointA = { 
 							x: polygon[j].x + cutOffsetX, 
@@ -348,11 +238,9 @@ export class PhysicsSystem implements System {
 						
 						const collision = physicsUtils.circleIntersectsSegment(ballCenter, ballRadius, pointA, pointB);
 						if (collision.intersects && collision.normal) {
-							// Position the ball correctly
 							physics.x = collision.point!.x + collision.normal.x * (ballRadius + 0.1);
 							physics.y = collision.point!.y + collision.normal.y * (ballRadius + 0.1);
 							
-							// Reflect velocity based on contact normal
 							const dotVelocity = physics.velocityX * collision.normal.x + physics.velocityY * collision.normal.y;
 							physics.velocityX -= 2 * dotVelocity * collision.normal.x;
 							physics.velocityY -= 2 * dotVelocity * collision.normal.y;
@@ -365,9 +253,7 @@ export class PhysicsSystem implements System {
 					
 					if (collided) break;
 					
-					// Finally check if ball is inside polygon (emergency case)
 					if (physicsUtils.pointInPolygon(ballCenter.x, ballCenter.y, polygon, cutOffsetX, cutOffsetY)) {
-						// Find the closest edge and push the ball out
 						let minDist = Infinity;
 						let closestEdgeNormal = { x: 0, y: 0 };
 						let closestPoint = { x: 0, y: 0 };
@@ -403,23 +289,19 @@ export class PhysicsSystem implements System {
 								minDist = distance;
 								closestPoint = closest;
 								
-								// Calculate normal pointing out of the polygon
 								const nx = -edgeVector.y / edgeLength;
 								const ny = edgeVector.x / edgeLength;
 								
-								// Make sure normal points out of the polygon
 								const centerToEdge = { x: closest.x - ballCenter.x, y: closest.y - ballCenter.y };
 								const dot = nx * centerToEdge.x + ny * centerToEdge.y;
 								closestEdgeNormal = dot > 0 ? { x: nx, y: ny } : { x: -nx, y: -ny };
 							}
 						}
 						
-						// Push ball out of the polygon with a little extra to avoid sticking
 						const pushOutDistance = ballRadius + 0.1;
 						physics.x = closestPoint.x + closestEdgeNormal.x * pushOutDistance;
 						physics.y = closestPoint.y + closestEdgeNormal.y * pushOutDistance;
 						
-						// Reflect velocity
 						const dotVelocity = physics.velocityX * closestEdgeNormal.x + physics.velocityY * closestEdgeNormal.y;
 						physics.velocityX -= 2 * dotVelocity * closestEdgeNormal.x;
 						physics.velocityY -= 2 * dotVelocity * closestEdgeNormal.y;
