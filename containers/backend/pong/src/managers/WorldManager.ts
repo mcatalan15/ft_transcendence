@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WorldManager.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:42:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:35:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ export class WorldManager {
     }
 
     selectWorld(id: string): number {
-        console.log(id);
+        //console.log(id);
         if (id.includes('pyramid')) return (2);
         if (id.includes('trenches')) return (3);
         if (id.includes('lightning')) return (4);

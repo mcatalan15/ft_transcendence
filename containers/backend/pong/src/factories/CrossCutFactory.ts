@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CrossCutFactory.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 11:49:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:36:14 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,8 +173,7 @@ export class CrossCutFactory {
                 console.warn(`Unknown cross-cut type with ${type} type`);
                 return null;
         }
-        const physics = cut.getComponent('physics') as PhysicsComponent;
-        console.log(physics.physicsPoints);
+        
         game.addEntity(cut);
         
         const render = cut.getComponent('render') as RenderComponent;

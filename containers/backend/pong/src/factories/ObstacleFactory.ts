@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ObstacleFactory.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:46:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:47:20 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@ export class ObstacleFactory {
 			despawn: 'time',
 			behavior: behavior,
 		}
+		console.log(type);
 		
-		switch (type) {
-			case ('pachinko'):
-				return new PachinkoSegment(game, options, type, id, 'background', pattern!);
-			case ('ledge'):
-				return new LedgeSegment(game, options, type, id, 'background');
-			default:
-				return new WindmillSegment(game, options, type, id, 'background', pattern!, position!);
+		if (type.includes('Pachinko')) {
+			return new PachinkoSegment(game, options, type, id, 'background', pattern!);
+		} else if (type.includes('ledge')) {
+			return new LedgeSegment(game, options, type, id, 'background');
+		} else {
+			return new WindmillSegment(game, options, type, id, 'background', pattern!, position!);
 		} 
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WorldSystem.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:33:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:30:55 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ export class WorldSystem implements System {
 
         this.worldManager.populateWorlds(game.worldPool);
         game.currentWorld = game.worldPool[0];
-        //game.renderLayers.ui.addChild(game.currentWorld.graphic);
         
         this.game.entities.forEach(entity => {
             if (isUI(entity)) {
