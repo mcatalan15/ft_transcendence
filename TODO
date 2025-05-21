@@ -206,24 +206,24 @@ GOOGLE SIGN-IN:
 
 ```
 ┌────────┐      ┌────────────┐      ┌────────────┐      ┌────────────┐
-│Player 1 │      │WebSocketMgr │      │  Backend   │      │Game Session│
+│Player 1│      │WebSocketMgr│      │  Backend   │      │Game Session│
 └───┬────┘      └─────┬──────┘      └─────┬──────┘      └─────┬──────┘
-    │  Press 'W' key   │                  │                   │
-    │────────────────> │                  │                   │
-    │                  │                  │                   │
-    │                  │  PADDLE_INPUT    │                   │
-    │                  │ (player: 1, dir: -1)                 │
-    │                  │────────────────> │                   │
-    │                  │                  │                   │
-    │                  │                  │ setPlayerInput()  │
-    │                  │                  │──────────────────>│
-    │                  │                  │                   │
-    │                  │                  │                   │
-    │                  │                  │  Update paddle    │
-    │                  │                  │  position         │
-    │                  │                  │ <────────────────│
-    │                  │                  │                   │
-    │                  │                  │                   │
+    │  Press 'W' key  │                   │                   │
+    │────────────────>│                   │                   │
+    │                 │                   │                   │
+    │                 │  PADDLE_INPUT     │                   │
+    │                 │ (player: 1, dir: -1)                  │
+    │                 │────────────────>  │                   │
+    │                 │                   │                   │
+    │                 │                   │ setPlayerInput()  │
+    │                 │                   │──────────────────>│
+    │                 │                   │                   │
+    │                 │                   │                   │
+    │                 │                   │  Update paddle    │
+    │                 │                   │  position         │
+    │                 │                   │  <────────────────│
+    │                 │                   │                   │
+    │                 │                   │                   │
 ```
 
 ## Cross-Browser Issue in Joining Flow
