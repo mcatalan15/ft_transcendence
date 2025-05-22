@@ -46,10 +46,11 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 	paddle2.x = 1470;
 	paddle2.y = 250;
   
-  // Initialize WebSocket connection
   const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
 
   // IMPORTANT: Register handlers BEFORE connecting
+ wsManagerPong.registerPlayerAssignmentHandler();
+
  wsManagerPong.registerHandler('GAME_START', () => {
     console.log('Game started!');
   });
@@ -65,7 +66,6 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
   
  wsManagerPong.registerHandler('GAME_STATE_UPDATE', (message) => {
 
-	// Extract the actual game state data (handle both possible structures)
 	const gameState = message.data || message;
 
 	if (gameState && gameState.ball) {
@@ -83,12 +83,12 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
 
 	});
 
-  // Now connect after registering handlers
   try {
     await wsManagerPong.connect(gameId);
     console.log('Connected to game session');
 
-    // Handle keyboard input
+	playerNumber = wsManagerPong.getPlayerNumber() || (isHost ? 1 : 2);
+
     document.addEventListener('keydown', (e) => {
 
       if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 

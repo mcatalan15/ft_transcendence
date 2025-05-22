@@ -7,7 +7,7 @@ function setupGameWebSocket(gameWss, redisService, gameManager) {
     let playerId = null;
     let currentGameId = gameId;
 
-    // Set up heartbeat to detect disconnections
+    // heartbeat to detect disconnections
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
 
@@ -15,23 +15,27 @@ function setupGameWebSocket(gameWss, redisService, gameManager) {
       try {
         const data = JSON.parse(message.toString());
 
-		if (data.type === 'IDENTIFY' && data.gameId) {
+		if (data.type === 'IDENTIFY') {
 			currentGameId = data.gameId;
 			playerId = data.playerId;
 			
-			// Re-join socket to game session if it exists
 			const gameSession = gameManager.getSession(currentGameId);
 			if (gameSession) {
-			  gameManager.addPlayerToSession(currentGameId, playerId, ws);
-			  console.log(`Player ${playerId} reconnected to game ${currentGameId}`);
+				gameManager.addPlayerToSession(currentGameId, playerId, ws);
+				console.log(`Player ${playerId} reconnected to game ${currentGameId}`);
+				
+				if (data.playerNumber) {
+					ws.send(JSON.stringify({
+						type: 'PLAYER_ASSIGNED',
+						playerNumber: data.playerNumber
+					}));
+				}
 			}
-		  }
+		}
 
-        // Extract player ID and game ID from message
         if (data.playerId) playerId = data.playerId;
         if (data.gameId) currentGameId = data.gameId;
 
-        // Handle different message types
         switch (data.type) {
           case 'CREATE_GAME':
             await handleCreateGame(ws, data, redisService, gameManager);
@@ -56,7 +60,6 @@ function setupGameWebSocket(gameWss, redisService, gameManager) {
     });
   });
 
-  // Set up the ping interval
   const pingInterval = setInterval(() => {
     gameWss.clients.forEach(ws => {
       if (ws.isAlive === false) return ws.terminate();

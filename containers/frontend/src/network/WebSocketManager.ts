@@ -8,12 +8,24 @@ export class WebSocketManager {
     private messageHandlers: Map<string, (data: any) => void> = new Map();
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
+	private playerNumberAssigned: boolean = false;
+    private currentPlayerNumber: number | null = null;
     
     private static instance: WebSocketManager | null = null;
 
     setPlayerRole(role: 'host' | 'guest') {
         this.playerRole = role;
         console.log('Player role set to:', this.playerRole);
+    }
+
+    getPlayerNumber(): number | null {
+        return this.currentPlayerNumber;
+    }
+    
+    setPlayerNumber(num: number): void {
+        this.currentPlayerNumber = num;
+        this.playerNumberAssigned = true;
+        sessionStorage.setItem('playerNumber', num.toString());
     }
 
     public static getInstance(playerId: string): WebSocketManager {
@@ -63,10 +75,13 @@ export class WebSocketManager {
                 console.log('WebSocket connection OPENED successfully');
                 this.isConnecting = false;
 
+				const storedPlayerNumber = sessionStorage.getItem('playerNumber');
+
 				this.send({
 					type: 'IDENTIFY',
 					playerId: this.localPlayerId,
-					gameId: this.gameId 
+					gameId: this.gameId,
+					playerNumber: storedPlayerNumber ? parseInt(storedPlayerNumber) : undefined
 				  });
 
                 resolve();
@@ -150,6 +165,13 @@ export class WebSocketManager {
     
     unregisterHandler(messageType: string) {
         this.messageHandlers.delete(messageType);
+    }
+
+	registerPlayerAssignmentHandler() {
+        this.registerHandler('PLAYER_ASSIGNED', (message) => {
+            console.log('Server assigned player number:', message.playerNumber);
+            this.setPlayerNumber(message.playerNumber);
+        });
     }
     
     send(data: any) {
