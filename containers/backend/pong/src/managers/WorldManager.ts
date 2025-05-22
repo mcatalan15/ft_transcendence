@@ -3,80 +3,102 @@
 /*                                                        :::      ::::::::   */
 /*   WorldManager.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 19:35:10 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:04:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics } from "pixi.js";
+import { PongGame } from "../engine/Game";
 
-import { World } from "../utils/Types";
+import { PowerupSpawner } from "../spawners/PowerupSpawner";
+
+import { World, GameEvent } from "../utils/Types";
 
 export class WorldManager {
-    worldColor: number = 0x204c93;
-    worldTags: string[] = [
-        'initialWorld',
-        'flatWorld',
-        'pyramidWorld',
-        'trenchesWorld',
-        'lightningWorld',
-        'stepsWorld',
-        'bangWorld',
-        'mawWorld',
-        'rakesWorld',
-        'blocksWorld',
-        'diamondWorld',
-        'honeycombWorld',
-        'funnelWorld',
-        'topWindmillsWorld',
-        'bottomWindmillsWorld',
-    ]
-    worldNames: string[] = [
-        'Initializing',
-        'The Flatlands',
-        'The Pyramids',
-        'The Trenches',
-        'The Lightning',
-        'The Steps',
-        'The Bang',
-        'The Maw',
-        'The Rakes',
-        'The Blocks',
-        'The Diamond',
-        'The Honeycomb',
-        'The Funnel',
-        'The Windmills',
-        'The Windmills',
-    ]
+	worldColor: number = 0x204c93;
+	worldTags: string[] = [
+		'initialWorld',
+		'flatWorld',
+		'pyramidWorld',
+		'trenchesFlippedWorld',
+		'trenchesWorld',
+		'lightningWorld',
+		'lightningFlippedWorld',
+		'stepsWorld',
+		'bangWorld',
+		'mawWorld',
+		'rakesWorld',
+		'cairnsWorld',
+		'kiteWorld',
+		'honeycombWorld',
+		'bowtieWorld',
+		'windmillsWorld',
+		'giantsWorld',
+	]
+	worldNames: string[] = [
+		'Initializing',
+		'The Flatlands',
+		'The Pyramids',
+		'The Trenches',
+		'The Trenches',
+		'The Lightning',
+		'The Lightning',
+		'The Steps',
+		'The Bang',
+		'The Maw',
+		'The Rakes',
+		'The Cairns',
+		'The Kite',
+		'The Honeycomb',
+		'The Bowtie',
+		'The Windmills',
+		'The Giants',
+	]
 
-    populateWorlds(worlds: World[]) {
-        for (let i = 0; i < 15; i++ ) {
-            const world = this.createWorld(this.worldTags[i], this.worldNames[i], this.worldColor);
-            worlds.push(world);
-        }
-    }
+	populateWorlds(worlds: World[]) {
+		for (let i = 0; i < 17; i++ ) {
+			const world = this.createWorld(this.worldTags[i], this.worldNames[i], this.worldColor);
+			worlds.push(world);
+		}
+	}
 
-    createWorld(tag: string, name: string, color: number): World {
-        return { tag, name, color,};
-    }
+	createWorld(tag: string, name: string, color: number): World {
+		return { tag, name, color,};
+	}
 
-    selectWorld(id: string): number {
-        //console.log(id);
-        if (id.includes('pyramid')) return (2);
-        if (id.includes('trenches')) return (3);
-        if (id.includes('lightning')) return (4);
-        if (id.includes('steps')) return (5);
-        if (id.includes('bang')) return (6);
-        if (id.includes('maw')) return (7);
-        if (id.includes('rake')) return (8);
-        if (id.includes('ledge')) return (9);
-        if (id.includes('diamond')) return (10);
-        if (id.includes('honeycomb')) return (11);
-        if (id.includes('funnel')) return (12);
-        if (id.includes('topWindmill')) return (13);
-        if (id.includes('bottomWindmill')) return (14);
-        return (1);
-    }
+	selectWorld(id: string): number {
+		if (id.includes('pyramid')) return (2);
+		if (id.includes('trenches')) {
+			if (id.includes('Flipped')) return (3);
+			return (4);
+		}
+		if (id.includes('lightning')) {
+			if (id.includes('Flipped')) return (5);
+			return (6);
+		} 
+		if (id.includes('steps')) return (7);
+		if (id.includes('bang')) return (8);
+		if (id.includes('maw')) return (9);
+		if (id.includes('rake')) return (10);
+		if (id.includes('ledge')) return (11);
+		if (id.includes('diamond')) return (12);
+		if (id.includes('honeycomb')) return (13);
+		if (id.includes('funnel')) return (14);
+		if (id.includes('windmills')) return (15);
+		if (id.includes('giants')) return (16);
+		return (1);
+	}
+
+	changeWorld(game: PongGame, id: string) {
+		const idx = this.selectWorld(id);
+		const nextWorld = game.worldPool[idx];
+
+		const changeWorldEvent: GameEvent = {
+			type: "CHANGE_WORLD",
+			target: nextWorld,
+		};
+		game.eventQueue.push(changeWorldEvent);
+	}
 }

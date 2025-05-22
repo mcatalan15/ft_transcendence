@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:26:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 17:29:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ export class WallFigureManager {
     update(worldSystem: any): void {
         if (this.mustSpawn) {
             this.isSpawningFigures = true;
-            let depth = this.randomOdd(81, 91);
+            let depth = 111;
             let idx = Math.floor(Math.random() * 7);
 
             switch(idx) {

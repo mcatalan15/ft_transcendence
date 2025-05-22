@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 11:50:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:19:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ import { LifetimeComponent } from '../components/LifetimeComponent';
 
 import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
+import { lerp } from '../utils/Utils';
 import { isPaddle,
 		isDepthLine,
 		isObstacle,
@@ -150,14 +151,14 @@ export class AnimationSystem implements System {
 		let targetHeight;
 
 		if (entity.overshootPhase === 'expand') {
-			targetHeight = this.lerp(entity.originalHeight, entity.overshootTarget, easeT);
+			targetHeight = lerp(entity.originalHeight, entity.overshootTarget, easeT);
 			if (t >= 1) {
 				entity.overshootPhase = 'settle';
 				entity.enlargeProgress = 0;
 				entity.originalHeight = entity.overshootTarget;
 			}
 		} else if (entity.overshootPhase === 'settle') {
-			targetHeight = this.lerp(entity.originalHeight, entity.targetHeight, easeT);
+			targetHeight = lerp(entity.originalHeight, entity.targetHeight, easeT);
 			if (t >= 1) {
 				entity.overshootPhase = '';
 			}
@@ -211,6 +212,9 @@ export class AnimationSystem implements System {
 				(entity.behavior.direction === 'upwards' && entity.y <= entity.upperLimit) ||
 				(entity.behavior.direction === 'downwards' && entity.y >= entity.lowerLimit)
 			) {
+				if (!entity.id.includes('Standard') && entity.id.includes('last')) {
+					this.handlePowerupSpawnEvent('figure');
+				}
 				this.manageCrossCutCreation(entity, render);
 				entitiesToRemove.push(entity.id);
 			}
@@ -229,7 +233,7 @@ export class AnimationSystem implements System {
 			lifetime.duration = lifetime.remaining;
 		}
 		
-		const animSpeed = 1
+		const animSpeed = 1;
 		
 		const adjustedDelta = delta.deltaTime * animSpeed;
 		
@@ -247,6 +251,9 @@ export class AnimationSystem implements System {
 		lifetime.remaining -= adjustedDelta;
 		
 		if (lifetime.despawn === 'time' && lifetime.remaining <= 0) {
+			if (entity.id.includes('last')) {
+				this.handlePowerupSpawnEvent('obstacle');
+			}
 			this.manageCrossCutCreation(entity, render);
 			entitiesToRemove.push(entity.id);
 		}
@@ -429,7 +436,21 @@ export class AnimationSystem implements System {
 		} as GameEvent);
 	}
 
-	private lerp(a: number, b: number, t: number): number {
-		return a + (b - a) * t;
-	}
+	private handlePowerupSpawnEvent(origin: string): void {
+		if (origin === 'figure') {
+			const spawnPowerupEvent: GameEvent = {
+				type: "SPAWN_POWERUP_FROM_FIGURE",
+				target: this.game.currentWorld,
+			}
+
+			this.game.eventQueue.push(spawnPowerupEvent);
+		} else if (origin === 'obstacle') {
+			const spawnPowerupEvent: GameEvent = {
+				type: "SPAWN_POWERUP_FROM_OBSTACLE",
+				target: this.game.currentWorld,
+			}
+
+			this.game.eventQueue.push(spawnPowerupEvent);
+		}
+    }
 }

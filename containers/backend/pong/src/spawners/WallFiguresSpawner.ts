@@ -3,9 +3,6 @@ import { WorldSystem } from '../systems/WorldSystem';
 import { DepthLineBehavior } from '../utils/Types';
 
 export class WallFiguresSpawner {
-  /**
-   * Generic method to build wall figures (pyramids, parapets, etc.)
-   */
   private static buildWallFigure(
     worldSystem: WorldSystem,
     depth: number,
@@ -23,6 +20,7 @@ export class WallFiguresSpawner {
     const rampDownStart = Math.floor(depth * 4 / 5);
     
     const flip = options.useFlip ? Math.floor(Math.random() * 2) : undefined;
+    const isFlipped = flip ? 'Flipped' : 'Regular';
 
     for (let i = 0; i < depth; i++) {
       let heightRatio;
@@ -41,7 +39,7 @@ export class WallFiguresSpawner {
       const behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in', figureHeight);
 
       let position = i === 0 ? 'first' : i === depth - 1 ? 'last' : 'middle';
-      let uniqueId = `${position}${figureType}DepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      let uniqueId = `${position}${isFlipped}${figureType}DepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       let bottomLine = FigureFactory.createDepthLine(
         figureType,
         worldSystem.game,
@@ -75,7 +73,7 @@ export class WallFiguresSpawner {
   }
 
   static buildPyramids(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'pyramid', { maxHeightDivisor: 2.5 }); //! Pyramid free width
+    this.buildWallFigure(worldSystem, depth, 'pyramid', { maxHeightDivisor: 2.5 });
   }
 
   static buildTrenches(worldSystem: WorldSystem, depth: number): void {

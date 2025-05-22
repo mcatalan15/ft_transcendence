@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 12:28:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:59:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,10 @@ export class AcceleratorDepthLine extends DepthLine {
 			new Point(-halfWidth, 0),
 			new Point(-halfWidth + eigthWidth, 0),
 			new Point(-halfWidth + (2 * eigthWidth), thirdHeight),
-			new Point(-halfWidth + (3 * eigthWidth), eigthHeight),
+			new Point(-halfWidth + (3 * eigthWidth), thirdHeight),
 			new Point(-halfWidth + (4 * eigthWidth), halfHeight),
 			new Point(fourthWidth, halfHeight),
-			new Point(fourthWidth + eigthWidth, eigthHeight),
+			new Point(fourthWidth + eigthWidth, thirdHeight),
 			new Point(fourthWidth + 2 * eigthWidth, thirdHeight),
 			new Point(fourthWidth + 3 * eigthWidth, 0),
 			new Point(halfWidth, 0),

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 18:16:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ export class SpinBallPowerup extends Powerup {
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: 0xfff8e3, width: 1.2 });
+        ornament.stroke({ color: 0xfff8e3, width: 3 });
         container.addChild(ornament);
 
         const innerSign = new Graphics();

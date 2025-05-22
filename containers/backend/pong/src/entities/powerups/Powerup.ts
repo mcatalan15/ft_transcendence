@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/07 13:55:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:26:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ export abstract class Powerup extends Entity {
         super(id, layer);
 
         const {
-            lifetime = 1000,
+            lifetime = 1100,
             despawn = 'time',
             effect = 'unknownEffect',
             affectation = 'powerUp',

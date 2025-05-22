@@ -29,7 +29,7 @@ export class LedgeCrossCut extends CrossCut {
     }
 
     buildPolygonalPhysics(): void {
-        const pointsPerPolygon = 5
+        const pointsPerPolygon = 7;
         const nPolygons = 4;
 
         const polygons: Point[][] = [];
@@ -67,7 +67,7 @@ export class LedgeCrossCut extends CrossCut {
         graphic.clear();
         
         if (this.points && this.points.length > 0) {
-            const pointsPerLedge = 5;
+            const pointsPerLedge = 7;
             
             const ledgeCount = 4;
             

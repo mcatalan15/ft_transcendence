@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WorldSystem.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 19:30:55 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/22 17:49:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,16 +102,6 @@ export class WorldSystem implements System {
         this.processEvents(entities);
         this.initializeDepthLines(entities);
     }
-
-    changeWorld(id: string) {
-        const idx = this.worldManager.selectWorld(id);
-        const nextWorld = this.game.worldPool[idx];
-        const changeWorldEvent: GameEvent = {
-            type: "CHANGE_WORLD",
-            target: nextWorld
-          };
-          this.game.eventQueue.push(changeWorldEvent);
-    }
     
     processEvents(entities: Entity[]): void {
         const unhandledEvents = [];
@@ -142,7 +132,7 @@ export class WorldSystem implements System {
         this.lastLineSpawnTime = Date.now();
 
 		let uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        this.changeWorld(uniqueId);
+        this.worldManager.changeWorld(this.game, uniqueId);
 
 		let behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in');
 		let behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in');
@@ -169,7 +159,7 @@ export class WorldSystem implements System {
     spawnFromFigureQueue() {
         {
             let line = this.figureQueue.pop();
-            this.changeWorld(line!.id);
+            this.worldManager.changeWorld(this.game, line!.id);
     
             if (line) {
                 this.game.addEntity(line);
@@ -185,7 +175,7 @@ export class WorldSystem implements System {
     spawnFromObstacleQueue() {
         {
             let line = this.obstacleQueue.pop();
-            this.changeWorld(line!.id);
+            this.worldManager.changeWorld(this.game, line!.id);
     
             if (line) {
                 this.game.addEntity(line);

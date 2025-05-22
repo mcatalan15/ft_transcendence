@@ -6,9 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 19:08:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 18:17:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Point } from "pixi.js";
 
 import { PongGame } from "../engine/Game";
 
@@ -36,53 +38,129 @@ import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";
 
 export class PowerupSpawner {
-	static spawnPowerup(game: PongGame, width: number, height: number): void {
-		const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-		
-		// Boundaries for spawning
-		const extraOffset = 50;
-		const topBoundary = game.topWallOffset + game.wallThickness + extraOffset;
-		const bottomBoundary = height - game.bottomWallOffset - extraOffset;
-		const availableHeight = bottomBoundary - topBoundary;
-		
-		const spawnAreaWidth = width / 2;
-		
-		// Random position within the spawn area
-		const randomX = (width - spawnAreaWidth) / 2 + Math.random() * spawnAreaWidth;
-		const randomY = topBoundary + Math.random() * availableHeight;
-		
-		let powerup;
-		let spawnIndex = Math.floor(Math.random() * 3);
+	static spawnPowerup(game: PongGame, width: number, height: number, world: string): void {
+		const spawningPoints: Point[] = this.getSpawningPointsInWorld(world, width, height);
 
-		switch (spawnIndex) {
-			case (0):
-				powerup = this.getPowerup(uniqueId, game, randomY, randomX);
-				break;
-			case (1):
-				powerup = this.getPowerdown(uniqueId, game, randomY, randomX);
-				break;
-			default:
-				powerup = this.getBallChange(uniqueId, game, randomY, randomX);
-				break;
+		this.redirectSpawn(game, spawningPoints);
+	}
+
+	static getSpawningPointsInWorld(world: string, width: number, height: number): Point[] {
+		let points: Point [] = [];
+		console.log(world);
+		if (world.includes('pyramid')) {
+			points.push(new Point(width / 2, height / 2 + 50));
+			points.push(new Point(width / 2, height / 2 - 50));
+		} else if (world.includes('cairns')) {
+			points.push(new Point(width / 2 - 310, height / 2));
+			points.push(new Point(width / 2, height / 2));
+			points.push(new Point(width / 2 + 310, height / 2));
+		} else if (world.includes('trenches')) {
+			if (world.includes('Flipped')) {
+				points.push(new Point(width / 2 + 150, height / 2 - 150));
+				points.push(new Point(width / 2, height / 2));
+				points.push(new Point(width / 2 - 150, height / 2 + 150));
+			} else {
+				points.push(new Point(width / 2 - 150, height / 2 - 150));
+				points.push(new Point(width / 2, height / 2));
+				points.push(new Point(width / 2 + 150, height / 2 + 150));
+			}
+		} else if (world.includes('lightning')) {
+			if (world.includes('Flipped')) {
+				points.push(new Point(width / 2 + 300, height / 2 - 60));
+				points.push(new Point(width / 2, height / 2));
+				points.push(new Point(width / 2 - 300, height / 2 + 60));
+			} else {
+				points.push(new Point(width / 2 - 300, height / 2 - 60));
+				points.push(new Point(width / 2, height / 2));
+				points.push(new Point(width / 2 + 300, height / 2 + 60));
+			}
+		} else if (world.includes('steps')) {
+			points.push(new Point(width / 2, height / 2 + 100));
+			points.push(new Point(width / 2, height / 2))
+			points.push(new Point(width / 2, height / 2 - 100));
+		} else if (world.includes('bang')) {
+			points.push(new Point(280, 170))
+			points.push(new Point(280, 560))
+			points.push(new Point(width / 2, height / 2))
+			points.push(new Point(width - 280, 170))
+			points.push(new Point(width - 280, 560))
+		} else if (world.includes('maw')) {
+			points.push(new Point(width / 2, height / 2 + 150));
+			points.push(new Point(width / 2 - 460, height / 2));
+			points.push(new Point(width / 2, height / 2));
+			points.push(new Point(width / 2 + 460, height / 2));
+			points.push(new Point(width / 2, height / 2 - 150));
+		} else if (world.includes('rakes')) {
+			points.push(new Point(width / 2 - 400, height / 2 + 200));
+			points.push(new Point(width / 2 - 400, height / 2 - 200));
+			points.push(new Point(width / 2, height / 2));
+			points.push(new Point(width / 2 + 400, height / 2 + 200));
+			points.push(new Point(width / 2 + 400, height / 2 - 200));
+		} else if (world.includes('kite') || world.includes('honeycomb') || world.includes('bowtie')) {
+			points.push(new Point(width / 2, height / 2));
+		} else if (world.includes('windmills')) {
+			points.push(new Point(width / 2 - 550, height / 2 + 250));
+			points.push(new Point(width / 2, height / 2 - 250))
+			points.push(new Point(width / 2 + 550, height / 2 + 250));
+		} else if (world.includes('giants')) {
+			points.push(new Point(width / 2 - 550, height / 2 - 250));
+			points.push(new Point(width / 2, height / 2 + 250))
+			points.push(new Point(width / 2 + 550, height / 2 - 250));
+		} else {
+			points.push(new Point(100, 100));
 		}
 
-		/* powerup = new ShootPowerup(uniqueId, 'powerup', game, randomX, randomY); */
-	
-		game.addEntity(powerup);
-	
-		const render = powerup.getComponent('render') as RenderComponent;
-		const physics = powerup.getComponent('physics') as PhysicsComponent;
-		
-		render.graphic.x = physics.x;
-		render.graphic.y = physics.y;
-	
-		console.log(powerup.layer);
-		if (powerup.layer === 'powerup') {
-			game.renderLayers.powerup.addChild(render.graphic);
-		} else if (powerup.layer === 'powerdown') {
-			game.renderLayers.powerdown.addChild(render.graphic);
-		} else if (powerup.layer === 'ballChange') {
-			game.renderLayers.ballChange.addChild(render.graphic);
+		return (points);
+	}
+
+	static redirectSpawn(game: PongGame, points: Point[]) {
+		console.log(game.currentWorld.tag);	
+		switch (game.currentWorld.tag) {
+			case ('pyramidWorld'):
+				this.manageTwoPointSpawn(game, points);
+				break;
+			case ('cairnsWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
+			case ('trenchesWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
+			case ('trenchesFlippedWorld'):
+					this.manageThreePointSpawn(game, points);
+					break;
+			case ('lightningWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
+			case ('lightningFlippedWorld'):
+					this.manageThreePointSpawn(game, points);
+					break;
+			case ('stepsWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
+			case ('bangWorld'):
+				this.manageFivePointSpawn(game, points);
+				break;
+			case ('mawWorld'):
+				this.manageFivePointSpawn(game, points);
+				break;
+			case ('rakesWorld'):
+				this.manageFivePointSpawn(game, points);
+				break;
+			case ('kiteWorld'):
+				this.manageOnePointSpawn(game, points);
+				break;
+			case ('honeycombWorld'):
+				this.manageOnePointSpawn(game, points);
+				break;
+			case ('bowtieWorld'):
+				this.manageOnePointSpawn(game, points);
+				break;
+			case ('windmillsWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
+			case ('giantsWorld'):
+				this.manageThreePointSpawn(game, points);
+				break;
 		}
 	}
 
@@ -161,7 +239,6 @@ export class PowerupSpawner {
 		game.addEntity(shield);
 
 		const render = shield.getComponent('render') as RenderComponent;
-		//const physics = shield.getComponent('physics') as PhysicsComponent;
 		
 		game.renderLayers.powerup.addChild(render.graphic);
 		
@@ -199,5 +276,140 @@ export class PowerupSpawner {
 	static despawnBullet(game: PongGame, bulletId: string) {
 		game.removeEntity(bulletId);
 		console.log(`Bullet ${bulletId} despawned`)
+	}
+
+	static manageOnePointSpawn(game: PongGame, points: Point[]) {
+		const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+		let powerup = this.getPowerup(uniqueId, game, points[0].y, points[0].x);
+		
+		game.addEntity(powerup);
+		
+			const render = powerup.getComponent('render') as RenderComponent;
+			const physics = powerup.getComponent('physics') as PhysicsComponent;
+			
+			render.graphic.x = physics.x;
+			render.graphic.y = physics.y;
+		
+			//console.log(powerup.layer);
+			if (powerup.layer === 'powerup') {
+				game.renderLayers.powerup.addChild(render.graphic);
+			} else if (powerup.layer === 'powerdown') {
+				game.renderLayers.powerdown.addChild(render.graphic);
+			} else if (powerup.layer === 'ballChange') {
+				game.renderLayers.ballChange.addChild(render.graphic);
+			}
+	}
+
+	static manageTwoPointSpawn(game: PongGame, points: Point[]) {
+		for (let i = 0; i < points.length; i++) {
+			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+			let powerup;
+
+			switch (i) {
+				case (0):
+					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					break;
+				default:
+					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					break;
+			}
+
+			game.addEntity(powerup);
+		
+			const render = powerup.getComponent('render') as RenderComponent;
+			const physics = powerup.getComponent('physics') as PhysicsComponent;
+			
+			render.graphic.x = physics.x;
+			render.graphic.y = physics.y;
+		
+			//console.log(powerup.layer);
+			if (powerup.layer === 'powerup') {
+				game.renderLayers.powerup.addChild(render.graphic);
+			} else if (powerup.layer === 'powerdown') {
+				game.renderLayers.powerdown.addChild(render.graphic);
+			} else if (powerup.layer === 'ballChange') {
+				game.renderLayers.ballChange.addChild(render.graphic);
+			}
+		}
+	}
+
+	static manageThreePointSpawn(game: PongGame, points: Point[]) {
+		for (let i = 0; i < points.length; i++) {
+			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+			let powerup;
+			
+			switch (i) {
+				case (0):
+					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					break;
+				case (1):
+					powerup = this.getBallChange(uniqueId, game, points[i].y, points[i].x);
+					break;
+				default:
+					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+			}
+
+			game.addEntity(powerup);
+		
+			const render = powerup.getComponent('render') as RenderComponent;
+			const physics = powerup.getComponent('physics') as PhysicsComponent;
+			
+			render.graphic.x = physics.x;
+			render.graphic.y = physics.y;
+		
+			//console.log(powerup.layer);
+			if (powerup.layer === 'powerup') {
+				game.renderLayers.powerup.addChild(render.graphic);
+			} else if (powerup.layer === 'powerdown') {
+				game.renderLayers.powerdown.addChild(render.graphic);
+			} else if (powerup.layer === 'ballChange') {
+				game.renderLayers.ballChange.addChild(render.graphic);
+			}
+		}
+	}
+
+	static manageFivePointSpawn(game: PongGame, points: Point[]) {
+		for (let i = 0; i < points.length; i++) {
+			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+			let powerup;
+			
+			switch (i) {
+				case (0):
+					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					break;
+				case (1):
+					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					break;
+				case(2):
+					powerup = this.getBallChange(uniqueId, game, points[i].y, points[i].x);
+					break;
+				case(3):
+					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					break;
+				default:
+					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);	
+			}
+
+			game.addEntity(powerup);
+		
+			const render = powerup.getComponent('render') as RenderComponent;
+			const physics = powerup.getComponent('physics') as PhysicsComponent;
+			
+			render.graphic.x = physics.x;
+			render.graphic.y = physics.y;
+		
+			//console.log(powerup.layer);
+			if (powerup.layer === 'powerup') {
+				game.renderLayers.powerup.addChild(render.graphic);
+			} else if (powerup.layer === 'powerdown') {
+				game.renderLayers.powerdown.addChild(render.graphic);
+			} else if (powerup.layer === 'ballChange') {
+				game.renderLayers.ballChange.addChild(render.graphic);
+			}
+		}
 	}
 }

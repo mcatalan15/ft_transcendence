@@ -10,15 +10,14 @@ export class ObstacleSpawner {
 		pattern?: number,
 	): void {
 		for (let i = 0; i < depth; i++) {
-		const obstacleBehavior = this.generateObstacleBehavior('none', 'in');
+			const obstacleBehavior = this.generateObstacleBehavior('none', 'in');
 
-		let position = i === 0 ? 'first' : i === depth - 1 ? 'last' : 'middle';
-		let uniqueId = `${position}${figureType}Obstacle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-		console.log(uniqueId);
+			let position = i === 0 ? 'first' : i === depth - 1 ? 'last' : 'middle';
+			let uniqueId = `${position}${figureType}Obstacle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-		let obstacle = ObstacleFactory.createObstacle(worldSystem.game, obstacleBehavior, figureType, uniqueId, pattern, i);
+			let obstacle = ObstacleFactory.createObstacle(worldSystem.game, obstacleBehavior, figureType, uniqueId, pattern, i);
 
-		worldSystem.obstacleQueue.push(obstacle);
+			worldSystem.obstacleQueue.push(obstacle);
 		}
 	}
 
@@ -42,10 +41,10 @@ export class ObstacleSpawner {
 	static buildWindmills(worldSystem: WorldSystem, depth: number, pattern: number): void {
 		switch (pattern) {
 			case (0):
-				this.buildObstacle(worldSystem, depth, 'topWindmill', pattern);
+				this.buildObstacle(worldSystem, depth, 'windmills', pattern);
 				break;
 			default:
-				this.buildObstacle(worldSystem, depth, 'bottomWindmill', pattern);
+				this.buildObstacle(worldSystem, depth, 'giants', pattern);
 		}
 		
 	}

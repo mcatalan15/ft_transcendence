@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:08:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 17:50:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 12:35:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,10 @@ export class LedgePatternManager {
 		const ledgePositions = [
 			// Left chunk
 			{ x: -((3 * seventhWidth) + fourteenthWidth), y: -halfHeight },
+			{ x: -((3 * seventhWidth) + fourteenthWidth * 2), y: 0},
 			{ x: -((3 * seventhWidth) + fourteenthWidth), y: halfHeight },
 			{ x: -(2 * seventhWidth + fourteenthWidth), y: halfHeight },
+			{ x: -(2 * seventhWidth + fourteenthWidth * 2), y: 0 },
 			{ x: -(2 *seventhWidth + fourteenthWidth), y: -halfHeight },
 			{ x: -((3 * seventhWidth) + fourteenthWidth), y: -halfHeight },
 
@@ -35,8 +37,10 @@ export class LedgePatternManager {
 
 			// Left-center chunk
 			{ x: -((seventhWidth) + fourteenthWidth), y: -halfHeight },
+			{ x: -((seventhWidth) + fourteenthWidth * 2), y: 0 },
 			{ x: -((seventhWidth) + fourteenthWidth), y: halfHeight },
 			{ x: -(fourteenthWidth), y: halfHeight },
+			{ x: -(fourteenthWidth * 2), y: 0 },
 			{ x: -(fourteenthWidth), y: -halfHeight },
 			{ x: -((seventhWidth) + fourteenthWidth), y: -halfHeight },
 			
@@ -44,8 +48,10 @@ export class LedgePatternManager {
 
 			// Right-center chunk
 			{ x: fourteenthWidth, y: -halfHeight },
+			{ x: fourteenthWidth * 2, y: 0 },
 			{ x: fourteenthWidth, y: halfHeight },
 			{ x: seventhWidth + fourteenthWidth, y: halfHeight },
+			{ x: seventhWidth + (fourteenthWidth * 2), y: 0 },
 			{ x: seventhWidth + fourteenthWidth, y: -halfHeight },
 			{ x: fourteenthWidth, y: -halfHeight },
 
@@ -53,8 +59,10 @@ export class LedgePatternManager {
 
 			// Right chunk
 			{ x: fourteenthWidth + (2 * seventhWidth), y: -halfHeight },
+			{ x: (2 * fourteenthWidth) + (2 * seventhWidth), y: 0 },
 			{ x: fourteenthWidth + (2 * seventhWidth), y: halfHeight },
 			{ x: fourteenthWidth + (3 * seventhWidth), y: halfHeight },
+			{ x: (2 * fourteenthWidth) + (3 * seventhWidth), y: 0 },
 			{ x: fourteenthWidth + (3 * seventhWidth), y: -halfHeight },
 			{ x: fourteenthWidth + (2 * seventhWidth), y: -halfHeight },
 		];

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 18:16:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ export class ShieldPowerup extends Powerup {
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: 0xfff8e3, width: 1.2 });
+        ornament.stroke({ color: 0xfff8e3, width: 3 });
         container.addChild(ornament);
     
         const innerSign = new Graphics();

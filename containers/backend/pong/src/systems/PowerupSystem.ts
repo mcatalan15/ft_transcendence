@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/09 17:23:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:44:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ export class PowerupSystem implements System {
 	game: PongGame;
 	width: number;
 	height: number;
-	cooldown: number;
-	lastPowerupSpawn: number;
+	powerupTimer: number = 0;
+	isSpawningPowerups: boolean = false;
 	isSpawningBullets: boolean = false;
 	bulletSpawnInterval: number = 10;
 	bulletQuantity: number = 3;
@@ -40,24 +40,46 @@ export class PowerupSystem implements System {
 		this.game = game;
 		this.width = width;
 		this.height = height;
-
-		this.cooldown = 100;
-		this.lastPowerupSpawn = 0;
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
 		const powerupsToRemove: string[] = [];
+		const unhandledEvents: GameEvent[] = [];
 
-		this.cooldown -= delta.deltaTime;
+		if (this.isSpawningPowerups) {
+			this.powerupTimer -= delta.deltaTime;
 
-		// Spawn powerups
-		if (this.cooldown <= 0) {
-			this.lastPowerupSpawn = Date.now();
-
-			PowerupSpawner.spawnPowerup(this.game, this.width, this.height);
-			console.log('Powerup Spawned');
-			this.cooldown = 1000;   
+			if (this.powerupTimer <= 0) {
+				PowerupSpawner.spawnPowerup(this.game, this. width, this.height, this.game.currentWorld.tag)
+				this.powerupTimer = 999999;
+			}
 		}
+
+		//handle powerup events
+		while (this.game.eventQueue.length > 0) {
+			const event = this.game.eventQueue.shift();
+			if (!event)
+				break;
+
+			if (event.type.endsWith("Ball")) {
+				this.changeBall(event);
+			} else if (event.type.endsWith("Powerup")) {
+				this.triggerPowerup(event);
+			} else if (event.type.endsWith("Powerdown")) {
+				this.triggerPowerdown(event);
+			} else if (event.type === 'SPAWN_POWERUP_FROM_FIGURE') {
+				this.isSpawningPowerups = true;
+				this.powerupTimer = 420;
+			} else if (event.type === 'SPAWN_POWERUP_FROM_OBSTACLE') {
+				this.isSpawningPowerups = true;
+				this.powerupTimer = 20;
+			} else {
+				unhandledEvents.push(event);
+			}
+		}
+
+
+		this.game.eventQueue.push(...unhandledEvents);
 
 		for (const entity of entities) {
 			// Manage powerup lifetime
@@ -114,27 +136,6 @@ export class PowerupSystem implements System {
 				}
 			}
 		}
-
-		//handle powerupEvents
-		const unhandledEvents: GameEvent[] = [];
-
-		while (this.game.eventQueue.length > 0) {
-			const event = this.game.eventQueue.shift();
-			if (!event)
-				break;
-			
-			if (event.type.endsWith("Ball")) {
-				this.changeBall(event);
-			} else if (event.type.endsWith("Powerup")) {
-				this.triggerPowerup(event);
-			} else if (event.type.endsWith("Powerdown")) {
-				this.triggerPowerdown(event);
-			} else {
-				unhandledEvents.push(event);
-			}
-		}
-
-		this.game.eventQueue.push(...unhandledEvents);
 
 		// Remove powerups that have expired
 		for (const entityId of powerupsToRemove) {

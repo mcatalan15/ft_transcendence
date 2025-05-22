@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ObstacleFactory.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 19:47:20 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/22 09:42:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ export class ObstacleFactory {
 			despawn: 'time',
 			behavior: behavior,
 		}
-		console.log(type);
 		
 		if (type.includes('Pachinko')) {
 			return new PachinkoSegment(game, options, type, id, 'background', pattern!);

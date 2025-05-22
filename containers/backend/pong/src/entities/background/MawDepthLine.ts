@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 08:51:29 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 12:46:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:33:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,10 @@ export class MawDepthLine extends DepthLine {
 			new Point(-halfWidth + sixthWidth, halfHeight - (fourthHeight / 2)),
 			new Point(-halfWidth + sixthWidth, (fourthHeight * 2)),
 			new Point(-halfWidth + thirdWidth, fourthHeight),
-			new Point(-halfWidth + thirdWidth, (fourthHeight * 3)),
+			new Point(-halfWidth + thirdWidth, (fourthHeight * 2)),
 			new Point(-halfWidth + thirdWidth + (sixthWidth / 2), fourthHeight),
 			new Point(sixthWidth / 2, fourthHeight),
-			new Point(sixthWidth, (fourthHeight * 3)),
+			new Point(sixthWidth, (fourthHeight * 2)),
 			new Point(sixthWidth, fourthHeight),
 			new Point(thirdWidth, (fourthHeight * 2)),
 			new Point(thirdWidth, halfHeight - (fourthHeight / 2)),

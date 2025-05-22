@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:30:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:46:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ export class FigureFactory {
         behavior: DepthLineBehavior,
         flip?: number,
     ): DepthLine {
-        const addedOffset = 20;
+        const addedOffset = 10;
         const upperLimit = topWallOffset + wallThickness - addedOffset;
         const lowerLimit = height - bottomWallOffset + addedOffset;
         const options = {

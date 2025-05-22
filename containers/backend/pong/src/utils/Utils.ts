@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 14:17:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/22 09:49:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,4 +171,8 @@ export function processEvents<T extends GameEvent>(
     }
     
     game.eventQueue.push(...unhandledEvents);
+}
+
+export function lerp(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
 }

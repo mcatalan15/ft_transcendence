@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ObstacleManager.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 19:39:05 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:21:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,18 @@ export class ObstacleManager {
     update(worldSystem: any): void {
         if (this.mustSpawn) {
             this.isSpawningObstacles = true;
-            let depth = this.randomOdd(81, 91);
+            let depth = 141;
             let idx = Math.floor(Math.random() * 3);
 
             switch(idx) {
                 case (0):
-                    console.log('Spawning a ledge obstacle');
                     ObstacleSpawner.buildLedge(worldSystem, depth);
                     break;
                 case (1):
-                    console.log('Spawning a pachinko obstacle');
                     const pachinkoPattern = Math.floor(Math.random() * 3);
                     ObstacleSpawner.buildPachinko(worldSystem, depth, pachinkoPattern);
                     break;
                 default:
-                    console.log('Spawning windmills');
                     const windmillPattern = Math.floor(Math.random() * 2)
                     ObstacleSpawner.buildWindmills(worldSystem, depth, windmillPattern);
             }
