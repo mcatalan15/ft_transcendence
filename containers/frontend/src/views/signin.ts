@@ -79,7 +79,7 @@ export function showSignIn(container: HTMLElement): void {
 				// Sign-in successful - show success message and redirect
 				alert('Sign-in successful!');
 				localStorage.setItem('token', result.token);
-				window.location.href = '/auth?from=signup';
+				window.location.href = '/auth?from=signin';
 				// navigate('/auth?from=signin');
 				// navigate('/home');
 			}
