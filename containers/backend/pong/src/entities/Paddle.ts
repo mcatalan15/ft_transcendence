@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:34:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ import { RenderComponent } from "../components/RenderComponent";
 import { PhysicsComponent } from "../components/PhysicsComponent";
 import { InputComponent } from '../components/InputComponent';
 import { TextComponent } from '../components/TextComponent';
+
+import { GAME_COLORS } from '../utils/Types.js';
 
 export class Paddle extends Entity {
     game: PongGame;
@@ -104,7 +106,7 @@ export class Paddle extends Entity {
     createPaddleGraphic(): Graphics {
         const paddleGraphic = new Graphics();
         paddleGraphic.rect(0, 0, this.game.paddleWidth, this.game.paddleHeight);
-        paddleGraphic.fill('0xfff8e3');
+        paddleGraphic.fill(GAME_COLORS.black);
         paddleGraphic.pivot.set(5, 40);
         return paddleGraphic;
     }
@@ -140,7 +142,7 @@ export class Paddle extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xfff8e3,
+				fill: GAME_COLORS.black,
 				fontSize: 10,
 				fontWeight: 'bold' as const,
 			},

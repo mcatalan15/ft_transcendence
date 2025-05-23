@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 17:49:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:36:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,10 @@ import type { Entity } from '../engine/Entity';
 import type { System } from '../engine/System';
 
 import { DepthLine } from '../entities/background/DepthLine';
-
 import { RenderComponent } from '../components/RenderComponent';
-
 import { WallFigureManager } from '../managers/WallFigureManager';
 import { ObstacleManager } from '../managers/ObstacleManager';
 import { WorldManager } from '../managers/WorldManager';
-
 import { FigureFactory } from '../factories/FigureFactory';
 
 import { DepthLineBehavior, FrameData, GameEvent, World } from '../utils/Types';
@@ -29,6 +26,13 @@ import { isUI, isDepthLine } from '../utils/Guards';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
+    private static readonly DEPTH_LINE_COOLDOWN = 8;
+    private static readonly SPAWNING_TIMER = 200;
+    private static readonly MODE_SWITCH_TIMER = {
+        WALL_FIGURES: 2000,
+        OBSTACLES: 1500
+    };
+
     game: PongGame;
     private depthLineCooldown: number = 10;
     private lastLineSpawnTime: number = 0;
@@ -39,8 +43,8 @@ export class WorldSystem implements System {
     private obstacleManager: ObstacleManager;
     private worldManager: WorldManager;
 
-    private spawningMode: number = -1;
-    private spawningTimer: number = 200;
+    private spawningMode: number = 1;
+    private spawningTimer: number = WorldSystem.SPAWNING_TIMER;
     
     constructor(game: PongGame) {
         this.game = game;
@@ -49,44 +53,66 @@ export class WorldSystem implements System {
         this.obstacleManager = new ObstacleManager();
         this.worldManager = new WorldManager();
 
-        this.worldManager.populateWorlds(game.worldPool);
-        game.currentWorld = game.worldPool[0];
+        this.initializeWorld();
+    }
+
+    private initializeWorld(): void {
+        this.worldManager.populateWorlds(this.game.worldPool);
+        this.game.currentWorld = this.game.worldPool[0];
         
+        this.updateUIWorldText();
+    }
+
+    private updateUIWorldText(): void {
         this.game.entities.forEach(entity => {
             if (isUI(entity)) {
-                entity.setWorldText(game.currentWorld.name);
+                entity.setWorldText(this.game.currentWorld.name);
             }
         });
     }
 
     update(entities: Entity[], delta: FrameData) {
-        this.spawningTimer -= delta.deltaTime;
-        this.depthLineCooldown -= delta.deltaTime;
+        this.updateTimers(delta.deltaTime);
+        this.handleDepthLineSpawning();
+        this.handleModeSwitching();
+        this.updateManagers();
+        this.processEvents(entities);
+        this.initializeDepthLines(entities);
+    }
 
-        if (this.depthLineCooldown <= 0) {
-            if (this.figureQueue.length > 0) {
-                this.spawnFromFigureQueue();
-            } else {
-                this.spawnDepthLines();
-                if (this.obstacleQueue.length > 0) {
-                    this.spawnFromObstacleQueue();
-                }
+    private updateTimers(deltaTime: number): void {
+        this.spawningTimer -= deltaTime;
+        this.depthLineCooldown -= deltaTime;
+    }
+
+    private handleDepthLineSpawning(): void {
+        if (this.depthLineCooldown > 0) return;
+
+        if (this.figureQueue.length > 0) {
+            this.spawnFromFigureQueue();
+        } else {
+            this.spawnDepthLines();
+            if (this.obstacleQueue.length > 0) {
+                this.spawnFromObstacleQueue();
             }
-            this.depthLineCooldown = 8;
         }
+        this.depthLineCooldown = WorldSystem.DEPTH_LINE_COOLDOWN;
+    }
 
-        if (this.spawningTimer <= 0) {
-            if (this.spawningMode === 1) {
-                this.wallFigureManager.activateSpawning();
-                this.spawningTimer = 2000;
-            } else if (this.spawningMode === -1) {
-                this.obstacleManager.activateSpawning();
-                this.spawningTimer = 1500;
-            }
-            this.spawningMode *= -1;
+    private handleModeSwitching(): void {
+        if (this.spawningTimer > 0) return;
+
+        if (this.spawningMode === 1) {
+            this.wallFigureManager.activateSpawning();
+            this.spawningTimer = WorldSystem.MODE_SWITCH_TIMER.WALL_FIGURES;
+        } else {
+            this.obstacleManager.activateSpawning();
+            this.spawningTimer = WorldSystem.MODE_SWITCH_TIMER.OBSTACLES;
         }
+        this.spawningMode *= -1;
+    }
 
-        // Update managers
+    private updateManagers(): void {
         this.wallFigureManager.update(this);
         this.obstacleManager.update(this);
         
@@ -95,113 +121,104 @@ export class WorldSystem implements System {
         }
 
         if (this.obstacleManager.isSpawning() && this.figureQueue.length === 0) {
-            this.wallFigureManager.finishedSpawning();
+            this.obstacleManager.finishedSpawning();
         }
-
-        // Process events
-        this.processEvents(entities);
-        this.initializeDepthLines(entities);
     }
     
     processEvents(entities: Entity[]): void {
-        const unhandledEvents = [];
+        const unhandledEvents: GameEvent[] = [];
 
         while (this.game.eventQueue.length > 0) {
             const event = this.game.eventQueue.shift() as GameEvent;
 
             if (event.type === 'CHANGE_WORLD') {
-                const targetWorld = event.target;
-
-                this.game.currentWorld = targetWorld as World;
-
-                for (const entity of entities) {
-                    if (!isUI(entity)) {
-                        continue;
-                    } else {
-                        entity.setWorldText((targetWorld as World).name);
-                    }
-                }
+                this.handleWorldChange(event, entities);
             } else {
                 unhandledEvents.push(event);
             }
         }
         this.game.eventQueue.push(...unhandledEvents);
     }
+
+    private handleWorldChange(event: GameEvent, entities: Entity[]): void {
+        this.game.currentWorld = event.target as World;
+        entities.forEach(entity => {
+            if (isUI(entity)) {
+                entity.setWorldText((event.target as World).name);
+            }
+        });
+    }
     
     private spawnDepthLines(): void {
         this.lastLineSpawnTime = Date.now();
-
-		let uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        const uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        
         this.worldManager.changeWorld(this.game, uniqueId);
 
-		let behaviorBottom = this.generateDepthLineBehavior('vertical', 'downwards', 'in');
-		let behaviorTop = this.generateDepthLineBehavior('vertical', 'upwards', 'in');
+        const bottomLine = this.createDepthLine(uniqueId, 'bottom', 'downwards');
+        const topLine = this.createDepthLine(uniqueId, 'top', 'upwards');
 
-        let bottomLine = FigureFactory.createDepthLine(
-			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'bottom', behaviorBottom
-		);
+        this.addEntitiesToGame([bottomLine, topLine]);
+    }
 
-		let topLine = FigureFactory.createDepthLine(
-			'standard', this.game, uniqueId, this.game.width, this.game.height, this.game.topWallOffset, this.game.bottomWallOffset, this.game.wallThickness, 'top', behaviorTop
-		);
+    private createDepthLine(id: string, position: 'top' | 'bottom', direction: 'upwards' | 'downwards'): DepthLine {
+        const behavior = this.generateDepthLineBehavior('vertical', direction, 'in');
+        return FigureFactory.createDepthLine(
+            'standard', 
+            this.game, 
+            id, 
+            this.game.width, 
+            this.game.height, 
+            this.game.topWallOffset, 
+            this.game.bottomWallOffset, 
+            this.game.wallThickness, 
+            position, 
+            behavior
+        );
+    }
 
-        this.game.addEntity(bottomLine);
-        this.game.addEntity(topLine);
-
-        const bottomRender = topLine.getComponent('render') as RenderComponent;
-        const topRender = topLine.getComponent('render') as RenderComponent;
-
-        this.game.renderLayers.background.addChild(bottomRender.graphic);
-        this.game.renderLayers.background.addChild(topRender.graphic);
-
+    private addEntitiesToGame(entities: Entity[]): void {
+        entities.forEach(entity => {
+            this.game.addEntity(entity);
+            const render = entity.getComponent('render') as RenderComponent;
+            if (render) {
+                this.game.renderLayers.background.addChild(render.graphic);
+            }
+        });
     }
 
     spawnFromFigureQueue() {
-        {
-            let line = this.figureQueue.pop();
-            this.worldManager.changeWorld(this.game, line!.id);
-    
-            if (line) {
-                this.game.addEntity(line);
-    
-                const render = line.getComponent('render') as RenderComponent;
-                if (render) {
-                    this.game.renderLayers.background.addChild(render.graphic);
-                }
-            }
-        }
+        const line = this.figureQueue.pop();
+        if (!line) return;
+
+        this.worldManager.changeWorld(this.game, line.id);
+        this.addEntitiesToGame([line]);
     }
 
     spawnFromObstacleQueue() {
-        {
-            let line = this.obstacleQueue.pop();
-            this.worldManager.changeWorld(this.game, line!.id);
-    
-            if (line) {
-                this.game.addEntity(line);
-    
-                const render = line.getComponent('render') as RenderComponent;
-                if (render) {
-                    this.game.renderLayers.background.addChild(render.graphic);
-                }
-            }
-        }
+        const obstacle = this.obstacleQueue.pop();
+        if (!obstacle) return;
+
+        this.worldManager.changeWorld(this.game, obstacle.id);
+        this.addEntitiesToGame([obstacle]);
     }
 
-    private generateDepthLineBehavior(movement: string, direction: string, fade: string): DepthLineBehavior {
-		return {
-			movement: movement,
-			direction: direction,
-			fade: fade,
-		}
-	}
+    private generateDepthLineBehavior(
+        movement: string, 
+        direction: string, 
+        fade: string
+    ): DepthLineBehavior {
+        return { movement, direction, fade };
+    }
 
     private initializeDepthLines(entities: Entity[]): void {
-        for (const entity of entities) {
-            if (isDepthLine(entity)) {
+        entities
+            .filter(isDepthLine)
+            .filter(entity => !entity.initialized)
+            .forEach(entity => {
                 const idParts = entity.id.split('-');
                 const timestamp = parseInt(idParts[1]);
-                if (!entity.initialized && timestamp >= this.lastLineSpawnTime - 100) {
+                if (timestamp >= this.lastLineSpawnTime - 100) {
                     const render = entity.getComponent('render') as RenderComponent;
                     if (render) {
                         entity.initialized = true;
@@ -210,7 +227,6 @@ export class WorldSystem implements System {
                         render.graphic.alpha = 0;
                     }
                 }
-            }
-        }
+            });
     }
 }

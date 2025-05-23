@@ -14,7 +14,7 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
-import { PhysicsData } from '../../utils/Types';
+import { PhysicsData, GAME_COLORS } from '../../utils/Types';
 
 export class LedgeCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
@@ -84,7 +84,7 @@ export class LedgeCrossCut extends CrossCut {
                 
                 // Close the path and fill
                 graphic.closePath();
-                graphic.fill(0xfff8e3);
+                graphic.fill(GAME_COLORS.black);
             }
         }
     }

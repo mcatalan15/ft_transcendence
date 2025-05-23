@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:02:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:14:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ export interface PostProcessingOptions {
 	rgbSpilt?: RGBSplitFilter | null;
     powerupGlow?: GlowFilter | null;
 	powerupCRT?: CRTFilter | null,
-	powerupGlitch?: GlitchFilter | null,
+	powerdownGlitch?: GlitchFilter | null,
 }
 
 export interface GameSounds {
@@ -119,12 +119,17 @@ export interface World {
 }
 
 export const GAME_COLORS = {
+	white: 0x171717,
+	black: 0xfff8e3,
+	orange: 0xfbbf24,
 	red: 0xea3d37,
 	brown: 0xcf7f45,
 	rose: 0xd35461,
 	turquoise: 0x25849a,
 	violet: 0x835a83,
+	violetParticle: 0xD946EF,
 	green: 0x2ea17c,
+	greenParticle: 0x5EEAD4,
 	marine: 0x204c93
 }
 

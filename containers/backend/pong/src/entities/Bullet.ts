@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:53:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@ import { Graphics } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
+
+import { GAME_COLORS } from '../utils/Types.js';
 
 export class Bullet extends Entity {
 	direction: string;
@@ -39,7 +41,7 @@ export class Bullet extends Entity {
 		const right = { x: 10, y: 0 };
 
 		ballGraphic.poly([tip, right, left], true);
-		ballGraphic.fill(0xfff8e3);
+		ballGraphic.fill(GAME_COLORS.black);
 		return ballGraphic;
 	}
 

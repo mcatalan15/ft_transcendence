@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:20:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:22:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ export class PostProcessingLayer extends Entity {
         const bulgePinch = new BulgePinchFilter({
             center: new Point(0.5, 0.5), // Normalized coordinates (0 to 1) if using relative center
             radius: Math.min(game.width, game.height) * 1.6,                      // Radius of effect in pixels
-            strength: (1 / game.width / game.height) * 60000,                     // Range: -1 (pinch) to 1 (bulge)
+            strength: (1 / game.width / game.height) * 70000,                     // Range: -1 (pinch) to 1 (bulge)
         });
 
         // Chromatic aberration
@@ -66,7 +66,7 @@ export class PostProcessingLayer extends Entity {
 
         const glow = new GlowFilter({
             alpha: 0.1,
-            color: '0xfff8e3',
+            color: GAME_COLORS.black,
             distance: 10,
             innerStrength: 0,
             knockout: false,
@@ -91,7 +91,7 @@ export class PostProcessingLayer extends Entity {
 
         const depthLineGlow = new GlowFilter({
             alpha: 0.1,
-            color: '0xfff8e3',
+            color: GAME_COLORS.black,
             distance: 10,
             innerStrength: 0,
             knockout: false,
@@ -174,7 +174,7 @@ export class PostProcessingLayer extends Entity {
             resolution: 1,
         });
 
-        const powerupGlitch = new GlitchFilter({
+        const powerdownGlitch = new GlitchFilter({
             average: false,
             blue: {x: 0.5, y: 0.5},
             green: {x: 0.5, y: 0.5},
@@ -203,13 +203,13 @@ export class PostProcessingLayer extends Entity {
             rgbSpilt: rgbSplit,
             powerupGlow: powerupGlow,
             powerupCRT: powerupCRT,
-            powerupGlitch: powerupGlitch,
+            powerdownGlitch: powerdownGlitch,
         }));
 
         //Apply filters to the powerup layer0
         game.renderLayers.background.filters = [depthLineGlow, bulgePinch, depthLineCRTFilter];
         game.renderLayers.powerup.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
-        game.renderLayers.powerdown.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur, powerupGlitch];
+        game.renderLayers.powerdown.filters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerupMotionBlur, powerdownGlitch];
         game.renderLayers.ballChange.filters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow, powerupMotionBlur];
         game.renderLayers.crossCut.filters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow, powerupMotionBlur];
     }

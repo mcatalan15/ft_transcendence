@@ -6,15 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 11:43:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:58:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
-import { PhysicsData } from '../../utils/Types';
-
 import { CrossCut } from './CrossCut';
+
+import { PhysicsData, GAME_COLORS } from '../../utils/Types';
 
 export class WindmillCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
@@ -84,7 +84,7 @@ export class WindmillCrossCut extends CrossCut {
                 
                 // Close the path and fill
                 graphic.closePath();
-                graphic.fill(0xfff8e3);
+                graphic.fill(GAME_COLORS.black);
             }
         }
     }

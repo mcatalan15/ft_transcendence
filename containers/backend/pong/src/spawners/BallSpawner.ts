@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:02:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:46:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ import { RenderComponent } from '../components/RenderComponent'
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { VFXComponent } from '../components/VFXComponent';
 
+import { ParticleSpawner } from './ParticleSpawner';
+
 import { GAME_COLORS } from '../utils/Types';
 
 export class BallSpawner {
@@ -29,6 +31,8 @@ export class BallSpawner {
 		const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2, true);
 		const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
 
         ballRender.graphic.x = ballPhysics.x;
 		ballRender.graphic.y = ballPhysics.y;
@@ -52,6 +56,8 @@ export class BallSpawner {
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
 
         ballRender.graphic.x = ballPhysics.x;
 		ballRender.graphic.y = ballPhysics.y;
@@ -96,9 +102,11 @@ export class BallSpawner {
 
             const vfx = clone.getComponent('vfx') as VFXComponent;
             if (clone.isGoodBall) {
-                vfx.startFlash(GAME_COLORS.forest, 20);
+                vfx.startFlash(GAME_COLORS.green, 50);
+                ParticleSpawner.spawnBasicExplosion(game, clonePhysics.x + clonePhysics.width / 4, clonePhysics.y, GAME_COLORS.green, 1);
             } else {
-                vfx.startFlash(GAME_COLORS.city, 20);
+                vfx.startFlash(GAME_COLORS.rose, 50);
+                ParticleSpawner.spawnBasicExplosion(game, clonePhysics.x + clonePhysics.width / 4, clonePhysics.y, GAME_COLORS.rose, 1);
             }
     
             console.log(`${isGoodBall ? "REAL" : "FAKE"} MultiplyBall spawned at (${clonePhysics.x}, ${clonePhysics.y})`);
@@ -120,6 +128,8 @@ export class BallSpawner {
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
 
         ballRender.graphic.x = ballPhysics.x;
 		ballRender.graphic.y = ballPhysics.y;
@@ -144,6 +154,8 @@ export class BallSpawner {
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
+
+        ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
 
         ballRender.graphic.x = ballPhysics.x;
 		ballRender.graphic.y = ballPhysics.y;

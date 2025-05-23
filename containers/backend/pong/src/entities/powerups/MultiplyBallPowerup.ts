@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:17:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:52:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData } from '../../utils/Types.js';
+import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
 export class MultiplyBallPowerup extends Powerup {
     game: PongGame;
@@ -37,34 +37,34 @@ export class MultiplyBallPowerup extends Powerup {
 
         const outline = new Graphics();
         outline.circle(0, 0, 15);
-        outline.fill(0x171717);
+        outline.fill(GAME_COLORS.white);
         container.addChild(outline);
         
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(0xfff8e3);
+        base.fill(GAME_COLORS.black);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: 0xfff8e3, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
         container.addChild(ornament);
 
         const innerSign = new Container;
 
         const innerSignA = new Graphics();
         innerSignA.circle(0, 0, 2);
-        innerSignA.fill(0x171717);
+        innerSignA.fill(GAME_COLORS.white);
         innerSign.addChild(innerSignA);
         
         const innerSignB = new Graphics();
         innerSignB.circle(-4.5, -4.5, 2);
-        innerSignB.fill(0x171717);
+        innerSignB.fill(GAME_COLORS.white);
         innerSign.addChild(innerSignB);
 
         const innerSignC = new Graphics();
         innerSignC.circle(4.5, 4.5, 2);
-        innerSignC.fill(0x171717);
+        innerSignC.fill(GAME_COLORS.white);
         innerSign.addChild(innerSignC);
         
         container.addChild(innerSign);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 09:49:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:01:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,11 @@ import { Graphics, Point} from 'pixi.js'
 import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
 
+import { RenderComponent } from '../components/RenderComponent';
+import { TextComponent } from '../components/TextComponent';
+
 import { GameEvent } from './Types'
+import { isPaddle } from './Guards';
 
 export function createEntitiesMap(entities: Entity[]): Map<string, Entity> {
 	const map = new Map<string, Entity>();
@@ -173,6 +177,91 @@ export function processEvents<T extends GameEvent>(
     game.eventQueue.push(...unhandledEvents);
 }
 
+export function changePaddleLayer(game: PongGame, side: string, id: string) {
+    switch (side) {
+        case ('left'):
+            {
+                if (id.includes('powerUp'))
+                {
+                    for (const entity of game.entities) {
+                        if (isPaddle(entity) && entity.id.includes('paddleL')) {
+                            const text = entity.getComponent('text') as TextComponent;
+                            const playerName = text.getRenderable();
+                            playerName.label = 'playerName' + game.leftPlayer.name;
+                            game.renderLayers.powerup.addChild(playerName);
+
+                            const render = entity.getComponent('render') as RenderComponent;
+                            const graphic = render.graphic;
+                            graphic.label = 'paddle';
+                            game.renderLayers.powerup.addChild(graphic);
+                        }
+                    }
+                } else if (id.includes('powerDown')) {
+                    for (const entity of game.entities) {
+                        if (isPaddle(entity) && entity.id.includes('paddleL')) {
+                            const text = entity.getComponent('text') as TextComponent;
+                            text.setText('#@%$&');
+                            const playerName = text.getRenderable();
+                            playerName.label = 'playerName' + game.leftPlayer.name;
+                            game.renderLayers.powerup.addChild(playerName);
+                            game.renderLayers.powerdown.addChild(playerName);
+                            
+                            const render = entity.getComponent('render') as RenderComponent;
+                            const graphic = render.graphic;
+                            graphic.label = 'paddle';
+                            game.renderLayers.powerdown.addChild(graphic);
+                        }
+                    }
+                }
+            }
+            break;
+
+        case ('right'):
+            {
+                if (id.includes('powerUp'))
+                {
+                    for (const entity of game.entities) {
+                        if (isPaddle(entity) && entity.id.includes('paddleR')) {
+                            const text = entity.getComponent('text') as TextComponent;
+                            game.renderLayers.powerup.addChild(text.getRenderable());
+                            const playerName = text.getRenderable();
+                            playerName.label = 'playerName' + game.rightPlayer.name;
+                            game.renderLayers.powerup.addChild(playerName);
+                            
+                            const render = entity.getComponent('render') as RenderComponent;
+                            const graphic = render.graphic;
+                            graphic.label = 'paddle';
+                            game.renderLayers.powerup.addChild(graphic);
+                        }
+                    }
+                } else if (id.includes('powerDown')) {
+                    for (const entity of game.entities) {
+                        if (isPaddle(entity) && entity.id.includes('paddleR')) {
+                            const text = entity.getComponent('text') as TextComponent;
+                            text.setText('#@%$&');
+                            const playerName = text.getRenderable();
+                            playerName.label = 'playerName'+ game.rightPlayer.name;
+                            game.renderLayers.powerup.addChild(playerName);
+                            game.renderLayers.powerdown.addChild(playerName);
+                            
+                            const render = entity.getComponent('render') as RenderComponent;
+                            const graphic = render.graphic;
+                            graphic.label = 'paddle';
+                            game.renderLayers.powerdown.addChild(graphic);
+                        }
+                    }
+                }
+            }
+            break;
+    }
+    
+    
+}
+
 export function lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
+}
+
+export function randomInRange(min: number, max: number): number {
+	return Math.random() * (max - min) + min;
 }

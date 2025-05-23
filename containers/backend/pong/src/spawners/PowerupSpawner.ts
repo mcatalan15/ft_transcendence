@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:17:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:23:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,11 @@ export class PowerupSpawner {
 			points.push(new Point(width / 2, height / 2))
 			points.push(new Point(width / 2, height / 2 - 100));
 		} else if (world.includes('bang')) {
-			points.push(new Point(280, 170))
-			points.push(new Point(280, 560))
+			points.push(new Point(280, 200))
+			points.push(new Point(280, 540))
 			points.push(new Point(width / 2, height / 2))
-			points.push(new Point(width - 280, 170))
-			points.push(new Point(width - 280, 560))
+			points.push(new Point(width - 280, 200))
+			points.push(new Point(width - 280, 540))
 		} else if (world.includes('maw')) {
 			points.push(new Point(width / 2, height / 2 + 150));
 			points.push(new Point(width / 2 - 460, height / 2));
@@ -171,16 +171,18 @@ export class PowerupSpawner {
 
 		switch(idx) {
 			case(0):
+				uniqueId = `${uniqueId}shieldPowerup`;
 				powerup = new ShieldPowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 			case(1):
 				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 			case(2):
-				powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX);
+				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);	
 				break;
 			default:
-				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);
+				uniqueId = `${uniqueId}shootPowerup`;
+				powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 		}
 
@@ -279,7 +281,7 @@ export class PowerupSpawner {
 	}
 
 	static manageOnePointSpawn(game: PongGame, points: Point[]) {
-		const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+		let uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
 		let powerup = this.getPowerup(uniqueId, game, points[0].y, points[0].x);
 		
@@ -291,7 +293,6 @@ export class PowerupSpawner {
 			render.graphic.x = physics.x;
 			render.graphic.y = physics.y;
 		
-			//console.log(powerup.layer);
 			if (powerup.layer === 'powerup') {
 				game.renderLayers.powerup.addChild(render.graphic);
 			} else if (powerup.layer === 'powerdown') {
@@ -303,15 +304,17 @@ export class PowerupSpawner {
 
 	static manageTwoPointSpawn(game: PongGame, points: Point[]) {
 		for (let i = 0; i < points.length; i++) {
-			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			let uniqueId;
 
 			let powerup;
 
 			switch (i) {
 				case (0):
+					uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
 					break;
 				default:
+					uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
 					break;
 			}
@@ -324,7 +327,6 @@ export class PowerupSpawner {
 			render.graphic.x = physics.x;
 			render.graphic.y = physics.y;
 		
-			//console.log(powerup.layer);
 			if (powerup.layer === 'powerup') {
 				game.renderLayers.powerup.addChild(render.graphic);
 			} else if (powerup.layer === 'powerdown') {
@@ -337,18 +339,21 @@ export class PowerupSpawner {
 
 	static manageThreePointSpawn(game: PongGame, points: Point[]) {
 		for (let i = 0; i < points.length; i++) {
-			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			let uniqueId;
 
 			let powerup;
 			
 			switch (i) {
 				case (0):
+					uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;	
 					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
 					break;
 				case (1):
+					uniqueId = `ballChange-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getBallChange(uniqueId, game, points[i].y, points[i].x);
 					break;
 				default:
+					uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
 			}
 
@@ -360,7 +365,6 @@ export class PowerupSpawner {
 			render.graphic.x = physics.x;
 			render.graphic.y = physics.y;
 		
-			//console.log(powerup.layer);
 			if (powerup.layer === 'powerup') {
 				game.renderLayers.powerup.addChild(render.graphic);
 			} else if (powerup.layer === 'powerdown') {
@@ -373,24 +377,29 @@ export class PowerupSpawner {
 
 	static manageFivePointSpawn(game: PongGame, points: Point[]) {
 		for (let i = 0; i < points.length; i++) {
-			const uniqueId = `powerup-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+			let uniqueId;
 
 			let powerup;
 			
 			switch (i) {
 				case (0):
+					uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
 					break;
 				case (1):
+					uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
 					break;
 				case(2):
+				uniqueId = `ballChange-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getBallChange(uniqueId, game, points[i].y, points[i].x);
 					break;
 				case(3):
+				uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
 					break;
 				default:
+					uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);	
 			}
 

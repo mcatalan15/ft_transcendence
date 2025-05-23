@@ -6,13 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:57:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
+
+import { GAME_COLORS } from '../../utils/Types.js';
 
 export class EscalatorCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
@@ -32,6 +34,6 @@ export class EscalatorCrossCut extends CrossCut {
             graphic.lineTo(this.points[i].x, this.points[i].y);
         }
         
-        graphic.fill(0xfff8e3);
+        graphic.fill(GAME_COLORS.black);
     }
 }

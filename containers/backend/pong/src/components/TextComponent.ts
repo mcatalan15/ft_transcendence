@@ -6,13 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:47:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Text, TextStyle } from 'pixi.js';
 
 import type { Component } from '../engine/Component';
+
+import { GAME_COLORS } from '../utils/Types.js';
 
 export class TextComponent implements Component {
 	type = 'text';
@@ -45,7 +47,7 @@ export class TextComponent implements Component {
 		const defaultStyle: Partial<TextStyle> = {
 			fontFamily: '"Roboto Mono", monospace',
 			fontSize: 10,
-			fill: 0xfff8e3,
+			fill: GAME_COLORS.black,
 			align: 'center',
 			fontWeight: 'lighter',
 			letterSpacing: 1,

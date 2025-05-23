@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:16:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:52:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData } from '../../utils/Types.js';
+import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
 export class ShieldPowerup extends Powerup {
     game: PongGame;
@@ -37,17 +37,17 @@ export class ShieldPowerup extends Powerup {
         
         const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(0x171717);
+        outline.fill(GAME_COLORS.white);
         container.addChild(outline);
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(0xfff8e3);
+        base.fill(GAME_COLORS.black);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: 0xfff8e3, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
         container.addChild(ornament);
     
         const innerSign = new Graphics();
@@ -58,7 +58,7 @@ export class ShieldPowerup extends Powerup {
         innerSign.lineTo(-5.5, 4);           // Bottom-left curve
         innerSign.lineTo(-7.5, -6);          // Top-left
         innerSign.closePath();
-        innerSign.fill(0x171717);
+        innerSign.fill(GAME_COLORS.white);
         container.addChild(innerSign);
         
         return container;

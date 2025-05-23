@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/01 15:45:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:21:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ import { Entity } from "../engine/Entity";
 import type { System } from '../engine/System'
 
 import { PostProcessingComponent } from "../components/PostProcessingComponent";
+
+import { randomInRange } from "../utils/Utils";
 
 export class PostProcessingSystem implements System {
     time: number;
@@ -56,20 +58,20 @@ export class PostProcessingSystem implements System {
                 options.powerupCRT.seed = Math.sin(this.time) * 10000 % 1;
             }
 
-            if (options.powerupGlitch) {
+            if (options.powerdownGlitch) {
                 const t = this.time;
             
-                // Randomize seed slightly each frame
-                options.powerupGlitch.seed = Math.random();
+                options.powerdownGlitch.seed = Math.random();
             
-                // Occasionally spike offset for a burst effect
-                options.powerupGlitch.offset = 1 + Math.sin(t * 10);
+                options.powerdownGlitch.offset = 1 + Math.sin(t * 10);
             
-                // Rotate the glitch direction slowly
-                options.powerupGlitch.direction = Math.sin(t * 0.5) * Math.PI / 2;
+                options.powerdownGlitch.direction = Math.sin(t * 0.5) * Math.PI / 2;
             
-                // Optionally animate the number of slices (intense flicker effect)
-                options.powerupGlitch.slices = 100 + Math.floor(Math.random() * 100);
+                options.powerdownGlitch.slices = 100 + Math.floor(Math.random() * 100);
+            }
+
+            if (options.powerupGlow) {
+                options.powerupGlow.distance = randomInRange(90, 100);
             }
             
             // Animate the powerup glow with a sine wave pattern

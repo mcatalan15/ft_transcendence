@@ -14,6 +14,8 @@ import { Graphics, Point } from 'pixi.js';
 
 import { CrossCut } from './CrossCut';
 
+import { GAME_COLORS } from '../../utils/Types';
+
 export class LightningCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
@@ -32,6 +34,6 @@ export class LightningCrossCut extends CrossCut {
             graphic.lineTo(this.points[i].x, this.points[i].y);
         }
         
-        graphic.fill(0xfff8e3);
+        graphic.fill(GAME_COLORS.black);
     }
 }

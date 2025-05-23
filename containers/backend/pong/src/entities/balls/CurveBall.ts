@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 11:32:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:09:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ import { Ball } from './Ball'
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 import { RenderComponent } from '../../components/RenderComponent';
 
+import { GAME_COLORS } from '../../utils/Types';
+
 export class CurveBall extends Ball {
 	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {
 		super(id, layer, x, y, isGoodBall);
@@ -25,7 +27,7 @@ export class CurveBall extends Ball {
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
 		ballGraphic.ellipse(10, 10, 14, 8); // Horizontal ellipse = football shape
-		ballGraphic.fill(0xfff8e3); // Brownish football color
+		ballGraphic.fill(GAME_COLORS.black); // Brownish football color
 		ballGraphic.pivot.set(10, 10);
 		return ballGraphic;
 	}

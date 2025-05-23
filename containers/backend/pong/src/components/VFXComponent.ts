@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:45:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:39:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@ import type { Entity } from '../engine/Entity';
 import type { Component } from '../engine/Component';
 
 import { RenderComponent } from '../components/RenderComponent'
+
+import { GAME_COLORS } from '../utils/Types';
 
 export class VFXComponent implements Component {
 	type = 'vfx';
@@ -27,7 +29,7 @@ export class VFXComponent implements Component {
 	entity?: Entity;
 
 	constructor() {
-		this.flashColor = 0xfff8e3;
+		this.flashColor = GAME_COLORS.orange;
 		this.flashDuration = 0;
 		this.flashTimeLeft = 0;
 		this.originalTint = 0xFBBF24;

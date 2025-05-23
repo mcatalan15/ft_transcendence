@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 17:35:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:30:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ import { Entity } from '../../engine/Entity';
 import { RenderComponent } from '../../components/RenderComponent';
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 import { LifetimeComponent } from '../../components/LifetimeComponent';
+
+import { GAME_COLORS } from '../../utils/Types';
 
 export class Shield extends Entity {
 	x: number;
@@ -40,10 +42,10 @@ export class Shield extends Entity {
 
 		this.side = side;
 
-		this.x = side === 'left' ? 18 : game.width - 18;
+		this.x = side === 'left' ? 20 : game.width - 20;
 		this.y = game.height / 2;
 
-		const graphic = this.generateLine(0xfff8e3);
+		const graphic = this.generateLine(GAME_COLORS.black);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 10:08:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 16:02:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:59:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ export class MultiplyBall extends Ball {
 	constructor(id: string, layer: string, x: number, y: number, isGoodBall: boolean) {
 		super(id, layer, x, y, isGoodBall);
 
-		this.flashColor = GAME_COLORS.forest;
+		this.flashColor = GAME_COLORS.greenParticle;
 	}
 
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
 		ballGraphic.circle(5, 5, 5);
-		ballGraphic.fill(0xfff8e3);
+		ballGraphic.fill(GAME_COLORS.black);
 		ballGraphic.pivot.set(2.5, 2.5);
 		return ballGraphic;
 	}

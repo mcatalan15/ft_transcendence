@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:10:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ import { Ball } from './Ball'
 
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 import { RenderComponent } from '../../components/RenderComponent';
+
+import { GAME_COLORS } from '../../utils/Types';
 
 export class BurstBall extends Ball {
 	private state: 'winding' | 'burst' = 'winding';
@@ -35,7 +37,7 @@ export class BurstBall extends Ball {
 		const right = { x: 20, y: 0 };
 
 		ballGraphic.poly([tip, right, left], true);
-		ballGraphic.fill(0xfff8e3);
+		ballGraphic.fill(GAME_COLORS.black);
 		ballGraphic.pivot.set(10, 10);
 		return ballGraphic;
 	}

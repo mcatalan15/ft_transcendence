@@ -6,11 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 14:26:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:39:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Container } from 'pixi.js';
+
+import { PongGame } from '../../engine/Game.js';
 
 import { Entity } from '../../engine/Entity.js';
 
@@ -21,6 +23,7 @@ import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { PowerupComponent } from '../../components/PowerupComponent';
 
 import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
+import { isPaddle } from '../../utils/Guards.js';
 
 export type AffectationType = 'powerUp' | 'powerDown' | 'ballChange';
 
@@ -80,5 +83,61 @@ export abstract class Powerup extends Entity {
             floatOffset: Math.random() * Math.PI * 2,
             initialized: true,
         };
+    }
+
+    changePaddleLayer(game: PongGame, side: string, id: string) {
+        switch (side) {
+            case ('left'):
+                {
+                    if (id.includes('powerUp'))
+                    {
+                        for (const entity of game.entities) {
+                            if (isPaddle(entity) && entity.id.includes('paddleL')) {
+                                const render = entity.getComponent('render') as RenderComponent;
+                                const graphic = render.graphic;
+                                graphic.label = 'paddle';
+                                game.renderLayers.powerup.addChild(graphic);
+                            }
+                        }
+                    } else if (id.includes('powerDown')) {
+                        for (const entity of game.entities) {
+                            if (isPaddle(entity) && entity.id.includes('paddleL')) {
+                                const render = entity.getComponent('render') as RenderComponent;
+                                const graphic = render.graphic;
+                                graphic.label = 'paddle';
+                                game.renderLayers.powerdown.addChild(graphic);
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case ('right'):
+                {
+                    if (id.includes('powerUp'))
+                    {
+                        for (const entity of game.entities) {
+                            if (isPaddle(entity) && entity.id.includes('paddleR')) {
+                                const render = entity.getComponent('render') as RenderComponent;
+                                const graphic = render.graphic;
+                                graphic.label = 'paddle';
+                                game.renderLayers.powerup.addChild(graphic);
+                            }
+                        }
+                    } else if (id.includes('powerDown')) {
+                        for (const entity of game.entities) {
+                            if (isPaddle(entity) && entity.id.includes('paddleR')) {
+                                const render = entity.getComponent('render') as RenderComponent;
+                                const graphic = render.graphic;
+                                graphic.label = 'paddle';
+                                game.renderLayers.powerdown.addChild(graphic);
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+        
+        
     }
 }

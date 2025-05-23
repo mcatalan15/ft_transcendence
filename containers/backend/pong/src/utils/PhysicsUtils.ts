@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 14:25:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 09:30:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:02:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,15 +202,6 @@ export function findExactCollisionPosition(physicsSystem: PhysicsSystem, paddle:
 		const testY = startY + (endY - startY) * mid;
 
 		physics.y = testY;
-		
-		const hitsCut = physicsSystem.handlePaddleCutCollisions(physics, entitiesMap, paddle);
-		const hitsWall = physicsSystem.constrainPaddleToWalls(physics, entitiesMap);
-		
-		if (hitsCut || hitsWall) {
-			high = mid;
-		} else {
-			low = mid;
-		}
 	}
 	
 	physics.y = startY + (endY - startY) * low;

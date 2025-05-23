@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:15:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:52:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData } from '../../utils/Types.js';
+import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
 export class InvertPowerDown extends Powerup {
 	game: PongGame;
@@ -37,7 +37,7 @@ export class InvertPowerDown extends Powerup {
 	
 		const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(0x171717);
+        outline.fill(GAME_COLORS.white);
 		outline.pivot.set(-5, -5);
 		outline.angle = 45;
         container.addChild(outline);
@@ -45,7 +45,7 @@ export class InvertPowerDown extends Powerup {
 		// Base diamond (rotated square)
 		const base = new Graphics();
 		base.rect(-10, -10, 20, 20);
-		base.fill(0xfff8e3);
+		base.fill(GAME_COLORS.black);
 		base.pivot.set(-5, -5);
 		base.angle = 45;
 		container.addChild(base);
@@ -53,27 +53,27 @@ export class InvertPowerDown extends Powerup {
 		// Ornament stroke, matching the base rotation
 		const ornament = new Graphics();
 		ornament.rect(-15, -15, 30, 30);
-		ornament.stroke({ color: 0xfff8e3, width: 3 });
+		ornament.stroke({ color: GAME_COLORS.black, width: 3 });
 		ornament.pivot.set(-5, -5);
 		ornament.angle = 45;
 		container.addChild(ornament);
 	
 		const innerSign = new Graphics();
         innerSign.ellipse(0, 7, 8.5, 6.5);
-        innerSign.stroke({width: 2.2,color: 0x171717});
+        innerSign.stroke({width: 2.2,color: GAME_COLORS.white});
         container.addChild(innerSign);
 		
 		const topStar = new Graphics();
 		topStar.star(1.3, 1.6, 5, 5.5);
-		topStar.fill(0x171717);
-		topStar.stroke({width: 1, color: 0xfff8e3})
+		topStar.fill(GAME_COLORS.white);
+		topStar.stroke({width: 1, color: GAME_COLORS.black})
 		
 		container.addChild(topStar);
 		
 		const botStar = new Graphics();
 		botStar.star(-1.1, 13, 5, 4);
-		botStar.fill(0x171717);
-		botStar.stroke({width: 1, color: 0xfff8e3})
+		botStar.fill(GAME_COLORS.white);
+		botStar.stroke({width: 1, color: GAME_COLORS.black})
 		container.addChild(botStar);
 	
 		return container;

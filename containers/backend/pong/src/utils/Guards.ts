@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 14:27:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:52:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ import { Bullet } from '../entities/Bullet';
 
 import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
+import { PowerupSystem } from '../systems/PowerupSystem';
 
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;
@@ -153,4 +154,8 @@ export function isAnimationSystem(system: System): system is AnimationSystem {
 
 export function isRenderSystem(system: System): system is RenderSystem {
 	return system instanceof RenderSystem;
+}
+
+export function isPowerupSystem(system: System): system is PowerupSystem {
+	return system instanceof PowerupSystem;
 }

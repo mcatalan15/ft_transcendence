@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 12:30:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:59:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ import { RenderComponent } from "../../components/RenderComponent";
 
 import { LedgePatternManager } from '../../managers/LedgePatternManager';
 
-import { ObstacleBehavior, ObstacleOptions } from '../../utils/Types';
+import { ObstacleOptions } from '../../utils/Types';
 import { drawPointPath, generateLedgePoints } from '../../utils/Utils';
 
 export class LedgeSegment extends Obstacle {

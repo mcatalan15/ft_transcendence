@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:59:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 08:46:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:59:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ import { Ball } from './Ball'
 
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 import { RenderComponent } from '../../components/RenderComponent';
+
+import { GAME_COLORS } from '../../utils/Types';
 
 export class SpinBall extends Ball {
 	private rotation: number = 0;
@@ -33,7 +35,7 @@ export class SpinBall extends Ball {
 	createBallGraphic(): Graphics {
 		const ballGraphic = new Graphics();
 		ballGraphic.rect(-10, -10, 20, 20);
-		ballGraphic.fill(0xfff8e3);
+		ballGraphic.fill(GAME_COLORS.black);
 		//ballGraphic.pivot.set(0, 0);
 		return ballGraphic;
 	}

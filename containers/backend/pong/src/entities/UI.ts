@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 15:59:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:53:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,9 @@ import { Graphics, TextStyle } from 'pixi.js'
 
 import { Entity } from "../engine/Entity";
 
-import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent} from '../components/TextComponent';
 
-import { TextData } from '../utils/Types'
-import { drawPointOpenPath } from '../utils/Utils';
+import { TextData, GAME_COLORS } from '../utils/Types'
 
 export class UI extends Entity {
 	width: number;
@@ -65,7 +63,7 @@ export class UI extends Entity {
 		graphic.moveTo(30, 60);
 		graphic.lineTo(150, 60);
         
-        graphic.stroke({color: 0xfff8e3, width: 2 });
+        graphic.stroke({color: GAME_COLORS.black, width: 2 });
 
 		graphic.x = this.width / 2;
 		graphic.y = this.height - 80;
@@ -79,7 +77,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xfff8e3,
+				fill: GAME_COLORS.black,
 				fontSize: 20,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -94,7 +92,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xfff8e3,
+				fill: GAME_COLORS.black,
 				fontSize: 10,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -109,7 +107,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xfff8e3,
+				fill: GAME_COLORS.black,
 				fontSize: 10,
 				fontWeight: 'bold',
 				align: 'left',

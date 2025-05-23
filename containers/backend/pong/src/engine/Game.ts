@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 11:05:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:00:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 
-// Import pertinent managers
-import { WorldManager } from '../managers/WorldManager';
+// Import pertinent spawners
+import { ParticleSpawner } from '../spawners/ParticleSpawner';
 
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
@@ -48,7 +48,7 @@ import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { BallSpawner } from '../spawners/BallSpawner'
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, Player } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
 export class PongGame {
 	app: Application;
@@ -79,6 +79,8 @@ export class PongGame {
 	sounds!: GameSounds;
 	worldPool: World[] = [];
 	currentWorld!: World;
+	leftPlayer: any = '';
+	rightPlayer: any = '';
 
 	constructor(app: Application) {
 		this.app = app;
@@ -135,6 +137,8 @@ export class PongGame {
 
 		this.initSounds();
 		console.log('Sounds loaded');
+
+		this.initDust();
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
@@ -222,6 +226,22 @@ export class PongGame {
 		document.addEventListener('keydown', warmUpAudio, { once: true });
 	}
 
+	initDust() {
+			ParticleSpawner.setAmbientDustDensity(20, 5);
+
+			ParticleSpawner.setAmbientDustColor(0x888888);
+
+			ParticleSpawner.setAmbientDustSize(5, 12);
+
+			ParticleSpawner.setAmbientDustLifetime(200, 260);
+
+			ParticleSpawner.setAmbientDustAlpha(0.1, 0.3);
+
+			ParticleSpawner.setAmbientDustDriftSpeed(3);
+
+			ParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
+	}
+
 	async createEntities(): Promise<void>  {
 		//Fetch player info from jsons
 		let playerData;
@@ -234,14 +254,14 @@ export class PongGame {
 
 		console.log(playerData.type);
 
-		const leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
-		const rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
+		this.leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
+		this.rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
 
-		console.log(`${leftPlayer.name}  vs  ${rightPlayer.name}`);
+		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
 
 		
 		// Create Bounding Box
-		this.createBoundingBox();
+		this.createBoundingBoxes();
 		
 		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
@@ -257,7 +277,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -265,7 +285,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name);
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
@@ -334,11 +354,32 @@ export class PongGame {
 		}
 	}
 
-	createBoundingBox() {
-		const boundingBox = new Graphics();
-		boundingBox.rect(0, 0, this.width, this.height);
-		boundingBox.stroke({width: 0.1, color: '#171717'});
-		this.renderLayers.bounding.addChild(boundingBox);
+	createBoundingBoxes() {
+		const boundingBoxA = new Graphics();
+		boundingBoxA.rect(0, 0, this.width, this.height);
+		boundingBoxA.stroke({width: 0.1, color: '#171717'});
+
+		const boundingBoxB = new Graphics();
+		boundingBoxB.rect(0, 0, this.width, this.height);
+		boundingBoxB.stroke({width: 0.1, color: '#171717'});
+
+		const boundingBoxC = new Graphics();
+		boundingBoxC.rect(0, 0, this.width, this.height);
+		boundingBoxC.stroke({width: 0.1, color: '#171717'});
+
+		const boundingBoxD = new Graphics();
+		boundingBoxD.rect(0, 0, this.width, this.height);
+		boundingBoxD.stroke({width: 0.1, color: '#171717'});
+
+		const boundingBoxE = new Graphics();
+		boundingBoxE.rect(0, 0, this.width, this.height);
+		boundingBoxE.stroke({width: 0.1, color: '#171717'});
+
+		this.renderLayers.bounding.addChild(boundingBoxA);
+		this.renderLayers.powerup.addChild(boundingBoxB);
+		this.renderLayers.powerdown.addChild(boundingBoxC);
+		this.renderLayers.ballChange.addChild(boundingBoxD);
+		this.renderLayers.pp.addChild(boundingBoxE);
 		
 	}
 }

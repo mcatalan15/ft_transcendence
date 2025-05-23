@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 18:16:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:52:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { PongGame } from '../../engine/Game.js';
 import { Entity } from '../../engine/Entity.js';
 import { Powerup } from './Powerup.js';
 
-import { PhysicsData } from '../../utils/Types.js';
+import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
 export class SlowPowerDown extends Powerup {
 	game: PongGame;
@@ -37,7 +37,7 @@ export class SlowPowerDown extends Powerup {
 		
 		const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(0x171717);
+        outline.fill(GAME_COLORS.white);
 		outline.pivot.set(-5, -5);
 		outline.angle = 45;
         container.addChild(outline);
@@ -45,7 +45,7 @@ export class SlowPowerDown extends Powerup {
 		// Base diamond (rotated square)
 		const base = new Graphics();
 		base.rect(-10, -10, 20, 20);
-		base.fill(0xfff8e3);
+		base.fill(GAME_COLORS.black);
 		base.pivot.set(-5, -5);
 		base.angle = 45;
 		container.addChild(base);
@@ -53,7 +53,7 @@ export class SlowPowerDown extends Powerup {
 		// Ornament stroke, matching the base rotation
 		const ornament = new Graphics();
 		ornament.rect(-15, -15, 30, 30);
-		ornament.stroke({ color: 0xfff8e3, width: 3 });
+		ornament.stroke({ color: GAME_COLORS.black, width: 3 });
 		ornament.pivot.set(-5, -5);
 		ornament.angle = 45;
 		container.addChild(ornament);
@@ -71,7 +71,7 @@ export class SlowPowerDown extends Powerup {
         
         rightTri.poly(rightPoints, true);
 		rightTri.x = -3;
-        rightTri.fill(0x171717);
+        rightTri.fill(GAME_COLORS.white);
         rightTri.pivot.set(0, 0);
         rightTri.angle = 30;
 
@@ -87,7 +87,7 @@ export class SlowPowerDown extends Powerup {
 
         leftTri.poly(leftPoints, true);
 		leftTri.x = 4;
-        leftTri.fill(0x171717);
+        leftTri.fill(GAME_COLORS.white);
         leftTri.pivot.set(0, 0);
         leftTri.angle = 30;
 

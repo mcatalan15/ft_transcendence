@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 14:19:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:02:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
+
+import { GAME_COLORS } from '../utils/Types';
 
 import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
@@ -169,7 +171,7 @@ export class AnimationSystem implements System {
 			const graphic = render.graphic as Graphics;
 			graphic.clear();
 			graphic.rect(0, 0, physics.width, targetHeight);
-			graphic.fill('0xfff8e3');
+			graphic.fill(GAME_COLORS.black);
 			graphic.pivot.set(physics.width / 2, targetHeight / 2);
 		}
 	}

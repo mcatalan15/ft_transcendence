@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 12:52:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:55:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ import { ParticleSpawner } from '../spawners/ParticleSpawner'
 import { BallSpawner } from '../spawners/BallSpawner'
 import { PowerupSpawner } from '../spawners/PowerupSpawner';
 
-import { createEntitiesMap } from '../utils/Utils';
+import { createEntitiesMap, changePaddleLayer } from '../utils/Utils';
 import * as physicsUtils from '../utils/PhysicsUtils'
 import { isPaddle, isBall, isSpinBall, isPowerup, isBullet } from '../utils/Guards';
-import { BoundingBox } from '../utils/Types';
+import { GAME_COLORS } from '../utils/Types';
 
 
 export class PhysicsSystem implements System {
@@ -178,6 +178,9 @@ export class PhysicsSystem implements System {
 		let collided = false;
 		let collisionNormal = { x: 0, y: 0 };
 		
+		// Store previous position for stuck detection
+		const prevPos = { x: physics.x - physics.velocityX, y: physics.y - physics.velocityY };
+		
 		for (const entity of entitiesMap.values()) {
 			if (entity instanceof CrossCut) {
 				const cutPhysics = entity.getComponent('physics') as PhysicsComponent;
@@ -196,64 +199,11 @@ export class PhysicsSystem implements System {
 						continue;
 					}
 					
-					for (let j = 0; j < polygon.length; j++) {
-						const vertex = { 
-							x: polygon[j].x + cutOffsetX, 
-							y: polygon[j].y + cutOffsetY 
-						};
-						
-						const dx = ballCenter.x - vertex.x;
-						const dy = ballCenter.y - vertex.y;
-						const distanceSq = dx * dx + dy * dy;
-						
-						if (distanceSq <= ballRadius * ballRadius) {
-							const distance = Math.sqrt(distanceSq);
-							const nx = distance > 0 ? dx / distance : 0;
-							const ny = distance > 0 ? dy / distance : 0;
-							
-							physics.x = vertex.x + nx * (ballRadius + 0.1);
-							physics.y = vertex.y + ny * (ballRadius + 0.1);
-							
-							const dotVelocity = physics.velocityX * nx + physics.velocityY * ny;
-							physics.velocityX -= 2 * dotVelocity * nx;
-							physics.velocityY -= 2 * dotVelocity * ny;
-							
-							collided = true;
-							collisionNormal = { x: nx, y: ny };
-							break;
-						}
-					}
+					// Check if ball is inside polygon first
+					const isInside = physicsUtils.pointInPolygon(ballCenter.x, ballCenter.y, polygon, cutOffsetX, cutOffsetY);
 					
-					if (collided) break;
-					
-					for (let j = 0; j < polygon.length; j++) {
-						const pointA = { 
-							x: polygon[j].x + cutOffsetX, 
-							y: polygon[j].y + cutOffsetY 
-						};
-						const pointB = { 
-							x: polygon[(j + 1) % polygon.length].x + cutOffsetX, 
-							y: polygon[(j + 1) % polygon.length].y + cutOffsetY 
-						};
-						
-						const collision = physicsUtils.circleIntersectsSegment(ballCenter, ballRadius, pointA, pointB);
-						if (collision.intersects && collision.normal) {
-							physics.x = collision.point!.x + collision.normal.x * (ballRadius + 0.1);
-							physics.y = collision.point!.y + collision.normal.y * (ballRadius + 0.1);
-							
-							const dotVelocity = physics.velocityX * collision.normal.x + physics.velocityY * collision.normal.y;
-							physics.velocityX -= 2 * dotVelocity * collision.normal.x;
-							physics.velocityY -= 2 * dotVelocity * collision.normal.y;
-							
-							collided = true;
-							collisionNormal = collision.normal;
-							break;
-						}
-					}
-					
-					if (collided) break;
-					
-					if (physicsUtils.pointInPolygon(ballCenter.x, ballCenter.y, polygon, cutOffsetX, cutOffsetY)) {
+					if (isInside) {
+						// Ball is inside - find closest edge to push out
 						let minDist = Infinity;
 						let closestEdgeNormal = { x: 0, y: 0 };
 						let closestPoint = { x: 0, y: 0 };
@@ -289,19 +239,23 @@ export class PhysicsSystem implements System {
 								minDist = distance;
 								closestPoint = closest;
 								
+								// Calculate normal pointing outward from polygon
 								const nx = -edgeVector.y / edgeLength;
 								const ny = edgeVector.x / edgeLength;
 								
+								// Make sure normal points away from polygon center
 								const centerToEdge = { x: closest.x - ballCenter.x, y: closest.y - ballCenter.y };
 								const dot = nx * centerToEdge.x + ny * centerToEdge.y;
 								closestEdgeNormal = dot > 0 ? { x: nx, y: ny } : { x: -nx, y: -ny };
 							}
 						}
 						
-						const pushOutDistance = ballRadius + 0.1;
+						// Push ball out with extra margin
+						const pushOutDistance = ballRadius + 2.0; // Increased margin
 						physics.x = closestPoint.x + closestEdgeNormal.x * pushOutDistance;
 						physics.y = closestPoint.y + closestEdgeNormal.y * pushOutDistance;
 						
+						// Reflect velocity
 						const dotVelocity = physics.velocityX * closestEdgeNormal.x + physics.velocityY * closestEdgeNormal.y;
 						physics.velocityX -= 2 * dotVelocity * closestEdgeNormal.x;
 						physics.velocityY -= 2 * dotVelocity * closestEdgeNormal.y;
@@ -311,6 +265,69 @@ export class PhysicsSystem implements System {
 						break;
 					}
 					
+					// Check edge collisions only if not inside
+					for (let j = 0; j < polygon.length; j++) {
+						const pointA = { 
+							x: polygon[j].x + cutOffsetX, 
+							y: polygon[j].y + cutOffsetY 
+						};
+						const pointB = { 
+							x: polygon[(j + 1) % polygon.length].x + cutOffsetX, 
+							y: polygon[(j + 1) % polygon.length].y + cutOffsetY 
+						};
+						
+						const collision = physicsUtils.circleIntersectsSegment(ballCenter, ballRadius, pointA, pointB);
+						if (collision.intersects && collision.normal) {
+							// Extra safety margin
+							const pushOutDistance = ballRadius + 1.5;
+							physics.x = collision.point!.x + collision.normal.x * pushOutDistance;
+							physics.y = collision.point!.y + collision.normal.y * pushOutDistance;
+							
+							// Reflect velocity
+							const dotVelocity = physics.velocityX * collision.normal.x + physics.velocityY * collision.normal.y;
+							physics.velocityX -= 2 * dotVelocity * collision.normal.x;
+							physics.velocityY -= 2 * dotVelocity * collision.normal.y;
+							
+							collided = true;
+							collisionNormal = collision.normal;
+							break;
+						}
+					}
+					
+					// Check vertex collisions
+					if (!collided) {
+						for (let j = 0; j < polygon.length; j++) {
+							const vertex = { 
+								x: polygon[j].x + cutOffsetX, 
+								y: polygon[j].y + cutOffsetY 
+							};
+							
+							const dx = ballCenter.x - vertex.x;
+							const dy = ballCenter.y - vertex.y;
+							const distanceSq = dx * dx + dy * dy;
+							
+							if (distanceSq <= ballRadius * ballRadius) {
+								const distance = Math.sqrt(distanceSq);
+								const nx = distance > 0 ? dx / distance : 0;
+								const ny = distance > 0 ? dy / distance : 0;
+								
+								// Push out with margin
+								const pushOutDistance = ballRadius + 1.5;
+								physics.x = vertex.x + nx * pushOutDistance;
+								physics.y = vertex.y + ny * pushOutDistance;
+								
+								// Reflect velocity
+								const dotVelocity = physics.velocityX * nx + physics.velocityY * ny;
+								physics.velocityX -= 2 * dotVelocity * nx;
+								physics.velocityY -= 2 * dotVelocity * ny;
+								
+								collided = true;
+								collisionNormal = { x: nx, y: ny };
+								break;
+							}
+						}
+					}
+					
 					if (collided) break;
 				}
 				
@@ -318,17 +335,31 @@ export class PhysicsSystem implements System {
 			}
 		}
 		
-		if (collided) {    
+		if (collided) {
+			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
-			const maxSpeed = 15;
+			const distanceFromPrev = Math.hypot(physics.x - prevPos.x, physics.y - prevPos.y);
 			
-			if (speed > maxSpeed) {
-				const scale = maxSpeed / speed;
+			// If ball barely moved or is moving very slowly, give it a boost
+			if (speed < 3 || distanceFromPrev < 1) {
+				const boostMagnitude = Math.max(5, speed * 1.5);
+				const normalizedVelX = physics.velocityX / speed || collisionNormal.x;
+				const normalizedVelY = physics.velocityY / speed || collisionNormal.y;
+				
+				physics.velocityX = normalizedVelX * boostMagnitude;
+				physics.velocityY = normalizedVelY * boostMagnitude;
+			}
+			
+			// Enforce speed limits
+			const maxSpeed = 15;
+			const currentSpeed = Math.hypot(physics.velocityX, physics.velocityY);
+			if (currentSpeed > maxSpeed) {
+				const scale = maxSpeed / currentSpeed;
 				physics.velocityX *= scale;
 				physics.velocityY *= scale;
 			}
 			
-			physicsUtils.enforceMinimumHorizontalComponent(this, physics, speed, 0.5);
+			physicsUtils.enforceMinimumHorizontalComponent(this, physics, currentSpeed, 0.5);
 			
 			if (isSpinBall(ball)) {
 				(ball as SpinBall).applySpinToBounce(physics);
@@ -347,6 +378,7 @@ export class PhysicsSystem implements System {
 				const shieldRight = shieldPhysics.x + shieldPhysics.width / 2;
 				if (ballLeft < shieldRight) {
 					physics.velocityX *= -1;
+
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}
 			} else if (shield.side === 'right') {
@@ -461,19 +493,19 @@ export class PhysicsSystem implements System {
 					}
 					
 					if (paddleSide === "left") {
-						ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, 0x1CFFAC);
+						ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.greenParticle, 1);
 						
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
-							vfx.startFlash(0x5EEAD4, 10); // Green flash for left paddle
+							vfx.startFlash(GAME_COLORS.greenParticle, 10); // Green flash for left paddle
 						}
 
 					} else {
-						ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, 0xAC1CFF);
+						ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, GAME_COLORS.violetParticle, 1);
 						
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
-							vfx.startFlash(0xD946EF, 10); // Purple flash for right paddle
+							vfx.startFlash(GAME_COLORS.violetParticle, 10); // Purple flash for right paddle
 						}
 					}
 
@@ -497,6 +529,9 @@ export class PhysicsSystem implements System {
                     const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
 					entity.sendPowerupEvent(entitiesMap);
                     lifetime.remaining = 0;
+					if (!entity.id.includes('shield') && !entity.id.includes('shoot')) {
+						changePaddleLayer(this.game, ball.lastHit, entity.id);
+					}
                 }
             }
         }
@@ -607,6 +642,16 @@ export class PhysicsSystem implements System {
 				paddleR.isStunned = true;
 				paddleR.affectedTimer = 100;
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
+				ParticleSpawner.spawnBurst(
+					this.game,
+					bulletPhysics.x - bulletPhysics.width,
+					bulletPhysics.y,
+					10,
+					bulletPhysics.velocityX,
+					bulletPhysics.velocityY,
+					GAME_COLORS.rose,
+				);
+				changePaddleLayer(this.game, 'right', 'powerDown');
 				console.log('Bullet hit!');
 			}
 		} else if (bullet.direction === 'left') {
@@ -614,6 +659,16 @@ export class PhysicsSystem implements System {
 				paddleL.isStunned = true;
 				paddleL.affectedTimer = 100;
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
+				ParticleSpawner.spawnBurst(
+					this.game,
+					bulletPhysics.x + bulletPhysics.width,
+					bulletPhysics.y,
+					10,
+					-bulletPhysics.velocityX,
+					bulletPhysics.velocityY,
+					GAME_COLORS.rose,
+				);
+				changePaddleLayer(this.game, 'left', 'powerDown');
 				console.log('Bullet hit!');
 			}
 		}
@@ -682,6 +737,7 @@ export class PhysicsSystem implements System {
 					}
 					
 					if (collided) {
+						ParticleSpawner.spawnBasicExplosion(this.game, bulletPhysics.x + bulletPhysics.width / 4, bulletPhysics.y, GAME_COLORS.rose, 1);
 						PowerupSpawner.despawnBullet(this.game, bullet.id);
 						return;
 					}
