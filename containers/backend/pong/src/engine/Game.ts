@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 19:00:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:20:23 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ import { CrossCutSystem } from '../systems/CrossCutSystem';
 
 // Import spawners
 import { BallSpawner } from '../spawners/BallSpawner'
+import { SoundManager } from '../managers/SoundManager';
 
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
@@ -77,6 +78,7 @@ export class PongGame {
 	};
 	visualRoot: Container;
 	sounds!: GameSounds;
+	soundManager: SoundManager;
 	worldPool: World[] = [];
 	currentWorld!: World;
 	leftPlayer: any = '';
@@ -124,6 +126,10 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.pp);
 
 		this.visualRoot.addChild(this.renderLayers.ui);
+		
+		this.initSounds();
+		console.log(this.sounds);
+		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 	}
 
 	async init(): Promise<void> {
@@ -135,10 +141,12 @@ export class PongGame {
 		this.initSystems();
 		console.log('All Systems initialiazed');
 
-		this.initSounds();
+		this.initDust();
+
 		console.log('Sounds loaded');
 
-		this.initDust();
+		
+		this.soundManager.startMusic();
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
@@ -185,28 +193,58 @@ export class PongGame {
 
 	initSounds(): void {
 		this.sounds = {
+			bgm: new Howl({
+				src: ['src/assets/music/bgmFiltered01.mp3'],
+				preload: true,
+				loop: true,
+				volume: 0.5
+			}),
 			pong: new Howl({ 
-				src: ['src/assets/sfx/pong.wav'],
+				src: ['src/assets/sfx/used/pongFiltered02.mp3'],
 				preload: true
 			}),
+			thud: new Howl({ 
+				src: ['src/assets/sfx/used/thudFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			shoot: new Howl({ 
+				src: ['src/assets/sfx/used/shotFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			hit: new Howl({ 
+				src: ['src/assets/sfx/used/hitFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			shieldBreak: new Howl({ 
+				src: ['src/assets/sfx/used/shieldBreakFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
 			powerup: new Howl({ 
-				src: ['src/assets/sfx/powerup.wav'],
-				preload: true 
+				src: ['src/assets/sfx/used/powerupFiltered01.mp3'],
+				preload: true,
 			}),
 			powerdown: new Howl({ 
-				src: ['src/assets/sfx/powerdown.wav'],
+				src: ['src/assets/sfx/used/powerdownFiltered01.mp3'],
 				preload: true 
 			}),
 			ballchange: new Howl({ 
-				src: ['src/assets/sfx/ballchange.wav'],
+				src: ['src/assets/sfx/used/ballchangeFiltered01.mp3'],
 				preload: true 
 			}),
 			death: new Howl({ 
-				src: ['src/assets/sfx/death.wav'],
+				src: ['src/assets/sfx/used/explosionFiltered01.mp3'],
 				preload: true
 			}),
-			paddleReset: new Howl({ 
-				src: ['src/assets/sfx/paddleReset.wav'],
+			paddleResetUp: new Howl({ 
+				src: ['src/assets/sfx/recoverUpFiltered01.mp3'],
+				preload: true
+			}),
+			paddleResetDown: new Howl({ 
+				src: ['src/assets/sfx/recoverDownFiltered01.mp3'],
 				preload: true
 			}),
 		};

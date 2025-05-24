@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsSystem.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 18:55:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:23:24 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,11 @@ export class PhysicsSystem implements System {
 				physics.velocityY *= -1;
 				collided = true;
 			}
+		}
+
+		if (collided) {
+			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
+			this.game.sounds.thud.play();
 		}
 		
 		if (isSpinBall(ball) && collided) {
@@ -336,6 +341,8 @@ export class PhysicsSystem implements System {
 		}
 		
 		if (collided) {
+			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
+			this.game.sounds.thud.play();
 			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
 			const distanceFromPrev = Math.hypot(physics.x - prevPos.x, physics.y - prevPos.y);
@@ -386,6 +393,10 @@ export class PhysicsSystem implements System {
 				const shieldLeft = shieldPhysics.x - shieldPhysics.width / 2;
 				if (ballRight > shieldLeft) {
 					physics.velocityX *= -1;
+
+					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.shieldBreak.play();
+
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}
 			}
@@ -433,6 +444,7 @@ export class PhysicsSystem implements System {
 				);
 				
 				if (collision.hit && collision.time >= 0 && collision.time <= 1) {
+					this.game.sounds.pong.rate(Math.random() * 0.2 + 1.1);
 					this.game.sounds.pong.play();
 					
 					physics.x = collision.position.x;
@@ -652,6 +664,10 @@ export class PhysicsSystem implements System {
 					GAME_COLORS.rose,
 				);
 				changePaddleLayer(this.game, 'right', 'powerDown');
+
+				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+				this.game.sounds.hit.play();
+
 				console.log('Bullet hit!');
 			}
 		} else if (bullet.direction === 'left') {
@@ -669,6 +685,10 @@ export class PhysicsSystem implements System {
 					GAME_COLORS.rose,
 				);
 				changePaddleLayer(this.game, 'left', 'powerDown');
+
+				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+				this.game.sounds.hit.play();
+				
 				console.log('Bullet hit!');
 			}
 		}
@@ -738,6 +758,10 @@ export class PhysicsSystem implements System {
 					
 					if (collided) {
 						ParticleSpawner.spawnBasicExplosion(this.game, bulletPhysics.x + bulletPhysics.width / 4, bulletPhysics.y, GAME_COLORS.rose, 1);
+						
+						this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.hit.play();
+						
 						PowerupSpawner.despawnBullet(this.game, bullet.id);
 						return;
 					}

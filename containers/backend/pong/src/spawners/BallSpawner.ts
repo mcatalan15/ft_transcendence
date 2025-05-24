@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BallSpawner.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:46:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:21:02 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ export class BallSpawner {
 		console.log("DefaultBall spawned")
     }
 
-    static spawnCurveBallAt(game: PongGame, physics: PhysicsComponent): CurveBall {
+    static spawnCurveBallAt(game: PongGame, physics: PhysicsComponent, lastHit: string): CurveBall {
         const ball = new CurveBall('curveBall', 'foreground', physics.x, physics.y, true);
     
         // Override default physics with the passed data
@@ -53,6 +53,8 @@ export class BallSpawner {
         physicsComponent.velocityY = physics.velocityY;
         physicsComponent.restitution = physics.restitution;
         physicsComponent.mass = physics.mass;
+        
+        ball.lastHit = lastHit;
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
@@ -69,7 +71,7 @@ export class BallSpawner {
         return ball;
     }
 
-    static spawnMultiplyBallsAt(game: PongGame, physics: PhysicsComponent): MultiplyBall[] {
+    static spawnMultiplyBallsAt(game: PongGame, physics: PhysicsComponent, lastHit: string): MultiplyBall[] {
         const clones: MultiplyBall[] = [];
     
         // Decide randomly which index is the real ball (0, 1, or 2)
@@ -102,6 +104,7 @@ export class BallSpawner {
 
             const vfx = clone.getComponent('vfx') as VFXComponent;
             if (clone.isGoodBall) {
+                clone.lastHit = lastHit;
                 vfx.startFlash(GAME_COLORS.green, 50);
                 ParticleSpawner.spawnBasicExplosion(game, clonePhysics.x + clonePhysics.width / 4, clonePhysics.y, GAME_COLORS.green, 1);
             } else {
@@ -115,7 +118,7 @@ export class BallSpawner {
         return clones;
     }
 
-    static spawnBurstBallAt(game: PongGame, physics: PhysicsComponent): BurstBall {
+    static spawnBurstBallAt(game: PongGame, physics: PhysicsComponent, lastHit: string): BurstBall {
         const ball = new BurstBall('burstBall', 'foreground', physics.x, physics.y, true);
     
         const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
@@ -125,6 +128,8 @@ export class BallSpawner {
         physicsComponent.velocityY = physics.velocityY;
         physicsComponent.restitution = physics.restitution;
         physicsComponent.mass = physics.mass;
+
+        ball.lastHit = lastHit;
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
@@ -141,7 +146,7 @@ export class BallSpawner {
         return ball;
     }
 
-    static spawnSpinBallAt(game: PongGame, physics: PhysicsComponent): SpinBall {
+    static spawnSpinBallAt(game: PongGame, physics: PhysicsComponent, lastHit: string): SpinBall {
         const ball = new SpinBall('curveBall', 'foreground', physics.x, physics.y, true);
     
         const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
@@ -151,6 +156,8 @@ export class BallSpawner {
         physicsComponent.velocityY = physics.velocityY;
         physicsComponent.restitution = physics.restitution;
         physicsComponent.mass = physics.mass;
+
+        ball.lastHit = lastHit;
     
         const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;

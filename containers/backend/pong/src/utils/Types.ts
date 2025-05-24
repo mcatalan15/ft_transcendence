@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Types.ts                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 18:14:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:20:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,19 @@ export interface PostProcessingOptions {
 }
 
 export interface GameSounds {
+	bgm: Howl;
 	pong: Howl;
+	thud: Howl;
+	shoot: Howl;
+	hit: Howl;
+	shieldBreak: Howl;
 	powerup: Howl;
 	powerdown: Howl;
 	ballchange: Howl;
 	death: Howl;
-	paddleReset: Howl;
+	paddleResetUp: Howl;
+	paddleResetDown: Howl;
+	[key: string]: Howl;
 }
 
 export interface World {
