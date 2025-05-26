@@ -16,29 +16,37 @@ async function signupHandler(request, reply) {
     const userExists = await checkUserExists(username, email);
     if (userExists?.exists) {
       if (userExists.usernameExists && userExists.emailExists) {
-        return reply.status(400).send({ 
-          success: false, 
-          message: 'Username and email are already taken' 
+        return reply.status(400).send({
+          success: false,
+          message: 'Username and email are already taken'
         });
       } else if (userExists.usernameExists) {
-        return reply.status(400).send({ 
+        return reply.status(400).send({
           success: false,
-          message: 'Username is already taken' 
+          message: 'Username is already taken'
         });
       } else if (userExists.emailExists) {
-        return reply.status(400).send({ 
-          success: false, 
-          message: 'Email is already taken' 
+        return reply.status(400).send({
+          success: false,
+          message: 'Email is already taken'
         });
       }
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    await saveUserToDatabase(username, email, hashedPassword, 'local');
-
+    // !!! IMPORTANT CHANGE HERE !!!
+    // Make sure saveUserToDatabase returns the newly created user's ID
+    const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local');
+    // MORE DEBUGGIng
+    console.log('[BACKEND - signupHandler] Preparing response with:', {
+        userId: newUserId,
+        username: username
+    })
     return reply.status(201).send({
       success: true,
-      message: 'User registered successfully'
+      message: 'User registered successfully',
+      userId: newUserId, // <--- Add the new user ID
+      username: username // <--- Add the username (or email, if that's what you use for 2FA display)
     });
 
   } catch (error) {
@@ -120,12 +128,12 @@ async function logoutHandler(request, reply) {
 		  message: 'Internal server error'
 		});
 	}
-
 }
 
 module.exports = {
   signupHandler,
   signinHandler,
   logoutHandler,
+
   // Add other auth handlers here (loginHandler, logoutHandler, etc.)
 };

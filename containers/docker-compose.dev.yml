@@ -21,6 +21,8 @@ services:
       - ./backend:/usr/src/app:consistent
       - userbase:/usr/src/app/db
       - /usr/src/app/node_modules
+    ports:           # <--- ADD THIS SECTION TO YOUR BACKEND SERVICE
+      - "3100:3100"  # Map container port 3100 to host port 3100
     networks:
       - transcendence
 

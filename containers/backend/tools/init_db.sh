@@ -21,7 +21,9 @@ if [ ! -f "$DB_PATH" ]; then
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT,
-		provider TEXT NOT NULL DEFAULT 'local'
+		provider TEXT NOT NULL DEFAULT 'local',
+		twoFactorSecret TEXT,
+		twoFactorEnabled BOOLEAN DEFAULT FALSE
     );
 
     CREATE TABLE IF NOT EXISTS games (

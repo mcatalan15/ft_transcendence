@@ -77,8 +77,10 @@ export function showSignUp(container: HTMLElement): void {
 	SignUpDiv.appendChild(errorMessageDiv);
 	
 	
+	console.log('[signup.ts] Form element selected:', form);
 	form.onsubmit = async (e) => {
 		e.preventDefault();
+		console.log('[signup.ts] Form submission detected!');
 		const username = (SignUpDiv.querySelector('#nickname') as HTMLInputElement).value;
 		const email = (SignUpDiv.querySelector('#email') as HTMLInputElement).value;
 		const password = (SignUpDiv.querySelector('#password') as HTMLInputElement).value;
