@@ -18,7 +18,30 @@ export function showAuth(container: HTMLElement): void {
     if (fromPage === 'signup') {
         console.log('Showing signup success');
         // Show signup success message
-        const message = document.createElement('p');
+        // --- NEW: API Call Integration for 'signup' success ---
+        const apiMessageDiv = document.createElement('p');
+        apiMessageDiv.textContent = 'Fetching message from API...'; // Initial loading message
+        authDiv.appendChild(apiMessageDiv); // Add a placeholder for API response
+        // Function to call our backend API
+        const fetchHelloMessage = async () => {
+            try {
+                // IMPORTANT: Replace 'http://localhost:3000' with your actual backend API URL
+                const response = await fetch('http://localhost:3000/hello');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data: HelloResponse = await response.json();
+                apiMessageDiv.textContent = `API Says: "${data.message}"`; // Update with API response
+                console.log('API response:', data.message);
+            } catch (error) {
+                console.error("Error fetching hello message from API:", error);
+                apiMessageDiv.textContent = `Failed to fetch message from API: ${error.message}`;
+            }
+        };
+    
+        // Call the API when the 'signup' success page loads
+        fetchHelloMessage();
+        // --- END NEW ---onst message = document.createElement('p');
         message.textContent = i18n.t('You have successfully created an account!');
         
         const continueButton = document.createElement('button');
