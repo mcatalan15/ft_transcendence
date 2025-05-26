@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:52:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:17:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ export class BurstBallPowerup extends Powerup {
 
         const outline = new Graphics();
         outline.circle(0, 0, 15);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
         
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
 
         const innerSign = new Graphics();
@@ -60,7 +60,7 @@ export class BurstBallPowerup extends Powerup {
         ];
         
         innerSign.poly(points, true);
-        innerSign.fill(GAME_COLORS.white);
+        innerSign.fill(GAME_COLORS.black);
         innerSign.pivot.set(0, 0);
         innerSign.angle = +30;
         container.addChild(innerSign);
@@ -84,7 +84,7 @@ export class BurstBallPowerup extends Powerup {
         };
 	}
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>, side?: string, ): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string, ): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
         }

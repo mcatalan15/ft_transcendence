@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 17:20:23 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/26 17:42:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,7 +267,7 @@ export class PongGame {
 	initDust() {
 			ParticleSpawner.setAmbientDustDensity(20, 5);
 
-			ParticleSpawner.setAmbientDustColor(0x888888);
+			ParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
 
 			ParticleSpawner.setAmbientDustSize(5, 12);
 
@@ -332,9 +332,16 @@ export class PongGame {
 		console.log("Right paddle created");
 
 		// Create UI
-		const ui = new UI('UI', 'ui', this.width, this.height, this.topWallOffset);
+		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
+
 		const uiText = ui.getComponent('text') as TextComponent;
 		this.renderLayers.ui.addChild(uiText.getRenderable());
+
+		const bars = ui.getComponent('render') as RenderComponent;
+		this.renderLayers.ui.addChild(bars.graphic);
+		
+		this.renderLayers.ui.addChild(uiText.getRenderable());
+		
 		this.entities.push(ui);
 		console.log("UI created")
 

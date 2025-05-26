@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 16:52:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 09:57:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ import { RectangleCrossCut } from '../entities/crossCuts/TrenchesCrossCut';
 import { LightningCrossCut } from '../entities/crossCuts/LightningCrossCut';
 
 import { SpinBall } from '../entities/balls/SpinBall';
+import { BurstBall } from '../entities/balls/BurstBall';
 
 import { Shield } from '../entities/background/Shield';
 import { Bullet } from '../entities/Bullet';
@@ -58,6 +59,10 @@ export function isBall(entity: Entity): entity is Ball {
 
 export function isSpinBall(entity: Entity): entity is SpinBall {
 	return entity instanceof SpinBall;
+}
+
+export function isBurstBall(entity: Entity): entity is BurstBall {
+	return entity instanceof BurstBall;
 }
 
 export function isShield(entity: Entity): entity is Shield {

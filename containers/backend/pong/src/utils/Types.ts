@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Types.ts                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 17:20:10 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/26 15:14:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Point, TextStyle } from 'pixi.js'
 
-import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter } from 'pixi-filters'
+import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter, ShockwaveFilter } from 'pixi-filters'
 
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
@@ -76,13 +76,13 @@ export type TextData = {
 
 export type GameEvent = {
     type: string;
-    side?: 'left' | 'right'; // For example, for the SCORE event
+    side?: 'left' | 'right';
 	target?: Paddle | World | CrossCut;
+	affectationTime?: number;
 	entitiesMap?: Map<string, Entity>;
 	points?: Point[];
 	x?: number;
 	y?: number;
-    // Add any other fields you expect in an event here
 };
 
 export type BoundingBox = {
@@ -126,8 +126,9 @@ export interface World {
 }
 
 export const GAME_COLORS = {
-	white: 0x171717,
-	black: 0xfff8e3,
+	white: 0xfff8e3,
+	black: 0x171717,
+	particleGray: 0x888888,
 	orange: 0xfbbf24,
 	red: 0xea3d37,
 	brown: 0xcf7f45,

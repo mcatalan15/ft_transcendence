@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:52:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 17:04:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ export class ShieldPowerup extends Powerup {
         
         const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
     
         const innerSign = new Graphics();
@@ -58,7 +58,7 @@ export class ShieldPowerup extends Powerup {
         innerSign.lineTo(-5.5, 4);           // Bottom-left curve
         innerSign.lineTo(-7.5, -6);          // Top-left
         innerSign.closePath();
-        innerSign.fill(GAME_COLORS.white);
+        innerSign.fill(GAME_COLORS.black);
         container.addChild(innerSign);
         
         return container;
@@ -80,9 +80,12 @@ export class ShieldPowerup extends Powerup {
         };
     }
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
+        }
+        if (side == 'left' || side == 'right') {
+            this.event.side = side;
         }
         this.game.eventQueue.push(this.event);
     }

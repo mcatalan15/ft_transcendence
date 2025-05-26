@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:52:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:18:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ export class SpinBallPowerup extends Powerup {
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'spinBurstBall',
+            effect: 'spawnSpinBall',
             affectation: 'ballChange',
             event: {type:'spawnSpinBall'},
         });
@@ -37,28 +37,28 @@ export class SpinBallPowerup extends Powerup {
 
         const outline = new Graphics();
         outline.circle(0, 0, 15);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
 
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
 
         const innerSign = new Graphics();
 
         innerSign.rect(-6.5, -6.5, 13, 13);
-        innerSign.fill(GAME_COLORS.white);
+        innerSign.fill(GAME_COLORS.black);
         innerSign.angle = 45;
         
         innerSign.moveTo(4.5, 0);
         innerSign.arc(0, 0, 4, 0, 1.75 * Math.PI, false);
-        innerSign.stroke({ color: GAME_COLORS.black, width: 1.5 });
+        innerSign.stroke({ color: GAME_COLORS.white, width: 1.5 });
         
         const angle = 1.75 * Math.PI;
         const arrowX = Math.cos(angle) * 5;
@@ -98,7 +98,7 @@ export class SpinBallPowerup extends Powerup {
         };
 	}
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>, side?: string, ): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string, ): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
         }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 16:39:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 17:01:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ export abstract class Powerup extends Entity {
         this.effect = effect;
         this.lifetime = lifetime;
         this.affectation = affectation;
+
         this.event = event;
 
         const graphic = this.createPowerupGraphic();
@@ -72,7 +73,7 @@ export abstract class Powerup extends Entity {
     }
 
     abstract createPowerupGraphic(): Container;
-    abstract sendPowerupEvent(entitiesMap: Map<string, Entity>): void;
+    abstract sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string): void;
     abstract initPowerupPhysicsData(x: number, y: number): PhysicsData;
 
     protected defineAnimationOptions(physics: PhysicsComponent): AnimationOptions {

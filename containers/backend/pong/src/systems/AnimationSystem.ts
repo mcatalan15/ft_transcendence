@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 13:02:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:02:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ import { Powerup } from '../entities/powerups/Powerup';
 import { DepthLine } from '../entities/background/DepthLine';
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { Obstacle } from '../entities/obstacles/Obstacle';
+import { UI } from '../entities/UI';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -36,6 +37,7 @@ import { isPaddle,
 		isDepthLine,
 		isObstacle,
 		isPowerup,
+		isUI,
 		isPyramidDepthLine,
 		isParapetDepthLine,
 		isLightningDepthLine,
@@ -51,7 +53,7 @@ import { isPaddle,
 
 export class AnimationSystem implements System {
 	private game: PongGame;
-
+	private UI!: UI;
 	private frameCounter: number = 0;
 	private depthLineUpdateRate: number = 1;
 	lastCutId: string | null = null;
@@ -61,11 +63,22 @@ export class AnimationSystem implements System {
 		game: PongGame,
 	) {
 		this.game = game;
+
+		for (const entity of this.game.entities) {
+			if (isUI(entity)) this.UI = entity;
+		}
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
 		this.frameCounter = (this.frameCounter + 1) % this.depthLineUpdateRate;
 		const entitiesToRemove: string[] = [];
+		
+		if (this.UI.leftAffectationFullTime > 0) {
+			this.UI.leftAffectationTime += delta.deltaTime;
+		}
+		if (this.UI.rightAffectationFullTime > 0) {
+			this.UI.rightAffectationTime += delta.deltaTime;
+		}
 	
 		// 1. Handle paddle transformation events
 		const unhandledEvents = [];
@@ -104,7 +117,9 @@ export class AnimationSystem implements System {
 					this.animatePowerup(entity);
 				} else if (isCrossCut(entity) && this.isDespawningCrossCut !== true) {
 					this.animateCrossCut(entity);
-				}
+				} else if (isUI(entity)) {
+					this.animateUI(entity);
+				} 
 			}
 		}
 
@@ -171,7 +186,7 @@ export class AnimationSystem implements System {
 			const graphic = render.graphic as Graphics;
 			graphic.clear();
 			graphic.rect(0, 0, physics.width, targetHeight);
-			graphic.fill(GAME_COLORS.black);
+			graphic.fill(GAME_COLORS.white);
 			graphic.pivot.set(physics.width / 2, targetHeight / 2);
 		}
 	}
@@ -277,6 +292,55 @@ export class AnimationSystem implements System {
 			physics.y = floatY;
 			render.graphic.position.set(physics.x, floatY);
 		}	
+	}
+
+	animateUI(UI: UI) {
+		if (UI.leftAffectationFullTime) {
+			if (UI.leftAffectationTime >= UI.leftAffectationFullTime) {
+				UI.leftAffectationFullTime = 0;
+				UI.leftAffectationTime = 0;
+				UI.hasLeftSideActivated = false;
+			} else {
+				const render = UI.getComponent('render') as RenderComponent;
+				const targetChild = render.graphic.children.find(child => child.label === "leftBarFill");
+				if (targetChild) {
+					for (let i = 0; i < render.graphic.children.length; i++) {
+						if (render.graphic.children[i].label === targetChild.label) {
+							let caughtGraphic = render.graphic.children[i] as Graphics;
+							caughtGraphic.clear();
+							const length = 80 - ((UI.leftAffectationTime / UI.leftAffectationFullTime) * 80)
+							console.log(length);
+							caughtGraphic.rect(0, 0, length, 7.5);
+							caughtGraphic.fill(GAME_COLORS.white);
+						}
+					}
+				}
+			}
+		}
+		
+		if (UI.rightAffectationFullTime) {
+			if (UI.rightAffectationTime >= UI.rightAffectationFullTime) {
+				UI.rightAffectationFullTime = 0;
+				UI.rightAffectationTime = 0;
+				UI.hasRightSideActivated = false;
+			} else {
+				const render = UI.getComponent('render') as RenderComponent;
+				const targetChild = render.graphic.children.find(child => child.label === "rightBarFill");
+				if (targetChild) {
+					for (let i = 0; i < render.graphic.children.length; i++) {
+						if (render.graphic.children[i].label === targetChild.label) {
+							let caughtGraphic = render.graphic.children[i] as Graphics;
+							caughtGraphic.clear();
+							const length = 80 - ((UI.rightAffectationTime / UI.rightAffectationFullTime) * 80);
+							const offsetX = 80 - length;
+							console.log(length);
+							caughtGraphic.rect(offsetX, 0, length, 7.5);
+							caughtGraphic.fill(GAME_COLORS.white);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	animateCrossCut(entity: CrossCut) {

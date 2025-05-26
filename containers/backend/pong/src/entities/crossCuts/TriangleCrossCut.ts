@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:58:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,6 @@ export class TriangleCrossCut extends CrossCut {
             graphic.lineTo(this.points[i].x, this.points[i].y);
         }
         
-        graphic.fill(GAME_COLORS.black);
+        graphic.fill(GAME_COLORS.white);
     }
 }

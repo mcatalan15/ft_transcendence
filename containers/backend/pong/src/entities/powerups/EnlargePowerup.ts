@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:52:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 17:03:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ export class EnlargePowerup extends Powerup {
         
         const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
     
         const createArrow = (): Graphics => {
@@ -62,7 +62,7 @@ export class EnlargePowerup extends Powerup {
                 { x: 3, y: 0 },
             ];
             arrow.poly(points, true);
-            arrow.fill(GAME_COLORS.white);
+            arrow.fill(GAME_COLORS.black);
             return arrow;
         };
     
@@ -99,9 +99,12 @@ export class EnlargePowerup extends Powerup {
         };
     }
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
+        }
+        if (side == 'left' || side == 'right') {
+            this.event.side = side;
         }
         this.game.eventQueue.push(this.event);
     }

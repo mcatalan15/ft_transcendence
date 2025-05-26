@@ -6,28 +6,40 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:53:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:58:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, TextStyle } from 'pixi.js'
+import { Graphics, Container, TextStyle } from 'pixi.js'
+
+import { PongGame } from '../engine/Game';
 
 import { Entity } from "../engine/Entity";
 
 import { TextComponent} from '../components/TextComponent';
+import { RenderComponent } from '../components/RenderComponent';
 
 import { TextData, GAME_COLORS } from '../utils/Types'
 
 export class UI extends Entity {
+	game: PongGame;
 	width: number;
 	height: number;
 	topOffset: number;
 	elapsedTime: number;
 	leftScore: number;
 	rightScore: number;
+	hasLeftSideActivated: boolean = false;
+	hasRightSideActivated: boolean = false;
+	leftAffectationTime: number = 0;
+	leftAffectationFullTime: number = 0;
+	rightAffectationTime: number = 0;
+	rightAffectationFullTime: number = 0;
 
-	constructor(id: string, layer: string, width: number, height: number, topWallOffset: number) {
+	constructor(game: PongGame, id: string, layer: string, width: number, height: number, topWallOffset: number) {
 		super(id, layer);
+
+		this.game = game;
 
 		this.topOffset = topWallOffset - 40;
 		this.width = width;
@@ -37,9 +49,9 @@ export class UI extends Entity {
 		this.leftScore = 0;
 		this.rightScore = 0;
 
-		/* const graphic = this.setUpWorldGraphic();
-		const renderComponent = new RenderComponent(graphic);
-		this.addComponent(renderComponent, 'render'); */
+		const bars = this.setUpBars();
+		const renderComponent = new RenderComponent(bars);
+		this.addComponent(renderComponent, 'render');
 		
 		const scoreText = this.setUpScoreText();
 		const scoreTextComponent = new TextComponent(scoreText);
@@ -54,21 +66,43 @@ export class UI extends Entity {
 		this.addComponent(worldTextComponent, "worldText");
 	}
 
-	/* private setUpWorldGraphic(): Graphics {
-        const graphic = new Graphics;
+	private setUpBars(): Container {
+        const graphics = new Container();
 		
-		graphic.moveTo(30, 25);
-		graphic.lineTo(150, 25);
+		const leftBarContainer = new Graphics;
+		leftBarContainer.rect(0, 0, 80, 7.5);
+		leftBarContainer.stroke({color: GAME_COLORS.white, width: 1.5 });
+		leftBarContainer.x = 20;
+		leftBarContainer.y = this.game.height - 40;
+		leftBarContainer.label = 'leftBarContainer';
+		graphics.addChild(leftBarContainer);
 
-		graphic.moveTo(30, 60);
-		graphic.lineTo(150, 60);
-        
-        graphic.stroke({color: GAME_COLORS.black, width: 2 });
+		const rightBarContainer = new Graphics;
+		rightBarContainer.rect(0, 0, 80, 7.5);
+		rightBarContainer.stroke({color: GAME_COLORS.white, width: 1.5 });
+		rightBarContainer.x = this.game.width - 100;
+		rightBarContainer.y = this.game.height - 40;
+		rightBarContainer.label = 'rightBarContainer';
+        graphics.addChild(rightBarContainer);
 
-		graphic.x = this.width / 2;
-		graphic.y = this.height - 80;
-        return (graphic);
-    } */
+		const leftBarFill = new Graphics;
+		leftBarFill.rect(0, 0, 0, 7.5);
+		leftBarFill.fill(GAME_COLORS.white);
+		leftBarFill.x = 20;
+		leftBarFill.y = this.game.height - 40;
+		leftBarFill.label = 'leftBarFill';
+		graphics.addChild(leftBarFill);
+
+		const rightBarFill = new Graphics;
+		rightBarFill.rect(0, 0, 0, 7.5);
+		rightBarFill.fill(GAME_COLORS.white);
+		rightBarFill.x = this.game.width - 100;
+		rightBarFill.y = this.game.height - 40;
+		rightBarFill.label = 'rightBarFill';
+        graphics.addChild(rightBarFill);
+
+		return (graphics);
+    }
 
 	private setUpScoreText(): TextData {
 		return {
@@ -77,7 +111,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: GAME_COLORS.black,
+				fill: GAME_COLORS.white,
 				fontSize: 20,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -92,7 +126,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: GAME_COLORS.black,
+				fill: GAME_COLORS.white,
 				fontSize: 10,
 				fontWeight: 'bold',
 			} as TextStyle,
@@ -107,7 +141,7 @@ export class UI extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: GAME_COLORS.black,
+				fill: GAME_COLORS.white,
 				fontSize: 10,
 				fontWeight: 'bold',
 				align: 'left',
@@ -184,6 +218,16 @@ export class UI extends Entity {
 		const timerComponent = this.getTimerTextComponent();
 		if (timerComponent) {
 			timerComponent.setText(formattedTime);
+		}
+	}
+
+	setBarTimer(side: string, time: number) {
+		if (side === 'left') {
+			this.leftAffectationFullTime = time;
+			this.leftAffectationTime = 0;
+		} else if (side === 'right') {
+			this.rightAffectationFullTime = time;
+			this.rightAffectationTime = 0;
 		}
 	}
 }

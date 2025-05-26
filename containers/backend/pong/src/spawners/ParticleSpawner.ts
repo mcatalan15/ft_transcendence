@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:51:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ export class ParticleSpawner {
 	private static ambientDustConfig: AmbientDustConfig = {
 		maxParticles: 20,
 		spawnRate: 2,
-		color: GAME_COLORS.black,
+		color: GAME_COLORS.white,
 		minSize: 2,
 		maxSize: 4,
 		minLifetime: 80,

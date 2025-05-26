@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:52:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:17:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,34 +37,34 @@ export class MultiplyBallPowerup extends Powerup {
 
         const outline = new Graphics();
         outline.circle(0, 0, 15);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
         
         const base = new Graphics();
         base.circle(0, 0, 10);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
 
         const ornament = new Graphics();
         ornament.circle(0, 0, 15);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
 
         const innerSign = new Container;
 
         const innerSignA = new Graphics();
         innerSignA.circle(0, 0, 2);
-        innerSignA.fill(GAME_COLORS.white);
+        innerSignA.fill(GAME_COLORS.black);
         innerSign.addChild(innerSignA);
         
         const innerSignB = new Graphics();
         innerSignB.circle(-4.5, -4.5, 2);
-        innerSignB.fill(GAME_COLORS.white);
+        innerSignB.fill(GAME_COLORS.black);
         innerSign.addChild(innerSignB);
 
         const innerSignC = new Graphics();
         innerSignC.circle(4.5, 4.5, 2);
-        innerSignC.fill(GAME_COLORS.white);
+        innerSignC.fill(GAME_COLORS.black);
         innerSign.addChild(innerSignC);
         
         container.addChild(innerSign);
@@ -88,7 +88,7 @@ export class MultiplyBallPowerup extends Powerup {
         };
 	}
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>, side?: string, ): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string, ): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
         }

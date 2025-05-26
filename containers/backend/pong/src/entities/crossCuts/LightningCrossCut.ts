@@ -34,6 +34,6 @@ export class LightningCrossCut extends CrossCut {
             graphic.lineTo(this.points[i].x, this.points[i].y);
         }
         
-        graphic.fill(GAME_COLORS.black);
+        graphic.fill(GAME_COLORS.white);
     }
 }

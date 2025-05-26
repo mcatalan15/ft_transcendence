@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:45:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:39:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 10:24:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ export class VFXComponent implements Component {
 		this.flashColor = GAME_COLORS.orange;
 		this.flashDuration = 0;
 		this.flashTimeLeft = 0;
-		this.originalTint = 0xFBBF24;
+		this.originalTint = GAME_COLORS.orange;
 		this.isFlashing = false;
 	}
 

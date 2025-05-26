@@ -3,17 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   PowerupSystem.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 17:13:28 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/26 19:23:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from '../engine/Game';
+
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle';
 import type { System } from '../engine/System'
+
+import { UI } from '../entities/UI';
 
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { PowerupComponent } from '../components/PowerupComponent';
@@ -24,12 +27,13 @@ import { PowerupSpawner } from '../spawners/PowerupSpawner';
 import { BallSpawner } from '../spawners/BallSpawner';
 
 import { FrameData, GameEvent  } from '../utils/Types'
-import { isPaddle, isBall, isPowerup, isShield } from '../utils/Guards'
+import { isPaddle, isBall, isPowerup, isShield, isUI } from '../utils/Guards'
 
 export class PowerupSystem implements System {
 	game: PongGame;
 	width: number;
 	height: number;
+	UI!: UI;
 	powerupTimer: number = 0;
 	isSpawningPowerups: boolean = false;
 	isSpawningBullets: boolean = false;
@@ -41,6 +45,10 @@ export class PowerupSystem implements System {
 		this.game = game;
 		this.width = width;
 		this.height = height;
+
+		for (const entity of this.game.entities) {
+			if (isUI(entity)) this.UI = entity;
+		}
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
@@ -61,14 +69,16 @@ export class PowerupSystem implements System {
 			const event = this.game.eventQueue.shift();
 			if (!event)
 				break;
-
+			
 			if (event.type.endsWith("Ball")) {
 				this.game.sounds.ballchange.play();
 				this.changeBall(event);
 			} else if (event.type.endsWith("Powerup")) {
 				this.game.sounds.powerup.play();
+				this.setBarTimers(event.side!, event.type);
 				this.triggerPowerup(event);
 			} else if (event.type.endsWith("Powerdown")) {
+				this.setBarTimers(event.side!, event.type);
 				this.game.sounds.powerdown.play();
 				this.triggerPowerdown(event);
 			} else if (event.type === 'SPAWN_POWERUP_FROM_FIGURE') {
@@ -224,6 +234,15 @@ export class PowerupSystem implements System {
 		}
 	}
 
+	setBarTimers(side: string, id: string) {
+		console.log(id);
+		if (id.includes('enlarge') || id.includes('magnetize') || id.includes('shrink') || id.includes('flat') || id.includes('slow') || id.includes('invert')) {
+			this.UI.setBarTimer(side, 500);
+		} else if (id.includes ('shield')) {
+			this.UI.setBarTimer(side, 1000);
+		}
+	}
+
 	changeBall(event: GameEvent) {
 		switch (event.type) {
 			case ('spawnCurveBall'):
@@ -249,7 +268,7 @@ export class PowerupSystem implements System {
 			case ('shieldPowerup'):
 				this.triggerShieldSpawn(event);
 				break;
-			case ('MagnetizePowerup'):
+			case ('magnetizePowerup'):
 					this.triggerMagnetizePaddle(event);
 					break;
 			case ('ShootPowerup'):

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsSystem.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 17:23:24 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/26 19:18:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ import { PongGame } from '../engine/Game'
 
 import { Paddle } from '../entities/Paddle'
 import { Ball } from '../entities/balls/Ball'
+import { UI } from '../entities/UI';
 import { BurstBall } from '../entities/balls/BurstBall';
 import { SpinBall } from '../entities/balls/SpinBall';
 import { Shield } from '../entities/background/Shield';
@@ -33,23 +34,40 @@ import { PowerupSpawner } from '../spawners/PowerupSpawner';
 
 import { createEntitiesMap, changePaddleLayer } from '../utils/Utils';
 import * as physicsUtils from '../utils/PhysicsUtils'
-import { isPaddle, isBall, isSpinBall, isPowerup, isBullet } from '../utils/Guards';
-import { GAME_COLORS } from '../utils/Types';
+import { isPaddle, isBall, isSpinBall, isBurstBall, isPowerup, isBullet, isUI } from '../utils/Guards';
+import { FrameData, GAME_COLORS } from '../utils/Types';
+import { ShockwaveFilter } from 'pixi-filters';
 
 
 export class PhysicsSystem implements System {
 	game: PongGame;
+	UI!: UI;
 	width: number;
 	height: number;
+	mustResetBall: boolean = false;
+	ballResetTime: number = 0;
 
 	constructor(game: PongGame, width: number, height: number) {
-        this.width = width;
-        this.height = height;
         this.game = game;
+		this.width = width;
+        this.height = height;
+		for (const entity of game.entities) {
+			if (isUI(entity)) {
+				this.UI = entity;
+			}
+		}
     }
 
-	update(entities: Entity[]): void {
+	update(entities: Entity[], delta: FrameData): void {
 		const entitiesMap = createEntitiesMap(entities);
+		if (this.mustResetBall) {
+			this.ballResetTime -= delta.deltaTime;
+		}
+
+		if (this.mustResetBall && this.ballResetTime <= 0) {
+			this.mustResetBall = false;
+			BallSpawner.spawnDefaultBall(this.game);
+		}
 
 		for (const entity of entities){
 			if (isPaddle(entity)) {
@@ -127,6 +145,14 @@ export class PhysicsSystem implements System {
 		} else {
 			ball.magneticInfluence = 'left';
 		}
+		
+		if (!isBurstBall(ball)) {
+			if (physics.velocityX > 10) physics.velocityX = 10;
+			if (physics.velocityY > 10) physics.velocityY = 10;
+		} else {
+			if (physics.velocityX > 17) physics.velocityX = 17;
+			if (physics.velocityY > 17) physics.velocityY = 17;
+		}
 		ball.moveBall(physics);
 
 		this.handleBallWallCollisions(physics, entitiesMap, ball);
@@ -168,6 +194,7 @@ export class PhysicsSystem implements System {
 		}
 
 		if (collided) {
+			ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
 			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
 			this.game.sounds.thud.play();
 		}
@@ -343,6 +370,8 @@ export class PhysicsSystem implements System {
 		if (collided) {
 			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
 			this.game.sounds.thud.play();
+			ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
+			
 			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
 			const distanceFromPrev = Math.hypot(physics.x - prevPos.x, physics.y - prevPos.y);
@@ -386,6 +415,19 @@ export class PhysicsSystem implements System {
 				if (ballLeft < shieldRight) {
 					physics.velocityX *= -1;
 
+					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.shieldBreak.play();
+
+					ParticleSpawner.spawnBurst(
+						this.game,
+						shieldPhysics.x,
+						physics.y,
+						10,
+						-physics.velocityX,
+						physics.velocityY,
+						GAME_COLORS.green,
+					);
+					
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}
 			} else if (shield.side === 'right') {
@@ -396,6 +438,16 @@ export class PhysicsSystem implements System {
 
 					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
 					this.game.sounds.shieldBreak.play();
+
+					ParticleSpawner.spawnBurst(
+						this.game,
+						shieldPhysics.x,
+						physics.y,
+						10,
+						-physics.velocityX,
+						physics.velocityY,
+						GAME_COLORS.green,
+					);
 
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}
@@ -532,14 +584,22 @@ export class PhysicsSystem implements System {
 	
 	handlePowerupCollisions(entities: Entity[], entitiesMap: Map<string, Entity>, ball: Ball) {
 		const ballBox = physicsUtils.getBoundingBox(ball.getComponent('physics') as PhysicsComponent);
+		const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
 
         for (const entity of entities) {
 			if (isPowerup(entity)) {
                 const powerupBox = physicsUtils.getBoundingBox(entity.getComponent('physics') as PhysicsComponent);
                 if (ball.lastHit && physicsUtils.isAABBOverlap(ballBox, powerupBox)) {
                     console.log(`Triggered powerup: ${entity.id}`);
+
+					if (entity.id.includes('Down')) {
+						ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.red, 1);
+					} else if (entity.id.includes('Up')) {
+						ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.green, 1);
+					}
+
                     const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
-					entity.sendPowerupEvent(entitiesMap);
+					entity.sendPowerupEvent(entitiesMap, ball.lastHit);
                     lifetime.remaining = 0;
 					if (!entity.id.includes('shield') && !entity.id.includes('shoot')) {
 						changePaddleLayer(this.game, ball.lastHit, entity.id);
@@ -564,10 +624,17 @@ export class PhysicsSystem implements System {
 					10,
 					physics.velocityX,
 					physics.velocityY,
-					0xFBBF24,
+					GAME_COLORS.orange,
 				);
 				this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
-				this.resetBall(ball, physics, 1);
+				this.game.removeEntity(ball.id);
+				for (const effect of this.game.visualRoot.effects!) {
+					if (effect instanceof ShockwaveFilter) {
+						effect.speed = 1080;
+					}
+				}
+				this.mustResetBall = true;
+				this.ballResetTime = 200;
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
 			}
@@ -584,20 +651,20 @@ export class PhysicsSystem implements System {
 					10,
 					physics.velocityX,
 					physics.velocityY,
-					0xFBBF24,
+					GAME_COLORS.orange,
 				);
 				this.game.sounds.death.play();
 				this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
-				this.resetBall(ball, physics, -1);
+				this.game.removeEntity(ball.id);
+				this.mustResetBall = true;
+				this.ballResetTime = 200;
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
 			}
 		}
     }
     
-    resetBall(ball: Ball, physics: PhysicsComponent, direction: number) {
-        this.game.removeEntity(ball.id);
-		
+    /* resetBall(ball: Ball, physics: PhysicsComponent, direction: number) {
 		physics.x = this.width / 2;
         physics.y = this.height / 2;
 		
@@ -609,7 +676,7 @@ export class PhysicsSystem implements System {
         physics.velocityX = Math.cos(angle) * speed * direction;
         physics.velocityY = Math.sin(angle) * speed;
         ball.lastHit = '';
-    }
+    } */
 
 	updateBullet(bullet: Bullet, entitiesMap: Map<string, Entity>) {
 		const physics = bullet.getComponent('physics') as PhysicsComponent;
@@ -653,6 +720,7 @@ export class PhysicsSystem implements System {
 			if (physicsUtils.isAABBOverlap(bulletBox, paddleRBox)) {
 				paddleR.isStunned = true;
 				paddleR.affectedTimer = 100;
+				this.UI.setBarTimer('right', 100);
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
 				ParticleSpawner.spawnBurst(
 					this.game,
@@ -674,6 +742,7 @@ export class PhysicsSystem implements System {
 			if (physicsUtils.isAABBOverlap(bulletBox, paddleLBox)) {
 				paddleL.isStunned = true;
 				paddleL.affectedTimer = 100;
+				this.UI.setBarTimer('left', 100);
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
 				ParticleSpawner.spawnBurst(
 					this.game,

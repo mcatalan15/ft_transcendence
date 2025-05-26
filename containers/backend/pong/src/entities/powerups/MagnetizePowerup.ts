@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:51:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:11:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ export class MagnetizePowerup extends Powerup {
             despawn: 'time',
             effect: 'MagnetizePowerup',
             affectation: 'powerUp',
-            event: { type: 'MagnetizePowerup' },
+            event: { type: 'magnetizePowerup' },
         });
 
         this.game = game;
@@ -37,17 +37,17 @@ export class MagnetizePowerup extends Powerup {
         
         const outline = new Graphics();
         outline.rect(-15, -15, 30, 30);
-        outline.fill(GAME_COLORS.white);
+        outline.fill(GAME_COLORS.black);
         container.addChild(outline);
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(GAME_COLORS.black);
+        base.fill(GAME_COLORS.white);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: GAME_COLORS.black, width: 3 });
+        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
         container.addChild(ornament);
     
         const magnet = new Graphics();
@@ -56,7 +56,7 @@ export class MagnetizePowerup extends Powerup {
         magnet.lineTo(5, -1);
         magnet.moveTo(-5, -5);
         magnet.lineTo(-5, -1);
-        magnet.stroke({width: 3, color: GAME_COLORS.white});
+        magnet.stroke({width: 3, color: GAME_COLORS.black});
         magnet.y = 3;
         magnet.x = 0;
         container.addChild(magnet);
@@ -64,13 +64,13 @@ export class MagnetizePowerup extends Powerup {
         // Left tip (black block)
         const leftTip = new Graphics();
         leftTip.rect(-6.5, 4, 3, 4);
-        leftTip.fill(GAME_COLORS.white);
+        leftTip.fill(GAME_COLORS.black);
         container.addChild(leftTip);
 
         // Right tip (white with black stroke)
         const rightTip = new Graphics();
         rightTip.rect(3.5, 4, 3, 4);
-        rightTip.fill(GAME_COLORS.white);
+        rightTip.fill(GAME_COLORS.black);
         container.addChild(rightTip);
         
         return container;
@@ -92,9 +92,12 @@ export class MagnetizePowerup extends Powerup {
         };
     }
 
-    sendPowerupEvent(entitiesMap: Map<string, Entity>): void {
+    sendPowerupEvent(entitiesMap: Map<string, Entity>, side: string): void {
         if (entitiesMap) {
             this.event.entitiesMap = entitiesMap;
+        }
+        if (side == 'left' || side == 'right') {
+            this.event.side = side;
         }
         this.game.eventQueue.push(this.event);
     }

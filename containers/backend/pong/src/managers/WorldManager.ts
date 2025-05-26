@@ -6,18 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:12:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 10:25:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from "../engine/Game";
 
-import { PowerupSpawner } from "../spawners/PowerupSpawner";
+import { GAME_COLORS } from "../utils/Types";
 
 import { World, GameEvent } from "../utils/Types";
 
 export class WorldManager {
-	worldColor: number = 0x204c93;
+	worldColor: number = GAME_COLORS.marine;
 	worldTags: string[] = [
 		'initialWorld',
 		'flatWorld',

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PowerupSpawner.ts                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 17:25:41 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/26 19:10:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ export class PowerupSpawner {
 		let powerup;
 
 		switch(idx) {
-			/*case(0):
+			/* case(0):
 				uniqueId = `${uniqueId}shieldPowerup`;
 				powerup = new ShieldPowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
@@ -178,12 +178,12 @@ export class PowerupSpawner {
 				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 			case(2):
-				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);	
+				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;*/
 			default:
-				uniqueId = `${uniqueId}shootPowerup`;
-				//powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX);
-				powerup = new ShieldPowerup(uniqueId, 'powerup', game, randomY, randomX);
+				/* uniqueId = `${uniqueId}shootPowerup`;
+				powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX); */
+				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 		}
 
