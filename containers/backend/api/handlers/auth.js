@@ -42,6 +42,12 @@ async function signupHandler(request, reply) {
         userId: newUserId,
         username: username
     })
+    console.log('[BACKEND - signupHandler] Final response object before sending:', {
+            success: true,
+            message: 'User registered successfully',
+            userId: newUserId,
+            username: username
+        });
     return reply.status(201).send({
       success: true,
       message: 'User registered successfully',

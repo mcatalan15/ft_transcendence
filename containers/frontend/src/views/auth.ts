@@ -21,14 +21,15 @@ export function showAuth(container: HTMLElement): void {
     console.log('Current URL:', window.location.href);
     console.log('URL params:', urlParams.toString());
     console.log('fromPage value:', fromPage);
-
+    console.log(sessionStorage.getItem('userId'));
+    console.log(sessionStorage.getItem('username'));
     // Create the main container
     const authDiv = document.createElement('div');
     authDiv.className = "auth-container";
 
     // --- IMPORTANT: Variables to hold the actual user data ---
-    let actualUserId: number | null = null;
-    let actualUsername: string | null = null;
+    let actualUserId = sessionStorage.getItem('userId');
+    let actualUsername = sessionStorage.getItem('username');
 
     // Different content based on where the user came from
     if (fromPage === 'signup') {

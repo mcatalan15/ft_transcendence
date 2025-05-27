@@ -106,7 +106,12 @@ export function showSignUp(container: HTMLElement): void {
 		
 		if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
-			
+			console.log('[CALLING CODE] localSignUp result:', result);
+			console.log('[CALLING CODE] result.userId:', result.userId);
+			console.log('[CALLING CODE] result.username:', result.username);
+			sessionStorage.setItem('userId', String(result.userId));
+			sessionStorage.setItem('username', String(result.username));
+			// console.log('[CALLING CODE] result.email:', result.email);
 			if (!result.success) {
 				// Display the error message from the backend
 				errorMessageDiv.textContent = result.message;
