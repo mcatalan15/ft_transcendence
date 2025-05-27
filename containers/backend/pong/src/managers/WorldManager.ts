@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 10:25:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:59:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,15 @@ export class WorldManager {
 		'lightningWorld',
 		'lightningFlippedWorld',
 		'stepsWorld',
-		'bangWorld',
+		'hourglassWorld',
 		'mawWorld',
 		'rakesWorld',
 		'cairnsWorld',
 		'kiteWorld',
 		'honeycombWorld',
 		'bowtieWorld',
-		'windmillsWorld',
-		'giantsWorld',
+		'snakesWorld',
+		'vipersWorld',
 	]
 	worldNames: string[] = [
 		'Initializing',
@@ -46,15 +46,15 @@ export class WorldManager {
 		'The Lightning',
 		'The Lightning',
 		'The Steps',
-		'The Bang',
-		'The Maw',
+		'The Hourglass',
+		'The Fangs',
 		'The Rakes',
-		'The Cairns',
+		'The Waystones',
 		'The Kite',
 		'The Honeycomb',
 		'The Bowtie',
-		'The Windmills',
-		'The Giants',
+		'The Snakes',
+		'The Vipers',
 	]
 
 	populateWorlds(worlds: World[]) {
@@ -79,7 +79,7 @@ export class WorldManager {
 			return (6);
 		} 
 		if (id.includes('steps')) return (7);
-		if (id.includes('bang')) return (8);
+		if (id.includes('hourglass')) return (8);
 		if (id.includes('maw')) return (9);
 		if (id.includes('rake')) return (10);
 		if (id.includes('ledge')) return (11);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 16:46:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:57:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { TrenchesDepthLine } from '../entities/background/TrenchesDepthLine';
 import { LightningDepthLine } from '../entities/background/LightningDepthLine';
 import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
-import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
+import { HourglassDepthLine } from '../entities/background/HourglassDepthLine';
 import { MawDepthLine } from '../entities/background/MawDepthLine';
 import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 
@@ -30,7 +30,7 @@ export class FigureFactory {
             'trenches' |
             'lightning' |
             'steps' |
-            'bang' |
+            'hourglass' |
             'maw'|
             'rake'|
             string,
@@ -71,8 +71,8 @@ export class FigureFactory {
                 return new LightningDepthLine(id, 'background', game, options, flip!);
 			case ('steps'):
 				return new EscalatorDepthLine(id, 'background', game, options);
-            case ('bang'):
-                return new AcceleratorDepthLine(id, 'background', game, options);
+            case ('hourglass'):
+                return new HourglassDepthLine(id, 'background', game, options);
             case ('maw'):
                 return new MawDepthLine(id, 'background', game, options);
             case ('rake'):

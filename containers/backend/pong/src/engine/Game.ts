@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 17:42:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:46:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ export class PongGame {
 		midground: Container;
 		foreground: Container;
 		powerup: Container;
+		powerupGlitched: Container;
 		powerdown: Container;
 		ballChange: Container;
 		crossCut: Container;
@@ -104,6 +105,7 @@ export class PongGame {
 			midground: new Container(),
 			foreground: new Container(),
 			powerup: new Container(),
+			powerupGlitched: new Container(),
 			powerdown: new Container(),
 			ballChange: new Container(),
 			crossCut: new Container(),
@@ -115,6 +117,7 @@ export class PongGame {
 
 		this.app.stage.addChild(this.renderLayers.background);
 		this.app.stage.addChild(this.renderLayers.powerup);
+		this.app.stage.addChild(this.renderLayers.powerupGlitched);
 		this.app.stage.addChild(this.renderLayers.powerdown);
 		this.app.stage.addChild(this.renderLayers.ballChange);
 		this.app.stage.addChild(this.renderLayers.crossCut);
@@ -265,7 +268,7 @@ export class PongGame {
 	}
 
 	initDust() {
-			ParticleSpawner.setAmbientDustDensity(20, 5);
+			ParticleSpawner.setAmbientDustDensity(40, 5);
 
 			ParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
 
@@ -420,11 +423,16 @@ export class PongGame {
 		boundingBoxE.rect(0, 0, this.width, this.height);
 		boundingBoxE.stroke({width: 0.1, color: '#171717'});
 
+		const boundingBoxF = new Graphics();
+		boundingBoxF.rect(0, 0, this.width, this.height);
+		boundingBoxF.stroke({width: 0.1, color: '#171717'});
+
 		this.renderLayers.bounding.addChild(boundingBoxA);
 		this.renderLayers.powerup.addChild(boundingBoxB);
-		this.renderLayers.powerdown.addChild(boundingBoxC);
-		this.renderLayers.ballChange.addChild(boundingBoxD);
-		this.renderLayers.pp.addChild(boundingBoxE);
+		this.renderLayers.powerupGlitched.addChild(boundingBoxC);
+		this.renderLayers.powerdown.addChild(boundingBoxD);
+		this.renderLayers.ballChange.addChild(boundingBoxE);
+		this.renderLayers.pp.addChild(boundingBoxF);
 		
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:11:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 10:56:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ export class MagnetizePowerup extends Powerup {
     constructor(id: string, layer: string, game: any, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
-            effect: 'MagnetizePowerup',
+            effect: 'magnetizePowerup',
             affectation: 'powerUp',
             event: { type: 'magnetizePowerup' },
         });

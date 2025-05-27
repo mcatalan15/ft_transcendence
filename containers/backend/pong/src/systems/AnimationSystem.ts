@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:02:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:10:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,7 +309,6 @@ export class AnimationSystem implements System {
 							let caughtGraphic = render.graphic.children[i] as Graphics;
 							caughtGraphic.clear();
 							const length = 80 - ((UI.leftAffectationTime / UI.leftAffectationFullTime) * 80)
-							console.log(length);
 							caughtGraphic.rect(0, 0, length, 7.5);
 							caughtGraphic.fill(GAME_COLORS.white);
 						}
@@ -333,7 +332,6 @@ export class AnimationSystem implements System {
 							caughtGraphic.clear();
 							const length = 80 - ((UI.rightAffectationTime / UI.rightAffectationFullTime) * 80);
 							const offsetX = 80 - length;
-							console.log(length);
 							caughtGraphic.rect(offsetX, 0, length, 7.5);
 							caughtGraphic.fill(GAME_COLORS.white);
 						}

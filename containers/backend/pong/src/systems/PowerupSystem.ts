@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:23:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:25:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ import { UI } from '../entities/UI';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { PowerupComponent } from '../components/PowerupComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
-import { TextComponent } from '../components/TextComponent';
 
 import { PowerupSpawner } from '../spawners/PowerupSpawner';
 import { BallSpawner } from '../spawners/BallSpawner';
 
 import { FrameData, GameEvent  } from '../utils/Types'
+import { removePaddleFromLayer } from '../utils/Utils';
 import { isPaddle, isBall, isPowerup, isShield, isUI } from '../utils/Guards'
 
 export class PowerupSystem implements System {
@@ -138,24 +138,24 @@ export class PowerupSystem implements System {
 					} else {
 						if (entity.isEnlarged) this.game.sounds.paddleResetUp.play();
 					};
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.resetPaddleSize(entity);
 				} else if (entity.isInverted && entity.affectedTimer <= 0) {
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.inversion = 1;
 					entity.isInverted = false;
 				} else if (entity.isSlowed && entity.affectedTimer <= 0) {
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.slowness = 1;
 					entity.isSlowed = false;
 				} else if (entity.isFlat && entity.affectedTimer <= 0) {
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.isFlat = false;
 				} else if (entity.isMagnetized && entity.affectedTimer <= 0) {
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.isMagnetized = false;
 				} else if (entity.isStunned && entity.affectedTimer <= 0) {
-					this.removePaddleFromLayer(entity)
+					removePaddleFromLayer(this, entity);
 					entity.isStunned = false;
 				}
 			}
@@ -182,57 +182,7 @@ export class PowerupSystem implements System {
 		}
 	}
 
-	removePaddleFromLayer(paddle: Paddle) {
-		const text = paddle.getComponent('text') as TextComponent;
-		
-		if (paddle.isFlat || paddle.isInverted || paddle.isShrinked || paddle.isSlowed || paddle.isStunned) {
-			const powerdownLayer = this.game.renderLayers.powerdown;
-			const targetChild = powerdownLayer.children.find(child => child.label === "paddle");
-
-			if (targetChild) {
-				this.game.renderLayers.foreground.addChild(targetChild);
-			}
-
-			const targetLeftName = powerdownLayer.children.find(child => child.label === ("playerName" + this.game.leftPlayer.name));
-			const targetRightName = powerdownLayer.children.find(child => child.label === ("playerName" + this.game.rightPlayer.name));
-			if (targetLeftName) {
-				this.game.renderLayers.foreground.addChild(targetLeftName);
-				const prefix = "playerName";
-				const result = targetLeftName.label.slice(prefix.length);
-				
-				text.setText(result);
-			} else if (targetRightName) {
-				this.game.renderLayers.foreground.addChild(targetRightName);
-				const prefix = "playerName";
-				const result = targetRightName.label.slice(prefix.length);
-				
-				text.setText(result);
-			}
-		} else {
-			const powerupLayer = this.game.renderLayers.powerup;
-			const targetChild = powerupLayer.children.find(child => child.label === "paddle");
-
-			if (targetChild) {
-				this.game.renderLayers.foreground.addChild(targetChild);
-			}
-
-			const targetLeftName = powerupLayer.children.find(child => child.label === ("playerName" + this.game.leftPlayer.name));
-			const targetRightName = powerupLayer.children.find(child => child.label === ("playerName" + this.game.rightPlayer.name));
-			if (targetLeftName) {
-				this.game.renderLayers.foreground.addChild(targetLeftName);
-				const prefix = "playerName";
-				const result = targetLeftName.label.slice(prefix.length);
-				
-				text.setText(result);
-			} else if (targetRightName) {
-				this.game.renderLayers.foreground.addChild(targetRightName);
-				const prefix = "playerName";
-				const result = targetRightName.label.slice(prefix.length);
-				
-				text.setText(result);
-			}
-		}
-	}
+	
 
 	setBarTimers(side: string, id: string) {
 		console.log(id);

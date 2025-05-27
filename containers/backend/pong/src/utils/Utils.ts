@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 19:01:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:09:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@ import { Graphics, Point} from 'pixi.js'
 
 import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
+import { Paddle } from '../entities/Paddle';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
+
+import { PowerupSystem } from '../systems/PowerupSystem';
 
 import { GameEvent } from './Types'
 import { isPaddle } from './Guards';
@@ -92,35 +95,28 @@ export function generateCirclePoints(
 ): Point[] {
     const points: Point[] = [];
     
-    // Normalize angles to be within 0 to 2π
     startAngle = startAngle % (Math.PI * 2);
     if (startAngle < 0) startAngle += Math.PI * 2;
     
     endAngle = endAngle % (Math.PI * 2);
     if (endAngle < 0) endAngle += Math.PI * 2;
     
-    // Ensure endAngle is greater than startAngle for calculations
     if (!clockwise && startAngle <= endAngle) {
         endAngle -= Math.PI * 2;
     } else if (clockwise && endAngle <= startAngle) {
         endAngle += Math.PI * 2;
     }
     
-    // Calculate total angle to cover
     const totalAngle = clockwise ? endAngle - startAngle : startAngle - endAngle;
     
-    // Adjust segments based on the arc length
     const arcSegments = Math.max(2, Math.ceil(segments * Math.abs(totalAngle) / (Math.PI * 2)));
     
-    // Generate points along the circumference
     for (let i = 0; i <= arcSegments; i++) {
-        // Calculate the angle for this segment
         const t = i / arcSegments;
         const angle = clockwise 
             ? startAngle + t * (endAngle - startAngle)
             : startAngle - t * (startAngle - endAngle);
         
-        // Calculate x and y using the parametric equation of a circle
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
         
@@ -130,7 +126,7 @@ export function generateCirclePoints(
     return points;
 }
 
-export function generateWindmillPoints(positions: {x: number, y: number}[]): Point[] {
+export function generateSnakePoints(positions: {x: number, y: number}[]): Point[] {
     const points: Point[] = [];
     
     for (const position of positions) {
@@ -161,7 +157,6 @@ export function processEvents<T extends GameEvent>(
         const event = game.eventQueue.shift() as GameEvent;
         
         if (matcher(event)) {
-            // Find the right handler
             const handlerKey = Object.keys(handlers).find(key => event.type.startsWith(key));
             
             if (handlerKey) {
@@ -188,12 +183,20 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                             const text = entity.getComponent('text') as TextComponent;
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName' + game.leftPlayer.name;
-                            game.renderLayers.powerup.addChild(playerName);
 
                             const render = entity.getComponent('render') as RenderComponent;
                             const graphic = render.graphic;
                             graphic.label = 'paddle';
-                            game.renderLayers.powerup.addChild(graphic);
+                            
+                            if (entity.currentLayer === 'powerdown') {
+                                game.renderLayers.powerupGlitched.addChild(graphic);
+                                game.renderLayers.powerupGlitched.addChild(playerName);
+                                entity.currentLayer = 'powerupGlitched';
+                            } else {
+                                game.renderLayers.powerup.addChild(graphic);
+                                game.renderLayers.powerup.addChild(playerName);
+                                entity.currentLayer = 'powerup';
+                            }
                         }
                     }
                 } else if (id.includes('powerDown')) {
@@ -203,13 +206,20 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                             text.setText('#@%$&');
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName' + game.leftPlayer.name;
-                            game.renderLayers.powerup.addChild(playerName);
-                            game.renderLayers.powerdown.addChild(playerName);
                             
                             const render = entity.getComponent('render') as RenderComponent;
                             const graphic = render.graphic;
                             graphic.label = 'paddle';
-                            game.renderLayers.powerdown.addChild(graphic);
+
+                            if (entity.currentLayer === 'powerup') {
+                                game.renderLayers.powerupGlitched.addChild(graphic);
+                                game.renderLayers.powerupGlitched.addChild(playerName);
+                                entity.currentLayer = 'powerupGlitched';
+                            } else {
+                                game.renderLayers.powerdown.addChild(graphic);
+                                game.renderLayers.powerdown.addChild(playerName);
+                                entity.currentLayer = 'powerdown';
+                            }
                         }
                     }
                 }
@@ -226,12 +236,20 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                             game.renderLayers.powerup.addChild(text.getRenderable());
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName' + game.rightPlayer.name;
-                            game.renderLayers.powerup.addChild(playerName);
                             
                             const render = entity.getComponent('render') as RenderComponent;
                             const graphic = render.graphic;
                             graphic.label = 'paddle';
-                            game.renderLayers.powerup.addChild(graphic);
+                            
+                            if (entity.currentLayer === 'powerdown') {
+                                game.renderLayers.powerupGlitched.addChild(graphic);
+                                game.renderLayers.powerupGlitched.addChild(playerName);
+                                entity.currentLayer = 'powerupGlitched';
+                            } else {
+                                game.renderLayers.powerup.addChild(graphic);
+                                game.renderLayers.powerup.addChild(playerName);
+                                entity.currentLayer = 'powerup';
+                            }
                         }
                     }
                 } else if (id.includes('powerDown')) {
@@ -241,21 +259,108 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                             text.setText('#@%$&');
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName'+ game.rightPlayer.name;
-                            game.renderLayers.powerup.addChild(playerName);
-                            game.renderLayers.powerdown.addChild(playerName);
                             
                             const render = entity.getComponent('render') as RenderComponent;
                             const graphic = render.graphic;
                             graphic.label = 'paddle';
-                            game.renderLayers.powerdown.addChild(graphic);
+                            
+                            if (entity.currentLayer === 'powerup') {
+                                game.renderLayers.powerupGlitched.addChild(graphic);
+                                game.renderLayers.powerupGlitched.addChild(playerName);
+                                entity.currentLayer = 'powerupGlitched';
+                            } else {
+                                game.renderLayers.powerdown.addChild(graphic);
+                                game.renderLayers.powerdown.addChild(playerName);
+                                entity.currentLayer = 'powerdown';
+                            }
                         }
                     }
                 }
             }
             break;
     }
+}
+
+export function removePaddleFromLayer(system: PowerupSystem, paddle: Paddle) {
+    const text = paddle.getComponent('text') as TextComponent;
     
-    
+    if (paddle.isFlat || paddle.isInverted || paddle.isShrinked || paddle.isSlowed || paddle.isStunned) {
+        const powerdownLayer = system.game.renderLayers.powerdown;
+        const powerupGlitchedLayer = system.game.renderLayers.powerupGlitched;
+        
+        // Check powerdown layer first
+        let targetChild = powerdownLayer.children.find(child => child.label === "paddle");
+        let targetLeftName = powerdownLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
+        let targetRightName = powerdownLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
+        
+        // If not found in powerdown, check powerupGlitched layer
+        if (!targetChild) {
+            targetChild = powerupGlitchedLayer.children.find(child => child.label === "paddle");
+        }
+        if (!targetLeftName) {
+            targetLeftName = powerupGlitchedLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
+        }
+        if (!targetRightName) {
+            targetRightName = powerupGlitchedLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
+        }
+
+        if (targetChild) {
+            system.game.renderLayers.foreground.addChild(targetChild);
+            paddle.currentLayer = 'foreground';
+        }
+
+        if (targetLeftName) {
+            system.game.renderLayers.foreground.addChild(targetLeftName);
+            const prefix = "playerName";
+            const result = targetLeftName.label.slice(prefix.length);
+            
+            text.setText(result);
+        } else if (targetRightName) {
+            system.game.renderLayers.foreground.addChild(targetRightName);
+            const prefix = "playerName";
+            const result = targetRightName.label.slice(prefix.length);
+            
+            text.setText(result);
+        }
+    } else {
+        const powerupLayer = system.game.renderLayers.powerup;
+        const powerupGlitchedLayer = system.game.renderLayers.powerupGlitched;
+        
+        // Check powerup layer first
+        let targetChild = powerupLayer.children.find(child => child.label === "paddle");
+        let targetLeftName = powerupLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
+        let targetRightName = powerupLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
+        
+        // If not found in powerup, check powerupGlitched layer
+        if (!targetChild) {
+            targetChild = powerupGlitchedLayer.children.find(child => child.label === "paddle");
+        }
+        if (!targetLeftName) {
+            targetLeftName = powerupGlitchedLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
+        }
+        if (!targetRightName) {
+            targetRightName = powerupGlitchedLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
+        }
+
+        if (targetChild) {
+            system.game.renderLayers.foreground.addChild(targetChild);
+            paddle.currentLayer = 'foreground';
+        }
+
+        if (targetLeftName) {
+            system.game.renderLayers.foreground.addChild(targetLeftName);
+            const prefix = "playerName";
+            const result = targetLeftName.label.slice(prefix.length);
+            
+            text.setText(result);
+        } else if (targetRightName) {
+            system.game.renderLayers.foreground.addChild(targetRightName);
+            const prefix = "playerName";
+            const result = targetRightName.label.slice(prefix.length);
+            
+            text.setText(result);
+        }
+    }
 }
 
 export function lerp(a: number, b: number, t: number): number {

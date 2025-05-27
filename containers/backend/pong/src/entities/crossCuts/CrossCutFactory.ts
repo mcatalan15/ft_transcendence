@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:57:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:56:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ import { TriangleCrossCut } from '../../entities/crossCuts/TriangleCrossCut';
 import { RectangleCrossCut } from './TrenchesCrossCut';
 import { LightningCrossCut } from './LightningCrossCut';
 import { EscalatorCrossCut } from '../../entities/crossCuts/EscalatorCrossCut';
-import { AcceleratorCrossCut } from '../../entities/crossCuts/AcceleratorCrossCut';
+import { HourglassCrossCut } from './HourglassCrossCut';
 import { MawCrossCut } from '../../entities/crossCuts/MawCrossCut';
 import { RakeCrossCut } from '../../entities/crossCuts/RakeCrossCut';
 import { LedgeCrossCut } from '../../entities/crossCuts/LedgeCrossCut';
@@ -85,7 +85,7 @@ export class CrossCutFactory {
                 );
                 break;
             case ('accelerator'):
-                cut = new AcceleratorCrossCut(
+                cut = new HourglassCrossCut(
                     `cut-accelerator-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'accelerator', 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:15:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:39:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ export class WallFigureManager {
             let idx = Math.floor(Math.random() * 7);
 
             switch(idx) {
-                /* case (1):
+                case (1):
                     console.log('Spawning pyramids obstacle');    
                     WallFiguresSpawner.buildPyramids(worldSystem, depth);
                     break;
@@ -49,11 +49,10 @@ export class WallFigureManager {
                 case (6):
                     console.log('Spawning maw obstacle');
                     WallFiguresSpawner.buildMaw(worldSystem, depth);
-                    break; */
+                    break;
                 default:
-                   /*  console.log('Spawning rakes obstacle');
-                    WallFiguresSpawner.buildRakes(worldSystem, depth); */
-                    WallFiguresSpawner.buildAccelerator(worldSystem, depth);
+                    console.log('Spawning rakes obstacle');
+                    WallFiguresSpawner.buildRakes(worldSystem, depth);
             }
         }
 

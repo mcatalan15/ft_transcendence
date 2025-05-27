@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 09:57:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:57:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ import { PyramidDepthLine } from '../entities/background/PyramidDepthLine';
 import { TrenchesDepthLine } from '../entities/background/TrenchesDepthLine';
 import { LightningDepthLine } from '../entities/background/LightningDepthLine';
 import { EscalatorDepthLine } from '../entities/background/EscalatorDepthLine';
-import { AcceleratorDepthLine } from '../entities/background/AcceleratorDepthLine';
+import { HourglassDepthLine } from '../entities/background/HourglassDepthLine';
 import { MawDepthLine } from '../entities/background/MawDepthLine';
 import { RakeDepthLine } from '../entities/background/RakeDepthLine';
 
 import { Obstacle } from '../entities/obstacles/Obstacle';
 import { LedgeSegment } from '../entities/obstacles/LedgeSegment';
 import { PachinkoSegment } from '../entities/obstacles/PachinkoSegment';
-import { WindmillSegment } from '../entities/obstacles/WindmillSegment';
+import { SnakeSegment } from '../entities/obstacles/SnakeSegment';
 
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
@@ -97,8 +97,8 @@ export function isEscalatorDepthLine(entity: Entity): entity is EscalatorDepthLi
 	return entity instanceof EscalatorDepthLine;
 }
 
-export function isAcceleratorDepthLine(entity: Entity): entity is AcceleratorDepthLine {
-	return entity instanceof AcceleratorDepthLine;
+export function isAcceleratorDepthLine(entity: Entity): entity is HourglassDepthLine {
+	return entity instanceof HourglassDepthLine;
 }
 
 export function isMawDepthLine(entity: Entity): entity is MawDepthLine {
@@ -121,8 +121,8 @@ export function isPachinkoSegment(entity: Entity): entity is PachinkoSegment {
 	return entity instanceof PachinkoSegment;
 }
 
-export function isWindmillSegment(entity: Entity): entity is WindmillSegment {
-	return entity instanceof WindmillSegment;
+export function isWindmillSegment(entity: Entity): entity is SnakeSegment {
+	return entity instanceof SnakeSegment;
 }
 
 export function isParticle(entity: Entity): entity is Particle {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:53:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 09:42:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:15:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { PongGame } from '../engine/Game';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 import { LedgeSegment } from '../entities/obstacles/LedgeSegment';
 import { PachinkoSegment } from '../entities/obstacles/PachinkoSegment';
-import { WindmillSegment } from '../entities/obstacles/WindmillSegment';
+import { SnakeSegment } from '../entities/obstacles/SnakeSegment';
 
 import { ObstacleBehavior, ObstacleOptions } from '../utils/Types';
 
@@ -41,7 +41,7 @@ export class ObstacleFactory {
 		} else if (type.includes('ledge')) {
 			return new LedgeSegment(game, options, type, id, 'background');
 		} else {
-			return new WindmillSegment(game, options, type, id, 'background', pattern!, position!);
+			return new SnakeSegment(game, options, type, id, 'background', pattern!, position!);
 		} 
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:18:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:13:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -426,7 +426,9 @@ export class PhysicsSystem implements System {
 						-physics.velocityX,
 						physics.velocityY,
 						GAME_COLORS.green,
-					);
+					)
+
+					this.UI.resetBars('left');
 					
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}
@@ -448,6 +450,8 @@ export class PhysicsSystem implements System {
 						physics.velocityY,
 						GAME_COLORS.green,
 					);
+
+					this.UI.resetBars('right');
 
 					PowerupSpawner.despawnShield(this.game, shield.id);
 				}

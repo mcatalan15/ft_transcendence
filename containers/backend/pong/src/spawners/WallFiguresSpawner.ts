@@ -89,7 +89,7 @@ export class WallFiguresSpawner {
   }
 
   static buildAccelerator(worldSystem: WorldSystem, depth: number): void {
-    this.buildWallFigure(worldSystem, depth, 'bang', { maxHeightDivisor: 2 });
+    this.buildWallFigure(worldSystem, depth, 'hourglass', { maxHeightDivisor: 2 });
   }
 
   static buildMaw(worldSystem: WorldSystem, depth: number): void {

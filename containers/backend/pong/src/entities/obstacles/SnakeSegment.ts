@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WindmillSegment.ts                                 :+:      :+:    :+:   */
+/*   snakeSegment.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/19 12:19:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 16:47:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ import { Obstacle } from './Obstacle';
 
 import { RenderComponent } from "../../components/RenderComponent";
 
-import { WindmillPatternManager} from '../../managers/WindmillPatternManager';
+import { SnakePatternManager} from '../../managers/SnakePatternManager';
 
 import { ObstacleBehavior, ObstacleOptions } from '../../utils/Types';
-import { drawPointPath, generateWindmillPoints } from '../../utils/Utils';
+import { drawPointPath, generateSnakePoints } from '../../utils/Utils';
 
-export class WindmillSegment extends Obstacle {
+export class SnakeSegment extends Obstacle {
 	points: Point[] = [];
 	segmentIndices: { start: number; count: number; }[] = [];
 	color: number = this.game.currentWorld.color;
@@ -33,23 +33,23 @@ export class WindmillSegment extends Obstacle {
 		const render = this.getComponent('render') as RenderComponent;
 		
 		if (render) {
-			render.graphic = this.generateWindmillLine(game, this.color, pattern, position);
+			render.graphic = this.generateSnakeLine(game, this.color, pattern, position);
 			render.graphic.position.set(this.x, this.y);
 		}
 	}
 
 	
-	private generateWindmillLine(game: PongGame, color: number, pattern: number, position: number): Graphics {
+	private generateSnakeLine(game: PongGame, color: number, pattern: number, position: number): Graphics {
 		const line = new Graphics();
 		
-		let windmillPositions;
+		let snakePositions;
 	
 		switch (pattern) {
 			case (0):
-				windmillPositions = WindmillPatternManager.createDoubleTopPattern(game, position);
+				snakePositions = SnakePatternManager.createViperPattern(game, position);
 				break;
 			default:
-				windmillPositions = WindmillPatternManager.createDoubleBottomPattern(game, position);
+				snakePositions = SnakePatternManager.createSnakePattern(game, position);
 				break;
 		}
 	
@@ -59,7 +59,7 @@ export class WindmillSegment extends Obstacle {
 		const pathSegments: {x: number, y: number}[][] = [];
 		let currentPath: {x: number, y: number}[] = [];
 		
-		for (const pos of windmillPositions) {
+		for (const pos of snakePositions) {
 			if (isNaN(pos.x) && isNaN(pos.y)) {
 				if (currentPath.length > 0) {
 					pathSegments.push([...currentPath]);
@@ -82,7 +82,7 @@ export class WindmillSegment extends Obstacle {
 				count: pathPositions.length
 			});
 			
-			const pathPoints = generateWindmillPoints(pathPositions);
+			const pathPoints = generateSnakePoints(pathPositions);
 			this.points.push(...pathPoints);
 			pointIndex += pathPoints.length;
 			

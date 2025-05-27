@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 19:10:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:55:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,12 @@ export class PowerupSpawner {
 			}
 		} else if (world.includes('steps')) {
 			points.push(new Point(width / 2, height / 2 + 100));
-			points.push(new Point(width / 2, height / 2))
+			points.push(new Point(width / 2, height / 2));
 			points.push(new Point(width / 2, height / 2 - 100));
-		} else if (world.includes('bang')) {
-			points.push(new Point(280, 200))
-			points.push(new Point(280, 540))
-			points.push(new Point(width / 2, height / 2))
-			points.push(new Point(width - 280, 200))
-			points.push(new Point(width - 280, 540))
+		} else if (world.includes('hourglass')) {
+			points.push(new Point((width / 2 - 175), height / 2));
+			points.push(new Point(width / 2, height / 2));
+			points.push(new Point((width / 2 + 175), height / 2));
 		} else if (world.includes('maw')) {
 			points.push(new Point(width / 2, height / 2 + 150));
 			points.push(new Point(width / 2 - 460, height / 2));
@@ -98,14 +96,14 @@ export class PowerupSpawner {
 			points.push(new Point(width / 2 + 400, height / 2 - 200));
 		} else if (world.includes('kite') || world.includes('honeycomb') || world.includes('bowtie')) {
 			points.push(new Point(width / 2, height / 2));
-		} else if (world.includes('windmills')) {
-			points.push(new Point(width / 2 - 550, height / 2 + 250));
-			points.push(new Point(width / 2, height / 2 - 250))
-			points.push(new Point(width / 2 + 550, height / 2 + 250));
-		} else if (world.includes('giants')) {
-			points.push(new Point(width / 2 - 550, height / 2 - 250));
-			points.push(new Point(width / 2, height / 2 + 250))
-			points.push(new Point(width / 2 + 550, height / 2 - 250));
+		} else if (world.includes('snakes')) {
+			points.push(new Point(width / 2, height / 2 + 250));
+			points.push(new Point(width / 2, height / 2))
+			points.push(new Point(width / 2, height / 2 - 250));
+		} else if (world.includes('vipers')) {
+			points.push(new Point(width / 2, height / 2 + 250));
+			points.push(new Point(width / 2, height / 2))
+			points.push(new Point(width / 2, height / 2 - 250));
 		} else {
 			points.push(new Point(100, 100));
 		}
@@ -114,7 +112,6 @@ export class PowerupSpawner {
 	}
 
 	static redirectSpawn(game: PongGame, points: Point[]) {
-		console.log(game.currentWorld.tag);	
 		switch (game.currentWorld.tag) {
 			case ('pyramidWorld'):
 				this.manageTwoPointSpawn(game, points);
@@ -137,8 +134,8 @@ export class PowerupSpawner {
 			case ('stepsWorld'):
 				this.manageThreePointSpawn(game, points);
 				break;
-			case ('bangWorld'):
-				this.manageFivePointSpawn(game, points);
+			case ('hourglassWorld'):
+				this.manageThreePointSpawn(game, points);
 				break;
 			case ('mawWorld'):
 				this.manageFivePointSpawn(game, points);
@@ -155,11 +152,11 @@ export class PowerupSpawner {
 			case ('bowtieWorld'):
 				this.manageOnePointSpawn(game, points);
 				break;
-			case ('windmillsWorld'):
+			case ('snakesWorld'):
 				this.manageThreePointSpawn(game, points);
 				break;
-			case ('giantsWorld'):
-				this.manageThreePointSpawn(game, points);
+			case ('vipersWorld'):
+				this.manageThreePointSpawn(game, points, true);
 				break;
 		}
 	}
@@ -170,19 +167,18 @@ export class PowerupSpawner {
 		let powerup;
 
 		switch(idx) {
-			/* case(0):
+			case(0):
+				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);
+				break;
+			case(1):
+				uniqueId = `${uniqueId}shootPowerup`;
+				powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX);	
+				break;
+			case(2):
 				uniqueId = `${uniqueId}shieldPowerup`;
 				powerup = new ShieldPowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
-			case(1):
-				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
-				break;
-			case(2):
-				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);
-				break;*/
 			default:
-				/* uniqueId = `${uniqueId}shootPowerup`;
-				powerup = new ShootPowerup(uniqueId, 'powerup', game, randomY, randomX); */
 				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 		}
@@ -338,7 +334,7 @@ export class PowerupSpawner {
 		}
 	}
 
-	static manageThreePointSpawn(game: PongGame, points: Point[]) {
+	static manageThreePointSpawn(game: PongGame, points: Point[], invert?: boolean) {
 		for (let i = 0; i < points.length; i++) {
 			let uniqueId;
 
@@ -346,16 +342,26 @@ export class PowerupSpawner {
 			
 			switch (i) {
 				case (0):
-					uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;	
-					powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					if (invert) {
+						uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+						powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					} else {
+						uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;	
+						powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					}
 					break;
 				case (1):
 					uniqueId = `ballChange-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					powerup = this.getBallChange(uniqueId, game, points[i].y, points[i].x);
 					break;
 				default:
-					uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-					powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					if (invert) {
+						uniqueId = `powerUp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;	
+						powerup = this.getPowerup(uniqueId, game, points[i].y, points[i].x);
+					} else {
+						uniqueId = `powerDown-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+						powerup = this.getPowerdown(uniqueId, game, points[i].y, points[i].x);
+					}
 			}
 
 			game.addEntity(powerup);

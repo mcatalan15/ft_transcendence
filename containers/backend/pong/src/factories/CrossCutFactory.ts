@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CrossCutFactory.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/21 19:36:14 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/27 17:56:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ import { TriangleCrossCut } from '../entities/crossCuts/TriangleCrossCut';
 import { RectangleCrossCut } from '../entities/crossCuts/TrenchesCrossCut';
 import { LightningCrossCut } from '../entities/crossCuts/LightningCrossCut';
 import { EscalatorCrossCut } from '../entities/crossCuts/EscalatorCrossCut';
-import { AcceleratorCrossCut } from '../entities/crossCuts/AcceleratorCrossCut';
+import { HourglassCrossCut } from '../entities/crossCuts/HourglassCrossCut';
 import { MawCrossCut } from '../entities/crossCuts/MawCrossCut';
 import { RakeCrossCut } from '../entities/crossCuts/RakeCrossCut';
 import { LedgeCrossCut } from '../entities/crossCuts/LedgeCrossCut';
 import { PachinkoCrossCut } from '../entities/crossCuts/PachinkoCrossCut';
-import { WindmillCrossCut } from '../entities/crossCuts/WindmillCrossCut';
+import { SnakeCrossCut } from '../entities/crossCuts/SnakeCrossCut';
 
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
@@ -86,7 +86,7 @@ export class CrossCutFactory {
                 );
                 break;
             case ('accelerator'):
-                cut = new AcceleratorCrossCut(
+                cut = new HourglassCrossCut(
                     `cut-accelerator-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'accelerator', 
@@ -158,7 +158,7 @@ export class CrossCutFactory {
                 );
                 break;
             case ('windmill'):
-                cut = new WindmillCrossCut(
+                cut = new SnakeCrossCut(
                     `cut-obstacle-windmill-${Date.now()}-${Math.floor(Math.random() * 1000)}`, 
                     'midground', 
                     'windmill', 

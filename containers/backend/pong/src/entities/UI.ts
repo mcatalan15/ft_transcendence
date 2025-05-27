@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 18:58:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:21:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,42 @@ export class UI extends Entity {
 		} else if (side === 'right') {
 			this.rightAffectationFullTime = time;
 			this.rightAffectationTime = 0;
+		}
+	}
+
+	resetBars(side: string){
+		if (side === 'left') {
+			this.leftAffectationFullTime = 0;
+			this.leftAffectationTime = 0;
+			const render = this.getComponent('render') as RenderComponent;
+			const targetChild = render.graphic.children.find(child => child.label === "leftBarFill");
+			if (targetChild) {
+				for (let i = 0; i < render.graphic.children.length; i++) {
+					if (render.graphic.children[i].label === targetChild.label) {						
+						let caughtGraphic = render.graphic.children[i] as Graphics;
+						console.log(caughtGraphic);
+						caughtGraphic.clear();
+						caughtGraphic.rect(0, 0, 0, 7.5);
+						//caughtGraphic.fill(GAME_COLORS.white);
+					}
+				}
+			}
+		} else if (side === 'right') {
+			this.rightAffectationFullTime = 0;
+			this.rightAffectationTime = 0;
+			const render = this.getComponent('render') as RenderComponent;
+			const targetChild = render.graphic.children.find(child => child.label === "rightBarFill");
+			if (targetChild) {
+				for (let i = 0; i < render.graphic.children.length; i++) {
+					if (render.graphic.children[i].label === targetChild.label) {
+						let caughtGraphic = render.graphic.children[i] as Graphics;
+						console.log(caughtGraphic);
+						caughtGraphic.clear();
+						caughtGraphic.rect(0, 0, 0, 7.5);
+						//caughtGraphic.fill(GAME_COLORS.white);
+					}
+				}
+			}
 		}
 	}
 }

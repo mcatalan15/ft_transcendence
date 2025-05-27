@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 13:51:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:07:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,63 +23,34 @@ import { GAME_COLORS } from '../utils/Types.js';
 export class Paddle extends Entity {
     game: PongGame;
     name: string;
-    isEnlarged: boolean;
-    wasEnlarged: boolean;
-    affectedTimer: number;
-	enlargeProgress: number;
-    isShrinked: boolean;
-    wasShrinked: boolean;
-    shrinkProgress: number;
-    isInverted: boolean;
-    inversion: number;
-    isSlowed: boolean;
-    slowness: number;
-    isFlat: boolean;
-    isMagnetized: boolean;
-    isStunned: boolean;
-    baseWidth: number;
-    originalWidth: number;
-    baseHeight: number;
-    originalHeight: number;
-    overshootTarget: number;
-    overshootPhase: string;
-    targetHeight: number;
+    isEnlarged: boolean = false;
+    wasEnlarged: boolean = false;
+    affectedTimer: number = 0;
+	enlargeProgress: number = 0;
+    isShrinked: boolean = false;
+    wasShrinked: boolean = false;
+    shrinkProgress: number = 0;
+    isInverted: boolean = false;
+    inversion: number = 1;
+    isSlowed: boolean = false;
+    slowness: number = 1;
+    isFlat: boolean = false;
+    isMagnetized: boolean = false;
+    isStunned: boolean = false;
+    baseWidth: number = 0;
+    originalWidth: number = 0;
+    baseHeight: number = 0;
+    originalHeight: number = 0;
+    overshootTarget: number = 0;
+    overshootPhase: string = '';
+    targetHeight: number = 0;
+    currentLayer: string = 'foreground';
 
     constructor(id: string, layer: string, game: PongGame, x: number, y: number, isLeftPaddle: boolean, name: string) {
         super(id, layer);
 
         this.game = game;
         this.name = name;
-        
-        this.affectedTimer = 0;
-
-        this.isEnlarged = false;
-        this.wasEnlarged = false;
-		this.enlargeProgress = 0;
-
-        this.isShrinked = false;
-        this.wasShrinked = false;
-		this.shrinkProgress = 0;
-
-        this.overshootTarget = 0;
-        this.overshootPhase = '';
-        this.targetHeight = 0;
-
-        this.isInverted = false;
-        this.inversion = 1;
-
-        this.isSlowed = false;
-        this.slowness = 1;
-
-        this.isFlat = false;
-        this.isMagnetized = false;
-        this.isStunned = false;
-        
-        // These will be initialized in the code below
-        this.baseWidth = 0;
-        this.originalWidth = 0;
-        this.baseHeight = 0;
-        this.originalHeight = 0;
 
         const paddleGraphic = this.createPaddleGraphic();
         const renderComponent = new RenderComponent(paddleGraphic);

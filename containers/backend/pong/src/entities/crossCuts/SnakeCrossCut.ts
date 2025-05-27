@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WindmillCrossCut.ts                                :+:      :+:    :+:   */
+/*   SnakeCrossCut.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 10:45:35 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:34:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { CrossCut } from './CrossCut';
 
 import { PhysicsData, GAME_COLORS } from '../../utils/Types';
 
-export class WindmillCrossCut extends CrossCut {
+export class SnakeCrossCut extends CrossCut {
     constructor(id: string, layer: string, shape: string, position: string, nPoints: number, points: Point[], x: number, y: number) {
         super(id, layer, shape, position, nPoints, points, x, y);
     }
@@ -29,8 +29,8 @@ export class WindmillCrossCut extends CrossCut {
     }
 
     buildPolygonalPhysics(): void {
-        const pointsPerPolygon = 13
-        const nPolygons = 3;
+        const pointsPerPolygon = 5;
+        const nPolygons = 2;
 
         const polygons: Point[][] = [];
 
@@ -67,9 +67,9 @@ export class WindmillCrossCut extends CrossCut {
         graphic.clear();
         
         if (this.points && this.points.length > 0) {
-            const pointsPerWindmill = 13;
+            const pointsPerWindmill = 5;
             
-            const windmillCount = 3;
+            const windmillCount = 2;
             
             for (let c = 0; c < windmillCount; c++) {
                 const startIdx = c * pointsPerWindmill;
