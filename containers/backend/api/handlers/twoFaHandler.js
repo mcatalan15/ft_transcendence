@@ -15,7 +15,7 @@ otplib.authenticator.options = {
  * @param {number} userId - The unique ID of the user.
  * @returns {Promise<object>} An object containing the secret, QR code data URL, and otpAuthUrl.
  */
-async function generateTwoFaSetup(username, userId) {
+async function generateTwoFaSetup(username, userId, email) {
   // 1. Generate a new TOTP secret
   const secret = otplib.authenticator.generateSecret();
   console.log(`Generated 2FA secret for user ${userId}: ${secret}`);
@@ -25,9 +25,11 @@ async function generateTwoFaSetup(username, userId) {
   await saveTwoFactorSecret(userId, secret);
 
   // 3. Generate the OTPAuth URL
+  const accountLabel = `${username}@${email}`;
+
   // The 'issuer' is your application's name, 'label' is the user's identifier
   const appName = 'ft_transcendence'; // Replace with your application's name
-  const otpAuthUrl = otplib.authenticator.keyuri(username, appName, secret);
+  const otpAuthUrl = otplib.authenticator.keyuri(accountLabel, appName, secret);
   console.log(`Generated OTPAuth URL: ${otpAuthUrl}`);
 
   // 4. Generate the QR code image as a data URL

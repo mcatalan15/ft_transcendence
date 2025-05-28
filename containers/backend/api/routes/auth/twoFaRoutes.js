@@ -13,17 +13,18 @@ async function twoFaRoutes(fastify, options) {
       body: {
         type: 'object',
         properties: {
-          username: { type: 'string', description: 'The username or email of the user.' },
-          userId: { type: 'number', description: 'The ID of the newly registered user.' }
+          username: { type: 'string', description: 'The username of the user.' },
+          userId: { type: 'number', description: 'The ID of the newly registered user.' },
+		  email: { type: 'string', description: 'The email of the user'}
         },
-        required: ['username', 'userId'] // Now these are genuinely required
+        required: ['username', 'userId', 'email'] // Now these are genuinely required
       },
       response: twoFaSetupResponseSchema
     }
   }, async (request, reply) => {
     // These now come directly from the request body, which should be sent by the frontend
     // after a successful signup.
-    const { username, userId } = request.body;
+    const { username, userId, email } = request.body;
 
     // Basic validation to ensure we received proper data
     if (!username || typeof userId !== 'number') {
@@ -33,10 +34,10 @@ async function twoFaRoutes(fastify, options) {
 
     try {
       // Use the actual user data received from the request
-      const { secret, qrCodeUrl, otpAuthUrl } = await generateTwoFaSetup(username, userId);
+      const { secret, qrCodeUrl, otpAuthUrl } = await generateTwoFaSetup(username, userId, email);
       reply.send({ secret, qrCodeUrl, otpAuthUrl });
     } catch (error) {
-      fastify.log.error('Error generating 2FA setup for user:', userId, error);
+      fastify.log.error('Error generating 2FA setup for user:', username, error);
       reply.code(500).send({ message: 'Failed to generate 2FA setup.' });
     }
   });
