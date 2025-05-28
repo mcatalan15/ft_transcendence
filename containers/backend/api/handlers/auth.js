@@ -54,7 +54,8 @@ async function signupHandler(request, reply) {
       success: true,
       message: 'User registered successfully',
       userId: newUserId, // <--- Add the new user ID
-      username: username // <--- Add the username (or email, if that's what you use for 2FA display)
+      username: username, // <--- Add the username (or email, if that's what you use for 2FA display)
+	  email: email
     });
 
   } catch (error) {

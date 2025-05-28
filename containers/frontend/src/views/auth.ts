@@ -23,13 +23,15 @@ export function showAuth(container: HTMLElement): void {
     console.log('fromPage value:', fromPage);
     console.log(sessionStorage.getItem('userId'));
     console.log(sessionStorage.getItem('username'));
+	console.log(sessionStorage.getItem('email'));
     // Create the main container
     const authDiv = document.createElement('div');
     authDiv.className = "auth-container";
 
-    // --- IMPORTANT: Variables to hold the actual user data ---
+    // --- Variables to hold the actual user data ---
     let actualUserId = sessionStorage.getItem('userId');
     let actualUsername = sessionStorage.getItem('username');
+	let actualEmail = sessionStorage.getItem('email');
 
     // Different content based on where the user came from
     if (fromPage === 'signup') {
@@ -39,17 +41,19 @@ export function showAuth(container: HTMLElement): void {
         message.textContent = i18n.t('You have successfully created an account!');
         authDiv.appendChild(message);
 
-        // --- Retrieve user data from localStorage after signup redirect ---
+        // // --- Retrieve user data from localStorage after signup redirect ---
         const storedUserId = localStorage.getItem('signupUserId');
         const storedUsername = localStorage.getItem('signupUsername');
-
+		const storedEmail = localStorage.getItem('actualEmail');
+		
         if (storedUserId && storedUsername) {
             actualUserId = parseInt(storedUserId, 10);
             actualUsername = storedUsername;
+			actualEmail = storedEmail;
             // IMPORTANT: Clear localStorage items after use to prevent stale data
             localStorage.removeItem('signupUserId');
             localStorage.removeItem('signupUsername');
-            console.log(`[2FA Setup] Retrieved userId: ${actualUserId}, username: ${actualUsername} from localStorage.`);
+            console.log(`[2FA Setup] Retrieved userId: ${actualUserId}, username: ${actualUsername}, email: ${actualEmail}.`);
         } else {
             // Fallback for direct access or if signup process didn't store data
             console.warn('[2FA Setup] User ID or username not found in localStorage. This might happen on direct page access or if signup flow is incomplete.');
@@ -115,7 +119,7 @@ export function showAuth(container: HTMLElement): void {
 
         // Function to call our backend API to initiate 2FA setup
         const initiateTwoFaSetup = async () => {
-            if (actualUserId === null || actualUsername === null) {
+            if (actualUserId === null || actualUsername === null ||actualEmail === null ) {
                 const errorMessage = i18n.t('Cannot set up 2FA: User data missing. Please try signing up again.');
                 console.error(errorMessage);
                 qrCodeDisplay.textContent = errorMessage;
