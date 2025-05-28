@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 11:13:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/28 11:04:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ export class PhysicsSystem implements System {
 	height: number;
 	mustResetBall: boolean = false;
 	ballResetTime: number = 0;
+	private ballCollisionHistory: Map<string, Array<{time: number, normal: {x: number, y: number}}>> = new Map();
 
 	constructor(game: PongGame, width: number, height: number) {
         this.game = game;
@@ -368,6 +369,8 @@ export class PhysicsSystem implements System {
 		}
 		
 		if (collided) {
+			const prevVelocity = {x: physics.velocityX, y: physics.velocityY};
+			
 			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
 			this.game.sounds.thud.play();
 			ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
@@ -375,6 +378,14 @@ export class PhysicsSystem implements System {
 			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
 			const distanceFromPrev = Math.hypot(physics.x - prevPos.x, physics.y - prevPos.y);
+
+			const oscillationCheck = physicsUtils.detectOscillation(prevVelocity, {x: physics.velocityX, y: physics.velocityY});
+			const historyOscillation = this.trackCollision(ball.id, collisionNormal);
+
+			if (oscillationCheck.isOscillating || historyOscillation) {
+				physicsUtils.breakOscillation(physics, collisionNormal, ball);
+				console.log(`Broke ${oscillationCheck.type} oscillation for ball ${ball.id}`);
+			}
 			
 			// If ball barely moved or is moving very slowly, give it a boost
 			if (speed < 3 || distanceFromPrev < 1) {
@@ -615,8 +626,8 @@ export class PhysicsSystem implements System {
 
 
 	checkBallOutOfBounds(physics: PhysicsComponent, ball: Ball) {
-        const ballLeft = physics.x - (physics.width / 2);
-        const ballRight = physics.x + (physics.width / 2);
+        const ballLeft = physics.x - (physics.width / 2) + 10;
+        const ballRight = physics.x + (physics.width / 2) - 10;
 
 		if (ballLeft > this.width) {
 			if (ball.isGoodBall) {
@@ -852,5 +863,52 @@ export class PhysicsSystem implements System {
 		if (bulletLeft < 0 || bulletRight > this.game.width) {
 			PowerupSpawner.despawnBullet(this.game, bullet.id);
 		}
+	}
+
+	private trackCollision(ballId: string, normal: {x: number, y: number}) {
+		if (!this.ballCollisionHistory.has(ballId)) {
+			this.ballCollisionHistory.set(ballId, []);
+		}
+		
+		const history = this.ballCollisionHistory.get(ballId)!;
+		const now = Date.now();
+		
+		// Clean old entries (older than 2 seconds)
+		while (history.length > 0 && now - history[0].time > 2000) {
+			history.shift();
+		}
+		
+		history.push({time: now, normal});
+		
+		// Check for rapid back-and-forth bouncing
+		if (history.length >= 4) {
+			const recent = history.slice(-4);
+			const isOscillating = this.isRapidOscillation(recent);
+			
+			if (isOscillating) {
+				return true; // Signal to break oscillation
+			}
+		}
+		
+		return false;
+	}
+	
+	private isRapidOscillation(collisions: Array<{time: number, normal: {x: number, y: number}}>): boolean {
+		const timeSpan = collisions[collisions.length - 1].time - collisions[0].time;
+		const isRapid = timeSpan < 1000; // 4 collisions in 1 second
+		
+		// Check if normals are roughly opposite (indicating back-and-forth)
+		let oppositeCount = 0;
+		for (let i = 1; i < collisions.length; i++) {
+			const prev = collisions[i-1].normal;
+			const curr = collisions[i].normal;
+			const dot = prev.x * curr.x + prev.y * curr.y;
+			
+			if (dot < -0.5) { // Roughly opposite directions
+				oppositeCount++;
+			}
+		}
+		
+		return isRapid && oppositeCount >= 2;
 	}
 }
