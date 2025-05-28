@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParticleSpawner.ts                                 :+:      :+:    :+:   */
+/*   MenuParticleSpawner.ts                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 17:02:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/28 17:10:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ import { Particle } from '../entities/Particle';
 import { RenderComponent } from '../components/RenderComponent';
 
 import { GAME_COLORS } from '../utils/Types';
+import { Menu } from './Menu';
 
 interface AmbientDustConfig {
 	maxParticles: number;
@@ -31,7 +32,7 @@ interface AmbientDustConfig {
 	maxRotationSpeed: number;
 }
 
-export class ParticleSpawner {
+export class MenuParticleSpawner {
 	private static ambientDustConfig: AmbientDustConfig = {
 		maxParticles: 20,
 		spawnRate: 2,
@@ -50,83 +51,12 @@ export class ParticleSpawner {
 	private static lastAmbientSpawn: number = 0;
 	private static ambientParticleCount: number = 0;
 
-	static spawnBasicExplosion(game: PongGame, x: number, y: number, color: number, sizeFactor: number): void {
-		for (let i = 0; i < 5; i++) {
-			const angle = Math.random() * Math.PI * 2;
-			const speed = Math.random() * 5 + 3;
-
-			const startX = x + (Math.random() * 6 - 3);
-			const startY = y + (Math.random() * 6 - 3);
-
-			const alpha = Math.random() * 0.8 + 0.2;
-
-			const particle = new Particle(`explosionParticle-${Date.now()}-${i}`, 'foreground', startX, startY, {
-				type: 'square',
-				velocityX: Math.cos(angle) * speed,
-				velocityY: Math.sin(angle) * speed,
-				lifetime: Math.random() * 10 + 15,
-				size: (Math.random() * 10 + 5) * sizeFactor,
-				shrink: true,
-				rotate: true,
-				color,
-				alpha,
-				alphaDecay: alpha / 50,
-				fadeOut: true,
-			});
-
-			game.addEntity(particle);
-			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.renderLayers.foreground.addChild(particleRender.graphic);
-		}
-	}
-
-	static spawnBurst(
-		game: PongGame,
-		x: number,
-		y: number,
-		size: number = 5,
-		velocityX: number = 0,
-		velocityY: number = 0,
-		color: number
-	): void {
-		const baseAngle = Math.atan2(-velocityY, -velocityX);
-
-		for (let i = 0; i < size; i++) {
-			const spread = 0.5;
-			const angle = baseAngle + (Math.random() * spread - spread / 2);
-			const distance = Math.random() * 20 + 10;
-
-			const startX = x + (Math.random() * 6 - 3);
-			const startY = y + (Math.random() * 6 - 3);
-
-			const alpha = Math.random() * 0.8 + 0.2;
-
-			const particle = new Particle(`burstParticle-${Date.now()}-${i}`, 'midground', startX, startY, {
-				type: 'triangle',
-				velocityX: Math.cos(angle) * distance / 1.5,
-				velocityY: Math.sin(angle) * distance / 1.5,
-				lifetime: Math.random() * 10 + 35,
-				size: Math.random() * 3 + 3,
-				shrink: true,
-				rotate: true,
-				color,
-				alpha,
-				alphaDecay: alpha / 120,
-				fadeOut: true,
-			});
-
-			game.addEntity(particle);
-			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.renderLayers.midground.addChild(particleRender.graphic);
-		}
-	}
-
-	static updateAmbientDust(game: PongGame, deltaTime: number, gameWidth: number, gameHeight: number): void {
+	static updateAmbientDust(menu: Menu, deltaTime: number, gameWidth: number, gameHeight: number): void {
 		const currentTime = Date.now();
 		const config = this.ambientDustConfig;
 
 		this.ambientParticleCount = 0;
-		for (const entity of game.entities) {
+		for (const entity of menu.entities) {
 			if (entity.id.startsWith('ambientDust-')) {
 				this.ambientParticleCount++;
 			}
@@ -136,12 +66,12 @@ export class ParticleSpawner {
 		const spawnInterval = 1000 / config.spawnRate;
 
 		if (this.ambientParticleCount < config.maxParticles && timeSinceLastSpawn >= spawnInterval) {
-			this.spawnAmbientDustParticle(game, gameWidth, gameHeight);
+			this.spawnAmbientDustParticle(menu, gameWidth, gameHeight);
 			this.lastAmbientSpawn = currentTime;
 		}
 	}
 
-	private static spawnAmbientDustParticle(game: PongGame, gameWidth: number, gameHeight: number): void {
+	private static spawnAmbientDustParticle(menu: Menu, gameWidth: number, gameHeight: number): void {
 		const config = this.ambientDustConfig;
 		
 		const x = Math.random() * gameWidth;
@@ -170,10 +100,9 @@ export class ParticleSpawner {
 			fadeOut: false,
 			growShrink: true,
 		});
-
-		game.addEntity(particle);
+		menu.addEntity(particle);
 		const particleRender = particle.getComponent('render') as RenderComponent;
-		game.renderLayers.background.addChild(particleRender.graphic);
+		menu.renderLayers.background.addChild(particleRender.graphic);
 	}
 
 	// Configuration methods for tweaking dust behavior

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:46:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/28 17:46:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,6 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
-
 		this.visualRoot.addChild(this.renderLayers.ui);
 		
 		this.initSounds();
@@ -405,27 +404,27 @@ export class PongGame {
 	createBoundingBoxes() {
 		const boundingBoxA = new Graphics();
 		boundingBoxA.rect(0, 0, this.width, this.height);
-		boundingBoxA.stroke({width: 0.1, color: '#171717'});
+		boundingBoxA.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		const boundingBoxB = new Graphics();
 		boundingBoxB.rect(0, 0, this.width, this.height);
-		boundingBoxB.stroke({width: 0.1, color: '#171717'});
+		boundingBoxB.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		const boundingBoxC = new Graphics();
 		boundingBoxC.rect(0, 0, this.width, this.height);
-		boundingBoxC.stroke({width: 0.1, color: '#171717'});
+		boundingBoxC.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		const boundingBoxD = new Graphics();
 		boundingBoxD.rect(0, 0, this.width, this.height);
-		boundingBoxD.stroke({width: 0.1, color: '#171717'});
+		boundingBoxD.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		const boundingBoxE = new Graphics();
 		boundingBoxE.rect(0, 0, this.width, this.height);
-		boundingBoxE.stroke({width: 0.1, color: '#171717'});
+		boundingBoxE.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		const boundingBoxF = new Graphics();
 		boundingBoxF.rect(0, 0, this.width, this.height);
-		boundingBoxF.stroke({width: 0.1, color: '#171717'});
+		boundingBoxF.stroke({width: 0.1, color: GAME_COLORS.black});
 
 		this.renderLayers.bounding.addChild(boundingBoxA);
 		this.renderLayers.powerup.addChild(boundingBoxB);

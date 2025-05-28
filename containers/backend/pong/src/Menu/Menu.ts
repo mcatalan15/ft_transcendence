@@ -1,0 +1,370 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Menu.ts                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/05/28 19:19:12 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+// Import Pixi and Howler stuff
+import { Application, Text, Container, Graphics, FederatedPointerEvent } from 'pixi.js';
+import { Howl } from 'howler';
+
+// Import G A M E
+import { PongGame } from '../engine/Game';
+
+// Import Engine elements (ECS)
+import { Entity } from '../engine/Entity';
+import { System } from '../engine/System';
+
+import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
+
+// Import components
+import { RenderComponent } from '../components/RenderComponent';
+import { TextComponent } from '../components/TextComponent';
+
+// Import spawners
+import { MenuParticleSpawner } from './MenuParticleSpawner';
+
+// Import Implemented Systems
+import { RenderSystem } from '../systems/RenderSystem';
+import { MenuRenderSystem } from './MenuRenderSystem';
+import { MenuAnimationSystem } from '../Menu/MenuAnimationSystem';
+import { MenuParticleSystem } from './MenuParticleSystem';
+import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
+
+import { GAME_COLORS, FrameData } from '../utils/Types';
+import * as menuUtils from '../utils/MenuUtils'
+
+export class Menu{
+	app: Application;
+	width: number;
+	height: number;
+	entities: Entity[] = [];
+    systems: System[] = [];
+	menuContainer: Container;
+	buttonWidth: number;
+	buttonHeight:number = 60;
+	buttonSpacing: number = 0;
+	renderLayers: {
+		blackEnd: Container;
+		logo: Container;
+		background: Container;
+		midground: Container;
+		foreground: Container;
+		pp: Container;
+	};
+	visualRoot: Container;
+
+	constructor(app: Application) {
+		this.app = app;
+		this.width = app.screen.width;
+		this.height = app.screen.height;
+		this.buttonWidth = app.screen.width;
+		this.menuContainer = new Container();
+
+		this.renderLayers = {
+			blackEnd: new Container(),
+			logo: new Container(),
+			background: new Container(),
+			midground: new Container(),
+			foreground: new Container(),
+			pp: new Container(),
+		};
+		this.visualRoot = new Container();
+		this.visualRoot.sortableChildren = true;
+
+		this.app.stage.addChild(this.renderLayers.blackEnd);
+
+		this.app.stage.addChild(this.menuContainer);
+		this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.visualRoot);
+		this.app.stage.addChild(this.menuContainer);
+	
+		this.visualRoot.addChild(this.renderLayers.logo);
+		this.visualRoot.addChild(this.renderLayers.background);
+		this.visualRoot.addChild(this.renderLayers.midground);
+		this.visualRoot.addChild(this.renderLayers.foreground);
+		this.visualRoot.addChild(this.renderLayers.pp);
+
+		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
+	}
+
+	async init(): Promise<void> {
+		await this.createButtons(this.app);
+		await this.createBaseTitle(this.app);
+		await this.createEntities();
+		await this.initSystems();
+		await this.initDust();
+
+		this.app.ticker.add((ticker) => {
+			//!DEBUG
+			/* console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
+				id,
+				type: entity.constructor.name
+			}))); */
+
+			const frameData: FrameData = {
+				deltaTime: ticker.deltaTime
+			};
+		
+			this.systems.forEach(system => {
+				system.update(this.entities, frameData);
+			});
+		});
+	}
+
+	createBaseTitle(app: Application) {
+		['anatol-mn', 'Anatol', 'anatol', 'Anatol MN'];
+		
+		const block1 = new Graphics();
+		block1.rect(0, 0, this.width, this.height);
+		block1.x = 0;
+		block1.y = 0;
+		block1.fill(0x151515);
+		this.renderLayers.logo.addChild(block1);
+
+		const titleText = new Text({
+			text: 'P   NG',
+			style: {
+			fill: GAME_COLORS.white,
+			fontSize: 300,
+			fontFamily: 'anatol-mn',
+			}
+		});
+		titleText.anchor.set(0.5);
+		titleText.x = app.screen.width / 2;
+		titleText.y = app.screen.height / 4;
+	
+		this.renderLayers.logo.addChild(titleText);
+
+		const block = new Graphics();
+		block.rect(0, 0, this.width, 80);
+		block.x = 0;
+		block.y = this.height / 8;
+		block.fill(0x151515);
+		this.renderLayers.logo.addChild(block);
+	}
+
+	createButtons(app: Application) {
+		const buttons: menuUtils.ButtonConfig[] = [
+			{
+				text: 'Start Game',
+				onClick: async () => {
+					console.log("Starting game...");
+					
+					this.cleanup();
+					
+					const game = new PongGame(app);
+					await game.init();
+				}
+			},
+			{
+				text: 'Placeholder 1',
+				onClick: () => {
+					console.log('Placeholder 1 clicked');
+				}
+			},
+			{
+				text: 'Placeholder 2',
+				onClick: () => {
+					console.log('Placeholder 2 clicked');
+				}
+			}
+		];
+	
+		buttons.forEach((buttonConfig, index) => {
+			let color: number = 0;
+	
+			switch(index) {
+				case (0): 
+					color = GAME_COLORS.green;
+					break;
+				case (1):
+					color = GAME_COLORS.rose;
+					break;
+				case (2):
+					color = GAME_COLORS.marine;
+					break;
+			}
+			const button = menuUtils.createButton(buttonConfig.text, this.buttonWidth, this.buttonHeight, color);
+			
+			button.x = (app.screen.width - this.buttonWidth) / 2;
+			button.y = (app.screen.height / 2) + (index * (this.buttonHeight + this.buttonSpacing));
+			
+			button.on('pointerdown', (event: FederatedPointerEvent) => {
+				buttonConfig.onClick();
+			});
+	
+			this.menuContainer.addChild(button);
+		});
+	}
+
+	async createEntities(): Promise<void>  {
+		this.createBoundingBoxes();
+		
+		// Create Postprocessing Layer
+		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
+		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
+		this.renderLayers.pp.addChild(ppRender.graphic);
+		this.entities.push(postProcessingLayer);
+	}
+
+	initSystems(): void {
+		const renderSystem = new MenuRenderSystem();
+		//const animationSystem = new MenuAnimationSystem(this);
+		const particleSystem = new MenuParticleSystem(this);
+		const postProcessingSystem = new MenuPostProcessingSystem();
+		
+		this.systems.push(renderSystem);
+		//this.systems.push(animationSystem);
+		this.systems.push(particleSystem);
+		this.systems.push(postProcessingSystem);
+	}
+
+	addEntity(entity: Entity): void {
+		this.entities.push(entity);
+		let targetLayer = this.renderLayers.midground;
+	
+		if (entity.layer) {
+			switch(entity.layer) {
+				case 'background': targetLayer = this.renderLayers.background; break;
+				case 'foreground': targetLayer = this.renderLayers.foreground; break;
+			}
+		}
+	
+		const render = entity.getComponent('render') as RenderComponent;
+		if (render?.graphic) {
+			targetLayer.addChild(render.graphic);
+		}
+		
+		const text = entity.getComponent('text') as TextComponent;
+		if (text?.getRenderable) {
+			targetLayer.addChild(text.getRenderable());
+		}
+	}
+
+	removeEntity(entityId: string): void {
+		const index = this.entities.findIndex(e => e.id === entityId);
+		if (index !== -1) {
+			const entity = this.entities[index];
+
+			const render = entity.getComponent('render') as RenderComponent;
+			if (render) {
+				render.graphic.destroy();
+			}
+
+			const text = entity.getComponent('text') as TextComponent;
+			if (text) {
+				text.getRenderable().destroy;
+			}
+
+			this.entities.splice(index, 1);
+		}
+	}
+
+	initDust() {
+		MenuParticleSpawner.setAmbientDustDensity(60, 10);
+
+		MenuParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
+
+		MenuParticleSpawner.setAmbientDustSize(5, 12);
+
+		MenuParticleSpawner.setAmbientDustLifetime(200, 260);
+
+		MenuParticleSpawner.setAmbientDustAlpha(0.3, 0.5);
+
+		MenuParticleSpawner.setAmbientDustDriftSpeed(3);
+
+		MenuParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
+	}
+	
+	createBoundingBoxes() {
+		const boundingBoxA = new Graphics();
+		boundingBoxA.rect(0, 0, this.width, this.height);
+		boundingBoxA.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		const boundingBoxB = new Graphics();
+		boundingBoxB.rect(0, 0, this.width, this.height);
+		boundingBoxB.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		const boundingBoxC = new Graphics();
+		boundingBoxC.rect(0, 0, this.width, this.height);
+		boundingBoxC.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		const boundingBoxD = new Graphics();
+		boundingBoxD.rect(0, 0, this.width, this.height);
+		boundingBoxD.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		const boundingBoxE = new Graphics();
+		boundingBoxE.rect(0, 0, this.width, this.height);
+		boundingBoxE.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		const boundingBoxF = new Graphics();
+		boundingBoxF.rect(0, 0, this.width, this.height);
+		boundingBoxF.stroke({width: 0.1, color: GAME_COLORS.white});
+
+		this.renderLayers.logo.addChild(boundingBoxA);
+		this.renderLayers.background.addChild(boundingBoxB);
+		this.renderLayers.midground.addChild(boundingBoxC);
+		this.renderLayers.foreground.addChild(boundingBoxD);
+		this.menuContainer.addChild(boundingBoxE);
+		this.renderLayers.pp.addChild(boundingBoxF);
+		
+	}
+
+	cleanup(): void {
+		console.log("Cleaning up menu...");
+		
+		this.systems.forEach(system => {
+			if ('cleanup' in system && typeof system.cleanup === 'function') {
+				(system as any).cleanup();
+			}
+		});
+		this.systems = [];
+		
+		this.entities.forEach(entity => {
+			const render = entity.getComponent('render') as RenderComponent;
+			if (render && render.graphic) {
+				render.graphic.destroy();
+			}
+			
+			const text = entity.getComponent('text') as TextComponent;
+			if (text && text.getRenderable()) {
+				text.getRenderable().destroy();
+			}
+		});
+		this.entities = [];
+		
+		Object.values(this.renderLayers).forEach(layer => {
+			if (layer.parent) {
+				layer.parent.removeChild(layer);
+			}
+			layer.destroy({ children: true });
+		});
+		
+		if (this.menuContainer.parent) {
+			this.menuContainer.parent.removeChild(this.menuContainer);
+		}
+		this.menuContainer.destroy({ children: true });
+		
+		if (this.visualRoot.parent) {
+			this.visualRoot.parent.removeChild(this.visualRoot);
+		}
+		this.visualRoot.destroy({ children: true });
+		
+		this.app.stage.removeChildren();
+		
+		this.app.stage.children.forEach(child => {
+			if (child && child.destroy) {
+				child.destroy({ children: true });
+			}
+		});
+		
+		console.log("Menu cleanup complete");
+	}
+}
