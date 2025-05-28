@@ -40,13 +40,15 @@ async function signupHandler(request, reply) {
     // MORE DEBUGGIng
     console.log('[BACKEND - signupHandler] Preparing response with:', {
         userId: newUserId,
-        username: username
+        username: username,
+		email: email
     })
     console.log('[BACKEND - signupHandler] Final response object before sending:', {
             success: true,
             message: 'User registered successfully',
             userId: newUserId,
-            username: username
+            username: username,
+			email: email
         });
     return reply.status(201).send({
       success: true,
@@ -120,9 +122,6 @@ async function signinHandler(request, reply) {
 
     }
 };
-
-
-// ADD BLOCKCHAIN handlers
 
 async function logoutHandler(request, reply) {
 	try {

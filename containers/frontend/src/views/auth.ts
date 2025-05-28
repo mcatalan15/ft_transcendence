@@ -59,21 +59,50 @@ export function showAuth(container: HTMLElement): void {
         }
 
         // --- 2FA Setup Section ---
-        const twoFaSection = document.createElement('div');
-        twoFaSection.className = 'twofa-section';
-        twoFaSection.innerHTML = `
-            <h3>${i18n.t('Two-Factor Authentication Setup')}</h3>
-            <p>${i18n.t('Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).')}</p>
-            <div class="qr-code-display">
-                <p>${i18n.t('Loading QR code...')}</p>
-            </div>
-            <p>${i18n.t('Or manually enter this secret key:')} <strong class="secret-key">${i18n.t('Loading secret...')}</strong></p>
-            <div class="verification-input">
-                <input type="text" id="twoFaTokenInput" placeholder="${i18n.t('Enter 6-digit code')}" maxlength="6">
-                <button id="verifyTwoFaBtn">${i18n.t('Verify 2FA')}</button>
-                <p class="verification-status"></p>
-            </div>
-        `;
+		const twoFaSection = document.createElement('div');
+		twoFaSection.className = 'fixed inset-0 bg-neutral-900 text-amber-50 overflow-hidden';
+		twoFaSection.innerHTML = `
+		<div class="relative h-full flex flex-col">
+        	<div class="pt-6 w-full flex justify-center gap-x-4 z-30">
+            	<div class="h-screen flex items-center justify-center text-amber-50 bg-gradient-to-br from-neutral-900">
+                	<div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6">
+                    	<h2 class="text-2xl font-semibold text-center">${i18n.t('Two-Factor Authentication Setup')}</h2>
+
+	                    <div class="space-y-4">
+    	                    <p class="text-neutral-700">${i18n.t('Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).')}</p>
+	
+    	                    <div class="qr-code-display flex justify-center items-center bg-white p-4 rounded border border-neutral-200">
+        	                    <p class="text-neutral-500">${i18n.t('Loading QR code...')}</p>
+            	            </div>
+                        
+                	        <p class="text-neutral-700">
+                    	        ${i18n.t('Or manually enter this secret key:')} 
+                        	    <strong class="secret-key block bg-neutral-100 p-2 rounded mt-1 text-center font-mono">${i18n.t('Loading secret...')}</strong>
+                      		</p>
+                        
+                        	<div class="verification-input space-y-2">
+                            	<input 
+									type="text" 
+									id="twoFaTokenInput" 
+									placeholder="${i18n.t('Enter 6-digit code')}" 
+									maxlength="6"
+									class="w-full border px-3 py-2 rounded text-center font-mono tracking-widest"
+								>
+								<button 
+									id="verifyTwoFaBtn" 
+									class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+								>
+									${i18n.t('Verify 2FA')}
+								</button>
+								<p class="verification-status text-sm text-center"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		// authDiv.appendChild(twoFaSection);
         authDiv.appendChild(twoFaSection);
 
         // Get references to the elements we just created
@@ -99,7 +128,6 @@ export function showAuth(container: HTMLElement): void {
                 const response = await fetch('/api/auth/setup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // !!! Pass the actual user data here !!!
                     body: JSON.stringify({ username: actualUsername, userId: actualUserId })
                 });
 
@@ -158,7 +186,8 @@ export function showAuth(container: HTMLElement): void {
                     verificationStatus.style.color = 'green';
                     // Optional: Disable input/button after successful verification
                     tokenInput.disabled = true;
-                    verifyBtn.disabled = true;
+                    // verifyBtn.disabled = true;
+					window.location.href = '/signin'; // Redirect to sign-in after 2FA setup
                 } else {
                     verificationStatus.textContent = i18n.t(data.message || 'Verification failed. Please try again.');
                     verificationStatus.style.color = 'red';
@@ -169,30 +198,99 @@ export function showAuth(container: HTMLElement): void {
                 verificationStatus.style.color = 'red';
             }
         });
-
-        // --- Continue Button ---
-        const continueButton = document.createElement('button');
-        continueButton.textContent = i18n.t('Continue to App');
-        continueButton.addEventListener('click', () => {
-            // After successful 2FA setup, the user should typically sign in
-            // For production, ensure 2FA is verified before allowing navigation.
-            window.location.href = '/signin'; // Redirect to sign-in after 2FA setup
-        });
-        authDiv.appendChild(continueButton);
-
     } else if (fromPage === 'signin') {
-        console.log('Showing signin success');
-        const message = document.createElement('p');
-        message.textContent = i18n.t('You have successfully signed in!');
+		console.log('Showing signin with 2FA verification');
 
-        const continueButton = document.createElement('button');
-        continueButton.textContent = i18n.t('Continue to App');
-        continueButton.addEventListener('click', () => {
-            window.location.href = '/home';
-        });
+		// Retrieve user data from sessionStorage
+		const userId = sessionStorage.getItem('userId');
+		const username = sessionStorage.getItem('username');
 
-        authDiv.appendChild(message);
-        authDiv.appendChild(continueButton);
+		if (!userId || !username) {
+			console.error('User data missing in sessionStorage');
+			window.location.href = '/signin';
+			return;
+		}
+
+		// Create the 2FA verification box (similar to login flow)
+		const twoFaBox = document.createElement('div');
+		twoFaBox.className = 'bg-white rounded-lg shadow-md p-6 max-w-md w-full mx-auto';
+		twoFaBox.innerHTML = `
+        <h2 class="text-xl font-semibold mb-4 text-center">${i18n.t('Two-Factor Verification')}</h2>
+        <p class="text-gray-600 mb-4">${i18n.t('Please enter your 6-digit authentication code')}</p>
+        
+        <div class="space-y-4">
+            <input 
+                type="text" 
+                id="twoFaTokenInput" 
+                placeholder="${i18n.t('123456')}" 
+                maxlength="6"
+                class="w-full px-4 py-2 border rounded-lg text-center text-lg tracking-widest"
+            >
+            <button
+                id="verifyTwoFaBtn"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
+            >
+                ${i18n.t('Verify')}
+            </button>
+            <p id="verificationStatus" class="text-sm text-center"></p>
+        </div>
+    `;
+
+		authDiv.appendChild(twoFaBox);
+
+		// Get DOM elements
+		const tokenInput = twoFaBox.querySelector('#twoFaTokenInput') as HTMLInputElement;
+		const verifyBtn = twoFaBox.querySelector('#verifyTwoFaBtn') as HTMLButtonElement;
+		const verificationStatus = twoFaBox.querySelector('#verificationStatus') as HTMLParagraphElement;
+
+		// 2FA Verification handler
+		verifyBtn.addEventListener('click', async () => {
+			const token = tokenInput.value.trim();
+
+			if (!/^\d{6}$/.test(token)) {
+				verificationStatus.textContent = i18n.t('Please enter a valid 6-digit code');
+				verificationStatus.className = 'text-sm text-center text-red-500';
+				return;
+			}
+
+			try {
+				verifyBtn.disabled = true;
+				verificationStatus.textContent = i18n.t('Verifying...');
+				verificationStatus.className = 'text-sm text-center text-gray-500';
+
+				const response = await fetch('/api/auth/verify', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						userId,
+						token
+					})
+				});
+
+				const data = await response.json();
+
+				if (response.ok && data.verified) {
+					verificationStatus.textContent = i18n.t('Verification successful!');
+					verificationStatus.className = 'text-sm text-center text-green-500';
+					setTimeout(() => {
+						window.location.href = '/home';
+					}, 1000);
+				} else {
+					throw new Error(data.message || 'Verification failed');
+				}
+			} catch (error) {
+				verificationStatus.textContent = i18n.t(error.message);
+				verificationStatus.className = 'text-sm text-center text-red-500';
+				verifyBtn.disabled = false;
+			}
+		});
+
+		// Optional: Auto-submit when 6 digits are entered
+		tokenInput.addEventListener('input', () => {
+			if (tokenInput.value.length === 6) {
+				verifyBtn.click();
+			}
+		});
     } else {
         // Default view if direct access to auth page
         console.log('Showing default auth view, fromPage:', fromPage);

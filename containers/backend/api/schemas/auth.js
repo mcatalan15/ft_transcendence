@@ -18,7 +18,8 @@ const signupSchema = {
         success: { type: 'boolean' },
         message: { type: 'string' },
         userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
-        username: { type: 'string', description: 'Username of the new user' } // <--- ADD THIS
+        username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
+		email: { type: 'string', description: 'Email of the new user' }
       },
       example: {
         success: true,
