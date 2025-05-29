@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 15:14:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:04:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,11 @@ export const GAME_COLORS = {
 	violetParticle: 0xD946EF,
 	green: 0x2ea17c,
 	greenParticle: 0x5EEAD4,
-	marine: 0x204c93
+	marine: 0x204c93,
+	menuBlue: 0x009fd6,
+	menuGreen: 0x73ae16,
+	menuOrange: 0xef6210,
+	menuPink: 0xfd3480,
 }
 
 export interface DepthLineOptions {
@@ -179,6 +183,15 @@ export interface RuinDepthLineOptions extends DepthLineOptions {
 export type AnimationOptions = {
 	initialized?: boolean;
     initialY?: number;
+	initialX?: number;
+    backdropInitialX?: number;
+    backdropInitialY?: number;
+    textInitialX?: number;
+    textInitialY?: number;
+	ballInitialX?: number;
+	ballInitialY?: number;
+    blockInitialX?: number;
+    blockInitialY?: number;
     floatAmplitude?: number;
     floatSpeed?: number;
     floatOffset?: number;

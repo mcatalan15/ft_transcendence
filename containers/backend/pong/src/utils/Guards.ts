@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:57:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 12:25:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ import { BurstBall } from '../entities/balls/BurstBall';
 
 import { Shield } from '../entities/background/Shield';
 import { Bullet } from '../entities/Bullet';
+
+import { Component } from '../engine/Component';
+import { RenderComponent } from '../components/RenderComponent';
 
 import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
@@ -151,6 +154,10 @@ export function isRectangleCut(cut: CrossCut): cut is RectangleCrossCut {
 
 export function isSawCut(cut: CrossCut): cut is LightningCrossCut {
 	return cut instanceof LightningCrossCut;
+}
+
+export function isRenderComponent(component: Component): component is RenderComponent {
+	return component instanceof RenderComponent
 }
 
 export function isAnimationSystem(system: System): system is AnimationSystem {

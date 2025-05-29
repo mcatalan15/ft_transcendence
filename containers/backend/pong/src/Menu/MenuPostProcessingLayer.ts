@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 19:22:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:49:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ export class MenuPostProcessingLayer extends Entity {
         const crtFilter = new CRTFilter({
             curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,    // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
             lineWidth: 0.05,         // Thickness of scanlines (default: 1.0)
-            lineContrast: 0.2,      // Contrast between scanlines and base image (default: 0.25)
+            lineContrast: 0.15,      // Contrast between scanlines and base image (default: 0.25)
             verticalLine: false,    // false = horizontal lines, true = vertical scanlines
             noise: 0.1,             // Noise overlay intensity (default: 0.3)
             noiseSize: 0.2,         // Size of noise grain (default: 1.0)
@@ -83,6 +83,5 @@ export class MenuPostProcessingLayer extends Entity {
 
         menu.visualRoot.filters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
         menu.menuContainer.filters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
-        //menu.renderLayers.background.filters = [depthLineGlow, bulgePinch, depthLineCRTFilter];
     }
 }

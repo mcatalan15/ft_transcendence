@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 15:22:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 15:46:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ import { Menu } from './Menu/Menu';
     width: 1800,
     height: 750,
     antialias: true,
-    resolution: 2,
+    resolution: 2                                                                                                                                                                                                                                                                                                                     ,
     autoDensity: true,
   });
 

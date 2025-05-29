@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 19:19:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:02:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ import { PongGame } from '../engine/Game';
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
+import { Title } from './Title';
+import { Subtitle } from './Subtitle';
 
 import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
 
@@ -39,6 +41,7 @@ import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
 
 import { GAME_COLORS, FrameData } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
+import { isRenderComponent } from '../utils/Guards';
 
 export class Menu{
 	app: Application;
@@ -49,10 +52,11 @@ export class Menu{
 	menuContainer: Container;
 	buttonWidth: number;
 	buttonHeight:number = 60;
-	buttonSpacing: number = 0;
+	buttonSpacing: number = 20;
 	renderLayers: {
 		blackEnd: Container;
 		logo: Container;
+		subtitle: Container;
 		background: Container;
 		midground: Container;
 		foreground: Container;
@@ -70,6 +74,7 @@ export class Menu{
 		this.renderLayers = {
 			blackEnd: new Container(),
 			logo: new Container(),
+			subtitle: new Container(),
 			background: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
@@ -86,6 +91,7 @@ export class Menu{
 		this.app.stage.addChild(this.menuContainer);
 	
 		this.visualRoot.addChild(this.renderLayers.logo);
+		this.visualRoot.addChild(this.renderLayers.subtitle);
 		this.visualRoot.addChild(this.renderLayers.background);
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.foreground);
@@ -96,7 +102,6 @@ export class Menu{
 
 	async init(): Promise<void> {
 		await this.createButtons(this.app);
-		await this.createBaseTitle(this.app);
 		await this.createEntities();
 		await this.initSystems();
 		await this.initDust();
@@ -118,42 +123,10 @@ export class Menu{
 		});
 	}
 
-	createBaseTitle(app: Application) {
-		['anatol-mn', 'Anatol', 'anatol', 'Anatol MN'];
-		
-		const block1 = new Graphics();
-		block1.rect(0, 0, this.width, this.height);
-		block1.x = 0;
-		block1.y = 0;
-		block1.fill(0x151515);
-		this.renderLayers.logo.addChild(block1);
-
-		const titleText = new Text({
-			text: 'P   NG',
-			style: {
-			fill: GAME_COLORS.white,
-			fontSize: 300,
-			fontFamily: 'anatol-mn',
-			}
-		});
-		titleText.anchor.set(0.5);
-		titleText.x = app.screen.width / 2;
-		titleText.y = app.screen.height / 4;
-	
-		this.renderLayers.logo.addChild(titleText);
-
-		const block = new Graphics();
-		block.rect(0, 0, this.width, 80);
-		block.x = 0;
-		block.y = this.height / 8;
-		block.fill(0x151515);
-		this.renderLayers.logo.addChild(block);
-	}
-
 	createButtons(app: Application) {
 		const buttons: menuUtils.ButtonConfig[] = [
 			{
-				text: 'Start Game',
+				text: 'START',
 				onClick: async () => {
 					console.log("Starting game...");
 					
@@ -164,15 +137,21 @@ export class Menu{
 				}
 			},
 			{
-				text: 'Placeholder 1',
+				text: 'GLOSSARY',
 				onClick: () => {
 					console.log('Placeholder 1 clicked');
 				}
 			},
 			{
-				text: 'Placeholder 2',
+				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Placeholder 2 clicked');
+				}
+			},
+			{
+				text: 'ABOUT',
+				onClick: () => {
+					console.log('Placeholder 3 clicked');
 				}
 			}
 		];
@@ -182,19 +161,22 @@ export class Menu{
 	
 			switch(index) {
 				case (0): 
-					color = GAME_COLORS.green;
+					color = GAME_COLORS.menuBlue;
 					break;
 				case (1):
-					color = GAME_COLORS.rose;
+					color = GAME_COLORS.menuGreen;
 					break;
 				case (2):
-					color = GAME_COLORS.marine;
+					color = GAME_COLORS.menuOrange;
+					break;
+				case (3):
+					color = GAME_COLORS.menuPink;
 					break;
 			}
-			const button = menuUtils.createButton(buttonConfig.text, this.buttonWidth, this.buttonHeight, color);
+			const button = menuUtils.createButton(buttonConfig.text, this.buttonWidth, this.buttonHeight, color, index);
 			
 			button.x = (app.screen.width - this.buttonWidth) / 2;
-			button.y = (app.screen.height / 2) + (index * (this.buttonHeight + this.buttonSpacing));
+			button.y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonSpacing));
 			
 			button.on('pointerdown', (event: FederatedPointerEvent) => {
 				buttonConfig.onClick();
@@ -207,21 +189,65 @@ export class Menu{
 	async createEntities(): Promise<void>  {
 		this.createBoundingBoxes();
 		
+		// Create title
+		const title = new Title("title", "menuContainer", this);
+		let titleBackdrop;
+		let titleText;
+		let titleBlock;
+		let titleBall;
+		for (const [key, component] of title.components) {
+			if (isRenderComponent(component)) {
+				if (component.instanceId === 'backDrop') titleBackdrop = component;
+				else if (component.instanceId === 'textRender') titleText = component;
+				else if (component.instanceId === 'block') titleBlock = component;
+				else if (component.instanceId === 'ballRender') titleBall = component;
+			}
+		}
+		this.renderLayers.logo.addChild(titleBackdrop!.graphic);
+		this.renderLayers.logo.addChild(titleText!.graphic);
+		//this.renderLayers.logo.addChild(titleBlock!.graphic);
+		this.renderLayers.logo.addChild(titleBall!.graphic);
+		this.entities.push(title);
+
+		// Create subtitle
+		const subtitle = new Subtitle("subtitle", "menuContainer", this);
+		let line1;
+		let line2;
+		let line3;
+		for (const [key, component] of subtitle.components) {
+			if (isRenderComponent(component)) {
+				if (component.instanceId === 'line1') line1 = component;
+				if (component.instanceId === 'line2') line2 = component;
+				if (component.instanceId === 'line3') line3 = component;
+			}
+		}
+		this.renderLayers.subtitle.addChild(line1!.graphic);
+		this.renderLayers.subtitle.addChild(line2!.graphic);
+		this.renderLayers.subtitle.addChild(line3!.graphic);
+		this.entities.push(subtitle);
+
+
 		// Create Postprocessing Layer
 		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
 		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
 		this.renderLayers.pp.addChild(ppRender.graphic);
 		this.entities.push(postProcessingLayer);
+
+		// Create frame
+		const frame = new Graphics();
+		frame.rect(0, 0, this.width, this.height);
+		frame.stroke({ color: GAME_COLORS.white, width: 75});
+		this.menuContainer.addChild(frame);
 	}
 
 	initSystems(): void {
 		const renderSystem = new MenuRenderSystem();
-		//const animationSystem = new MenuAnimationSystem(this);
+		const animationSystem = new MenuAnimationSystem(this);
 		const particleSystem = new MenuParticleSystem(this);
 		const postProcessingSystem = new MenuPostProcessingSystem();
 		
 		this.systems.push(renderSystem);
-		//this.systems.push(animationSystem);
+		this.systems.push(animationSystem);
 		this.systems.push(particleSystem);
 		this.systems.push(postProcessingSystem);
 	}
