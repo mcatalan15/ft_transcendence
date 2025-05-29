@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 17:46:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:36:25 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ export class PongGame {
 	initSounds(): void {
 		this.sounds = {
 			bgm: new Howl({
-				src: ['src/assets/music/bgmFiltered01.mp3'],
+				src: ['src/assets/sfx/music/bgmFiltered01.mp3'],
 				preload: true,
 				loop: true,
 				volume: 0.5
