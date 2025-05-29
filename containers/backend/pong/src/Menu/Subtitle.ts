@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Subtitle.ts                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 18:57:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:57:36 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ export class Subtitle extends Entity {
 					fontWeight: 'bold'
 				},
 				{
-					text: "eva + hugo + nico + marc x ft_transcendence", 
+					text: "eva + hugo + marc + nico x ft_transcendence", 
 					fontSize: 10,
 					fontWeight: 'bold'
 				},
