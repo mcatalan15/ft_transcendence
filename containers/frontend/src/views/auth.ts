@@ -31,7 +31,7 @@ export function showAuth(container: HTMLElement): void {
     // --- Variables to hold the actual user data ---
     let actualUserId = sessionStorage.getItem('userId');
     let actualUsername = sessionStorage.getItem('username');
-	let actualEmail = sessionStorage.getItem('email');
+    let actualEmail = sessionStorage.getItem('email');
 
     // Different content based on where the user came from
     if (fromPage === 'signup') {
