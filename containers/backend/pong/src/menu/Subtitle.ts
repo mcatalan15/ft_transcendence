@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Subtitle.ts                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 20:57:36 by marvin           ###   ########.fr       */
+/*   Updated: 2025/05/30 10:03:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,14 @@ export class Subtitle extends Entity {
 				{
 					text: "MCMLXXII - MMXXV",
 					fontSize: 10,
-					fontWeight: 'light',
+					fontWeight: 'bold',
 					offsetY: 25
+				},
+				{
+					text: "42bcn",
+					fontSize: 8,
+					fontWeight: 'bold',
+					offsetY: 45
 				}
 			],
 			spacing: 30,
@@ -75,7 +81,7 @@ export class Subtitle extends Entity {
 
 	private createSubtitleLines(): void {
 		const baseX = this.config.baseX ?? (this.menu.app.screen.width - this.config.marginFromEdge!);
-		const baseY = this.config.baseY ?? (this.menu.app.screen.height / 1.5);
+		const baseY = this.config.baseY ?? (this.menu.app.screen.height / 1.5 + 0);
 
 		this.config.lines.forEach((lineConfig, index) => {
 			const yPosition = this.calculateYPosition(baseY, index, lineConfig.offsetY);

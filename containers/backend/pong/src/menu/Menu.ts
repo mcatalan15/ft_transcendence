@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 09:54:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:48:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ export class Menu{
 	async init(): Promise<void> {
 		await this.createButtons(this.app);
 		await this.createEntities();
+		await this.createBallButton();
 		await this.initSystems();
 		await this.initDust();
 
@@ -186,6 +187,19 @@ export class Menu{
 		});
 	}
 
+	createBallButton() {
+		const button = menuUtils.createBallButton(this.width, this.height, GAME_COLORS.orange);
+		
+		button.on('pointerdown', (event: FederatedPointerEvent) => {
+			button.onClick();
+		});
+	
+		button.x = (this.app.screen.width - this.buttonWidth) / 2;
+		button.y = (this.app.screen.height / 3);
+		
+		this.menuContainer.addChild(button);
+	}
+
 	async createEntities(): Promise<void>  {
 		this.createBoundingBoxes();
 		
@@ -206,7 +220,7 @@ export class Menu{
 		this.renderLayers.logo.addChild(titleBackdrop!.graphic);
 		this.renderLayers.logo.addChild(titleText!.graphic);
 		//this.renderLayers.logo.addChild(titleBlock!.graphic);
-		this.renderLayers.logo.addChild(titleBall!.graphic);
+		//this.renderLayers.logo.addChild(titleBall!.graphic);
 		this.entities.push(title);
 
 		// Create subtitle
@@ -214,16 +228,19 @@ export class Menu{
 		let line1;
 		let line2;
 		let line3;
+		let line4;
 		for (const [key, component] of subtitle.components) {
 			if (isRenderComponent(component)) {
 				if (component.instanceId === 'line1') line1 = component;
 				if (component.instanceId === 'line2') line2 = component;
 				if (component.instanceId === 'line3') line3 = component;
+				if (component.instanceId === 'line4') line4 = component;
 			}
 		}
 		this.renderLayers.subtitle.addChild(line1!.graphic);
 		this.renderLayers.subtitle.addChild(line2!.graphic);
 		this.renderLayers.subtitle.addChild(line3!.graphic);
+		this.renderLayers.subtitle.addChild(line4!.graphic);
 		this.entities.push(subtitle);
 
 
