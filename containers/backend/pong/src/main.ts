@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 15:46:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 09:53:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Application } from "pixi.js";
-import { Menu } from './Menu/Menu';
+import { Menu } from './menu/Menu';
 
 (async () => {
   const app = new Application();

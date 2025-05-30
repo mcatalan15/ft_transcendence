@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 19:02:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 09:54:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ import { MenuParticleSpawner } from './MenuParticleSpawner';
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
 import { MenuRenderSystem } from './MenuRenderSystem';
-import { MenuAnimationSystem } from '../Menu/MenuAnimationSystem';
+import { MenuAnimationSystem } from './MenuAnimationSystem';
 import { MenuParticleSystem } from './MenuParticleSystem';
 import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
 
