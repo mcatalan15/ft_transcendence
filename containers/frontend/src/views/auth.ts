@@ -179,7 +179,6 @@ export function showAuth(container: HTMLElement): void {
                 const response = await fetch('/api/auth/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // !!! Pass the actual user data here !!!
                     body: JSON.stringify({ userId: actualUserId, token })
                 });
 
@@ -218,27 +217,28 @@ export function showAuth(container: HTMLElement): void {
 		// Create the 2FA verification box (similar to login flow)
 		const twoFaBox = document.createElement('div');
 		twoFaBox.className = 'bg-white rounded-lg shadow-md p-6 max-w-md w-full mx-auto';
+		twoFaBox.className = 'bg-amber-50 rounded-xl shadow-xl p-6 max-w-md w-full mx-auto';
 		twoFaBox.innerHTML = `
-        <h2 class="text-xl font-semibold mb-4 text-center">${i18n.t('Two-Factor Verification')}</h2>
-        <p class="text-gray-600 mb-4">${i18n.t('Please enter your 6-digit authentication code')}</p>
-        
-        <div class="space-y-4">
-            <input 
-                type="text" 
-                id="twoFaTokenInput" 
-                placeholder="${i18n.t('123456')}" 
-                maxlength="6"
-                class="w-full px-4 py-2 border rounded-lg text-center text-lg tracking-widest"
-            >
-            <button
-                id="verifyTwoFaBtn"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
-            >
-                ${i18n.t('Verify')}
-            </button>
-            <p id="verificationStatus" class="text-sm text-center"></p>
-        </div>
-    `;
+		<h2 class="text-xl font-semibold mb-4 text-center text-neutral-900">${i18n.t('Two-Factor Verification')}</h2>
+		<p class="text-neutral-700 mb-4">${i18n.t('Please enter your 6-digit authentication code')}</p>
+		
+		<div class="space-y-4">
+			<input 
+				type="text" 
+				id="twoFaTokenInput" 
+				placeholder="${i18n.t('123456')}" 
+				maxlength="6"
+				class="w-full px-4 py-2 border rounded-lg text-center text-lg tracking-widest text-neutral-900"
+			>
+			<button
+				id="verifyTwoFaBtn"
+				class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
+			>
+				${i18n.t('Verify')}
+			</button>
+			<p id="verificationStatus" class="text-sm text-center text-neutral-700"></p>
+		</div>
+		`;
 
 		authDiv.appendChild(twoFaBox);
 
