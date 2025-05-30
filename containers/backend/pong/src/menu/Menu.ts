@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 16:08:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 19:47:33 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -333,7 +333,7 @@ export class Menu{
 	}
 
 	initDust() {
-		MenuParticleSpawner.setAmbientDustDensity(60, 10);
+		MenuParticleSpawner.setAmbientDustDensity(60, 20);
 
 		MenuParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
 
@@ -437,7 +437,7 @@ export class Menu{
 	initSounds(): void {
 		this.sounds = {
 			menuBGM: new Howl({
-				src: ['src/assets/sfx/music/menu.wav'],
+				src: ['src/assets/sfx/music/menuFiltered01.mp3'],
 				preload: true,
 				loop: true,
 				volume: 0.5
