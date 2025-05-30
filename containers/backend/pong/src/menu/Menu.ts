@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 10:48:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 16:08:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { Title } from './Title';
 import { Subtitle } from './Subtitle';
+import { BallButton } from './BallButton';
 
 import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
 
@@ -31,6 +32,7 @@ import { TextComponent } from '../components/TextComponent';
 
 // Import spawners
 import { MenuParticleSpawner } from './MenuParticleSpawner';
+import { MenuBallSpawner } from './MenuBallSpawner';
 
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
@@ -39,14 +41,19 @@ import { MenuAnimationSystem } from './MenuAnimationSystem';
 import { MenuParticleSystem } from './MenuParticleSystem';
 import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
 
-import { GAME_COLORS, FrameData } from '../utils/Types';
+import { GAME_COLORS, FrameData, MenuSounds } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { isRenderComponent } from '../utils/Guards';
+import { MenuPhysicsSystem } from './MenuPhysicsSystem';
+import { MenuVFXSystem } from './MenuVFXSystem';
+import { MenuLineSystem } from './MenuLineSystem';
 
 export class Menu{
 	app: Application;
 	width: number;
 	height: number;
+	ballAmount: number = 0;
+	maxBalls: number = 20;
 	entities: Entity[] = [];
     systems: System[] = [];
 	menuContainer: Container;
@@ -56,13 +63,14 @@ export class Menu{
 	renderLayers: {
 		blackEnd: Container;
 		logo: Container;
+		midground: Container;
 		subtitle: Container;
 		background: Container;
-		midground: Container;
 		foreground: Container;
 		pp: Container;
 	};
 	visualRoot: Container;
+	sounds!: MenuSounds;
 
 	constructor(app: Application) {
 		this.app = app;
@@ -73,9 +81,9 @@ export class Menu{
 
 		this.renderLayers = {
 			blackEnd: new Container(),
+			background: new Container(),
 			logo: new Container(),
 			subtitle: new Container(),
-			background: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
 			pp: new Container(),
@@ -90,14 +98,15 @@ export class Menu{
 		this.app.stage.addChild(this.visualRoot);
 		this.app.stage.addChild(this.menuContainer);
 	
-		this.visualRoot.addChild(this.renderLayers.logo);
-		this.visualRoot.addChild(this.renderLayers.subtitle);
 		this.visualRoot.addChild(this.renderLayers.background);
+		this.visualRoot.addChild(this.renderLayers.logo);
 		this.visualRoot.addChild(this.renderLayers.midground);
+		this.visualRoot.addChild(this.renderLayers.subtitle);
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
 
 		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
+		this.initSounds();
 	}
 
 	async init(): Promise<void> {
@@ -106,6 +115,8 @@ export class Menu{
 		await this.createBallButton();
 		await this.initSystems();
 		await this.initDust();
+
+		this.sounds.menuBGM.play();
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
@@ -134,6 +145,8 @@ export class Menu{
 					this.cleanup();
 					
 					const game = new PongGame(app);
+					this.sounds.menuConfirm.play();
+					this.sounds.menuBGM.stop();
 					await game.init();
 				}
 			},
@@ -141,18 +154,21 @@ export class Menu{
 				text: 'GLOSSARY',
 				onClick: () => {
 					console.log('Placeholder 1 clicked');
+					this.sounds.menuSelect.play();
 				}
 			},
 			{
 				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Placeholder 2 clicked');
+					this.sounds.menuSelect.play();
 				}
 			},
 			{
 				text: 'ABOUT',
 				onClick: () => {
 					console.log('Placeholder 3 clicked');
+					this.sounds.menuSelect.play();
 				}
 			}
 		];
@@ -174,7 +190,7 @@ export class Menu{
 					color = GAME_COLORS.menuPink;
 					break;
 			}
-			const button = menuUtils.createButton(buttonConfig.text, this.buttonWidth, this.buttonHeight, color, index);
+			const button = menuUtils.createButton(this, buttonConfig.text, this.buttonWidth, this.buttonHeight, color, index);
 			
 			button.x = (app.screen.width - this.buttonWidth) / 2;
 			button.y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonSpacing));
@@ -188,16 +204,16 @@ export class Menu{
 	}
 
 	createBallButton() {
-		const button = menuUtils.createBallButton(this.width, this.height, GAME_COLORS.orange);
-		
-		button.on('pointerdown', (event: FederatedPointerEvent) => {
-			button.onClick();
+		const ballButton = new BallButton('ballButton', 'foreground', this, () => {
+			MenuBallSpawner.spawnDefaultBallInMenu(this);
+			this.sounds.ballClick.play();
 		});
 	
-		button.x = (this.app.screen.width - this.buttonWidth) / 2;
-		button.y = (this.app.screen.height / 3);
-		
-		this.menuContainer.addChild(button);
+		ballButton.setPosition(this.width - 470, 320);
+
+		this.entities.push(ballButton);
+
+		this.renderLayers.foreground.addChild(ballButton.getContainer());
 	}
 
 	async createEntities(): Promise<void>  {
@@ -217,10 +233,10 @@ export class Menu{
 				else if (component.instanceId === 'ballRender') titleBall = component;
 			}
 		}
-		this.renderLayers.logo.addChild(titleBackdrop!.graphic);
+		console.log(titleBlock);
+		this.renderLayers.background.addChild(titleBackdrop!.graphic);
 		this.renderLayers.logo.addChild(titleText!.graphic);
-		//this.renderLayers.logo.addChild(titleBlock!.graphic);
-		//this.renderLayers.logo.addChild(titleBall!.graphic);
+		this.renderLayers.logo.addChild(titleBlock!.graphic);
 		this.entities.push(title);
 
 		// Create subtitle
@@ -262,11 +278,17 @@ export class Menu{
 		const animationSystem = new MenuAnimationSystem(this);
 		const particleSystem = new MenuParticleSystem(this);
 		const postProcessingSystem = new MenuPostProcessingSystem();
+		const physicsSystem = new MenuPhysicsSystem(this);
+		const VFXSystem = new MenuVFXSystem();
+		const lineSystem = new MenuLineSystem(this);
 		
 		this.systems.push(renderSystem);
 		this.systems.push(animationSystem);
 		this.systems.push(particleSystem);
 		this.systems.push(postProcessingSystem);
+		this.systems.push(physicsSystem);
+		this.systems.push(VFXSystem);
+		this.systems.push(lineSystem);
 	}
 
 	addEntity(entity: Entity): void {
@@ -360,6 +382,7 @@ export class Menu{
 		
 	}
 
+	//! EXPAND THIS TO MAKE A DEEP CLEANUP
 	cleanup(): void {
 		console.log("Cleaning up menu...");
 		
@@ -409,5 +432,50 @@ export class Menu{
 		});
 		
 		console.log("Menu cleanup complete");
+	}
+
+	initSounds(): void {
+		this.sounds = {
+			menuBGM: new Howl({
+				src: ['src/assets/sfx/music/menu.wav'],
+				preload: true,
+				loop: true,
+				volume: 0.5
+			}),
+			menuMove: new Howl({
+				src: ['src/assets/sfx/used/shieldBreakFiltered01.mp3'],
+				preload: true,
+				volume: 0.5
+			}),
+			menuSelect: new Howl({ 
+				src: ['src/assets/sfx/used/menuFiltered01.mp3'],
+				preload: true,
+				volume: 0.5,	
+			}),
+			menuConfirm: new Howl({ 
+				src: ['src/assets/sfx/used/menuFiltered02.mp3'],
+				preload: true,
+				volume: 0.5,
+			}),
+			ballClick: new Howl({ 
+				src: ['src/assets/sfx/used/pongFiltered02.mp3'],
+				preload: true,
+				volume: 0.5,
+			}),
+		};
+		
+		// Create a better warm-up mechanism
+		const warmUpAudio = () => {
+			// Only attempt warm-up on user interaction
+			const silence = new Howl({
+				src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'],
+				volume: 0.01
+			});
+			silence.play();
+		};
+		
+		// Add the warm-up to a user interaction event
+		document.addEventListener('click', warmUpAudio, { once: true });
+		document.addEventListener('keydown', warmUpAudio, { once: true });
 	}
 }

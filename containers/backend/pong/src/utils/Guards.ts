@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 12:25:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 16:14:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ import { RenderComponent } from '../components/RenderComponent';
 import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
+import { MenuLine } from '../menu/MenuLine';
 
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;
@@ -78,6 +79,10 @@ export function isBullet(entity: Entity): entity is Bullet {
 
 export function isWall(entity: Entity): entity is Wall {
 	return entity instanceof Wall;
+}
+
+export function isMenuLine(entity: Entity): entity is MenuLine {
+	return entity instanceof MenuLine;
 }
 
 export function isDepthLine(entity: Entity): entity is DepthLine {

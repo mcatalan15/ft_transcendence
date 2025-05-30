@@ -6,11 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 10:49:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 14:54:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Container, Text, Application } from 'pixi.js';
+
+import { Menu } from '../menu/Menu';
 
 import { GAME_COLORS } from './Types';
 
@@ -19,33 +21,36 @@ export interface ButtonConfig {
 	onClick: () => void;
 }
 
-export function createButton(text: string, width: number, height: number, color: number, index: number): Container {
+export function createButton(menu: Menu, text: string, width: number, height: number, color: number, index: number): Container {
 	const button = new Container();
 	button.eventMode = 'static';
 	button.cursor = 'pointer';
+	
+	let isHovered = false;
   
-	// Button background with slanted right edge
 	const bg = new Graphics();
 
-	// Define the points for a trapezoid/parallelogram
 	makeLeftPolygon(bg, width, height, index, color);
-
 	makeMiddlePolygon(bg, width, height, index, color, false);
-
 	button.addChild(bg);
-
 	makeText(button, text, width, height, index, color);
   
 	// Hover effects
 	button.on('pointerenter', () => {
-	  bg.clear();
-	  makeLeftPolygon(bg, width, height, index, GAME_COLORS.white);
-	  makeMiddlePolygon(bg, width, height, index, GAME_COLORS.white, true);
-	  removeTextFromButton(button);
-	  makeText(button, text, width, height, index, GAME_COLORS.black);
+		if (!isHovered) {
+			isHovered = true;
+			bg.clear();
+			makeLeftPolygon(bg, width, height, index, GAME_COLORS.white);
+			makeMiddlePolygon(bg, width, height, index, GAME_COLORS.white, true);
+			removeTextFromButton(button);
+			makeText(button, text, width, height, index, GAME_COLORS.black);
+			menu.sounds.menuMove.play();
+			console.log('cucufu');
+		}
 	});
   
 	button.on('pointerleave', () => {
+		isHovered = false;
 		bg.clear();
 		makeLeftPolygon(bg, width, height, index, color);
 		makeMiddlePolygon(bg, width, height, index, color, false);
@@ -54,7 +59,7 @@ export function createButton(text: string, width: number, height: number, color:
 	});
   
 	return button;
-  }
+}
 
   export function createBallButton(width: number, height: number, color: number): Container & { onClick: () => void } {
 	const button = new Container() as Container & { onClick: () => void };

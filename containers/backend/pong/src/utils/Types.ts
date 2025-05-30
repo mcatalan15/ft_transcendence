@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 17:04:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:13:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,14 @@ export interface GameSounds {
 	paddleResetUp: Howl;
 	paddleResetDown: Howl;
 	[key: string]: Howl;
+}
+
+export interface MenuSounds {
+	menuBGM: Howl;
+	menuMove: Howl;
+	menuSelect: Howl;
+	menuConfirm: Howl;
+	ballClick: Howl;
 }
 
 export interface World {

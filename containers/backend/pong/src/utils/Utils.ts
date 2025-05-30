@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:09:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 17:03:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,4 +369,28 @@ export function lerp(a: number, b: number, t: number): number {
 
 export function randomInRange(min: number, max: number): number {
 	return Math.random() * (max - min) + min;
+}
+
+export function easeOut(t: number): number {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+// Easing function for smoother animation (ease-in-out)
+export function easeInOut(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// Accelerating easing function (ease-in with stronger acceleration)
+export function easeInStrong(t: number): number {
+    return t * t * t * t; // Quartic ease-in for stronger acceleration
+}
+
+// Even stronger acceleration (quintic)
+export function easeInVeryStrong(t: number): number {
+    return t * t * t * t * t; // Quintic ease-in for very strong acceleration
+}
+
+// Custom exponential acceleration
+export function easeInExponential(t: number): number {
+    return t === 0 ? 0 : Math.pow(2, 10 * (t - 1));
 }

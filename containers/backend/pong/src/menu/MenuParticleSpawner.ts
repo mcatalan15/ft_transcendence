@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 17:10:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:34:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,36 @@ export class MenuParticleSpawner {
 
 	private static lastAmbientSpawn: number = 0;
 	private static ambientParticleCount: number = 0;
+
+	static spawnBasicExplosion(menu: Menu, x: number, y: number, color: number, sizeFactor: number): void {
+		for (let i = 0; i < 5; i++) {
+			const angle = Math.random() * Math.PI * 2;
+			const speed = Math.random() * 5 + 3;
+
+			const startX = x + (Math.random() * 6 - 3);
+			const startY = y + (Math.random() * 6 - 3);
+
+			const alpha = Math.random() * 0.8 + 0.2;
+
+			const particle = new Particle(`explosionParticle-${Date.now()}-${i}`, 'foreground', startX, startY, {
+				type: 'square',
+				velocityX: Math.cos(angle) * speed,
+				velocityY: Math.sin(angle) * speed,
+				lifetime: Math.random() * 10 + 15,
+				size: (Math.random() * 10 + 5) * sizeFactor,
+				shrink: true,
+				rotate: true,
+				color,
+				alpha,
+				alphaDecay: alpha / 50,
+				fadeOut: true,
+			});
+
+			menu.addEntity(particle);
+			const particleRender = particle.getComponent('render') as RenderComponent;
+			menu.renderLayers.foreground.addChild(particleRender.graphic);
+		}
+	}
 
 	static updateAmbientDust(menu: Menu, deltaTime: number, gameWidth: number, gameHeight: number): void {
 		const currentTime = Date.now();

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 10:08:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/30 16:52:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ import type { System } from '../engine/System'
 
 import { Menu } from './Menu';
 import { Title } from './Title';
+import { BallButton } from './BallButton';
 
 import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
@@ -36,7 +37,8 @@ import { GAME_COLORS } from '../utils/Types';
 import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
 import { lerp } from '../utils/Utils';
-import { isRenderComponent } from '../utils/Guards'
+import { isRenderComponent, isMenuLine } from '../utils/Guards'
+import { MenuLine } from './MenuLine';
 
 export class MenuAnimationSystem implements System {
 	private menu: Menu;
@@ -53,16 +55,18 @@ export class MenuAnimationSystem implements System {
 
 	update(entities: Entity[], delta: FrameData): void {
 		const entitiesToRemove: string[] = [];
-
-		// 1. Handle events
-		const unhandledEvents = [];
-
+	
 		// 2. Update entities
 		for (const entity of entities) {
 			if (entity.id === 'title') {
 				this.animateTitle(delta, entity as Title);
+			} else if (entity.id === 'ballButton') {
+				this.animateBallButton(delta, entity as BallButton);
+			} else if (isMenuLine(entity)) {
+				this.animateMenuLine(delta, entitiesToRemove, entity);
 			}
 		}
+		
 		// 3. Cleanup
 		for (const id of entitiesToRemove) {
 			this.menu.removeEntity(id);
@@ -131,38 +135,44 @@ export class MenuAnimationSystem implements System {
 		}
 	}
 
-	animateDepthline(delta: FrameData, entitiesToRemove: string[], entity: DepthLine) {
-		const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
+	animateMenuLine(delta: FrameData, entitiesToRemove: string[], entity: MenuLine) {
+		// Update the animation progress
+		entity.updateAnimation(delta.deltaTime);
+	
+		// Check if the line has reached its target and should be despawned
+		if (entity.isAnimationComplete()) {
+			entitiesToRemove.push(entity.id);
+		}
+	}
+
+	animateBallButton(delta: FrameData, entity: BallButton) {
+		const animation = entity.getComponent('animation') as AnimationComponent;
 		const render = entity.getComponent('render') as RenderComponent;
-
-		if (
-			!lifetime ||
-			!render ||
-			!entity.behavior ||
-			!entity.initialized
-		) {
-			return ;
-		};
-
-		let progress = 0;
-		if (entity.behavior.direction === 'upwards') {
-			progress = 1 - ((entity.y - entity.upperLimit) / (entity.initialY - entity.upperLimit));
-		} else {
-			progress = (entity.y - entity.initialY) / (entity.lowerLimit - entity.initialY);
+	
+		if (!animation || !render) {
+			return;
 		}
-		progress = Math.max(0, Math.min(1, progress));
-
-		const speedMultiplier = Math.pow(progress + 0.5, 2);
-
-		if (entity.behavior.direction === 'upwards') {
-			entity.y -= entity.velocityY * delta.deltaTime * 0.1 * speedMultiplier * this.depthLineUpdateRate;
-		} else {
-			entity.y += entity.velocityY * delta.deltaTime * 0.1 * speedMultiplier * this.depthLineUpdateRate;
+	
+		if (animation.options) {
+			const animationOptions = animation.options;
+			
+			// Set initial position if not already set
+			if (!animationOptions.initialized) {
+				animationOptions.initialX = render.graphic.x;
+				animationOptions.initialY = render.graphic.y;
+				animationOptions.initialized = true;
+			}
+	
+			// Calculate floating animation
+			const floatOffset = Math.sin((Date.now() / 800 * (animationOptions.floatSpeed as number)) + (animationOptions.floatOffset as number)) * (animationOptions.floatAmplitude as number);
+	
+			// Apply animation - more pronounced when hovered
+			const amplitudeMultiplier = entity.getIsHovered() ? 1.5 : 1.0;
+			
+			render.graphic.position.set(
+				animationOptions.initialX as number,
+				(animationOptions.initialY as number) + (floatOffset * amplitudeMultiplier)
+			);
 		}
-
-		render.graphic.position.set(entity.x, entity.y);
-		entity.alpha = progress * entity.targetAlpha;
-		render.graphic.alpha = entity.alpha;
-
 	}
 }
