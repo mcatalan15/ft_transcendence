@@ -1,5 +1,7 @@
-export async function logUserOut(user: string): Promise<{success: boolean, message: string}> {
+export async function logUserOut(): Promise<{success: boolean, message: string}> {
 	try {
+		const user = sessionStorage.getItem('user');
+		
 		const response = await fetch('/api/auth/logout', {
 		method: 'POST',
 		headers: {
@@ -18,8 +20,8 @@ export async function logUserOut(user: string): Promise<{success: boolean, messa
 		}
 
 		// Clear the user data from local storage
-		localStorage.removeItem('user');
-		localStorage.removeItem('token');
+		sessionStorage.removeItem('username');
+		sessionStorage.removeItem('token');
 		
 		return { 
 			success: true,

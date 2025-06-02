@@ -1,20 +1,11 @@
 import { localSignUp } from "../auth/localSignUp";
+import { loadGoogleScript, setupGoogleSignUp } from "../auth/googleSignUp";
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
 
-function loadGoogleScript(): void {
-	if (document.getElementById('google-script')) return;
-
-	const script = document.createElement('script');
-	script.src = 'https://accounts.google.com/gsi/client';
-	script.id = 'google-script';
-	script.async = true;
-	script.defer = true;
-	document.head.appendChild(script);
-}
-
 export function showSignUp(container: HTMLElement): void {
 	loadGoogleScript();
+	setupGoogleSignUp()
 
 	const SignUpDiv = document.createElement('div');
 	SignUpDiv.innerHTML = `
@@ -45,8 +36,9 @@ export function showSignUp(container: HTMLElement): void {
 
 				<div>			
 					<div id="g_id_onload"
-						data-client_id="YOUR_GOOGLE_CLIENT_ID"
-						data-login_uri="https://your.domain/your_login_endpoint"
+						data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
+						data-login_uri="http://localhost:5173"
+        				data-callback="handleGoogleSignUp"
 						data-auto_prompt="false">
 					</div>
 
@@ -99,8 +91,9 @@ export function showSignUp(container: HTMLElement): void {
 			errorMessageDiv.textContent = 'Password must be between 6 and 20 characters long!';
 			return;
 		}
-		if (!/^[a-zA-Z0-9]+$/.test(username)) {
-			errorMessageDiv.textContent = 'Username can only contain letters and numbers!';
+		
+		if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(username)) {
+			errorMessageDiv.textContent = 'Username can only contain letters, numbers and a single hyphen!';
 			return;
 		}		
 		
@@ -114,10 +107,8 @@ export function showSignUp(container: HTMLElement): void {
 			sessionStorage.setItem('username', String(result.username));
 			sessionStorage.setItem('email', String(result.email));
 			if (!result.success) {
-				// Display the error message from the backend
 				errorMessageDiv.textContent = result.message;
 			} else {
-				// Registration successful - redirect or show success message
 				alert('Registration successful!');
 				window.location.href = '/auth?from=signup';
 			}

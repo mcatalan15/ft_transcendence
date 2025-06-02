@@ -1,89 +1,261 @@
-<!-- 
-fastify.post('/api/auth/logout', async (request, reply) => {
-  request.session.destroy();
-  return reply.status(200).send({
-    success: true,
-    message: 'Logged out successfully'
-  });
-});
- -->
+WEBSOCKETS:
+	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
+	- Backend updates ball position as well as paddle positions every frame (60FPS).
+	- CLEAN THE CODE!! Remove all unnecessary console.log()
+	- Refactor main.js: gameSession.js, gameServer.js, etc.
+		
 
-<!-- # Preventing SQL Injection in SQLite
+GOOGLE SIGN-IN:
+	- After user successfully logs in with their Google account, send a an API request to the backend with the email address in the data.
+	- Check their email and the provider is 'google': if true, then log them in.
+	- If the user does not exist, create a new user in the database and log them in.
 
-I see you're already implementing the most important protection against SQL injection - parameterized queries with placeholder values. This is excellent! Let's review SQL injection prevention techniques:
 
-## What You're Doing Right
 
-```javascript
-const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
-const params = [username, email, hashedPassword, provider];
-db.run(query, params, function(err) {
-  // callback code
-});
+<!-- class TournamentManager {
+  constructor(gameManager, redisService) {
+    this.tournaments = new Map();
+    this.gameManager = gameManager;
+    this.redisService = redisService;
+  }
+
+  createTournament(players, config = {}) {
+    const tournamentId = this.generateTournamentId();
+    const bracket = this.generateBracket(players);
+    
+    // Store tournament info
+    this.tournaments.set(tournamentId, {
+      bracket,
+      status: 'registration',
+      players: new Set(players),
+      currentRound: 0,
+      config
+    });
+    
+    return tournamentId;
+  }
+  
+  startTournament(tournamentId) {
+    const tournament = this.tournaments.get(tournamentId);
+    if (!tournament) return false;
+    
+    tournament.status = 'in_progress';
+    
+    // Start first round of games
+    this.scheduleRound(tournamentId, 0);
+    
+    return true;
+  }
+  
+  handleGameCompletion(gameId, winnerId) {
+    // Find which tournament this game belongs to
+    const tournamentId = this.findTournamentByGameId(gameId);
+    if (!tournamentId) return;
+    
+    const tournament = this.tournaments.get(tournamentId);
+    
+    // Update bracket with winner
+    this.advancePlayer(tournamentId, winnerId);
+    
+    // Check if round complete, start next round if needed
+    if (this.isRoundComplete(tournamentId)) {
+      const nextRound = tournament.currentRound + 1;
+      if (this.isTournamentComplete(tournamentId)) {
+        this.finishTournament(tournamentId);
+      } else {
+        tournament.currentRound = nextRound;
+        this.scheduleRound(tournamentId, nextRound);
+      }
+    }
+  }
+  
+  // Additional tournament management methods
+  // ...
+} -->
+
+# WebSocket Flow Diagram for Multiplayer Pong
+
+## WebSocketManager Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     WebSocketManager (Singleton)                │
+├─────────────────────────────────────────────────────────────────┤
+│ Properties:                                                     │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ socket      │  │messageHandlers│  │ gameId/playerId    │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+├─────────────────────────────────────────────────────────────────┤
+│ Methods:                                                        │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ connect()   │  │ createGame()  │  │ joinGame()         │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+│  ┌─────────────┐  ┌───────────────┐  ┌────────────────────┐     │
+│  │ send()      │  │registerHandler│  │ sendPaddleInput()  │     │
+│  └─────────────┘  └───────────────┘  └────────────────────┘     │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-This pattern:
-1. ✅ Separates SQL code from data
-2. ✅ Uses `?` placeholders
-3. ✅ Passes parameters as an array
+## Connection Lifecycle
 
-## Why This Works
-
-When you use parameterized queries, the SQLite driver:
-- Escapes special characters
-- Handles quoting automatically
-- Prevents attackers from changing the structure of your SQL
-
-## Additional Best Practices
-
-1. **Input Validation**: Add type checking and length limits:
-   ```javascript
-   if (typeof username !== 'string' || username.length > 50) {
-     reject(new Error('Invalid username'));
-     return;
-   }
-   ```
-
-2. **Principle of Least Privilege**: Configure SQLite with minimal permissions:
-   ```javascript
-   // Read-only connection for queries that don't modify data
-   const readOnlyDb = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY);
-   ```
-
-3. **Explicit Column Lists**: Never use `SELECT *` in production:
-   ```javascript
-   // Instead of SELECT *
-   const query = `SELECT id, username, email FROM users WHERE username = ?`;
-   ```
-
-4. **Error Messages**: Don't expose detailed error info to clients:
-   ```javascript
-   if (err) {
-     console.error('[DB ERROR]', err); // Log the full error internally
-     reject(new Error('Database error')); // Send generic message to client
-   }
-   ```
-
-5. **Prepared Statements**: For repeated queries:
-   ```javascript
-   const stmt = db.prepare(`SELECT id FROM users WHERE username = ?`);
-   // later
-   stmt.get(username, callback);
-   // when done
-   stmt.finalize();
-   ```
-
-## Example: Vulnerable vs. Safe Code
-
-❌ **Vulnerable** (string concatenation):
-```javascript
-!NEVER DO THIS
-db.run(`SELECT * FROM users WHERE username = '${username}'`);
+```
+┌────────┐        ┌────────────┐    ┌────────────┐      ┌───────┐
+│ Browser│        │  Frontend  │    │  Backend   │      │ Redis │
+└───┬────┘        └─────┬──────┘    └─────┬──────┘      └───┬───┘
+    │    Load Lobby     │                 │                 │
+    │────────────────>  │                 │                 │
+    │                   │                 │                 │
+    │                   │  WS Connect     │                 │
+    │                   │───────────────> │                 │
+    │                   │ (ws://localhost:3100/ws/socket/game/)
+    │                   │                 │                 │
+    │                   │ Connection OK   │                 │
+    │                   │ <───────────────│                 │
+    │                   │                 │                 │
+    │                   │ IDENTIFY        │                 │
+    │                   │───────────────> │                 │
+    │                   │                 │                 │
 ```
 
-✅ **Safe** (parameterized query):
-```javascript
-db.run(`SELECT * FROM users WHERE username = ?`, [username]);
+## Game Creation Flow
+
+```
+┌────────┐       ┌────────────┐     ┌────────────┐      ┌───────┐
+│Player 1│       │WebSocketMgr│     │  Backend   │      │ Redis │
+└───┬────┘       └─────┬──────┘     └─────┬──────┘      └───┬───┘
+    │  Click Create    │                  │                 │
+    │────────────────> │                  │                 │
+    │                  │  CREATE_GAME     │                 │
+    │                  │────────────────> │                 │
+    │                  │                  │ Create Game ID  │
+    │                  │                  │ Store Game Data │
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │ Create Session  │
+    │                  │  GAME_CREATED    │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │ Display Game ID  │                  │                 │
+    │ <───────────────────                │                 │
+    │ Register         │                  │                 │
+    │ PLAYER_JOINED    │                  │                 │
+    │ handler          │                  │                 │
+    │                  │                  │                 │
 ```
 
-Your code already follows the safe pattern, which is excellent. Just fix the duplicate `db.run` call, and you'll have solid SQL injection protection. -->
+## Game Joining Flow
+
+```
+┌────────┐       ┌────────────┐     ┌────────────┐      ┌────────┐
+│Player 2│       │WebSocketMgr│     │  Backend   │      │Player 1│
+└───┬────┘       └─────┬──────┘     └─────┬──────┘      └───┬────┘
+    │  Enter Game ID   │                  │                 │
+    │  Click Join      │                  │                 │
+    │────────────────> │                  │                 │
+    │                  │   JOIN_GAME      │                 │
+    │                  │────────────────> │                 │
+    │                  │                  │                 │
+    │                  │                  │ Update Redis    │
+    │                  │                  │ Store player2   │
+    │                  │  JOIN_SUCCESS    │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │                  │                  │  PLAYER_JOINED  │
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │                 │
+    │                  │   PLAYER_ASSIGNED│                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │  PLAYER_ASSIGNED│
+    │                  │                  │───────────────> │
+    │                  │                  │                 │
+    │                  │                  │  GAME_START     │
+    │                  │                  │───────────────> │
+    │                  │   GAME_START     │                 │
+    │                  │ <────────────────│                 │
+    │                  │                  │                 │
+    │  Navigate to     │                  │    Navigate to  │
+    │  Game Screen     │                  │    Game Screen  │
+    │                  │                  │                 │
+```
+
+## Game State Synchronization (60 FPS)
+
+```
+┌────────────┐      ┌────────────┐      ┌────────────┐      ┌────────────┐
+│  Player 1  │      │   Backend  │      │  Player 2  │      │ Game Loop  │
+└─────┬──────┘      └──────┬─────┘      └─────┬──────┘      └─────┬──────┘
+      │                    │                  │                   │
+      │                    │                  │     Tick (60 FPS) │
+      │                    │ <────────────────────────────────────│
+      │                    │                  │                   │
+      │                    │ Update Game State│                   │
+      │                    │─────────────────>│                   │
+      │                    │                  │                   │
+      │  GAME_STATE_UPDATE │                  │                   │
+      │ <─────────────────────────────────────────────────────────│
+      │                    │                  │                   │
+      │                    │  GAME_STATE_UPDATE                   │
+      │                    │─────────────────>│                   │
+      │                    │                  │                   │
+      │   Render Game      │                  │    Render Game    │
+      │                    │                  │                   │
+```
+
+## Input Handling Flow
+
+```
+┌────────┐      ┌────────────┐      ┌────────────┐      ┌────────────┐
+│Player 1│      │WebSocketMgr│      │  Backend   │      │Game Session│
+└───┬────┘      └─────┬──────┘      └─────┬──────┘      └─────┬──────┘
+    │  Press 'W' key  │                   │                   │
+    │────────────────>│                   │                   │
+    │                 │                   │                   │
+    │                 │  PADDLE_INPUT     │                   │
+    │                 │ (player: 1, dir: -1)                  │
+    │                 │────────────────>  │                   │
+    │                 │                   │                   │
+    │                 │                   │ setPlayerInput()  │
+    │                 │                   │──────────────────>│
+    │                 │                   │                   │
+    │                 │                   │                   │
+    │                 │                   │  Update paddle    │
+    │                 │                   │  position         │
+    │                 │                   │  <────────────────│
+    │                 │                   │                   │
+    │                 │                   │                   │
+```
+
+## Cross-Browser Issue in Joining Flow
+
+```
+┌─────────┐         ┌───────────┐         ┌────────────┐         ┌─────────┐
+│Firefox  │         │  Backend  │         │  Chrome    │         │  Redis  │
+│(Host)   │         │           │         │(Player 2)  │         │         │
+└────┬────┘         └─────┬─────┘         └─────┬──────┘         └────┬────┘
+     │  Create Game       │                     │                     │
+     │──────────────────> │                     │                     │
+     │                    │                     │                     │
+     │ GAME_CREATED       │                     │                     │
+     │ <──────────────────│                     │                     │
+     │                    │  Store Game         │                     │
+     │                    │────────────────────>│                     │
+     │                    │                     │                     │
+     │ Register for       │                     │                     │
+     │ 'PLAYER_JOINED'    │                     │                     │
+     │                    │                     │                     │
+     │                    │                     │ Join Game           │
+     │                    │ <────────────────────────────────────────>│
+     │                    │                     │                     │
+     │                    │ JOIN_SUCCESS        │                     │
+     │                    │──────────────────>  │                     │
+     │                    │                     │                     │
+     │                    │ PLAYER_JOINED       │                     │
+     │                    │ to Firefox          │                     │
+     ├ - - - - - - - - - >│                     │                     │
+     │ ✗ ISSUE: Handler   │                     │                     │
+     │ doesn't catch      │                     │                     │
+     │ due to             │                     │                     │
+     │ case sensitivity   │                     │                     │
+     │ or socket issues   │                     │                     │
+     │                    │                     │                     │

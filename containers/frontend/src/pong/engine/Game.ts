@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/02 11:05:56 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:36:11 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS, Player, PlayerData } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS } from '../utils/Types'
 import { createWorld } from '../utils/Utils'
 
 export class PongGame {
@@ -161,7 +161,7 @@ export class PongGame {
 		this.currentWorld = this.worldPool.desertWorld;
 
 		this.initSystems();
-		console.log('All Systems initialiazed');
+		console.log('All Systems initialized');
 
 		this.initSounds();
 		console.log('Sounds loaded');
@@ -260,8 +260,11 @@ export class PongGame {
 		this.entities.push(wallB);
 		console.log("Bottom wall created");
 
+
+		const Player1 = sessionStorage.getItem('username') || 'cucufu';
+
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, 'Player 1');
+		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, Player1!);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -356,4 +359,42 @@ export class PongGame {
 		boundingBox.stroke('#171717');
 		this.renderLayers.bounding.addChild(boundingBox);;
 	}
+
+	gameStarted: boolean = false;
+
+	start(): void {
+		if (this.gameStarted) return;
+
+		// get UI to reset the score
+		const ui = this.entities.find(e => e.id === 'ui') as UI;
+		
+		this.gameStarted = true;
+		this.resetBall();
+		ui.leftScore = 0;
+		ui.rightScore = 0;
+		
+		console.log("Game started!");
+	}
+
+	resetBall(): void {
+
+		const ball = this.entities.find(e => e.id === 'ball') as Ball;
+		ball.initBallPhysicsData(this.width / 2, this.height / 2);
+
+	}
+
+	updateState(
+		player1Position: { x: number, y: number },
+		player2Position: { x: number, y: number },
+	): void {
+
+		//const ball = this.entities.find(e => e.id === 'ball') as Ball;
+		const player1 = this.entities.find(e => e.id === 'paddleL') as Paddle;
+		const player2 = this.entities.find(e => e.id === 'paddleR') as Paddle;
+		
+		player1.updatePaddlePosition(player1Position.x, player1Position.y);
+		player2.updatePaddlePosition(player2Position.x, player2Position.y);
+		// Optionally, update velocities or other state if sent
+	}
+  
 }
