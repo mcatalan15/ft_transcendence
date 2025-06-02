@@ -2,7 +2,6 @@ const hre = require("hardhat");
 
 async function main() {
     try {
-        // Get game data from environment variable
         let gameData;
         try {
             gameData = process.env.GAME_DATA ? JSON.parse(process.env.GAME_DATA) : {};

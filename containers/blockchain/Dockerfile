@@ -10,11 +10,9 @@ COPY hardhat.config.js ./
 
 # Install exact versions to prevent conflicts
 RUN npm install --include=dev \
-    hardhat \
+    hardhat hardhat@2.24.1 \
     @nomicfoundation/hardhat-toolbox \
 	dotenv
-    # express \
-    # catapulta \
 
 # Copy application files
 COPY contracts/ ./contracts/

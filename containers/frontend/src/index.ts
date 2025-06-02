@@ -115,13 +115,17 @@ function router(path: string): void {
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;
-		
-    default:
+  case '/auth':
+  	showAuth(app);
+   break;
+  
+   default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>
 	  <button onclick="navigate('/')">Back home</button>
 	  `;
   }
+
 }
 
 window.addEventListener('popstate', () => {
