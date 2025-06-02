@@ -190,7 +190,7 @@ export function showAuth(container: HTMLElement): void {
                     // Optional: Disable input/button after successful verification
                     tokenInput.disabled = true;
                     // verifyBtn.disabled = true;
-					window.location.href = '/signin'; // Redirect to sign-in after 2FA setup
+					window.location.href = '/home'; // Redirect to sign-in after 2FA setup
                 } else {
                     verificationStatus.textContent = i18n.t(data.message || 'Verification failed. Please try again.');
                     verificationStatus.style.color = 'red';
