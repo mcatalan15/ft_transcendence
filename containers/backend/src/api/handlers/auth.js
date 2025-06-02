@@ -19,7 +19,7 @@ async function signupHandler(request, reply) {
       if (userExists.usernameExists && userExists.emailExists) {
         return reply.status(400).send({ 
           success: false, 
-          message: 'Username and email are already taken' 
+          message: 'Username and email are already taken'
         });
       } else if (userExists.usernameExists) {
         return reply.status(400).send({ 

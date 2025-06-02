@@ -8,12 +8,8 @@ module.exports = async function (fastify, options) {
 	}, async (request, reply) => {
 
 	try {
-		
 		const user = request.session.get('user');
 		
-		console.log('User:', user.username);
-
-		//TODO: update so that each user sees their profile, not just the last user logged in
 		return reply.status(200).send({
 			id: user.id,
 			username: user.username,
