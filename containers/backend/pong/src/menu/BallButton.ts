@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 11:42:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/02 09:27:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { Graphics, Container, FederatedPointerEvent } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
+import { VFXComponent } from '../components/VFXComponent';
 import { GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
 
@@ -37,12 +38,16 @@ export class BallButton extends Entity {
         this.buttonContainer.addChild(this.ballGraphic);
         this.setupEventHandlers();
         this.setupComponents(menu);
+
+        const vfxComponent = new VFXComponent();
+		this.addComponent(vfxComponent);
+
     }
 
     private createBall(isHovered: boolean = false): void {
         this.ballGraphic.clear();
         const radius = isHovered ? 80 : 75;
-        const color = GAME_COLORS.orange;
+        const color = GAME_COLORS.white;
         
         this.ballGraphic.circle(0, 0, radius);
         this.ballGraphic.fill(color);

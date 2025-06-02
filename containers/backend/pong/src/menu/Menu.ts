@@ -6,16 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:09:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 16:08:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/02 17:26:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Text, Container, Graphics, FederatedPointerEvent } from 'pixi.js';
+import { Application, Container, Graphics, FederatedPointerEvent } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import G A M E
 import { PongGame } from '../engine/Game';
+import { GameConfig } from './GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -25,6 +26,8 @@ import { Subtitle } from './Subtitle';
 import { BallButton } from './BallButton';
 
 import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
+import { MenuButton } from './MenuButton';
+import { MenuOrnaments } from './MenuOrnaments';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -35,20 +38,24 @@ import { MenuParticleSpawner } from './MenuParticleSpawner';
 import { MenuBallSpawner } from './MenuBallSpawner';
 
 // Import Implemented Systems
-import { RenderSystem } from '../systems/RenderSystem';
 import { MenuRenderSystem } from './MenuRenderSystem';
 import { MenuAnimationSystem } from './MenuAnimationSystem';
 import { MenuParticleSystem } from './MenuParticleSystem';
 import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
 
-import { GAME_COLORS, FrameData, MenuSounds } from '../utils/Types';
-import * as menuUtils from '../utils/MenuUtils'
-import { isRenderComponent } from '../utils/Guards';
 import { MenuPhysicsSystem } from './MenuPhysicsSystem';
 import { MenuVFXSystem } from './MenuVFXSystem';
 import { MenuLineSystem } from './MenuLineSystem';
+import { VFXComponent } from '../components/VFXComponent';
+import { MenuViewSystem } from './MenuViewSystem';
+
+
+import { GAME_COLORS, FrameData, MenuSounds, GameEvent } from '../utils/Types';
+import * as menuUtils from '../utils/MenuUtils'
+import { isRenderComponent } from '../utils/Guards';
 
 export class Menu{
+	config: GameConfig;
 	app: Application;
 	width: number;
 	height: number;
@@ -56,10 +63,12 @@ export class Menu{
 	maxBalls: number = 20;
 	entities: Entity[] = [];
     systems: System[] = [];
+	eventQueue: GameEvent[] = [];
 	menuContainer: Container;
 	buttonWidth: number;
 	buttonHeight:number = 60;
 	buttonSpacing: number = 20;
+	ornamentOffset: number = 25;
 	renderLayers: {
 		blackEnd: Container;
 		logo: Container;
@@ -71,6 +80,11 @@ export class Menu{
 	};
 	visualRoot: Container;
 	sounds!: MenuSounds;
+
+	// SUB-MENU stuff
+	private isOptionsOpen: boolean = false;
+	private optionsButtonRef: Container | null = null;
+	private submenuButtons: Container[] = [];
 
 	constructor(app: Application) {
 		this.app = app;
@@ -107,6 +121,24 @@ export class Menu{
 
 		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
 		this.initSounds();
+
+		//! GAME CONFIGURATION TO BE FED IN MENU, SENT TO BACKEND
+		this.config = {
+			mode: 'local',
+			variant: '1v1',
+			classicMode: false,
+			visuals: {
+				postProcessing: true,
+				trails: true,
+				colorShift: true,
+				crtShader: false,
+			},
+			powerupsEnabled: true,
+			players: [
+				{ name: 'Player 1', type: 'human', side: 'left' },
+				{ name: 'Player 2', type: 'human', side: 'right' }
+			]
+		};
 	}
 
 	async init(): Promise<void> {
@@ -135,8 +167,8 @@ export class Menu{
 		});
 	}
 
-	createButtons(app: Application) {
-		const buttons: menuUtils.ButtonConfig[] = [
+	createButtons(app: Application): void {
+		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
 				text: 'START',
 				onClick: async () => {
@@ -148,63 +180,63 @@ export class Menu{
 					this.sounds.menuConfirm.play();
 					this.sounds.menuBGM.stop();
 					await game.init();
-				}
+				},
+				color: GAME_COLORS.menuBlue,
+				index: 0
 			},
 			{
 				text: 'GLOSSARY',
 				onClick: () => {
-					console.log('Placeholder 1 clicked');
+					console.log('Glossary clicked');
 					this.sounds.menuSelect.play();
-				}
+				},
+				color: GAME_COLORS.menuGreen,
+				index: 1
 			},
 			{
 				text: 'OPTIONS',
 				onClick: () => {
-					console.log('Placeholder 2 clicked');
+					console.log('Options clicked');
 					this.sounds.menuSelect.play();
-				}
+				},
+				color: GAME_COLORS.menuOrange,
+				index: 2
 			},
 			{
 				text: 'ABOUT',
 				onClick: () => {
-					console.log('Placeholder 3 clicked');
+					console.log('About clicked');
 					this.sounds.menuSelect.play();
-				}
+				},
+				color: GAME_COLORS.menuPink,
+				index: 3
 			}
 		];
 	
-		buttons.forEach((buttonConfig, index) => {
-			let color: number = 0;
+		buttonConfigs.forEach((config, index) => {
+			const menuButton = new MenuButton(
+				`menuButton_${config.text.toLowerCase()}`, 
+				'menuContainer', 
+				this, 
+				config
+			);
+
+			const x = (app.screen.width - this.buttonWidth) / 2;
+			const y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonSpacing));
+			menuButton.setPosition(x, y);
+
+			this.entities.push(menuButton);
 	
-			switch(index) {
-				case (0): 
-					color = GAME_COLORS.menuBlue;
-					break;
-				case (1):
-					color = GAME_COLORS.menuGreen;
-					break;
-				case (2):
-					color = GAME_COLORS.menuOrange;
-					break;
-				case (3):
-					color = GAME_COLORS.menuPink;
-					break;
-			}
-			const button = menuUtils.createButton(this, buttonConfig.text, this.buttonWidth, this.buttonHeight, color, index);
-			
-			button.x = (app.screen.width - this.buttonWidth) / 2;
-			button.y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonSpacing));
-			
-			button.on('pointerdown', (event: FederatedPointerEvent) => {
-				buttonConfig.onClick();
-			});
-	
-			this.menuContainer.addChild(button);
+			this.menuContainer.addChild(menuButton.getContainer());
 		});
 	}
 
 	createBallButton() {
 		const ballButton = new BallButton('ballButton', 'foreground', this, () => {
+			const vfx = ballButton.getComponent('vfx') as VFXComponent;
+			if (vfx) {
+				vfx.startFlash(GAME_COLORS.white, 10);
+			}
 			MenuBallSpawner.spawnDefaultBallInMenu(this);
 			this.sounds.ballClick.play();
 		});
@@ -219,21 +251,24 @@ export class Menu{
 	async createEntities(): Promise<void>  {
 		this.createBoundingBoxes();
 		
+		// Create ornaments
+		const ornaments = new MenuOrnaments('menuOrnaments', 'menuContainer', this)
+		const ornamentsRender = ornaments.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(ornamentsRender.graphic);
+		this.entities.push(ornaments);
+
 		// Create title
 		const title = new Title("title", "menuContainer", this);
 		let titleBackdrop;
 		let titleText;
 		let titleBlock;
-		let titleBall;
 		for (const [key, component] of title.components) {
 			if (isRenderComponent(component)) {
 				if (component.instanceId === 'backDrop') titleBackdrop = component;
 				else if (component.instanceId === 'textRender') titleText = component;
 				else if (component.instanceId === 'block') titleBlock = component;
-				else if (component.instanceId === 'ballRender') titleBall = component;
 			}
 		}
-		console.log(titleBlock);
 		this.renderLayers.background.addChild(titleBackdrop!.graphic);
 		this.renderLayers.logo.addChild(titleText!.graphic);
 		this.renderLayers.logo.addChild(titleBlock!.graphic);
@@ -281,6 +316,7 @@ export class Menu{
 		const physicsSystem = new MenuPhysicsSystem(this);
 		const VFXSystem = new MenuVFXSystem();
 		const lineSystem = new MenuLineSystem(this);
+		const menuViewSystem = new MenuViewSystem(this);
 		
 		this.systems.push(renderSystem);
 		this.systems.push(animationSystem);
@@ -289,6 +325,7 @@ export class Menu{
 		this.systems.push(physicsSystem);
 		this.systems.push(VFXSystem);
 		this.systems.push(lineSystem);
+		this.systems.push(menuViewSystem);
 	}
 
 	addEntity(entity: Entity): void {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 14:54:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/02 16:58:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ import { Graphics, Container, Text, Application } from 'pixi.js';
 import { Menu } from '../menu/Menu';
 
 import { GAME_COLORS } from './Types';
+import { MenuButton } from '../menu/MenuButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -45,7 +46,6 @@ export function createButton(menu: Menu, text: string, width: number, height: nu
 			removeTextFromButton(button);
 			makeText(button, text, width, height, index, GAME_COLORS.black);
 			menu.sounds.menuMove.play();
-			console.log('cucufu');
 		}
 	});
   
@@ -107,7 +107,7 @@ export function setMenuBackground(app: Application): Graphics {
 	return (bg);
 }
 
-function makeLeftPolygon(bg: Graphics, width: number, height: number, index: number, color: number): void {
+export function makeLeftPolygon(bg: Graphics, width: number, height: number, index: number, color: number): void {
 	const slantOffset = 20;
 	const firstPolyOffset = index * 25;
 	
@@ -123,7 +123,7 @@ function makeLeftPolygon(bg: Graphics, width: number, height: number, index: num
 	bg.position.set(0, 0);
 }
 
-function makeMiddlePolygon(bg: Graphics, width: number, height: number, index: number, color: number, filled: boolean): void {
+export function makeMiddlePolygon(bg: Graphics, width: number, height: number, index: number, color: number, filled: boolean): void {
 	const slantOffset = 20;
 	const firstPolyOffset = index * 25;
 	const middleOffset = 20;
@@ -147,7 +147,7 @@ function makeMiddlePolygon(bg: Graphics, width: number, height: number, index: n
 	bg.position.set(0, 0);
 }
 
-function makeText(button: Container, text: string, width: number, height: number, index: number, color?: number): void {
+export function makeText(button: Container, text: string, width: number, height: number, index: number, color?: number): void {
 	const buttonText = new Text({
 		text: text,
 		style: {
@@ -165,10 +165,42 @@ function makeText(button: Container, text: string, width: number, height: number
 	  button.addChild(buttonText);
 }
 
-function removeTextFromButton(button: Container) {
+export function removeTextFromButton(button: Container) {
 	for (const child of button.children) {
 		if (child instanceof Text) {
 			button.removeChild(child);		
+		}
+	}
+}
+
+export interface MenuButtonConfig {
+    text: string;
+    onClick: () => void;
+    color: number;
+    index: number;
+}
+
+export function getButtonPoints(menu: Menu, button: MenuButton): number[] | undefined {
+	const slantOffset = 20;
+    const firstPolyOffset = button.getIndex() * 25;
+	const middleOffset = 20;
+	const optionsShrinkFactor = 500;
+	
+	if (!button.isClicked) {
+		return [
+			menu.buttonWidth / 2.3 + slantOffset - firstPolyOffset + middleOffset, 0,
+			menu.buttonWidth / 1.8 + slantOffset - firstPolyOffset + middleOffset, 0,
+			menu.buttonWidth / 1.8 + middleOffset - firstPolyOffset, menu.buttonHeight,
+			menu.buttonWidth / 2.3 + slantOffset - firstPolyOffset, menu.buttonHeight 
+		];
+	} else if (button.isClicked) {
+		if (button.getText() === 'OPTIONS') {
+			return [
+				(menu.buttonWidth / 2.3 + slantOffset - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
+				(menu.buttonWidth / 1.8 + slantOffset - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
+				(menu.buttonWidth / 1.8 + middleOffset - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight,
+				(menu.buttonWidth / 2.3 + slantOffset - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight 
+			];
 		}
 	}
 }

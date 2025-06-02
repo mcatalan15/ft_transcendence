@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 15:13:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/02 11:08:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Point, TextStyle } from 'pixi.js'
+import { Container, Point, TextStyle } from 'pixi.js'
 
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter, ShockwaveFilter } from 'pixi-filters'
 
@@ -75,14 +75,15 @@ export type TextData = {
 };
 
 export type GameEvent = {
-    type: string;
-    side?: 'left' | 'right';
-	target?: Paddle | World | CrossCut;
+	type: string;
+	side?: 'left' | 'right';
+	target?: Paddle | World | CrossCut | Container | null;
 	affectationTime?: number;
 	entitiesMap?: Map<string, Entity>;
 	points?: Point[];
 	x?: number;
 	y?: number;
+	buttonName?: string;
 };
 
 export type BoundingBox = {
