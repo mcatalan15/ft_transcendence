@@ -18,27 +18,29 @@ async function googleAuthRoutes(fastify, options) {
       });
 
       const payload = ticket.getPayload();
-
       const name = payload.name;
       const email = payload.email;
 
-	  	try {
-       	 await checkUserExists(name, email);
+      const userExists = await checkUserExists(name, email);
 
-     	 await saveUserToDatabase(name, email, null, 'provider');
+      if (userExists?.exists) {
+        // User exists - sign them in instead of registering
+        return reply.status(200).send({
+          success: true,
+          message: 'Google authentication successful',
+          user: { name, email },
+          // Generate a JWT token here for existing users
+        });
+      }
 
-    	 return reply.status(200).send({
-			success: true,
-			message: 'Google authentication successful',
-			user: { name, email, provider } });
-
-		} catch (error) {
-		// If user already exists
-		return reply.status(400).send({
-			success: false,
-			message: 'User already exists',
-		});
-		}
+      // User doesn't exist - register them
+      await saveUserToDatabase(name, email, null, 'google');
+      
+      return reply.status(201).send({
+        success: true,
+        message: 'User registered successfully',
+        user: { name, email }
+      });
 
 	} catch (error) {
       fastify.log.error(error);

@@ -1,31 +1,41 @@
-export type CredentialResponse = {
-	clientId: string;
-	credential: string;
-	select_by: string;
-  };  
+export function loadGoogleScript(): void {
+	if (document.getElementById('google-script')) return;
 
-export function initializeGoogleSignIn(onSuccess: (token: string) => void) {
-	window.onload = () => {
-	  window.google?.accounts.id.initialize({
-		client_id: "49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com",
-		callback: (response: google.accounts.id.CredentialResponse) => {
-		  const credential = response.credential;
-		  if (credential) {
-			onSuccess(credential);
-		  } else {
-			console.warn("Google Sign-In failed: No credential returned.");
-		  }
+	const script = document.createElement('script');
+	script.src = 'https://accounts.google.com/gsi/client';
+	script.id = 'google-script';
+	script.async = true;
+	script.defer = true;
+	document.head.appendChild(script);
+}
+
+export function setupGoogleSignUp(): void {
+	window.handleGoogleSignUp = (response: any) => {
+	  const credential = response.credential;
+	  console.log("Google sign-in successful, processing token...");
+	  
+	  fetch('/api/auth/google', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ credential: credential }),
+	  })
+	  .then(response => response.json())
+	  .then(data => {
+		if (data.success) {
+		  sessionStorage.setItem('username', data.username);
+		  sessionStorage.setItem('userId', data.userId);
+		  sessionStorage.setItem('token', data.token);
+		  
+		  window.location.href = '/home';
+		} else {
+		  alert('Google authentication failed: ' + data.message);
 		}
+	  })
+	  .catch(error => {
+		console.error('Error during Google authentication:', error);
+		alert('Error during authentication. Please try again.');
 	  });
-  
-	  window.google?.accounts.id.prompt();
 	};
-  }
-
-export {};
-
-declare global {
-	interface Window {
-		google: typeof google;
-	}
 }

@@ -1,6 +1,6 @@
 export class WebSocketManager {
     private socket: WebSocket | null = null;
-    private url: string;
+    //private url: string;
     private gameId: string | null = null;
     private hostId: string;
     private localPlayerId: string;
@@ -8,7 +8,7 @@ export class WebSocketManager {
     private messageHandlers: Map<string, (data: any) => void> = new Map();
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
-	private playerNumberAssigned: boolean = false;
+	//private playerNumberAssigned: boolean = false;
     private currentPlayerNumber: number | null = null;
     
     private static instance: WebSocketManager | null = null;
@@ -24,7 +24,7 @@ export class WebSocketManager {
     
     setPlayerNumber(num: number): void {
         this.currentPlayerNumber = num;
-        this.playerNumberAssigned = true;
+        //this.playerNumberAssigned = true;
         sessionStorage.setItem('playerNumber', num.toString());
     }
 
@@ -40,7 +40,7 @@ export class WebSocketManager {
     private constructor(playerId: string) {
         this.hostId = playerId;
         this.localPlayerId = playerId;
-        this.url = `ws://localhost:3100/ws/socket/game`;
+        //this.url = `ws://localhost:3100/ws/socket/game`;
     }
 
 	private isConnecting: boolean = false;
