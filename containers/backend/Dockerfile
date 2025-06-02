@@ -25,6 +25,8 @@ RUN npm cache clean --force \
 	@fastify/session \
 	@fastify/swagger \
 	@fastify/swagger-ui \
+	otplib \
+	qrcode \
 	jsonwebtoken \
 	redis \
 	ws

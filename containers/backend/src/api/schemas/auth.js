@@ -16,11 +16,16 @@ const signupSchema = {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
-        message: { type: 'string' }
+        message: { type: 'string' },
+        userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
+        username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
+		email: { type: 'string', description: 'Email of the new user' }
       },
       example: {
         success: true,
-        message: 'User registered successfully'
+        message: 'User registered successfully',
+        userId: 123, // <--- UPDATE EXAMPLE IF YOU WANT
+        username: 'testuser' // <--- UPDATE EXAMPLE IF YOU WANT
       }
     },
     400: {

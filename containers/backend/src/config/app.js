@@ -1,4 +1,4 @@
-const Fastify = require('fastify');
+ Fastify = require('fastify');
 const fastifyMultipart = require('fastify-multipart');
 const loggerConfig = require('./logsConfiguration');
 const fastifyCookie = require('@fastify/cookie');

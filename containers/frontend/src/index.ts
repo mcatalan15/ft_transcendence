@@ -12,6 +12,7 @@ import { showProfile} from './views/profile';
 import { showChat } from './views/chat';
 import { showLobby } from './views/lobby';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
+import { showAuth } from './views/auth'; 
 
 import { logUserOut } from './auth/userLogout';
 
@@ -97,23 +98,24 @@ function router(path: string): void {
         break;
 
     case '/logout':
-      if (isUserAuthenticated()){
-          logUserOut();
-      }
-        navigate('/');
-        break;
+	  if (!isUserAuthenticated()){
+        logUserOut('user');
+	  }
+      navigate('/');
+      break;
 
-    case '/lobby':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-        showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
-        break;
-    
+	case '/lobby':
+	if (!isUserAuthenticated()) {
+		navigate('/');
+		return;
+	}
+		showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
+		break;
+
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;
+		
     default:
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>

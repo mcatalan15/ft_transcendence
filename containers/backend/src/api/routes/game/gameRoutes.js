@@ -4,10 +4,10 @@ const gameSchema = require('../../schemas/game');
 
 async function gameRoutes(fastify, options) {
     fastify.post('/api/games', { schema: gameSchema }, async (request, reply) => {
-        const { player1_score, player2_score } = request.body;
+        const { player1_name, player1_score,player2_name, player2_score, winner_name } = request.body;
 
         try {
-            const gameId = await saveGameToDatabase(player1_score, player2_score);
+            const gameId = await saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name);
             
             reply.status(201).send({
                 success: true,

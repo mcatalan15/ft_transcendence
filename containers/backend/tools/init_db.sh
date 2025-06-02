@@ -17,17 +17,22 @@ if [ ! -f "$DB_PATH" ]; then
 
     sqlite3 "$DB_PATH" <<EOF
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_user INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT,
-		provider TEXT NOT NULL DEFAULT 'local'
+		provider TEXT NOT NULL DEFAULT 'local',
+		twoFactorSecret TEXT,
+		twoFactorEnabled BOOLEAN DEFAULT FALSE
     );
 
     CREATE TABLE IF NOT EXISTS games (
         id_game INTEGER PRIMARY KEY AUTOINCREMENT,
+        player1_name TEXT,
+        player2_name TEXT,
         player1_score INTEGER,
-        player2_score INTEGER
+        player2_score INTEGER,
+        winner_name TEXT 
     );
     
     -- Add more initialization logic as needed

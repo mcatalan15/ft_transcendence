@@ -71,7 +71,10 @@ export function showSignIn(container: HTMLElement): void {
 				errorMessageDiv.textContent = result.message;
 			} else {
 				alert('Sign-in successful, welcome ' + result.user + '!');
-				navigate('/home');
+				localStorage.setItem('token', result.token);
+				window.location.href = '/auth?from=signin';
+				// navigate('/auth?from=signin');
+				// navigate('/home');
 			}
 		} else {
 			errorMessageDiv.textContent = 'Invalid email or password';

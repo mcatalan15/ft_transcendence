@@ -69,8 +69,10 @@ export function showSignUp(container: HTMLElement): void {
 	SignUpDiv.appendChild(errorMessageDiv);
 	
 	
+	console.log('[signup.ts] Form element selected:', form);
 	form.onsubmit = async (e) => {
 		e.preventDefault();
+		console.log('[signup.ts] Form submission detected!');
 		const username = (SignUpDiv.querySelector('#nickname') as HTMLInputElement).value;
 		const email = (SignUpDiv.querySelector('#email') as HTMLInputElement).value;
 		const password = (SignUpDiv.querySelector('#password') as HTMLInputElement).value;
@@ -97,12 +99,18 @@ export function showSignUp(container: HTMLElement): void {
 		
 		if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
-			
+			console.log('[CALLING CODE] localSignUp result:', result);
+			console.log('[CALLING CODE] result.userId:', result.userId);
+			console.log('[CALLING CODE] result.username:', result.username);
+			console.log('[CALLING CODE] result.email:', result.email);
+			sessionStorage.setItem('userId', String(result.userId));
+			sessionStorage.setItem('username', String(result.username));
+			sessionStorage.setItem('email', String(result.email));
 			if (!result.success) {
 				errorMessageDiv.textContent = result.message;
 			} else {
 				alert('Registration successful!');
-				navigate('/signin');
+				window.location.href = '/auth?from=signup';
 			}
 		} else {
 			errorMessageDiv.textContent = 'Passwords do not match!';
