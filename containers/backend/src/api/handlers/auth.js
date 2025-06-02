@@ -17,15 +17,9 @@ async function signupHandler(request, reply) {
     const userExists = await checkUserExists(username, email);
     if (userExists?.exists) {
       if (userExists.usernameExists && userExists.emailExists) {
-<<<<<<< HEAD
-        return reply.status(400).send({
-          success: false,
-          message: 'Username and email are already taken'
-=======
         return reply.status(400).send({ 
           success: false, 
-          message: 'Username and email are already taken' 
->>>>>>> parent of e41d77c (JWT works with GSI now, and /profile works too)
+          message: 'Username and email are already taken'
         });
       } else if (userExists.usernameExists) {
         return reply.status(400).send({
