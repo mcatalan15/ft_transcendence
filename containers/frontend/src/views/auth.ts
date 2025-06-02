@@ -13,6 +13,7 @@ interface TwoFaVerifyResponse {
 }
 
 export function showAuth(container: HTMLElement): void {
+	console.log('Hola!');
     // Parse URL parameters to check where the user came from
     const urlParams = new URLSearchParams(window.location.search);
     const fromPage = urlParams.get('from');

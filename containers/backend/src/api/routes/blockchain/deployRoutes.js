@@ -117,4 +117,3 @@ async function deployRoutes(fastify) {
 
 module.exports = deployRoutes;
 
-module.exports = deployRoutes;
