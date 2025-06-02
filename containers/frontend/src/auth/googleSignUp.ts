@@ -24,8 +24,8 @@ export function setupGoogleSignUp(): void {
 	  .then(response => response.json())
 	  .then(data => {
 		if (data.success) {
-		  sessionStorage.setItem('username', data.username);
-		  sessionStorage.setItem('userId', data.userId);
+		  sessionStorage.setItem('username', data.user.username);
+		  sessionStorage.setItem('userId', data.user.id);
 		  sessionStorage.setItem('token', data.token);
 		  
 		  window.location.href = '/home';

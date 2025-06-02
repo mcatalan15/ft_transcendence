@@ -80,7 +80,7 @@ async function signinHandler(request, reply) {
 		    });
 
         request.session.set('token', authToken);
-        request.session.set('user', { // used to display profile
+        request.session.set('user', {
           id: user.id,
           username: user.username,
           email: user.email,

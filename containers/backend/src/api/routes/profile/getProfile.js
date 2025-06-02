@@ -3,7 +3,7 @@ const { profileSchema } = require('../../schemas/profile');
 
 module.exports = async function (fastify, options) {
 	fastify.get('/api/profile', { 
-		schema: profileSchema, 
+		schema: profileSchema,
 		preHandler: verifyToken,
 	}, async (request, reply) => {
 
@@ -13,6 +13,7 @@ module.exports = async function (fastify, options) {
 		
 		console.log('User:', user.username);
 
+		//TODO: update so that each user sees their profile, not just the last user logged in
 		return reply.status(200).send({
 			id: user.id,
 			username: user.username,
