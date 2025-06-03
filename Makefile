@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/05/09 16:52:20 by nponchon         ###   ########.fr        #
+#    Updated: 2025/06/03 11:54:12 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,11 @@ re:
 	$(MAKE) stop
 	$(MAKE) clean
 	$(MAKE) prod
+
+redev:
+	$(MAKE) stop
+	$(MAKE) clean
+	$(MAKE) dev
 
 frontend:
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build frontend
@@ -50,4 +55,4 @@ fclean:
 	docker image prune -a -f
 
 .PHONY:
-	up down re stop clean fclean frontend dev prod
+	up down re stop clean fclean frontend dev prod redev
