@@ -34,7 +34,7 @@ async function googleAuthRoutes(fastify, options) {
 
 		request.session.set('token', authToken);
 		request.session.set('user', {
-		  id: user.id,
+		  id: user.id_user,
 		  username: user.username,
 		  email: user.email
 		});
@@ -44,7 +44,7 @@ async function googleAuthRoutes(fastify, options) {
           success: true,
           message: 'Google authentication successful',
           user: { 
-            id: user.id,
+            id: user.id_user,
             username: user.username, 
             email: user.email 
           },
@@ -67,7 +67,7 @@ async function googleAuthRoutes(fastify, options) {
 
 	  	request.session.set('token', authToken);
 		request.session.set('user', {
-			id: newUser.id,
+			id: newUser.id_user,
 			username: nickname,
 			email: email
 		});
