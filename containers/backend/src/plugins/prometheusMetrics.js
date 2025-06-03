@@ -26,6 +26,17 @@ const httpRequestsTotal = new client.Counter({
 	//registers: [register]
   });
 
+  const activeGames = new client.Gauge({
+	name: 'pong_games_active',
+	help: 'Number of active Pong games'
+  });
+  
+  const gamesTotal = new client.Counter({
+	name: 'pong_games_total',
+	help: 'Total number of games',
+	labelNames: ['status']
+  });
+
 module.exports = async function (fastify) {
   const collectDefaultMetrics = client.collectDefaultMetrics;
   collectDefaultMetrics();
@@ -56,10 +67,11 @@ module.exports = async function (fastify) {
   });
 
   fastify.decorate('metrics', {
-    //activeGames,
-    //gamesTotal,
+    httpRequestsTotal,
+    httpRequestDuration,
+    activeGames,
+    gamesTotal,
     wsConnections,
-    authAttempts,
-    //redisStatus
+    authAttempts
   });
 };

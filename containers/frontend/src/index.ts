@@ -98,8 +98,8 @@ function router(path: string): void {
         break;
 
     case '/logout':
-	  if (!isUserAuthenticated()){
-        logUserOut('user');
+	  if (isUserAuthenticated()){
+        logUserOut();
 	  }
       navigate('/');
       break;

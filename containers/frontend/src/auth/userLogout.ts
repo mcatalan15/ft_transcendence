@@ -20,6 +20,7 @@ export async function logUserOut(): Promise<{success: boolean, message: string}>
 		}
 
 		// Clear the user data from local storage
+		sessionStorage.removeItem('userId');
 		sessionStorage.removeItem('username');
 		sessionStorage.removeItem('token');
 		
