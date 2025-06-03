@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 17:49:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 15:15:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,10 @@ export class MenuPostProcessingLayer extends Entity {
             bulgePinch: bulgePinch,
             rgbSpilt: rgbSplit,
         }));
+        menu.visualRootFilters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
+        menu.menuContainerFilters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
 
-        menu.visualRoot.filters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
-        menu.menuContainer.filters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
+        menu.visualRoot.filters = menu.visualRootFilters;
+        menu.menuContainer.filters = menu.menuContainerFilters;
     }
 }

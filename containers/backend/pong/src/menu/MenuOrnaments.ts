@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/02 18:00:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 13:40:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,43 +51,39 @@ export class MenuOrnaments extends Entity {
 		const startOrnament = new Graphics();
 		startOrnament.poly(this.startOrnamentPoints);
 		startOrnament.fill(GAME_COLORS.menuBlue);
-		startOrnament.stroke( {color: GAME_COLORS.menuBlue, width: 2} );
-		startOrnament.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2;
+		startOrnament.stroke( {color: GAME_COLORS.menuBlue, width: 3} );
 		startOrnament.y = (this.menu.app.screen.height / 3);
 		startOrnament.label = 'startOrnament';
 		ornaments.addChild(startOrnament);
 
-		const glossaryOrnament = new Graphics();
-		glossaryOrnament.poly(this.glossaryOrnamentPoints);
-		glossaryOrnament.fill(GAME_COLORS.menuGreen);
-		glossaryOrnament.stroke( {color: GAME_COLORS.menuGreen, width: 2} );
-		glossaryOrnament.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2  - this.menu.ornamentOffset;
-		glossaryOrnament.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonSpacing);
-		glossaryOrnament.label = 'glossaryOrnament';
-		ornaments.addChild(glossaryOrnament);
-
 		const optionsOrnament = new Graphics();
 		optionsOrnament.poly(this.optionsOrnamentPoints);
-		optionsOrnament.fill(GAME_COLORS.menuOrange);
-		optionsOrnament.stroke( {color: GAME_COLORS.menuOrange, width: 2} );
-		optionsOrnament.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - this.menu.ornamentOffset * 2;
-		optionsOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonSpacing) * 2);
+		optionsOrnament.fill(GAME_COLORS.menuGreen);
+		optionsOrnament.stroke( {color: GAME_COLORS.menuGreen, width: 3} );
+		optionsOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
 		optionsOrnament.label = 'optionsOrnament';
 		ornaments.addChild(optionsOrnament);
+
+		const glossaryOrnament = new Graphics();
+		glossaryOrnament.poly(this.glossaryOrnamentPoints);
+		glossaryOrnament.fill(GAME_COLORS.menuOrange);
+		glossaryOrnament.stroke( {color: GAME_COLORS.menuOrange, width: 3} );
+		glossaryOrnament.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 2;
+		glossaryOrnament.label = 'glossaryOrnament';
+		ornaments.addChild(glossaryOrnament);
 
 		const aboutOrnament = new Graphics();
 		aboutOrnament.poly(this.aboutOrnamentPoints);
 		aboutOrnament.fill(GAME_COLORS.menuPink);
-		aboutOrnament.stroke( {color: GAME_COLORS.menuPink, width: 2} );
-		aboutOrnament.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - this.menu.ornamentOffset * 3;
-		aboutOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonSpacing) * 3);
+		aboutOrnament.stroke( {color: GAME_COLORS.menuPink, width: 3} );
+		aboutOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3);
 		aboutOrnament.label = 'aboutOrnament';
 		ornaments.addChild(aboutOrnament);
 
 		return (ornaments);
 	}
 
-	updateOrnament(graphic: Container, level: string) {
+	updateOrnament(graphic: Container, level: string, reset: boolean = false) {
 		const redoneGraphic = graphic as Graphics;
 
 		let optionsButton;
@@ -101,84 +97,75 @@ export class MenuOrnaments extends Entity {
 		switch (level) {
 			case ('START'): {
 				redoneGraphic.clear();
-				redoneGraphic.poly(this.getOrnamentPoints('START', true)!);
+				redoneGraphic.poly(this.getOrnamentPoints('START', true, reset)!);
 				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 2} );
-				redoneGraphic.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2;
+				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3);
 				redoneGraphic.label = 'startOrnament';
 				break;
 			}
-			case ('GLOSSARY'): {
-				redoneGraphic.clear();
-				redoneGraphic.poly(this.getOrnamentPoints('GLOSSARY', true)!);
-				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 2} );
-				redoneGraphic.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2  - this.menu.ornamentOffset;
-				redoneGraphic.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonSpacing);
-				redoneGraphic.label = 'glossaryOrnament';
-				break;
-			}
 			case ('OPTIONS'): {
 				redoneGraphic.clear();
-				redoneGraphic.poly(this.getOrnamentPoints('OPTIONS', true)!);
-				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 2} );
-				redoneGraphic.x = ((this.menu.app.screen.width - this.menu.buttonWidth) / 2 - this.menu.ornamentOffset * 2);
-				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonSpacing) * 2);
+				redoneGraphic.poly(this.getOrnamentPoints('OPTIONS', true, reset)!);
+				redoneGraphic.fill(reset? GAME_COLORS.menuGreen : GAME_COLORS.white);
+				redoneGraphic.stroke( {color: reset? GAME_COLORS.menuGreen : GAME_COLORS.white, width: 3} );
+				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
 				redoneGraphic.label = 'optionsOrnament';
+				break;
+			}
+			case ('GLOSSARY'): {
+				redoneGraphic.clear();
+				redoneGraphic.poly(this.getOrnamentPoints('GLOSSARY', true, reset)!);
+				redoneGraphic.fill(GAME_COLORS.white);
+				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
+				redoneGraphic.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 2;
+				redoneGraphic.label = 'glossaryOrnament';
 				break;
 			}
 			case ('ABOUT'): {
 				redoneGraphic.clear();
-				redoneGraphic.poly(this.getOrnamentPoints('ABOUT', true)!);
+				redoneGraphic.poly(this.getOrnamentPoints('ABOUT', true, reset)!);
 				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 2} );
-				redoneGraphic.x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - this.menu.ornamentOffset * 3;
-				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonSpacing) * 3);
+				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
+				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3);
 				redoneGraphic.label = 'aboutOrnament';
 				break;
 			}
 		}
 	}
 
-	getOrnamentPoints(level: string, isClicked: boolean = false): number[] | undefined {
-		const startOrnamentOffset = 300;
-		const glossaryOrnamentOffset = 400;
-		const optionsOrnamentOffset = 477;
-		const aboutOrnamentOffset = 600;
-		
-		if (!isClicked) {
+	getOrnamentPoints(level: string, isClicked: boolean = false, reset:boolean = false): number[] | undefined {
+		if (!isClicked || reset) {
 			switch (level) {
 				case ('START'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset, 0,
-						this.menu.buttonWidth / 2.3, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
 						0, this.menu.buttonHeight
-					]);
-				}
-				case ('GLOSSARY'): {
-					return ([
-						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset, 0,
-						this.menu.buttonWidth / 2.3, this.menu.buttonHeight,
-						0, this.menu.buttonHeight,
 					]);
 				}
 				case ('OPTIONS'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset, 0,
-						this.menu.buttonWidth / 2.3, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap, this.menu.buttonHeight,
+						0, this.menu.buttonHeight,
+					]);
+				}
+				case ('GLOSSARY'): {
+					return ([
+						0, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
 						0, this.menu.buttonHeight,
 					]);
 				}
 				case ('ABOUT'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset, 0,
-						this.menu.buttonWidth / 2.3, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
 						0, this.menu.buttonHeight,
 					]);
 				}
@@ -188,32 +175,32 @@ export class MenuOrnaments extends Entity {
 				case ('START'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset - startOrnamentOffset, 0,
-						this.menu.buttonWidth / 2.3 - startOrnamentOffset, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
 						0, this.menu.buttonHeight
-					]);
-				}
-				case ('GLOSSARY'): {
-					return ([
-						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset - glossaryOrnamentOffset, 0,
-						this.menu.buttonWidth / 2.3 - glossaryOrnamentOffset, this.menu.buttonHeight,
-						0, this.menu.buttonHeight,
 					]);
 				}
 				case ('OPTIONS'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset - optionsOrnamentOffset, 0,
-						this.menu.buttonWidth / 2.3 - optionsOrnamentOffset, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.buttonSlant + 15, 0,
+						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + 15, this.menu.buttonHeight,
+						0, this.menu.buttonHeight,
+					]);
+				}
+				case ('GLOSSARY'): {
+					return ([
+						0, 0,
+						(this.menu.app.screen.width - this.menu.buttonWidth) / 2 - (this.menu.buttonWidth / 2) - this.menu.ornamentOffset + 10 - this.menu.ornamentOffset, 0,
+						(this.menu.app.screen.width - this.menu.buttonWidth) / 2 - (this.menu.buttonWidth / 2) - this.menu.ornamentOffset + 10 - this.menu.ornamentOffset - this.menu.buttonSlant, this.menu.buttonHeight,
 						0, this.menu.buttonHeight,
 					]);
 				}
 				case ('ABOUT'): {
 					return ([
 						0, 0,
-						this.menu.buttonWidth / 2.3 + this.slantOffset - aboutOrnamentOffset, 0,
-						this.menu.buttonWidth / 2.3 - aboutOrnamentOffset, this.menu.buttonHeight,
+						(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+						(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
 						0, this.menu.buttonHeight,
 					]);
 				}

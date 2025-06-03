@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/02 16:04:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 14:58:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,17 @@ import { RenderComponent } from '../components/RenderComponent';
 import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
+
+import { MenuPostProcessingLayer } from '../menu/MenuPostProcessingLayer';
 import { MenuLine } from '../menu/MenuLine';
 import { MenuButton } from '../menu/MenuButton';
+import { MenuXButton } from '../menu/MenuXButton';
+import { MenuHalfButton } from '../menu/MenuHalfButton';
 import { MenuOrnaments } from '../menu/MenuOrnaments';
+
+export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
+	return entity instanceof MenuPostProcessingLayer
+}
 
 export function isPaddle(entity: Entity): entity is Paddle {
 	return entity instanceof Paddle;
@@ -85,6 +93,14 @@ export function isWall(entity: Entity): entity is Wall {
 
 export function isMenuButton(entity: Entity): entity is MenuButton {
 	return entity instanceof MenuButton;
+}
+
+export function isMenuXButton(entity: Entity): entity is MenuXButton {
+	return entity instanceof MenuXButton;
+}
+
+export function isMenuHalfButton(entity: Entity): entity is MenuHalfButton {
+	return entity instanceof MenuHalfButton;
 }
 
 export function isMenuOrnaments(entity: Entity): entity is MenuOrnaments {

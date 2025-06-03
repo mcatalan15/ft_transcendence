@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/02 18:04:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 15:14:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,17 @@ export class Menu{
     systems: System[] = [];
 	eventQueue: GameEvent[] = [];
 	menuContainer: Container;
-	buttonWidth: number;
+	buttonWidth: number = 200;
 	buttonHeight:number = 60;
-	buttonSpacing: number = 20;
+	buttonVerticalOffset: number = 20;
+	buttonSlant: number = 20;
+	buttonXWidth: number = 20;
+	halfButtonWidth = this.buttonWidth + 11;
+	halfButtonHeight = 25;
+	halfButtonOffset = 35;
+	halfButtonSlant = this.buttonSlant * (25 / 60) + 0.5;
 	ornamentOffset: number = 25;
+	ornamentGap: number = 80;
 	renderLayers: {
 		blackEnd: Container;
 		logo: Container;
@@ -79,6 +86,8 @@ export class Menu{
 		pp: Container;
 	};
 	visualRoot: Container;
+	visualRootFilters: any[] = [];
+	menuContainerFilters: [] = [];
 	sounds!: MenuSounds;
 
 	// SUB-MENU stuff
@@ -90,7 +99,6 @@ export class Menu{
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
-		this.buttonWidth = app.screen.width;
 		this.menuContainer = new Container();
 
 		this.renderLayers = {
@@ -185,18 +193,18 @@ export class Menu{
 				index: 0
 			},
 			{
-				text: 'GLOSSARY',
+				text: 'OPTIONS',
 				onClick: () => {
-					console.log('Glossary clicked');
+					console.log('Options clicked');
 					this.sounds.menuSelect.play();
 				},
 				color: GAME_COLORS.menuGreen,
 				index: 1
 			},
 			{
-				text: 'OPTIONS',
+				text: 'GLOSSARY',
 				onClick: () => {
-					console.log('Options clicked');
+					console.log('Glossary clicked');
 					this.sounds.menuSelect.play();
 				},
 				color: GAME_COLORS.menuOrange,
@@ -221,8 +229,8 @@ export class Menu{
 				config
 			);
 
-			const x = (app.screen.width - this.buttonWidth) / 2;
-			const y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonSpacing));
+			const x = (app.screen.width - this.buttonWidth) / 2 - (index * (this.buttonSlant + 5));
+			const y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonVerticalOffset));
 			menuButton.setPosition(x, y);
 
 			this.entities.push(menuButton);
@@ -296,10 +304,7 @@ export class Menu{
 
 
 		// Create Postprocessing Layer
-		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
-		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
-		this.renderLayers.pp.addChild(ppRender.graphic);
-		this.entities.push(postProcessingLayer);
+		this.createPostProcessingLayer();
 
 		// Create frame
 		const frame = new Graphics();
@@ -385,6 +390,13 @@ export class Menu{
 		MenuParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
 	}
 	
+	createPostProcessingLayer() {
+		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
+		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
+		this.renderLayers.pp.addChild(ppRender.graphic);
+		this.entities.push(postProcessingLayer);
+	}
+
 	createBoundingBoxes() {
 		const boundingBoxA = new Graphics();
 		boundingBoxA.rect(0, 0, this.width, this.height);

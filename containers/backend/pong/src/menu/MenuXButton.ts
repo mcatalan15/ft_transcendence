@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MenuButton.ts                                      :+:      :+:    :+:   */
+/*   MenuXButton.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 13:05:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 11:52:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ import { RenderComponent } from '../components/RenderComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
-import { getButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
+import { getButtonPoints, getXButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
 import { MenuOrnaments } from './MenuOrnaments';
 import { isMenuOrnaments } from '../utils/Guards';
 
-export class MenuButton extends Entity {
+export class MenuXButton extends Entity {
     private buttonContainer: Container;
     private buttonPolygon: Graphics;
     private buttonText: Text;
@@ -50,6 +50,7 @@ export class MenuButton extends Entity {
                 fontSize: 24,
                 fontFamily: 'monospace',
                 fontWeight: 'bold',
+                fontStyle: 'italic',
             }
         });
         this.buttonContainer.addChild(this.buttonPolygon);
@@ -64,9 +65,6 @@ export class MenuButton extends Entity {
     createButton(isHovered: boolean = false, isClicked: boolean = false): void {
         this.buttonPolygon.clear();
         
-        const width = this.menu.buttonWidth;
-        const height = this.menu.buttonHeight;
-        const index = this.config.index;
         const color = isHovered ? GAME_COLORS.white : this.config.color;
 
         this.makeButtonPolygon(color, isHovered, isClicked);
@@ -74,14 +72,14 @@ export class MenuButton extends Entity {
         this.buttonText.style.fill = isHovered ? GAME_COLORS.black : color;
 		if (!isClicked) {
 			this.buttonText.anchor.set(0.5);
-			this.buttonText.x = this.menu.buttonWidth / 2;
+			this.buttonText.x = this.menu.buttonXWidth / 2 + 2;
 			this.buttonText.y = this.menu.buttonHeight / 2;
 		}
     }
 
     private makeButtonPolygon(color: number, filled: boolean, isClicked: boolean = false): void { 
 
-		const points = getButtonPoints(this.menu, this);
+		const points = getXButtonPoints(this.menu, this);
 
         if (this.originalButtonPolygonPoints.length === 0) {
             this.originalButtonPolygonPoints = [...points!];
@@ -99,32 +97,11 @@ export class MenuButton extends Entity {
 
     private setupEventHandlers(): void {
         this.buttonContainer.on('pointerdown', (event: FederatedPointerEvent) => { 
-            if (this.config.text === 'START') {
-                this.menu.eventQueue.push({
-                    type: 'START_CLICK',
-                    target: this.buttonContainer,
-                    buttonName: this.config.text
-                });
-            } else if (this.config.text === 'OPTIONS') {
-                this.menu.eventQueue.push({
-                    type: 'OPTIONS_CLICK',
-                    target: this.buttonContainer,
-                    buttonName: this.config.text
-                });
-            } else if (this.config.text === 'GLOSSARY') {
-                this.menu.eventQueue.push({
-                    type: 'GLOSSARY_CLICK',
-                    target: this.buttonContainer,
-                    buttonName: this.config.text
-                });
-            } else if (this.config.text === 'ABOUT') {
-                this.menu.eventQueue.push({
-                    type: 'ABOUT_CLICK',
-                    target: this.buttonContainer,
-                    buttonName: this.config.text
-                });
-            }
-            
+            this.menu.eventQueue.push({
+                type: 'OPTIONS_BACK',
+                target: this.buttonContainer,
+                buttonName: 'optionsXButton'
+            });
             this.config.onClick();
         });
 
@@ -206,7 +183,7 @@ export class MenuButton extends Entity {
     public updateButtonPolygon(filled?: boolean, color?: number): void {
         this.buttonPolygon.clear();
         
-		const points = getButtonPoints(this.menu, this);
+		const points = getXButtonPoints(this.menu, this);
 		this.buttonPolygon.poly(points!);
         
         const fillColor = color || (this.isHovered ? GAME_COLORS.white : this.config.color);
@@ -226,12 +203,7 @@ export class MenuButton extends Entity {
         this.createButton(this.isHovered);
     }
 
-	public repositionButtonText(button: MenuButton, factor: number) {
-		const text = button.getTextObject();
-		text.x -= factor;
-	}
-
-	highlightOrnament(button: MenuButton) {
+	highlightOrnament(button: MenuXButton) {
 		let ornaments;
 
 		for (const entity of this.menu.entities) {
@@ -251,13 +223,13 @@ export class MenuButton extends Entity {
 				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
 				break;
 			}
-			case ('OPTIONS'): {
+			case ('GLOSSARY'): {
 				targetChild = graphic!.children[1] as Graphics;
 				targetChild.fill(GAME_COLORS.white);
 				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
 				break;
 			}
-            case ('GLOSSARY'): {
+			case ('OPTIONS'): {
 				targetChild = graphic!.children[2] as Graphics;
 				targetChild.fill(GAME_COLORS.white);
 				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
@@ -272,7 +244,7 @@ export class MenuButton extends Entity {
 		}
 	}
 
-	resetOrnamentColor(button: MenuButton) {
+	resetOrnamentColor(button: MenuXButton) {
 		let ornaments;
 
 		for (const entity of this.menu.entities) {
@@ -289,25 +261,25 @@ export class MenuButton extends Entity {
 			case ('START'): {
 				targetChild = graphic!.children[0] as Graphics;
 				targetChild.fill(GAME_COLORS.menuBlue);
-				targetChild.stroke( {color: GAME_COLORS.menuBlue, width: 3} );
+				targetChild.stroke( {color: GAME_COLORS.menuBlue, width: 2} );
+				break;
+			}
+			case ('GLOSSARY'): {
+				targetChild = graphic!.children[1] as Graphics;
+				targetChild.fill(GAME_COLORS.menuGreen);
+				targetChild.stroke( {color: GAME_COLORS.menuGreen, width: 2} );
 				break;
 			}
 			case ('OPTIONS'): {
-				targetChild = graphic!.children[1] as Graphics;
-				targetChild.fill(GAME_COLORS.menuGreen);
-				targetChild.stroke( {color: GAME_COLORS.menuGreen, width: 3} );
-				break;
-			}
-            case ('GLOSSARY'): {
 				targetChild = graphic!.children[2] as Graphics;
 				targetChild.fill(GAME_COLORS.menuOrange);
-				targetChild.stroke( {color: GAME_COLORS.menuOrange, width: 3} );
+				targetChild.stroke( {color: GAME_COLORS.menuOrange, width: 2} );
 				break;
 			}
 			case ('ABOUT'): {
 				targetChild = graphic!.children[3] as Graphics;
 				targetChild.fill(GAME_COLORS.menuPink);
-				targetChild.stroke( {color: GAME_COLORS.menuPink, width: 3} );
+				targetChild.stroke( {color: GAME_COLORS.menuPink, width: 2} );
 				break;
 			}
 		}
