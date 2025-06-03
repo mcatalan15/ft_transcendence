@@ -39,6 +39,7 @@ async function googleAuthRoutes(fastify, options) {
 		  email: user.email
 		});
 
+		fastify.metrics.authAttempts.labels('local', 'success').inc();
         return reply.status(200).send({
           success: true,
           message: 'Google authentication successful',
@@ -71,6 +72,7 @@ async function googleAuthRoutes(fastify, options) {
 			email: email
 		});
 
+	  fastify.metrics.authAttempts.labels('local', 'success').inc();
       return reply.status(201).send({
         success: true,
         message: 'User registered successfully',
@@ -84,6 +86,7 @@ async function googleAuthRoutes(fastify, options) {
 
 	} catch (error) {
       fastify.log.error(error);
+	  fastify.metrics.authAttempts.labels('local', 'failure').inc();
       return reply.status(401).send({
 		success: false,
 		message: 'Invalid Token' });
