@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 11:52:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 17:31:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ export class MenuXButton extends Entity {
                 fontFamily: 'monospace',
                 fontWeight: 'bold',
                 fontStyle: 'italic',
+                padding: 1.5,
             }
         });
         this.buttonContainer.addChild(this.buttonPolygon);
@@ -72,7 +73,7 @@ export class MenuXButton extends Entity {
         this.buttonText.style.fill = isHovered ? GAME_COLORS.black : color;
 		if (!isClicked) {
 			this.buttonText.anchor.set(0.5);
-			this.buttonText.x = this.menu.buttonXWidth / 2 + 2;
+			this.buttonText.x = this.menu.buttonXWidth / 2 + 4;
 			this.buttonText.y = this.menu.buttonHeight / 2;
 		}
     }

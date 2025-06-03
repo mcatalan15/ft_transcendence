@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 15:14:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/03 17:37:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ export class Menu{
 	};
 	visualRoot: Container;
 	visualRootFilters: any[] = [];
-	menuContainerFilters: [] = [];
+	menuContainerFilters: any[] = [];
 	sounds!: MenuSounds;
 
 	// SUB-MENU stuff
@@ -182,12 +182,12 @@ export class Menu{
 				onClick: async () => {
 					console.log("Starting game...");
 					
-					this.cleanup();
+					/* this.cleanup();
 					
 					const game = new PongGame(app);
 					this.sounds.menuConfirm.play();
 					this.sounds.menuBGM.stop();
-					await game.init();
+					await game.init(); */
 				},
 				color: GAME_COLORS.menuBlue,
 				index: 0
