@@ -24,6 +24,7 @@ export function setupGoogleSignUp(): void {
 	  .then(response => response.json())
 	  .then(data => {
 		if (data.success) {
+		  console.log(data.user.id);
 		  sessionStorage.setItem('username', data.user.username);
 		  sessionStorage.setItem('userId', data.user.id);
 		  sessionStorage.setItem('token', data.token);

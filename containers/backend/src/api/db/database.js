@@ -104,6 +104,8 @@ async function getUserByEmail(email) {
 				return;
 			}
 			if (row) {
+				console.log(row);
+				console.log('Available keys:', Object.keys(row));
 				resolve(row);
 			} else {
 				resolve(null);
@@ -220,7 +222,7 @@ module.exports = {
 	saveGameToDatabase,
 	getLatestGame,
 	saveTwoFactorSecret,
-  getTwoFactorSecret,
-  enableTwoFactor 
+	getTwoFactorSecret,
+	enableTwoFactor 
 	// Add other database functions here as needed
 };

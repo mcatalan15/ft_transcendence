@@ -1,4 +1,3 @@
-// src/views/lobby.ts
 import { WebSocketManager } from '../network/WebSocketManager';
 
 export function showLobby(container: HTMLElement, userId: string) {

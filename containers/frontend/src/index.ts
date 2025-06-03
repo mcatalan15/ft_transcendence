@@ -41,74 +41,73 @@ function router(path: string): void {
 	console.log('Current game destroyed');
   }
 
-  const url = new URL(window.location.href);
+/*   const url = new URL(window.location.href);
   const pathname = url.pathname;
 
-  if (pathname === '/pong') {
+  if (pathname === '/pong' && isUserAuthenticated()) {
     const gameId = url.searchParams.get('gameId');
     const isHost = url.searchParams.get('isHost') === 'true';
     showPong(app, gameId, isHost);
     return;
-  }
+  } */
 
   switch(path)
   {
     case'/':
-      showLanding(app);
-      break;
+		showLanding(app);
+		break;
 
     case '/signin':
-      showSignIn(app);
-      break;
+		showSignIn(app);
+		break;
 
     case '/signup':
-      showSignUp(app);
-      break;
+		showSignUp(app);
+		break;
 
-/*     case '/pong':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-      showPong(app);
-      break; */
+    case '/pong':
+		if (!isUserAuthenticated()) {
+			navigate('/');
+			return;
+		}
+		break;
 
     case '/home':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-      showHome(app);
-      break;
+		if (!isUserAuthenticated()) {
+			navigate('/');
+			return;
+		}
+		showHome(app);
+		break;
 
     case '/profile':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-        showProfile(app);
-        break;
+		if (!isUserAuthenticated()) {
+			navigate('/');
+			return;
+		}
+			showProfile(app);
+			break;
 
     case '/chat':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-        showChat(app);
-        break;
+		if (!isUserAuthenticated()) {
+			navigate('/');
+			return;
+		}
+			showChat(app);
+			break;
 
     case '/logout':
-	  if (!isUserAuthenticated()){
-        logUserOut('user');
-	  }
-      navigate('/');
-      break;
+		if (isUserAuthenticated()){
+			logUserOut();
+		}
+		navigate('/');
+		break;
 
 	case '/lobby':
-	if (!isUserAuthenticated()) {
-		navigate('/');
-		return;
-	}
+		if (!isUserAuthenticated()) {
+			navigate('/');
+			return;
+		}
 		showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
 		break;
 
