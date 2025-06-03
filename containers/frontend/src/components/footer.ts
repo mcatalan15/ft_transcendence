@@ -10,3 +10,12 @@ Informacion legal
 Mapa del sitio
 
 FAQ
+
+1 - Copyright
+
+2 - Sitemap
+
+3 - Privacy Policy
+
+4 - logo 42 ?
+

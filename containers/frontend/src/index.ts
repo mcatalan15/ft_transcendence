@@ -8,5 +8,4 @@ if (!app) throw new Error('App container not found');
 // Exponer `navigate()` globalmente para uso en HTML y componentes
 (window as any).navigate = navigate;
 
-// Iniciar router con el contenedor
 startRouter(app);

@@ -58,10 +58,10 @@ function renderRoute(path: string) {
       showPong(appContainer);
       break;
     case '/profile':
-      if (!isUserAuthenticated()) {
+      /*if (!isUserAuthenticated()) {
         navigate('/');
         return;
-      }
+      }*/
       showProfile(appContainer);
       break;
     case '/logout':
