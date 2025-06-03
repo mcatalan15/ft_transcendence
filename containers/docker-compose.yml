@@ -18,6 +18,9 @@ volumes:
   certs:  # SSL certificates
     driver: local
 
+  redis_data:
+    driver: local
+
   prometheus_data:
     driver: local
   grafana_data:
@@ -66,7 +69,7 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "127.0.0.1:3100:3100"
+      - "3100:3100"
     volumes:
       - userbase:/usr/src/app/db
     env_file:
@@ -74,11 +77,29 @@ services:
     restart: always
     networks:
       - transcendence
+    depends_on:
+      redis:
+        condition: service_started
     healthcheck:
       test: ["CMD", "sqlite3", "db/mydatabase.db", "SELECT 1"]
       interval: 10s
       retries: 5
       timeout: 5s
+
+#                       REDIS                           #
+
+  redis:
+    build: ./redis
+    container_name: redis
+    env_file:
+      - .env
+    ports:
+      - "6380:6379"
+    restart: always
+    networks:
+      - transcendence
+    volumes:
+      - redis_data:/data
 
 #                       ADMINER                         #
 
@@ -91,7 +112,6 @@ services:
     environment:
       - PUID=1000  # Adjust to match your user ID (UID) if needed
       - PGID=1000  # Adjust to match your group ID (GID) if needed
-      - TZ=Etc/UTC  # Set timezone
     volumes:
       - userbase:/db
     ports:

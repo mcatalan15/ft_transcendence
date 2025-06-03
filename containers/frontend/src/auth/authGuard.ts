@@ -1,10 +1,9 @@
 export function isUserAuthenticated(): boolean {
-	  const user = sessionStorage.getItem('authToken');
-	return user !== null;
+	return sessionStorage.getItem('username') ? true : false;
 }
 
 export function protectRoute(): void {
 	if (!isUserAuthenticated()) {
-	  navigate('/landing');
+	  navigate('/');
 	}
   }

@@ -161,9 +161,10 @@ export function showHome(container: HTMLElement): void {
 	homeDiv.innerHTML = `
 		<h1>Home</h1>
 		<div><button onclick="navigate('/pong')">Play</button></div>
-		<div><button onclick="navigate('/signin')">Login</button></div>
+		<div><button onclick="navigate('/lobby')">Lobby</button></div>
 		<div><button onclick="navigate('/profile')">Profile</button></div>
 		<div><button onclick="navigate('/blockchain')">Blockchain</button></div>
+		<div><button onclick="navigate('/chat')">Chat</button></div>
 		<div><button onclick="navigate('/logout')">Logout</button></div>
 		<select id="lang-switcher">
 		<option value="fr">🇫🇷 FR</option>
@@ -173,5 +174,6 @@ export function showHome(container: HTMLElement): void {
 		`;
 
 	container.appendChild(homeDiv);
+
   }*/
   

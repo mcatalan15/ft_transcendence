@@ -1,0 +1,226 @@
+const sqlite3 = require('sqlite3').verbose();
+
+const dbPath = '/usr/src/app/db/mydatabase.db';
+const db = connectToDatabase();
+
+function connectToDatabase(retries = 5, delay = 2000) {
+	const db = new sqlite3.Database(dbPath, (err) => {
+		if (err) {
+		console.error(`Error opening database (attempts left: ${retries}):`, err.message);
+		if (retries > 0) {
+			console.log(`Retrying in ${delay/1000} seconds...`);
+			setTimeout(() => connectToDatabase(retries - 1, delay), delay);
+		} else {
+			console.error('Failed to connect to database after multiple attempts');
+		}
+		} else {
+		console.log('Connected to SQLite database successfully');
+		}
+	});
+	return db;
+}
+
+async function saveUserToDatabase(username, email, hashedPassword, provider) {
+	return new Promise((resolve, reject) => {
+	const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
+	const params = [username, email, hashedPassword, provider];
+
+		db.run(query, params, function (err) {
+			if (err) {
+				console.error('[DB INSERT ERROR] Full error:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno,
+					stack: err.stack
+				  });
+
+				if (err.message.includes('UNIQUE constraint failed')) {
+					const customError = new Error('Username or email already exists');
+					customError.code = 'SQLITE_CONSTRAINT';
+					reject(customError);
+				} else {
+					reject(err);
+				}
+			} else {
+				resolve(this.lastID);
+			}
+		});
+	});
+}
+
+async function checkUserExists(username, email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+		db.get(query, [username, email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve({
+					exists: true,
+					usernameExists: row.username === username,
+					emailExists: row.email === email
+				});
+			} else {
+				resolve({ exists: false });
+			}
+		});
+	});
+}
+
+async function isDatabaseHealthy() {
+	return new Promise((resolve) => {
+	db.get('SELECT 1', (err) => resolve(!err));
+	});
+}
+
+async function getHashedPassword(email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT password FROM users WHERE email = ?`;
+		db.get(query, [email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve(row.password);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+
+async function getUserByEmail(email) {
+	return new Promise((resolve, reject) => {
+	const query = `SELECT * FROM users WHERE email = ?`;
+		db.get(query, [email], (err, row) => {
+			if (err) {
+				console.error('[DB ERROR]', err);
+				reject(new Error('Database error'));
+				return;
+			}
+			if (row) {
+				resolve(row);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+
+//ADD ASYN FUNC TO SCORES (API)
+async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
+	return new Promise((resolve, reject) => {
+		const query = `INSERT INTO games (player1_name, player1_score,player2_name, player2_score, winner_name) VALUES (?, ?, ?, ?, ?)`;
+		const params = [player1_name, player1_score,player2_name, player2_score, winner_name];
+		db.run(query, params, function (err) {
+			if (err) {
+				console.error('[DB INSERT ERROR] Full error:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno,
+					stack: err.stack
+				});
+				reject(err);
+			} else {
+				resolve(this.lastID);
+			}
+		});
+	});
+}
+
+async function getLatestGame() {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
+        db.get(query, (err, row) => {
+            if (err) {
+                console.error('[DB FETCH ERROR]', err);
+                reject(err);
+            } else {
+                resolve(row || null);
+            }
+        });
+    });
+}
+
+async function saveTwoFactorSecret(userId, secret) {
+    return new Promise((resolve, reject) => {
+        const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
+        // Initially, twoFactorEnabled is FALSE until the user successfully verifies the code
+        const params = [secret, false, userId];
+
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error(`[DB ERROR] Failed to save 2FA secret for user ${userId}:`, err.message);
+                reject(new Error('Database error saving 2FA secret.'));
+            } else if (this.changes === 0) {
+                // If no rows were updated, it means the userId probably doesn't exist
+                console.warn(`[DB WARN] No user found with ID ${userId} to save 2FA secret.`);
+                reject(new Error('User not found.'));
+            } else {
+                console.log(`[DB] Saved 2FA secret for user ${userId}.`);
+                resolve(true);
+            }
+        });
+    });
+}
+
+async function getTwoFactorSecret(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT twoFactorSecret, twoFactorEnabled FROM users WHERE id_user = ?`;
+
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error(`[DB ERROR] Failed to get 2FA secret for user ${userId}:`, err.message);
+                reject(new Error('Database error getting 2FA secret.'));
+            } else if (row) {
+                console.log(`[DB] Fetched 2FA secret for user ${userId}.`);
+                resolve(row.twoFactorSecret); // Return just the secret
+            } else {
+                console.log(`[DB] No user found with ID ${userId} or no 2FA secret set.`);
+                resolve(null); // No secret found for this user
+            }
+        });
+    });
+}
+
+async function enableTwoFactor(userId, secret) {
+    return new Promise((resolve, reject) => {
+        // You might want to also ensure the provided 'secret' matches the stored one
+        // before enabling. For now, we trust the handler has done this.
+        const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
+        const params = [secret, true, userId]; // Set twoFactorEnabled to TRUE
+
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error(`[DB ERROR] Failed to enable 2FA for user ${userId}:`, err.message);
+                reject(new Error('Database error enabling 2FA.'));
+            } else if (this.changes === 0) {
+                console.warn(`[DB WARN] No user found with ID ${userId} to enable 2FA.`);
+                reject(new Error('User not found.'));
+            } else {
+                console.log(`[DB] Enabled 2FA for user ${userId}.`);
+                resolve(true);
+            }
+        });
+    });
+}
+
+module.exports = {
+	db,
+	checkUserExists,
+	saveUserToDatabase,
+	isDatabaseHealthy,
+	getHashedPassword,
+	getUserByEmail,
+	saveGameToDatabase,
+	getLatestGame,
+	saveTwoFactorSecret,
+  getTwoFactorSecret,
+  enableTwoFactor 
+	// Add other database functions here as needed
+};

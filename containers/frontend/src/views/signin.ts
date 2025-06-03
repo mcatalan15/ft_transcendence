@@ -1,25 +1,17 @@
+import { loadGoogleScript, setupGoogleSignUp } from "../auth/googleSignUp";
+
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
 import { localSignIn } from '../auth/localSignIn';
 import { navigate } from '../utils/router';
-
-function loadGoogleScript(): void {
-  if (document.getElementById('google-script')) return;
-
-  const script = document.createElement('script');
-  script.src = 'https://accounts.google.com/gsi/client';
-  script.id = 'google-script';
-  script.async = true;
-  script.defer = true;
-  document.head.appendChild(script);
-}
 
 export function showSignIn(container: HTMLElement): void {
   i18n
     .loadNamespaces('signin')
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
-      loadGoogleScript();
+      	loadGoogleScript();
+	      setupGoogleSignUp()
 
       const wrapper = document.createElement('div');
       wrapper.innerHTML = `
@@ -95,6 +87,7 @@ export function showSignIn(container: HTMLElement): void {
         e.preventDefault();
         navigate('/signup');
       });
+
 
       const langSelector = new LanguageSelector(() => {
         const emailInput = wrapper.querySelector('#email') as HTMLInputElement;
