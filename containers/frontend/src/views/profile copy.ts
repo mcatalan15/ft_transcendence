@@ -3,7 +3,6 @@ import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
-import { navigate } from '../utils/router';
 
 export async function showProfile(container: HTMLElement) {
 	try {
@@ -15,38 +14,6 @@ export async function showProfile(container: HTMLElement) {
 
 	container.innerHTML = '';
   
-	const profileDiv = document.createElement('div');
-	profileDiv.innerHTML = `
-		<h1>Profile</h1>
-		<p id="profileInfo"></p>
-		<button style='margin-right:16px' onclick="navigate('/home')">Return home</button>
-	`;
-
-	const profileInfo = profileDiv.querySelector('#profileInfo') as HTMLParagraphElement;
-
-	// Fetch and display user profile information
-	fetch('/api/profile', {
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-	})
-		.then(response => response.json())
-		.then(data => {
-			profileInfo.innerHTML = `
-			<form>
-			<label for="username">Nickname: </label>
-			<input type="text" id="username" name="username" value=${data.username}><br>
-			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" value=${data.email}><br>
-			</form>
-		  `;
-		})
-		.catch(error => {
-			navigate('/home');
- 			console.error('Error fetching profile:', error);
-		});
-
 	const hasMenu = false;
 	
 	if (hasMenu) {
@@ -100,6 +67,39 @@ export async function showProfile(container: HTMLElement) {
 	  );
 	  container.appendChild(menuWrapper);
 	}
+
+
+	const profileDiv = document.createElement('div');
+	profileDiv.innerHTML = `
+		<h1>Profile</h1>
+		<p id="profileInfo"></p>
+		<button style='margin-right:16px' onclick="navigate('/home')">Return home</button>
+	`;
+
+	const profileInfo = profileDiv.querySelector('#profileInfo') as HTMLParagraphElement;
+
+	// Fetch and display user profile information
+	fetch('/api/profile', {
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	})
+		.then(response => response.json())
+		.then(data => {
+			profileInfo.innerHTML = `
+			<div>ID: ${data.id}</div>
+			<div>Username: ${data.username}</div>
+			<div>Email: ${data.email}</div>
+		  `;
+		})
+		.catch(error => {
+			navigate('/home');
+ 			console.error('Error fetching profile:', error);
+		});
+
+	container.innerHTML = '';
 	container.appendChild(profileDiv);
+
 	translateDOM();
 }

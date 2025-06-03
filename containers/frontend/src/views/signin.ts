@@ -39,9 +39,13 @@ export function showSignIn(container: HTMLElement): void {
             </div>
             <div>
               <div id="g_id_onload"
-                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                data-login_uri="https://your.domain/your_login_endpoint"
-                data-auto_prompt="false">
+                data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
+					      data-context="signin"
+					      data-login_uri="http://localhost:5173"
+					      data-auto_select="true"
+					      data-callback="handleGoogleSignUp"
+					      data-itp_support="true"
+					      data-auto_prompt="false">
               </div>
               <div class="g_id_signin"
                 data-type="standard"

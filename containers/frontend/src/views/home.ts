@@ -3,6 +3,7 @@ import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
+import { navigate } from '../utils/router';
 import { createHomeAnimation } from '../components/homeAnimation';
 
 export async function showHome(container: HTMLElement) {
@@ -10,14 +11,12 @@ export async function showHome(container: HTMLElement) {
     await i18n.loadNamespaces(['home']);
     await i18n.changeLanguage(i18n.language);
   } catch (e) { 
-    console.warn('i18n fallo', e); 
+    console.warn('i18n home:error', e); 
   }
 
-  // 1) Vider et configurer le layout principal
   container.innerHTML = '';
   
-  // Adapter la grille selon si on a un menu ou pas
-  const hasMenu = false; // Change ça selon tes besoins
+  const hasMenu = false;
   
   if (hasMenu) {
     container.className = [
@@ -46,7 +45,7 @@ export async function showHome(container: HTMLElement) {
   );
   container.appendChild(headerWrapper);
 
-  // 3) Selector de idioma
+  // 3) Selector Language
   const langSelector = new LanguageSelector(() => translateDOM()).getElement();
   langSelector.classList.add(
     'row-start-1',
@@ -57,7 +56,6 @@ export async function showHome(container: HTMLElement) {
   );
   container.appendChild(langSelector);
 
-  // 4) Menu (si nécessaire)
   if (hasMenu) {
     const menuWrapper = new Menu().getElement();
     menuWrapper.classList.add(
@@ -73,7 +71,7 @@ export async function showHome(container: HTMLElement) {
   }
 
   // 5) Zone de contenu avec animation
-  const contentWrapper = document.createElement('div');
+  /*const contentWrapper = document.createElement('div');
   contentWrapper.className = [
     'row-start-2',
     hasMenu ? 'col-start-2' : 'col-start-1',
@@ -111,47 +109,18 @@ export async function showHome(container: HTMLElement) {
 
   contentWrapper.appendChild(animBox);
   container.appendChild(contentWrapper);
-
-  // 6) Traduction finale
+*/
   translateDOM();
-
-  // 7) Gestion responsive pour mobile
-  const handleResize = () => {
-    const isMobile = window.innerWidth < 768;
-    
-    if (isMobile && hasMenu) {
-      // Sur mobile, cacher le menu et utiliser un layout simple
-      container.className = [
-        'grid',
-        'grid-rows-[auto_1fr]',
-        'h-screen',
-        'overflow-hidden'
-      ].join(' ');
-      
-      // Ajuster les classes des éléments
-      headerWrapper.className = headerWrapper.className.replace('col-span-2', 'col-span-1');
-      langSelector.className = langSelector.className.replace('col-start-2', 'col-start-1');
-      contentWrapper.className = contentWrapper.className.replace('col-start-2', 'col-start-1');
-      
-      // Cacher le menu sur mobile
-      //const menuWrapper = container.querySelector('.row-start-2.col-start-1');
-      //if (menuWrapper && menuWrapper !== contentWrapper) {
-      //  (menuWrapper as HTMLElement).style.display = 'none';
-      //}
-    }
-  };
-
-  // Écouter les changements de taille
-  window.addEventListener('resize', handleResize);
-  handleResize(); // Appel initial
+  //  }
+//  };
 
   // Nettoyer l'event listener quand on quitte la page
-  const cleanup = () => {
+  /*const cleanup = () => {
     window.removeEventListener('resize', handleResize);
-  };
+  };*/
   
   // Stocker la fonction de nettoyage pour pouvoir l'appeler plus tard
-  (container as any).__homeCleanup = cleanup;
+  //(container as any).__homeCleanup = cleanup;
 }
 
 

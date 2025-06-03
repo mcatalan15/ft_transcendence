@@ -5,7 +5,7 @@ export class Header {
 
   constructor() {
     this.element = document.createElement('header');
-    this.element.className = 'fixed top-0 left-0 w-full bg-white shadow-sm z-50';
+    this.element.className = 'fixed top-0 left-0 w-full bg-neutral-900 shadow-sm z-50';
 
     const nav = document.createElement('nav');
     nav.className = 'relative max-w-7xl mx-auto flex items-center justify-between p-4';
@@ -13,7 +13,7 @@ export class Header {
     const title = document.createElement('a');
     title.href = '/home';
     title.className = 'text-xl font-semibold';
-    title.setAttribute('data-i18n', 'header.title');
+    title.setAttribute('data-i18n', 'PONG.title');
 
     const menu = new Menu().getElement();
 

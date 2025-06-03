@@ -5,7 +5,7 @@ import { navigate } from '../utils/router';
 export function showLanding(container: HTMLElement): void {
   i18n
     .loadNamespaces('landing')
-    .then(() => i18n.changeLanguage(i18n.language)) // 🟡 
+    .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       const landingDiv = document.createElement('div');
       landingDiv.innerHTML = `

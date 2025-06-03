@@ -10,7 +10,7 @@ export class Menu {
 
     this.container.innerHTML = `
       <!-- Botón Menu -->
-      <div id="menu-button" class="flex items-center gap-2 cursor-pointer text-gray-800 hover:text-black">
+      <div id="menu-button" class="flex items-center gap-2 cursor-pointer font-bold text-amber-50 hover:text-amber-50">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
           stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -20,14 +20,14 @@ export class Menu {
       </div>
 
       <!-- Overlay -->
-      <div id="menu-overlay" class="hidden fixed inset-0 bg-black/50 z-30"></div>
+      <div id="menu-overlay" class="hidden fixed inset-0 bg-neutral-900 z-30"></div>
 
       <!-- Menú de pantalla completa con animación -->
-      <div id="dropdown" class="fixed inset-0 bg-black/70 backdrop-blur-md text-white z-40 flex flex-col transform translate-x-full opacity-0 transition-all duration-300 ease-in-out">
+      <div id="dropdown" class="fixed inset-0 bg-neutral-900 backdrop-blur-md text-amber-50 z-40 flex flex-col transform translate-x-full opacity-0 transition-all duration-300 ease-in-out">
         <!-- Header del menú -->
         <div class="flex items-center justify-between px-6 py-6 border-b border-white/20">
           <div id="language-slot" class="flex justify-start"></div>
-          <div id="close-button" class="flex items-center gap-1 cursor-pointer text-white hover:text-amber-300 ml-2">
+          <div id="close-button" class="font-bold flex items-center gap-1 cursor-pointer text-amber-50 hover:text-amber-300 ml-2">
             <span class="text-sm">Close</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
               stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -38,15 +38,15 @@ export class Menu {
         </div>
 
         <!-- Cuerpo del menú -->
-        <div class="grid grid-cols-12 gap-x-12 px-10 py-12 text-xl flex-grow">
+        <div class="grid grid-cols-12 gap-x-12 px-10 py-12 text-font-bold-xl flex-grow">
           <!-- Columna izquierda -->
           <div class="col-span-3 space-y-6">
-            <a href="/profile" class="block hover:text-amber-300">Perfil</a>
+            <a href="/profile" class="font-bold hover:text-teal-300">Perfil</a>
           </div>
 
           <!-- Columna centro -->
           <div class="col-span-3 space-y-6">
-            <a href="/pong" class="block hover:text-amber-300">Pong</a>
+            <a href="/pong" class="font-bold hover:text-fuchsia-500">Pong</a>
           </div>
 
           <!-- Columna derecha -->
@@ -56,9 +56,10 @@ export class Menu {
               Logout
             </a>
             <div class="h-8"></div>
-            <a href="/about" class="block hover:text-amber-300">About</a>
-            <a href="/faq" class="block hover:text-amber-300">FAQ</a>
+            <a href="/about" class="block font-bold hover:text-amber-300">About</a>
+            <a href="/faq" class="block font-bold hover:text-amber-300">FAQ</a>
           </div>
+          
         </div>
       </div>
     `;

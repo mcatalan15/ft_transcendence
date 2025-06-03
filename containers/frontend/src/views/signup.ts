@@ -39,8 +39,9 @@ export function showSignUp(container: HTMLElement): void {
             </div>
             <div>
               <div id="g_id_onload"
-                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                data-login_uri="https://your.domain/your_login_endpoint"
+                data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
+                data-login_uri="http://localhost:5173"
+              data-callback="handleGoogleSignUp"
                 data-auto_prompt="false">
               </div>
               <div class="g_id_signin"
@@ -100,7 +101,6 @@ export function showSignUp(container: HTMLElement): void {
         }
       };
 
-      // SPA: interceptar enlace Sign In
       const signInLink = wrapper.querySelector('a[href="/signin"]');
       signInLink?.addEventListener('click', (e) => {
         e.preventDefault();
@@ -123,24 +123,14 @@ export function showSignUp(container: HTMLElement): void {
         title.textContent = i18n.t('title', { ns: 'signup' });
       });
 
-				</div>
-					</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-	`;
-
 	
-	const form = SignUpDiv.querySelector('#login-form') as HTMLFormElement;
+	/*const form = SignUpDiv.querySelector('#login-form') as HTMLFormElement;
 	const errorMessageDiv = document.createElement('div');
 	errorMessageDiv.style.color = 'red';
 	errorMessageDiv.style.marginTop = '10px';
-	SignUpDiv.appendChild(errorMessageDiv);
+	SignUpDiv.appendChild(errorMessageDiv);*/
 	
-	
+	/*
 	console.log('[signup.ts] Form element selected:', form);
 	form.onsubmit = async (e) => {
 		e.preventDefault();
@@ -167,9 +157,9 @@ export function showSignUp(container: HTMLElement): void {
 		if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(username)) {
 			errorMessageDiv.textContent = 'Username can only contain letters, numbers and a single hyphen!';
 			return;
-		}		
+		}		*/
 		
-		if (password === confirmPassword) {
+		/*if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
 			console.log('[CALLING CODE] localSignUp result:', result);
 			console.log('[CALLING CODE] result.userId:', result.userId);
@@ -189,9 +179,9 @@ export function showSignUp(container: HTMLElement): void {
 			errorMessageDiv.textContent = 'Passwords do not match!';
 		}
 	};
-	container.appendChild(SignUpDiv);
+	container.appendChild(SignUpDiv);*/
 	
-	const wrapper = SignUpDiv.querySelector('.flex-col')!;
+	/*const wrapper = SignUpDiv.querySelector('.flex-col')!;
 	const langSelector = new LanguageSelector(() => {
 		const nicknameInput = SignUpDiv.querySelector('#nickname') as HTMLButtonElement;
 		const emailInput = SignUpDiv.querySelector('#email') as HTMLButtonElement;
@@ -203,7 +193,7 @@ export function showSignUp(container: HTMLElement): void {
 		passwordInput.placeholder = i18n.t('signup:Password');
 		confirmPasswordInput.placeholder = i18n.t('signup:ConfirmPassword');
 		signUpBtn.textContent = i18n.t('Sign up');
-	});
+	});*/
 	wrapper.appendChild(langSelector.getElement());
 
       const selectorWrapper = document.createElement('div');
