@@ -70,6 +70,7 @@ async function checkUserExists(username, email) {
 	});
 }
 
+
 async function isDatabaseHealthy() {
 	return new Promise((resolve) => {
 	db.get('SELECT 1', (err) => resolve(!err));
@@ -146,6 +147,28 @@ async function getLatestGame() {
         });
     });
 }
+
+// async function check2FA(username, email) {
+// 	return new Promise((resolve, reject) => {
+// 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+// 		db.get(query, [username, email], (err, row) => {
+// 			if (err) {
+// 				console.error('[DB ERROR]', err);
+// 				reject(new Error('Database error'));
+// 				return;
+// 			}
+// 			if (row) {
+// 				resolve({
+// 					exists: true,
+// 					usernameExists: row.username === username,
+// 					emailExists: row.email === email
+// 				});
+// 			} else {
+// 				resolve({ exists: false });
+// 			}
+// 		});
+// 	});
+// }
 
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
