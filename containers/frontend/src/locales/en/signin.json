@@ -1,11 +1,8 @@
 {
-    "title": "Let's play!",
-    "email": "E-mail",
-    "password": "Password",
-    "signIn": "Sign in",
-	  "signUp": "Sign up",
-    "errorAllFields": "All fields are required!",
-    "errorInvalidCredentials": "Invalid email or password.",
-    "success": "Sign-in successful!"
-  }
-  
+    "Sign in": "Sign in",
+    "EN": "EN",
+    "ES": "ES",
+    "FR": "FR",
+    "E-mail":"E-mail",
+    "Password": "Password"
+}

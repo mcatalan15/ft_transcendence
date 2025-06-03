@@ -1,15 +1,11 @@
 {
-    "title": "¡Empecemos!",
-    "nickname": "Alias",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "confirmPassword": "Confirmar contraseña",
-    "signIn": "Iniciar sesión",
-	  "signUp": "Registrarse",
-    "errorAllFields": "¡Todos los campos son obligatorios!",
-    "errorUsernameLength": "El alias debe tener entre 3 y 8 caracteres.",
-    "errorUsernameChars": "El alias solo puede contener letras y números.",
-    "errorPasswordLength": "La contraseña debe tener entre 6 y 20 caracteres.",
-    "errorPasswordsMatch": "Las contraseñas no coinciden."
-  }
-  
+    "Sign in": "Iniciar sesión",
+    "Sign up": "Registrarse",
+    "EN": "EN",
+    "ES": "ES",
+    "FR": "FR",
+    "Nickname": "Apodo",
+    "E-mail": "Correo electrónico",
+    "Password": "Contraseña",
+    "ConfirmPassword": "Confirme la contraseña"
+}

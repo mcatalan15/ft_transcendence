@@ -1,10 +1,7 @@
 {
-	"signIn": "Sign in",
-	"signUp": "Sign up",
-	"language": {
-	  "cat": "CAT",
-	  "en": "EN",
-	  "es": "ES",
-	  "fr": "FR"
-	}
+	"Sign in": "Sign in",
+	"Sign up": "Sign up",
+	"EN": "EN",
+	"ES": "ES",
+	"FR": "FR"
 }
