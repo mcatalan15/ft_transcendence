@@ -26,6 +26,7 @@ export function setupGoogleSignUp(): void {
 		if (data.success) {
 		  sessionStorage.setItem('username', data.user.username);
 		  sessionStorage.setItem('userId', data.user.id);
+		  sessionStorage.setItem('email', data.user.email);
 		  sessionStorage.setItem('token', data.token);
 		  
 		  window.location.href = '/auth?from=signup';
