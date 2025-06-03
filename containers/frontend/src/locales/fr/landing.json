@@ -1,7 +1,10 @@
 {
-	"Sign in": "Se connecter",
-	"Sign up": "S'enregistrer",
-	"EN": "EN",
-	"ES": "ES",
-	"FR": "FR"
+	"signIn": "Se connecter",
+	"signUp": "S'enregistrer",
+	"language": {
+	"cat": "CAT",
+	"en": "EN",
+	"es": "ES",
+	"fr": "FR"
+	}
 }
