@@ -35,6 +35,8 @@ COPY . .
 
 RUN chmod +x tools/init_db.sh
 
+RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
+
 EXPOSE 3100
 
 RUN npm run build

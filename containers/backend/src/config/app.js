@@ -5,16 +5,36 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
+const path = require('path');
+const fs = require('fs');
 
 function buildApp() {
   const fastify = Fastify({
     logger: loggerConfig
   });
+
+  const avatarDirs = [
+    path.join(__dirname, '../public/avatars/defaults'),
+    path.join(__dirname, '../public/avatars/uploads')
+  ];
+  
+  avatarDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created directory: ${dir}`);
+    }
+  });
+
+	fastify.register(require('@fastify/static'), {
+		root: path.join(__dirname, '../public'),
+		prefix: '/public/'
+	});
   
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
     cookieName: 'sessionId',
-    secret: 'a-secret-key-that-should-be-in-env-file', // Use a strong secret
+	//! Update secret for prod
+    secret: 'a-secret-key-that-should-be-in-env-file',
     cookie: {
       secure: process.env.NODE_ENV === 'production', // true in production
       httpOnly: true,

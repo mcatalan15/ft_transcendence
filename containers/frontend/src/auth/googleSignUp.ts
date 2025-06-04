@@ -29,6 +29,7 @@ export function setupGoogleSignUp(): void {
 		  sessionStorage.setItem('email', data.user.email);
 		  sessionStorage.setItem('token', data.token);
 		  
+		  //! Change for prod!
 		  //window.location.href = '/auth?from=signup';
 		  navigate('/home');
 		} else {

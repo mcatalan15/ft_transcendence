@@ -37,7 +37,10 @@ async function signupHandler(request, reply) {
     const hashedPassword = await bcrypt.hash(password, 12);
     // !!! IMPORTANT CHANGE HERE !!!
     // Make sure saveUserToDatabase returns the newly created user's ID
-    const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local');
+	const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
+	const avatarFilename = `default_${defaultAvatarId}.png`;
+	
+	const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
     // MORE DEBUGGIng
     console.log('[BACKEND - signupHandler] Preparing response with:', {
         userId: newUserId,
