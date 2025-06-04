@@ -29,7 +29,8 @@ export function setupGoogleSignUp(): void {
 		  sessionStorage.setItem('email', data.user.email);
 		  sessionStorage.setItem('token', data.token);
 		  
-		  window.location.href = '/auth?from=signup';
+		  //window.location.href = '/auth?from=signup';
+		  navigate('/home');
 		} else {
 		  alert('Google authentication failed: ' + data.message);
 		}
