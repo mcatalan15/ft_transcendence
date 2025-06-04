@@ -14,7 +14,7 @@ RUN npm cache clean --force \
 	typescript @types/node ts-node \
 	pino-pretty \
 	sqlite3 \
-	fastify-multipart \
+	@fastify/multipart \
 	bcrypt \
 	@fastify/cors \
 	@fastify/under-pressure \

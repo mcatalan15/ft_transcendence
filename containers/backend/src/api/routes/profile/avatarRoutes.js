@@ -4,42 +4,80 @@ const { updateUserAvatar, getUserById } = require('../../db/database');
 const { verifyToken } = require('../../../config/middleware/auth');
 
 module.exports = async function (fastify, options) {
-    fastify.post('/api/profile/avatar', {
-        preHandler: verifyToken
-    }, async (request, reply) => {
-        try {
-            const data = await request.file();
-            const user = request.session.get('user');
-            
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!allowedTypes.includes(data.mimetype)) {
-                return reply.status(400).send({
-                    success: false,
-                    message: 'Only JPEG, PNG, and GIF files are allowed'
-                });
-            }
-            
-            const ext = path.extname(data.filename);
-            const filename = `user_${user.id}_avatar${ext}`;
-            const filepath = path.join(__dirname, '../../../public/avatars/uploads', filename);
-            
-            await data.file.pipe(fs.createWriteStream(filepath));
-            
-            await updateUserAvatar(user.id, filename, 'uploaded');
-            
-            reply.send({
-                success: true,
-                message: 'Avatar updated successfully',
-                avatarUrl: `/avatars/uploads/${filename}`
-            });
-        } catch (error) {
-            fastify.log.error('Avatar upload error:', error);
-            reply.status(500).send({
-                success: false,
-                message: 'Failed to upload avatar'
-            });
-        }
-    });
+	fastify.post('/api/profile/avatar', {
+		preHandler: verifyToken
+	}, async (request, reply) => {
+		try {
+			console.log('Avatar upload started');
+			console.log('Content-Type:', request.headers['content-type']);
+			
+			// Get the uploaded file
+			const data = await request.file();
+			
+			console.log('File data received:', data ? 'yes' : 'no');
+			if (data) {
+				console.log('File details:', {
+					filename: data.filename,
+					mimetype: data.mimetype,
+					encoding: data.encoding
+				});
+			}
+	
+			if (!data) {
+				return reply.status(400).send({
+					success: false,
+					message: 'No file uploaded'
+				});
+			}
+	
+			const user = request.session.get('user');
+	
+			if (!user) {
+				return reply.status(401).send({
+					success: false,
+					message: 'User not authenticated'
+				});
+			}
+			
+			const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+			if (!allowedTypes.includes(data.mimetype)) {
+				return reply.status(400).send({
+					success: false,
+					message: 'Only JPEG, PNG, and GIF files are allowed'
+				});
+			}
+			
+			const ext = path.extname(data.filename);
+			const filename = `user_${user.id}_avatar${ext}`;
+			const filepath = path.join('/usr/src/app/public/avatars/uploads', filename);
+			
+			console.log('Saving file to:', filepath);
+			
+			// Save the file
+			const buffer = await data.toBuffer();
+			fs.writeFileSync(filepath, buffer);
+			
+			console.log('File saved successfully');
+			
+			// Update database
+			await updateUserAvatar(user.id, filename, 'uploaded');
+			
+			console.log('Database updated successfully');
+			
+			reply.send({
+				success: true,
+				message: 'Avatar updated successfully',
+				avatarUrl: `/api/profile/avatar/${user.id}`
+			});
+		} catch (error) {
+			console.error('Avatar upload error:', error);
+			reply.status(500).send({
+				success: false,
+				message: 'Failed to upload avatar',
+				error: error.message
+			});
+		}
+	});
     
 	fastify.get('/api/profile/avatar/:userId', async (request, reply) => {
 		try {

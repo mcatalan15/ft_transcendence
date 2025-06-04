@@ -1,5 +1,5 @@
  Fastify = require('fastify');
-const fastifyMultipart = require('fastify-multipart');
+const fastifyMultipart = require('@fastify/multipart');
 const loggerConfig = require('./logsConfiguration');
 const fastifyCookie = require('@fastify/cookie');
 const fastifySession = require('@fastify/session');
@@ -74,8 +74,17 @@ function buildApp() {
     }
   });  
 
-  // Register core plugins
-  fastify.register(fastifyMultipart);
+  	// Register core plugins
+	fastify.register(fastifyMultipart, {
+		limits: {	// restrict custom avatars
+			fieldNameSize: 100,
+			fieldSize: 100,
+			fields: 10,
+			fileSize: 2 * 1024 * 1024, // 2MB limit
+			files: 1,
+			headerPairs: 2000
+		}
+	});
   
   // Register custom plugins
   fastify.register(require('../plugins/setupCors'));

@@ -24,31 +24,31 @@ export function showProfile(container: HTMLElement): void {
     });
 
     avatarInput.addEventListener('change', async (event) => {
-        const file = (event.target as HTMLInputElement).files?.[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('avatar', file);
-
-        try {
-            const response = await fetch('/api/profile/avatar', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                userAvatar.src = result.avatarUrl + '?t=' + Date.now(); // Cache busting
-                alert('Avatar updated successfully!');
-            } else {
-                alert('Failed to update avatar: ' + result.message);
-            }
-        } catch (error) {
-            console.error('Avatar upload error:', error);
-            alert('Failed to upload avatar');
-        }
-    });
+		const file = (event.target as HTMLInputElement).files?.[0];
+		if (!file) return;
+	
+		const formData = new FormData();
+		formData.append('file', file); // Make sure the field name matches what Fastify expects
+	
+		try {
+			const response = await fetch('/api/profile/avatar', {
+				method: 'POST',
+				body: formData,
+				credentials: 'include'
+			});
+	
+			const result = await response.json();
+			if (result.success) {
+				userAvatar.src = result.avatarUrl + '?t=' + Date.now();
+				alert('Avatar updated successfully!');
+			} else {
+				alert('Failed to update avatar: ' + result.message);
+			}
+		} catch (error) {
+			console.error('Avatar upload error:', error);
+			alert('Failed to upload avatar');
+		}
+	});
 
 	const profileInfo = profileDiv.querySelector('#profileInfo') as HTMLParagraphElement;
 
