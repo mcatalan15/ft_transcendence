@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 17:16:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:10:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,66 +33,73 @@ export class MenuParticleSystem implements System {
 
 	update(entities: Entity[], delta: FrameData): void {
 		const particlesToRemove: string[] = [];
+		if (!this.menu.config.classicMode) {
+			MenuParticleSpawner.updateAmbientDust(
+				this.menu,
+				delta.deltaTime, 
+				this.menu.width,
+				this.menu.height,
+			);
 
-		MenuParticleSpawner.updateAmbientDust(
-			this.menu,
-			delta.deltaTime, 
-			this.menu.width,
-			this.menu.height,
-		);
-
-		for (const entity of entities) {
-			if (!isParticle(entity)) {
-				continue;
-			} else {
-				const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
-				if (!lifetime) continue;
-
-				const behavior = entity.getComponent('particleBehavior') as ParticleBehaviorComponent;
-				const physics = entity.getComponent('physics') as PhysicsComponent;
-				const render = entity.getComponent('render') as RenderComponent;
-
-				if (!render) continue;
-
-				if (lifetime.despawn === 'time') {
-					lifetime.remaining -= delta.deltaTime;
-
-					if (lifetime.remaining <= 0) {
-						particlesToRemove.push(entity.id);
-						continue;
-					}
-				}
-
-				if (entity.growShrink) {
-					this.updateGrowShrinkParticle(entity, lifetime, render);
+			for (const entity of entities) {
+				if (!isParticle(entity)) {
+					continue;
 				} else {
-					render.graphic.alpha = entity.alpha;
-					if (entity.fadeOut) {
-						entity.alpha -= entity.alphaDecay * delta.deltaTime;
-						if (entity.alpha < 0) {
-							entity.alpha = 0;
+					const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
+					if (!lifetime) continue;
+
+					const behavior = entity.getComponent('particleBehavior') as ParticleBehaviorComponent;
+					const physics = entity.getComponent('physics') as PhysicsComponent;
+					const render = entity.getComponent('render') as RenderComponent;
+
+					if (!render) continue;
+
+					if (lifetime.despawn === 'time') {
+						lifetime.remaining -= delta.deltaTime;
+
+						if (lifetime.remaining <= 0) {
+							particlesToRemove.push(entity.id);
+							continue;
+						}
+					}
+
+					if (entity.growShrink) {
+						this.updateGrowShrinkParticle(entity, lifetime, render);
+					} else {
+						render.graphic.alpha = entity.alpha;
+						if (entity.fadeOut) {
+							entity.alpha -= entity.alphaDecay * delta.deltaTime;
+							if (entity.alpha < 0) {
+								entity.alpha = 0;
+							}
+						}
+					}
+
+					if (physics) {
+						physics.x += physics.velocityX * delta.deltaTime * 0.1;
+						physics.y += physics.velocityY * delta.deltaTime * 0.1;
+						render.graphic.x = physics.x;
+						render.graphic.y = physics.y;
+					}
+
+					if (behavior?.shrink && !entity.growShrink && lifetime.initial > 0) {
+						const scale = lifetime.remaining / lifetime.initial;
+						render.graphic.scale.set(scale);
+					}
+					
+					if (behavior?.rotate && lifetime.initial > 0) {
+						if (entity.id.includes('ambientDust')) {
+							render.graphic.rotation += entity.rotationSpeed * delta.deltaTime;
+						} else {
+							render.graphic.rotation += behavior.rotationSpeed * delta.deltaTime;
 						}
 					}
 				}
-
-				if (physics) {
-					physics.x += physics.velocityX * delta.deltaTime * 0.1;
-					physics.y += physics.velocityY * delta.deltaTime * 0.1;
-					render.graphic.x = physics.x;
-					render.graphic.y = physics.y;
-				}
-
-				if (behavior?.shrink && !entity.growShrink && lifetime.initial > 0) {
-					const scale = lifetime.remaining / lifetime.initial;
-					render.graphic.scale.set(scale);
-				}
-				
-				if (behavior?.rotate && lifetime.initial > 0) {
-					if (entity.id.includes('ambientDust')) {
-						render.graphic.rotation += entity.rotationSpeed * delta.deltaTime;
-					} else {
-						render.graphic.rotation += behavior.rotationSpeed * delta.deltaTime;
-					}
+			}
+		} else {
+			for (const entity of this.menu.entities) {
+				if (isParticle(entity)) {
+					particlesToRemove.push(entity.id);
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 16:52:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:17:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,26 +53,25 @@ export class MenuAnimationSystem implements System {
 
 	}
 
-	update(entities: Entity[], delta: FrameData): void {
-		const entitiesToRemove: string[] = [];
 	
-		// 2. Update entities
-		for (const entity of entities) {
-			if (entity.id === 'title') {
-				this.animateTitle(delta, entity as Title);
-			} else if (entity.id === 'ballButton') {
-				this.animateBallButton(delta, entity as BallButton);
-			} else if (isMenuLine(entity)) {
-				this.animateMenuLine(delta, entitiesToRemove, entity);
-			}
-		}
-		
-		// 3. Cleanup
-		for (const id of entitiesToRemove) {
-			this.menu.removeEntity(id);
+update(entities: Entity[], delta: FrameData): void {
+	const entitiesToRemove: string[] = [];
+
+	// 2. Update entities
+	for (const entity of entities) {
+		// Remove title animation - let Title.ts handle its own positioning
+		if (entity.id === 'ballButton') {
+			this.animateBallButton(delta, entity as BallButton);
+		} else if (isMenuLine(entity)) {
+			this.animateMenuLine(delta, entitiesToRemove, entity);
 		}
 	}
-
+	
+	// 3. Cleanup
+	for (const id of entitiesToRemove) {
+		this.menu.removeEntity(id);
+	}
+}
 	animateTitle(delta: FrameData, entity: Title) {
 		let titleBackdrop;
 		let titleText;

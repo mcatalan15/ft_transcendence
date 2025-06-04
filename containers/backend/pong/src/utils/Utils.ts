@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 18:53:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:04:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,9 @@ export function generateLedgePoints(positions: {x: number, y: number}[]): Point[
 export function getThemeColors(classicMode: boolean) {
     if (classicMode) {
         return {
+            white: GAME_COLORS.white,
+            black: GAME_COLORS.black,
+            particleGray: GAME_COLORS.white,
             menuBlue: GAME_COLORS.white,
             menuGreen: GAME_COLORS.white,
             menuOrange: GAME_COLORS.white,

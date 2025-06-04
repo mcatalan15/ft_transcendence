@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 18:33:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:20:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,12 @@ import { MenuVFXSystem } from './MenuVFXSystem';
 import { MenuLineSystem } from './MenuLineSystem';
 import { VFXComponent } from '../components/VFXComponent';
 import { MenuViewSystem } from './MenuViewSystem';
+import { MenuThemeSystem } from './MenuThemeSystem';
 
 
-import { GAME_COLORS, FrameData, MenuSounds, GameEvent } from '../utils/Types';
+import { GAME_COLORS , FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
+import { getThemeColors } from '../utils/Utils';
 import { isRenderComponent } from '../utils/Guards';
 import { MenuHalfButton } from './MenuHalfButton';
 
@@ -157,6 +159,7 @@ export class Menu{
 	async init(): Promise<void> {
 		await this.createButtons(this.app);
 		await this.createEntities();
+		await this.createTitle();
 		await this.createBallButton();
 		await this.initSystems();
 		await this.initDust();
@@ -189,7 +192,7 @@ export class Menu{
 					console.log("Starting game...");
 					this.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.config.classicMode).menuBlue,
 				index: 0
 			},
 			{
@@ -199,7 +202,7 @@ export class Menu{
 					console.log('Options clicked');
 					this.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuGreen,
+				color: getThemeColors(this.config.classicMode).menuGreen,
 				index: 1
 			},
 			{
@@ -209,7 +212,7 @@ export class Menu{
 					console.log('Glossary clicked');
 					this.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuOrange,
+				color: getThemeColors(this.config.classicMode).menuOrange,
 				index: 2
 			},
 			{
@@ -219,7 +222,7 @@ export class Menu{
 					console.log('About clicked');
 					this.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuPink,
+				color: getThemeColors(this.config.classicMode).menuPink,
 				index: 3
 			}
 		];
@@ -242,11 +245,32 @@ export class Menu{
 		});
 	}
 
+	createTitle(){
+		const title = new Title("title", "menuContainer", this);
+		let titleBackdrop;
+		let titleText;
+		let titleBlock;
+		for (const [key, component] of title.components) {
+			if (isRenderComponent(component)) {
+				if (component.instanceId === 'backDrop') titleBackdrop = component;
+				else if (component.instanceId === 'textRender') titleText = component;
+				else if (component.instanceId === 'block') titleBlock = component;
+			}
+		}
+
+		this.renderLayers.background.addChild(titleBackdrop!.graphic);
+		this.renderLayers.logo.addChild(titleText!.graphic);
+		if (!this.config.classicMode) {
+			this.renderLayers.logo.addChild(titleBlock!.graphic);
+		}
+		this.entities.push(title);
+	}
+
 	createBallButton() {
 		const ballButton = new BallButton('ballButton', 'foreground', this, () => {
 			const vfx = ballButton.getComponent('vfx') as VFXComponent;
 			if (vfx) {
-				vfx.startFlash(GAME_COLORS.white, 10);
+				vfx.startFlash(getThemeColors(this.config.classicMode).white, 10);
 			}
 			MenuBallSpawner.spawnDefaultBallInMenu(this);
 			this.sounds.ballClick.play();
@@ -267,23 +291,6 @@ export class Menu{
 		const ornamentsRender = ornaments.getComponent('render') as RenderComponent;
 		this.menuContainer.addChild(ornamentsRender.graphic);
 		this.entities.push(ornaments);
-
-		// Create title
-		const title = new Title("title", "menuContainer", this);
-		let titleBackdrop;
-		let titleText;
-		let titleBlock;
-		for (const [key, component] of title.components) {
-			if (isRenderComponent(component)) {
-				if (component.instanceId === 'backDrop') titleBackdrop = component;
-				else if (component.instanceId === 'textRender') titleText = component;
-				else if (component.instanceId === 'block') titleBlock = component;
-			}
-		}
-		this.renderLayers.background.addChild(titleBackdrop!.graphic);
-		this.renderLayers.logo.addChild(titleText!.graphic);
-		this.renderLayers.logo.addChild(titleBlock!.graphic);
-		this.entities.push(title);
 
 		// Create subtitle
 		const subtitle = new Subtitle("subtitle", "menuContainer", this);
@@ -312,7 +319,7 @@ export class Menu{
 		// Create frame
 		const frame = new Graphics();
 		frame.rect(0, 0, this.width, this.height);
-		frame.stroke({ color: GAME_COLORS.white, width: 75});
+		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
 		this.menuContainer.addChild(frame);
 	}
 
@@ -325,6 +332,7 @@ export class Menu{
 		const VFXSystem = new MenuVFXSystem();
 		const lineSystem = new MenuLineSystem(this);
 		const menuViewSystem = new MenuViewSystem(this);
+		const themeSystem = new MenuThemeSystem(this);
 		
 		this.systems.push(renderSystem);
 		this.systems.push(animationSystem);
@@ -334,6 +342,7 @@ export class Menu{
 		this.systems.push(VFXSystem);
 		this.systems.push(lineSystem);
 		this.systems.push(menuViewSystem);
+		this.systems.push(themeSystem);
 	}
 
 	addEntity(entity: Entity): void {
@@ -380,7 +389,7 @@ export class Menu{
 	initDust() {
 		MenuParticleSpawner.setAmbientDustDensity(60, 20);
 
-		MenuParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
+		MenuParticleSpawner.setAmbientDustColor(getThemeColors(this.config.classicMode).particleGray); 
 
 		MenuParticleSpawner.setAmbientDustSize(5, 12);
 
@@ -403,27 +412,27 @@ export class Menu{
 	createBoundingBoxes() {
 		const boundingBoxA = new Graphics();
 		boundingBoxA.rect(0, 0, this.width, this.height);
-		boundingBoxA.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxA.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		const boundingBoxB = new Graphics();
 		boundingBoxB.rect(0, 0, this.width, this.height);
-		boundingBoxB.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxB.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		const boundingBoxC = new Graphics();
 		boundingBoxC.rect(0, 0, this.width, this.height);
-		boundingBoxC.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxC.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		const boundingBoxD = new Graphics();
 		boundingBoxD.rect(0, 0, this.width, this.height);
-		boundingBoxD.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxD.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		const boundingBoxE = new Graphics();
 		boundingBoxE.rect(0, 0, this.width, this.height);
-		boundingBoxE.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxE.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		const boundingBoxF = new Graphics();
 		boundingBoxF.rect(0, 0, this.width, this.height);
-		boundingBoxF.stroke({width: 0.1, color: GAME_COLORS.white});
+		boundingBoxF.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
 		this.renderLayers.logo.addChild(boundingBoxA);
 		this.renderLayers.background.addChild(boundingBoxB);

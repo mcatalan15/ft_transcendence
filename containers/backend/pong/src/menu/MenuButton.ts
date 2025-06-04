@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 10:38:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:02:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { AnimationComponent } from '../components/AnimationComponent';
 import { GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
 import { getButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
+import { getThemeColors } from '../utils/Utils';
 import { MenuOrnaments } from './MenuOrnaments';
 import { isMenuOrnaments } from '../utils/Guards';
 
@@ -72,7 +73,7 @@ export class MenuButton extends Entity {
         
         let color;
         if (isHovered) {
-            color = { color: GAME_COLORS.white, alpha: 1};
+            color = { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1};
         } else {
             if (this.isClicked) {
                 color = { color: this.config.color, alpha: 1};
@@ -81,7 +82,7 @@ export class MenuButton extends Entity {
             }
         }
 
-        this.buttonText.style.fill = isHovered ? GAME_COLORS.black : color;
+        this.buttonText.style.fill = isHovered ? getThemeColors(this.menu.config.classicMode).black : color;
 		if (!isClicked) {
 			this.buttonText.anchor.set(0.5);
 			this.buttonText.x = this.menu.buttonWidth / 2;
@@ -104,7 +105,7 @@ export class MenuButton extends Entity {
         if (filled) {
             this.buttonPolygon.fill(color);
         } else {
-            this.buttonPolygon.fill(GAME_COLORS.black);
+            this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonPolygon.stroke({color: color.color, width: 3, alpha: this.isClicked ? 1 : 0.3});
         }
     }
@@ -151,7 +152,7 @@ export class MenuButton extends Entity {
                 this.isHovered = true;
                 this.updateButtonPolygon(true);
 				this.highlightOrnament(this);
-				this.buttonText.style.fill = GAME_COLORS.black;
+				this.buttonText.style.fill = getThemeColors(this.menu.config.classicMode).black;
                 this.menu.sounds.menuMove.play();
             }
         });
@@ -227,14 +228,14 @@ export class MenuButton extends Entity {
 		const points = getButtonPoints(this.menu, this);
 		this.buttonPolygon.poly(points!);
         
-        const fillColor = color || (this.isHovered ? GAME_COLORS.white : this.config.color);
+        const fillColor = color || (this.isHovered ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
         const shouldFill = filled !== undefined ? filled : this.isHovered;
         
         if (shouldFill) {
             this.buttonPolygon.fill(fillColor);
             this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
         } else {
-            this.buttonPolygon.fill(GAME_COLORS.black);
+            this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
         }
     }
@@ -265,26 +266,26 @@ export class MenuButton extends Entity {
 		switch(button.config.text) {
 			case ('START'): {
 				targetChild = graphic!.children[0] as Graphics;
-				targetChild.fill(GAME_COLORS.white);
-				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				break;
 			}
 			case ('OPTIONS'): {
 				targetChild = graphic!.children[1] as Graphics;
-				targetChild.fill(GAME_COLORS.white);
-				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				break;
 			}
             case ('GLOSSARY'): {
 				targetChild = graphic!.children[2] as Graphics;
-				targetChild.fill(GAME_COLORS.white);
-				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				break;
 			}
 			case ('ABOUT'): {
 				targetChild = graphic!.children[3] as Graphics;
-				targetChild.fill(GAME_COLORS.white);
-				targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				break;
 			}
 		}
@@ -306,26 +307,26 @@ export class MenuButton extends Entity {
 		switch(button.config.text) {
 			case ('START'): {
 				targetChild = graphic!.children[0] as Graphics;
-				targetChild.fill(GAME_COLORS.menuBlue);
-				targetChild.stroke( {color: GAME_COLORS.menuBlue, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).menuBlue);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuBlue, width: 3} );
 				break;
 			}
 			case ('OPTIONS'): {
 				targetChild = graphic!.children[1] as Graphics;
-				targetChild.fill(GAME_COLORS.menuGreen);
-				targetChild.stroke( {color: GAME_COLORS.menuGreen, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).menuGreen);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuGreen, width: 3} );
 				break;
 			}
             case ('GLOSSARY'): {
 				targetChild = graphic!.children[2] as Graphics;
-				targetChild.fill(GAME_COLORS.menuOrange);
-				targetChild.stroke( {color: GAME_COLORS.menuOrange, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).menuOrange);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuOrange, width: 3} );
 				break;
 			}
 			case ('ABOUT'): {
 				targetChild = graphic!.children[3] as Graphics;
-				targetChild.fill(GAME_COLORS.menuPink);
-				targetChild.stroke( {color: GAME_COLORS.menuPink, width: 3} );
+				targetChild.fill(getThemeColors(this.menu.config.classicMode).menuPink);
+				targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuPink, width: 3} );
 				break;
 			}
 		}

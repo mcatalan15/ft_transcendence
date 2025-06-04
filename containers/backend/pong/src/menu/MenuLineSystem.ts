@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:26:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 17:50:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:14:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { FrameData, GAME_COLORS } from "../utils/Types";
 import { Menu } from "./Menu";
 import { MenuLine } from "./MenuLine";
 import { RenderComponent } from "../components/RenderComponent";
+import { isMenuLine } from "../utils/Guards";
 
 export class MenuLineSystem implements System {
 	menu: Menu;
@@ -28,10 +29,24 @@ export class MenuLineSystem implements System {
 	}
 
 	update(entities: Entity[], delta: FrameData) {
-		this.depthLineCooldown -= delta.deltaTime;
+		if (!this.menu.config.classicMode) {
+			this.depthLineCooldown -= delta.deltaTime;
 
-		if (this.depthLineCooldown <= 0) {
-			this.handleLineSpawning();
+			if (this.depthLineCooldown <= 0) {
+				this.handleLineSpawning();
+			}
+		}else {
+			const particlesToRemove: string[] = [];
+
+			for (const entity of this.menu.entities) {
+				if (isMenuLine(entity)) {
+					particlesToRemove.push(entity.id);
+				}
+			}
+
+			for (const entityId of particlesToRemove) {
+				this.menu.removeEntity(entityId);
+			}
 		}
 	}
 

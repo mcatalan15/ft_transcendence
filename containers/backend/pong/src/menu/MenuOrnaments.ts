@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 09:27:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 18:58:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@ import { Graphics, Container, Text, FederatedPointerEvent } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
-import { GAME_COLORS } from '../utils/Types';
+import { GAME_COLORS} from '../utils/Types';
 import { Menu } from './Menu';
 import { getButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
+import { getThemeColors } from '../utils/Utils';
 import { isMenuButton } from '../utils/Guards';
 
 export class MenuOrnaments extends Entity {
@@ -50,32 +51,32 @@ export class MenuOrnaments extends Entity {
 
 		const startOrnament = new Graphics();
 		startOrnament.poly(this.startOrnamentPoints);
-		startOrnament.fill(GAME_COLORS.menuBlue);
-		startOrnament.stroke( {color: GAME_COLORS.menuBlue, width: 3} );
+		startOrnament.fill(getThemeColors(this.menu.config.classicMode).menuBlue);
+		startOrnament.stroke( {color: getThemeColors(this.menu.config.classicMode).menuBlue, width: 3} );
 		startOrnament.y = (this.menu.app.screen.height / 3);
 		startOrnament.label = 'startOrnament';
 		ornaments.addChild(startOrnament);
 
 		const optionsOrnament = new Graphics();
 		optionsOrnament.poly(this.optionsOrnamentPoints);
-		optionsOrnament.fill(GAME_COLORS.menuGreen);
-		optionsOrnament.stroke( {color: GAME_COLORS.menuGreen, width: 3} );
+		optionsOrnament.fill(getThemeColors(this.menu.config.classicMode).menuGreen);
+		optionsOrnament.stroke( {color: getThemeColors(this.menu.config.classicMode).menuGreen, width: 3} );
 		optionsOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
 		optionsOrnament.label = 'optionsOrnament';
 		ornaments.addChild(optionsOrnament);
 
 		const glossaryOrnament = new Graphics();
 		glossaryOrnament.poly(this.glossaryOrnamentPoints);
-		glossaryOrnament.fill(GAME_COLORS.menuOrange);
-		glossaryOrnament.stroke( {color: GAME_COLORS.menuOrange, width: 3} );
+		glossaryOrnament.fill(getThemeColors(this.menu.config.classicMode).menuOrange);
+		glossaryOrnament.stroke( {color: getThemeColors(this.menu.config.classicMode).menuOrange, width: 3} );
 		glossaryOrnament.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 2;
 		glossaryOrnament.label = 'glossaryOrnament';
 		ornaments.addChild(glossaryOrnament);
 
 		const aboutOrnament = new Graphics();
 		aboutOrnament.poly(this.aboutOrnamentPoints);
-		aboutOrnament.fill(GAME_COLORS.menuPink);
-		aboutOrnament.stroke( {color: GAME_COLORS.menuPink, width: 3} );
+		aboutOrnament.fill(getThemeColors(this.menu.config.classicMode).menuPink);
+		aboutOrnament.stroke( {color: getThemeColors(this.menu.config.classicMode).menuPink, width: 3} );
 		aboutOrnament.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3);
 		aboutOrnament.label = 'aboutOrnament';
 		ornaments.addChild(aboutOrnament);
@@ -98,8 +99,8 @@ export class MenuOrnaments extends Entity {
 			case ('START'): {
 				redoneGraphic.clear();
 				redoneGraphic.poly(this.getOrnamentPoints('START', true, reset)!);
-				redoneGraphic.fill(reset? GAME_COLORS.menuBlue : GAME_COLORS.white);
-				redoneGraphic.stroke( {color: reset? GAME_COLORS.menuBlue : GAME_COLORS.white, width: 3} );
+				redoneGraphic.fill(reset? getThemeColors(this.menu.config.classicMode).menuBlue : getThemeColors(this.menu.config.classicMode).white);
+				redoneGraphic.stroke( {color: reset? getThemeColors(this.menu.config.classicMode).menuBlue : getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3);
 				redoneGraphic.label = 'startOrnament';
 				break;
@@ -107,8 +108,8 @@ export class MenuOrnaments extends Entity {
 			case ('OPTIONS'): {
 				redoneGraphic.clear();
 				redoneGraphic.poly(this.getOrnamentPoints('OPTIONS', true, reset)!);
-				redoneGraphic.fill(reset? GAME_COLORS.menuGreen : GAME_COLORS.white);
-				redoneGraphic.stroke( {color: reset? GAME_COLORS.menuGreen : GAME_COLORS.white, width: 3} );
+				redoneGraphic.fill(reset? getThemeColors(this.menu.config.classicMode).menuGreen : getThemeColors(this.menu.config.classicMode).white);
+				redoneGraphic.stroke( {color: reset? getThemeColors(this.menu.config.classicMode).menuGreen : getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
 				redoneGraphic.label = 'optionsOrnament';
 				break;
@@ -116,8 +117,8 @@ export class MenuOrnaments extends Entity {
 			case ('GLOSSARY'): {
 				redoneGraphic.clear();
 				redoneGraphic.poly(this.getOrnamentPoints('GLOSSARY', true, reset)!);
-				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
+				redoneGraphic.fill(getThemeColors(this.menu.config.classicMode).white);
+				redoneGraphic.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3) + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 2;
 				redoneGraphic.label = 'glossaryOrnament';
 				break;
@@ -125,8 +126,8 @@ export class MenuOrnaments extends Entity {
 			case ('ABOUT'): {
 				redoneGraphic.clear();
 				redoneGraphic.poly(this.getOrnamentPoints('ABOUT', true, reset)!);
-				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
+				redoneGraphic.fill(getThemeColors(this.menu.config.classicMode).white);
+				redoneGraphic.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3);
 				redoneGraphic.label = 'aboutOrnament';
 				break;

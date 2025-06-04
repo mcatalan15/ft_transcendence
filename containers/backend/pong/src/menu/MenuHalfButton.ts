@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 18:35:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 18:58:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { AnimationComponent } from '../components/AnimationComponent';
 import { GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
 import { getHalfButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
+import { getThemeColors } from '../utils/Utils';
 import { isMenuOrnaments, isMenuPostProcessingLayer } from '../utils/Guards';
 
 export class MenuHalfButton extends Entity {
@@ -66,7 +67,7 @@ export class MenuHalfButton extends Entity {
 
         let color;
         if (isHovered) {
-            color = { color: GAME_COLORS.white, alpha: 1};
+            color = { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1};
         } else {
             if (this.isClicked) {
                 color = { color: this.config.color, alpha: 1};
@@ -75,7 +76,7 @@ export class MenuHalfButton extends Entity {
             }
         }
 
-        this.buttonText.style.fill = isHovered ? GAME_COLORS.black : color;
+        this.buttonText.style.fill = isHovered ? getThemeColors(this.menu.config.classicMode).black : color;
 		if (!isClicked) {
 			this.buttonText.anchor.set(0.5);
 			this.buttonText.x = this.menu.halfButtonWidth / 2;
@@ -97,7 +98,7 @@ export class MenuHalfButton extends Entity {
         if (filled) {
             this.buttonPolygon.fill(color);
         } else {
-            this.buttonPolygon.fill(GAME_COLORS.black);
+            this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonPolygon.stroke({color: color.color, width: 3, alpha: this.isClicked ? 1 : 0.3});
         }
     }
@@ -148,7 +149,7 @@ export class MenuHalfButton extends Entity {
             if (!this.isHovered) {
                 this.isHovered = true;
                 this.updateButtonPolygon(true);
-				this.updateButtonText(GAME_COLORS.black);;
+				this.updateButtonText(getThemeColors(this.menu.config.classicMode).black);;
                 this.menu.sounds.menuMove.play();
             }
         });
@@ -241,7 +242,7 @@ export class MenuHalfButton extends Entity {
             }
         } else {
             if (this.isHovered) {
-                fillColor = { color: GAME_COLORS.white, alpha: 1 };
+                fillColor = { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 };
             } else {
                 fillColor = { color: this.config.color, alpha: 0.3 };
             }
@@ -253,7 +254,7 @@ export class MenuHalfButton extends Entity {
             this.buttonPolygon.fill(fillColor);
             this.buttonPolygon.stroke({color: fillColor.color, width: 3, alpha: fillColor.alpha});
         } else {
-            this.buttonPolygon.fill(GAME_COLORS.black);
+            this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonPolygon.stroke({color: fillColor.color, width: 3, alpha: fillColor.alpha});
         }
     }
@@ -283,12 +284,12 @@ export class MenuHalfButton extends Entity {
 
         if (button.id.includes('start')) {
             targetChild = graphic!.children[0] as Graphics;
-            targetChild.fill(GAME_COLORS.white);
-            targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+            targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+            targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
         } else if (button.id.includes('options')) {
             targetChild = graphic!.children[2] as Graphics;
-            targetChild.fill(GAME_COLORS.white);
-            targetChild.stroke( {color: GAME_COLORS.white, width: 3} );
+            targetChild.fill(getThemeColors(this.menu.config.classicMode).white);
+            targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).white, width: 3} );
         }
 	}
 
@@ -307,12 +308,12 @@ export class MenuHalfButton extends Entity {
 
         if (button.id.includes('start')) {
             targetChild = graphic!.children[0] as Graphics;
-            targetChild.fill(GAME_COLORS.menuBlue);
-            targetChild.stroke( {color: GAME_COLORS.menuBlue, width: 3} );
+            targetChild.fill(getThemeColors(this.menu.config.classicMode).menuBlue);
+            targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuBlue, width: 3} );
         } else if (button.id.includes('options')) {
             targetChild = graphic!.children[2] as Graphics;
-            targetChild.fill(GAME_COLORS.menuOrange);
-            targetChild.stroke( {color: GAME_COLORS.menuOrange, width: 3} );
+            targetChild.fill(getThemeColors(this.menu.config.classicMode).menuOrange);
+            targetChild.stroke( {color: getThemeColors(this.menu.config.classicMode).menuOrange, width: 3} );
         }
 	}
 

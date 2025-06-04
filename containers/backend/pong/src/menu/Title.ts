@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 17:43:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:20:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,16 +85,22 @@ export class Title extends Entity {
 
 	private fetchTitle(): Text {
 		const titleText = new Text({
-			text: 'P   NG',
+			text: this.menu.config.classicMode ? 'PONG' : 'P   NG',
 			style: {
 			fill: GAME_COLORS.white,
 			fontSize: 250,
 			fontFamily: 'anatol-mn',
+			letterSpacing: this.menu.config.classicMode? 9.1 : 0,
 			}
 		});
+		
+		// Set anchor and position immediately
 		titleText.anchor.set(0.5);
-		titleText.x = this.menu.app.screen.width / 2;
-		titleText.y = this.menu.app.screen.height / 4;
+		titleText.position.set(
+			1400,
+			310,
+		);
+		
 		return (titleText);
 	}
 

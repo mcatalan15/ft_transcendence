@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/02 09:27:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:00:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@ import { RenderComponent } from '../components/RenderComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
 import { VFXComponent } from '../components/VFXComponent';
 import { GAME_COLORS } from '../utils/Types';
+import { getThemeColors } from '../utils/Utils';
 import { Menu } from './Menu';
 
 export class BallButton extends Entity {
+    private menu: Menu;
     private buttonContainer: Container;
     private ballGraphic: Graphics;
     private isHovered: boolean = false;
@@ -26,6 +28,7 @@ export class BallButton extends Entity {
 
     constructor(id: string, layer: string, menu: Menu, onClick: () => void) {
         super(id, layer);
+        this.menu = menu;
         this.onClick = onClick;
 
         this.buttonContainer = new Container();
@@ -47,7 +50,7 @@ export class BallButton extends Entity {
     private createBall(isHovered: boolean = false): void {
         this.ballGraphic.clear();
         const radius = isHovered ? 80 : 75;
-        const color = GAME_COLORS.white;
+        const color = getThemeColors(this.menu.config.classicMode).white;
         
         this.ballGraphic.circle(0, 0, radius);
         this.ballGraphic.fill(color);

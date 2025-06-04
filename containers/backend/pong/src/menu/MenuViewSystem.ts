@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 16:15:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 19:05:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ import { Entity } from "../engine/Entity";
 import { RenderComponent } from "../components/RenderComponent";
 
 import { isMenuButton, isMenuXButton, isMenuHalfButton, isMenuOrnaments } from "../utils/Guards";
-import { FrameData, GameEvent, GAME_COLORS } from "../utils/Types";
+import { getThemeColors } from "../utils/Utils";
+import { FrameData, GameEvent } from "../utils/Types";
 import * as menuUtils from '../utils/MenuUtils'
 
 
@@ -184,7 +185,7 @@ export class MenuViewSystem implements System {
 				console.log(`return at ${layer} clicked`);
 				this.menu.sounds.menuSelect.play();
 			},
-			color: layer === 'start' ? GAME_COLORS.menuBlue : GAME_COLORS.menuGreen,
+			color: layer === 'start' ? getThemeColors(this.menu.config.classicMode).menuBlue : getThemeColors(this.menu.config.classicMode).menuGreen,
 			index: 0,
 		};
 	
@@ -219,7 +220,7 @@ export class MenuViewSystem implements System {
 				console.log('PLAY clicked');
 				this.menu.sounds.menuConfirm.play();
 			},
-			color: GAME_COLORS.menuBlue,
+			color: getThemeColors(this.menu.config.classicMode).menuBlue,
 			index: 0,
 		};
 	
@@ -247,7 +248,7 @@ export class MenuViewSystem implements System {
 					console.log('LOCAL clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 0,
 			},
 			{
@@ -257,7 +258,7 @@ export class MenuViewSystem implements System {
 					console.log('ONLINE clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 1,	
 			},
 			{
@@ -267,7 +268,7 @@ export class MenuViewSystem implements System {
 					console.log('classic toggler clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 2,
 			},
 			{
@@ -277,7 +278,7 @@ export class MenuViewSystem implements System {
 					console.log('classic toggler clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 3,
 			},
 		];
@@ -337,7 +338,7 @@ export class MenuViewSystem implements System {
 					console.log('filter toggler clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuGreen,
+				color: getThemeColors(this.menu.config.classicMode).menuGreen,
 				index: 0,
 			},
 			{
@@ -347,7 +348,7 @@ export class MenuViewSystem implements System {
 					console.log('classic toggler clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuGreen,
+				color: getThemeColors(this.menu.config.classicMode).menuGreen,
 				index: 1,
 			},
 		];
@@ -418,7 +419,7 @@ export class MenuViewSystem implements System {
 					console.log('Options clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuGreen,
+				color: getThemeColors(this.menu.config.classicMode).menuGreen,
 				index: 1,
 			},
 		];
@@ -462,7 +463,7 @@ export class MenuViewSystem implements System {
 					console.log('Start clicked');
 					this.menu.sounds.menuSelect.play();
 				},
-				color: GAME_COLORS.menuBlue,
+				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 0,
 			},
 		];
@@ -538,7 +539,7 @@ export class MenuViewSystem implements System {
 							console.log('classic toggler clicked');
 							this.menu.sounds.menuSelect.play();
 						},
-						color: GAME_COLORS.menuBlue,
+						color: getThemeColors(this.menu.config.classicMode).menuBlue,
 						index: 2,
 					},
 					{
@@ -548,7 +549,7 @@ export class MenuViewSystem implements System {
 							console.log('classic toggler clicked');
 							this.menu.sounds.menuSelect.play();
 						},
-						color: GAME_COLORS.menuBlue,
+						color: getThemeColors(this.menu.config.classicMode).menuBlue,
 						index: 3,
 					},
 				];
@@ -598,7 +599,7 @@ export class MenuViewSystem implements System {
 							console.log('classic toggler clicked');
 							this.menu.sounds.menuSelect.play();
 						},
-						color: GAME_COLORS.menuBlue,
+						color: getThemeColors(this.menu.config.classicMode).menuBlue,
 						index: 2,
 					},
 					{
@@ -608,7 +609,7 @@ export class MenuViewSystem implements System {
 							console.log('classic toggler clicked');
 							this.menu.sounds.menuSelect.play();
 						},
-						color: GAME_COLORS.menuBlue,
+						color: getThemeColors(this.menu.config.classicMode).menuBlue,
 						index: 3,
 					},
 				];
