@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 17:37:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 18:33:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ import { MenuViewSystem } from './MenuViewSystem';
 import { GAME_COLORS, FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { isRenderComponent } from '../utils/Guards';
+import { MenuHalfButton } from './MenuHalfButton';
 
 export class Menu{
 	config: GameConfig;
@@ -89,6 +90,15 @@ export class Menu{
 	visualRootFilters: any[] = [];
 	menuContainerFilters: any[] = [];
 	sounds!: MenuSounds;
+
+	//Buttons
+	filtersButton!: MenuHalfButton;
+	classicButton!: MenuHalfButton;
+	localButton!: MenuHalfButton;
+	onlineButton!: MenuHalfButton;
+	duelButton!: MenuHalfButton;
+	IAButton!: MenuHalfButton;
+	tournamentButton!: MenuHalfButton;
 
 	// SUB-MENU stuff
 	private isOptionsOpen: boolean = false;
@@ -135,12 +145,7 @@ export class Menu{
 			mode: 'local',
 			variant: '1v1',
 			classicMode: false,
-			visuals: {
-				postProcessing: true,
-				trails: true,
-				colorShift: true,
-				crtShader: false,
-			},
+			filters: true,
 			powerupsEnabled: true,
 			players: [
 				{ name: 'Player 1', type: 'human', side: 'left' },
@@ -178,21 +183,17 @@ export class Menu{
 	createButtons(app: Application): void {
 		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
+				isClicked: true,
 				text: 'START',
 				onClick: async () => {
 					console.log("Starting game...");
-					
-					/* this.cleanup();
-					
-					const game = new PongGame(app);
-					this.sounds.menuConfirm.play();
-					this.sounds.menuBGM.stop();
-					await game.init(); */
+					this.sounds.menuSelect.play();
 				},
 				color: GAME_COLORS.menuBlue,
 				index: 0
 			},
 			{
+				isClicked: true,
 				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Options clicked');
@@ -202,6 +203,7 @@ export class Menu{
 				index: 1
 			},
 			{
+				isClicked: true,
 				text: 'GLOSSARY',
 				onClick: () => {
 					console.log('Glossary clicked');
@@ -211,6 +213,7 @@ export class Menu{
 				index: 2
 			},
 			{
+				isClicked: true,
 				text: 'ABOUT',
 				onClick: () => {
 					console.log('About clicked');

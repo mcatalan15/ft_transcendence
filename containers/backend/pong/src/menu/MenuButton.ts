@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 13:05:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 10:38:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export class MenuButton extends Entity {
     private buttonPolygon: Graphics;
     private buttonText: Text;
     private isHovered: boolean = false;
-	isClicked: boolean = false;
+	isClicked: boolean = true;
     private config: MenuButtonConfig;
     private menu: Menu;
     
@@ -36,17 +36,24 @@ export class MenuButton extends Entity {
         super(id, layer);
         this.menu = menu;
         this.config = config;
-
+        this.isClicked = config.isClicked!;
+    
         this.buttonContainer = new Container();
-        this.buttonContainer.eventMode = 'static';
-        this.buttonContainer.cursor = 'pointer';
-
+        
+        if (this.isClicked) {
+            this.buttonContainer.eventMode = 'static';
+            this.buttonContainer.cursor = 'pointer';
+        } else {
+            this.buttonContainer.eventMode = 'none';
+            this.buttonContainer.cursor = 'default';
+        }
+    
         this.buttonPolygon = new Graphics();
         
         this.buttonText = new Text({
             text: config.text,
             style: {
-                fill: config.color,
+                fill: { color: config.color, alpha: this.isClicked ? 1 : 0.3 },
                 fontSize: 24,
                 fontFamily: 'monospace',
                 fontWeight: 'bold',
@@ -54,22 +61,25 @@ export class MenuButton extends Entity {
         });
         this.buttonContainer.addChild(this.buttonPolygon);
         this.buttonContainer.addChild(this.buttonText);
-
+    
         this.createButton();
         this.setupEventHandlers();
         this.setupComponents();
-
     }
 
     createButton(isHovered: boolean = false, isClicked: boolean = false): void {
         this.buttonPolygon.clear();
         
-        const width = this.menu.buttonWidth;
-        const height = this.menu.buttonHeight;
-        const index = this.config.index;
-        const color = isHovered ? GAME_COLORS.white : this.config.color;
-
-        this.makeButtonPolygon(color, isHovered, isClicked);
+        let color;
+        if (isHovered) {
+            color = { color: GAME_COLORS.white, alpha: 1};
+        } else {
+            if (this.isClicked) {
+                color = { color: this.config.color, alpha: 1};
+            } else {
+                color = { color: this.config.color, alpha: 0.3};
+            }
+        }
 
         this.buttonText.style.fill = isHovered ? GAME_COLORS.black : color;
 		if (!isClicked) {
@@ -77,9 +87,11 @@ export class MenuButton extends Entity {
 			this.buttonText.x = this.menu.buttonWidth / 2;
 			this.buttonText.y = this.menu.buttonHeight / 2;
 		}
+
+        this.makeButtonPolygon(color, isHovered);
     }
 
-    private makeButtonPolygon(color: number, filled: boolean, isClicked: boolean = false): void { 
+    private makeButtonPolygon(color: { color: number, alpha: number}, filled: boolean): void { 
 
 		const points = getButtonPoints(this.menu, this);
 
@@ -93,7 +105,7 @@ export class MenuButton extends Entity {
             this.buttonPolygon.fill(color);
         } else {
             this.buttonPolygon.fill(GAME_COLORS.black);
-            this.buttonPolygon.stroke({color: color, width: 3});
+            this.buttonPolygon.stroke({color: color.color, width: 3, alpha: this.isClicked ? 1 : 0.3});
         }
     }
 
@@ -123,13 +135,19 @@ export class MenuButton extends Entity {
                     target: this.buttonContainer,
                     buttonName: this.config.text
                 });
+            } else if (this.config.text === 'PLAY') {
+                this.menu.eventQueue.push({
+                    type: 'PLAY_CLICK',
+                    target: this.buttonContainer,
+                    buttonName: this.config.text
+                });
             }
             
             this.config.onClick();
         });
 
         this.buttonContainer.on('pointerenter', () => {
-            if (!this.isHovered) {
+            if (!this.isHovered && this.isClicked) {
                 this.isHovered = true;
                 this.updateButtonPolygon(true);
 				this.highlightOrnament(this);
@@ -142,7 +160,7 @@ export class MenuButton extends Entity {
 				this.isHovered = false;
             	this.updateButtonPolygon(false, this.config.color);
 				this.resetOrnamentColor(this);
-				this.buttonText.style.fill = this.config.color;
+				this.buttonText.style.fill = { color: this.config.color, alpha: this.isClicked ? 1 : 0.3 };
         });
     }
 
@@ -214,10 +232,10 @@ export class MenuButton extends Entity {
         
         if (shouldFill) {
             this.buttonPolygon.fill(fillColor);
-            this.buttonPolygon.stroke({color: fillColor, width: 3});
+            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
         } else {
             this.buttonPolygon.fill(GAME_COLORS.black);
-            this.buttonPolygon.stroke({color: fillColor, width: 3});
+            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
         }
     }
 
@@ -312,4 +330,19 @@ export class MenuButton extends Entity {
 			}
 		}
 	}
+
+    public updateClickableState(isClicked: boolean): void {
+        this.isClicked = isClicked;
+        this.config.isClicked = isClicked;
+        
+        if (isClicked) {
+            this.buttonContainer.eventMode = 'static';
+            this.buttonContainer.cursor = 'pointer';
+        } else {
+            this.buttonContainer.eventMode = 'none';
+            this.buttonContainer.cursor = 'default';
+        }
+        
+        this.createButton(this.isHovered, isClicked);
+    }
 }

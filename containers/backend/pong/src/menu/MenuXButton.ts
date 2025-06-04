@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 17:31:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 09:20:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,19 @@ export class MenuXButton extends Entity {
 
     private setupEventHandlers(): void {
         this.buttonContainer.on('pointerdown', (event: FederatedPointerEvent) => { 
-            this.menu.eventQueue.push({
-                type: 'OPTIONS_BACK',
-                target: this.buttonContainer,
-                buttonName: 'optionsXButton'
-            });
+            if (this.id.includes('options')) {
+                this.menu.eventQueue.push({
+                    type: 'OPTIONS_BACK',
+                    target: this.buttonContainer,
+                    buttonName: 'optionsXButton'
+                });
+            } else if (this.id.includes('start')) {
+                this.menu.eventQueue.push({
+                    type: 'START_BACK',
+                    target: this.buttonContainer,
+                    buttonName: 'startXButton'
+                });
+            }
             this.config.onClick();
         });
 

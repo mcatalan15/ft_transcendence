@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 16:46:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 09:27:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,8 @@ export class MenuOrnaments extends Entity {
 			case ('START'): {
 				redoneGraphic.clear();
 				redoneGraphic.poly(this.getOrnamentPoints('START', true, reset)!);
-				redoneGraphic.fill(GAME_COLORS.white);
-				redoneGraphic.stroke( {color: GAME_COLORS.white, width: 3} );
+				redoneGraphic.fill(reset? GAME_COLORS.menuBlue : GAME_COLORS.white);
+				redoneGraphic.stroke( {color: reset? GAME_COLORS.menuBlue : GAME_COLORS.white, width: 3} );
 				redoneGraphic.y = (this.menu.app.screen.height / 3);
 				redoneGraphic.label = 'startOrnament';
 				break;

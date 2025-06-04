@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 10:20:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 10:16:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,56 +97,29 @@ export function removeTextFromButton(button: Container) {
 }
 
 export interface MenuButtonConfig {
-    text: string;
+    isClicked?: boolean;
+	text: string;
     onClick: () => void;
     color: number;
     index: number;
 }
 
 export function getButtonPoints(menu: Menu, button: MenuButton): number[] | undefined {
-    const firstPolyOffset = button.getIndex() * 25;
-	const middleOffset = 20;
-	const optionsShrinkFactor = 500;
-	if (!button.isClicked) {
-		return [
-			0, 0,
-			menu.buttonWidth + menu.buttonSlant, 0,
-			menu.buttonWidth , menu.buttonHeight,
-			0 - menu.buttonSlant, menu.buttonHeight 
-		];
-	} else if (button.isClicked) {
-		if (button.getText() === 'OPTIONS') {
-			return [
-				(menu.buttonWidth / 2.3 + menu.buttonSlant - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
-				(menu.buttonWidth / 1.8 + menu.buttonSlant - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
-				(menu.buttonWidth / 1.8 + middleOffset - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight,
-				(menu.buttonWidth / 2.3 + menu.buttonSlant - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight 
-			];
-		}
+	return [
+		0, 0,
+		menu.buttonWidth + menu.buttonSlant, 0,
+		menu.buttonWidth , menu.buttonHeight,
+		0 - menu.buttonSlant, menu.buttonHeight 
+	];
 	}
-}
 
 export function getHalfButtonPoints(menu: Menu, button: MenuHalfButton): number[] | undefined {
-    const firstPolyOffset = button.getIndex() * 25;
-	const middleOffset = 20;
-	const optionsShrinkFactor = 500;
-	if (!button.isClicked) {
-		return [
-			0, 0,
-			menu.halfButtonWidth + menu.halfButtonSlant, 0,
-			menu.halfButtonWidth , menu.halfButtonHeight,
-			0 - menu.halfButtonSlant, menu.halfButtonHeight 
-		];
-	} else if (button.isClicked) {
-		if (button.getText() === 'OPTIONS') {
-			return [
-				(menu.buttonWidth / 2.3 + menu.halfButtonSlant - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
-				(menu.buttonWidth / 1.8 + menu.halfButtonSlant - firstPolyOffset + middleOffset) - optionsShrinkFactor, 0,
-				(menu.buttonWidth / 1.8 + middleOffset - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight,
-				(menu.buttonWidth / 2.3 + menu.halfButtonSlant - firstPolyOffset) - optionsShrinkFactor, menu.buttonHeight 
-			];
-		}
-	}
+	return [
+		0, 0,
+		menu.halfButtonWidth + menu.halfButtonSlant, 0,
+		menu.halfButtonWidth , menu.halfButtonHeight,
+		0 - menu.halfButtonSlant, menu.halfButtonHeight 
+	];
 }
 
 export function getXButtonPoints(menu: Menu, button: MenuXButton): number[] | undefined {

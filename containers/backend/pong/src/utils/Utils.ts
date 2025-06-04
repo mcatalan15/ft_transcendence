@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 17:03:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 18:53:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ import { TextComponent } from '../components/TextComponent';
 
 import { PowerupSystem } from '../systems/PowerupSystem';
 
-import { GameEvent } from './Types'
+import { GAME_COLORS, GameEvent } from './Types'
 import { isPaddle } from './Guards';
 
 export function createEntitiesMap(entities: Entity[]): Map<string, Entity> {
@@ -144,6 +144,18 @@ export function generateLedgePoints(positions: {x: number, y: number}[]): Point[
     }
     
     return points;
+}
+
+export function getThemeColors(classicMode: boolean) {
+    if (classicMode) {
+        return {
+            menuBlue: GAME_COLORS.white,
+            menuGreen: GAME_COLORS.white,
+            menuOrange: GAME_COLORS.white,
+            menuPink: GAME_COLORS.white,
+        };
+    }
+    return GAME_COLORS;
 }
 
 export function processEvents<T extends GameEvent>(

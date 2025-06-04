@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/02 09:23:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/04 18:33:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,7 @@ export interface GameConfig {
 	variant: '1v1' | '1vAI' | '2v2'; // Extendable later
 	classicMode: boolean;
 
-	visuals: {
-		postProcessing: boolean;
-		trails: boolean;
-		colorShift: boolean;
-		crtShader: boolean;
-	};
+	filters: boolean;
 
 	powerupsEnabled: boolean;
 
