@@ -199,7 +199,7 @@ const googleSchema = {
 				message: { type: 'string' },
 				token: { type: 'string', description: 'JWT token for the authenticated user' },
 				userId: { type: 'number', description: 'ID of the user' },
-				user: { type: 'string', description: 'Username of the user' },
+				username: { type: 'string', description: 'Username of the user' },
 				email: { type: 'string', description: 'Email of the user' }
 			},
 			example: {
@@ -207,7 +207,7 @@ const googleSchema = {
 				message: 'Google authentication successful',
 				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
 				userId: 42,
-				user: 'googleuser',
+				username: 'googleuser',
 				email: 'user@gmail.com'
 			}
 		},

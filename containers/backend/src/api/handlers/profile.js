@@ -23,7 +23,6 @@ async function getUserProfile (request, reply) {
 
 async function avatarUploadHandler(request, reply) {
 	try {
-
 		const data = await request.file();
 
 		if (!data) {
@@ -42,6 +41,15 @@ async function avatarUploadHandler(request, reply) {
 			});
 		}
 		
+		const userId = user.userId || user.id;
+
+		if (!userId) {
+			return reply.status(401).send({
+			  success: false,
+			  message: 'Invalid user session data'
+			});
+		  }
+
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 		if (!allowedTypes.includes(data.mimetype)) {
 			return reply.status(400).send({
@@ -51,18 +59,18 @@ async function avatarUploadHandler(request, reply) {
 		}
 		
 		const ext = path.extname(data.filename);
-		const filename = `user_${user.id}_avatar${ext}`;
+		const filename = `user_${userId}_avatar${ext}`;
 		const filepath = path.join('/usr/src/app/public/avatars/uploads', filename);
 
 		const buffer = await data.toBuffer();
 		fs.writeFileSync(filepath, buffer);
 		
-		await updateUserAvatar(user.id, filename, 'uploaded');
+		await updateUserAvatar(userId, filename, 'uploaded');
 
 		reply.status(201).send({
 			success: true,
 			message: 'Avatar updated successfully',
-			avatarUrl: `/api/profile/avatar/${user.id}`
+			avatarUrl: `/api/profile/avatar/${userId}`
 		});
 	} catch (error) {
 		console.error('Avatar upload error:', error);
@@ -75,17 +83,11 @@ async function avatarUploadHandler(request, reply) {
 }
 
 async function fetchUserAvatar(request, reply) {
+    const defaultPath = path.join('/usr/src/app/public/avatars/defaults/default_1.png');
+
 	try {
-		const userId = request.session.get('user');
-		
-		try {
-			user = await getUserById(userId.userId);
-		} catch (dbError) {
-			return reply.status(500).send({ 
-				message: 'Database error',
-				error: dbError.message
-			});
-		}
+		const sessionUser = request.session.get('user');
+		const user = await getUserById(sessionUser.userId);
 		
 		if (!user) {
 			const defaultPath = path.join(__dirname, '../../../public/avatars/defaults/default_1.png');
@@ -102,7 +104,6 @@ async function fetchUserAvatar(request, reply) {
 		
 		if (!user.avatar_filename) {
 			// Serve default fallback
-			const defaultPath = path.join('/usr/src/app/public/avatars/defaults/default_1.png');
 			return reply.type('image/png').send(fs.createReadStream(defaultPath));
 		}
 

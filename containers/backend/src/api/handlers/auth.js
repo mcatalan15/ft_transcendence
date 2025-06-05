@@ -206,8 +206,6 @@ async function googleHandler(request, reply) {
 			username: user.username,
 			email: user.email
 		  });
-  
-		  console.log(user);
 
 		  // fastify.metrics.authAttempts.labels('local', 'success').inc();
 		  return reply.status(200).send({
@@ -238,8 +236,8 @@ async function googleHandler(request, reply) {
 
 		  request.session.set('token', authToken);
 		  request.session.set('user', {
-			id: newUser.id_user,
-			username: newUser.nickname,
+			userId: newUser.id_user,
+			username: newUser.username,
 			email: newUser.email
 		  });
 

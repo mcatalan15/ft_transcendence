@@ -61,7 +61,6 @@ export function showProfile(container: HTMLElement): void {
 	})
 		.then(response => response.json())
 		.then(data => {
-			console.log(data);
 			profileInfo.innerHTML = `
 			<div>ID: ${data.userId}</div>
 			<div>Username: ${data.username}</div>
