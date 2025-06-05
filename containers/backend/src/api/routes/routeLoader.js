@@ -3,10 +3,10 @@
 
 module.exports = async function (fastify) {
 	fastify.register(require('./auth/authRoutesIndex'));
+	fastify.register(require('./profile/profileRoutesIndex'));
+
 	// Add future routes here
 	fastify.register(require('./auth/twoFaRoutes'))
-	fastify.register(require('./profile/getProfile'));
-	fastify.register(require('./profile/avatarRoutes'));
 	fastify.register(require('./game/gameRoutes'));
 	fastify.register(require('./game/lastestGame.js'))
 	fastify.register(require('./blockchain/deployRoutes.js'))
