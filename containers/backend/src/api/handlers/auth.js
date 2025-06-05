@@ -107,7 +107,8 @@ async function signinHandler(request, reply) {
       if (match) {
 
         const user = await getUserByEmail(email);
-		    const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+		const twoFAStatus = user.twoFAEnabled === true;
+		const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 			    expiresIn: process.env.JWT_EXPIRES_IN
 		    });
 
@@ -116,6 +117,7 @@ async function signinHandler(request, reply) {
 		  userId: user.id_user,
           username: user.username,
           email: user.email,
+		//   twoFA: user.twoFA // Include 2FA status
           //! Never store sensitive data like passwords !
 		});
 
@@ -194,6 +196,7 @@ async function googleHandler(request, reply) {
 		if (userExists?.exists) {
 		  // user exists? sign them in instead of registering
 		  const user = await getUserByEmail(email);
+		  const twoFAStatus = user.twoFactorEnabled === true; // If 0 is false, 1 is true (yes, a bit confusing)
 		  const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES_IN
 		  });
@@ -202,7 +205,8 @@ async function googleHandler(request, reply) {
 		  request.session.set('user', {
 			id: user.id_user,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			twoFAEnabled: twoFAStatus
 		  });
   
 		  // fastify.metrics.authAttempts.labels('local', 'success').inc();
@@ -212,7 +216,8 @@ async function googleHandler(request, reply) {
 			user: { 
 			  id: user.id_user,
 			  username: user.username, 
-			  email: user.email 
+			  email: user.email,
+			  twoFA: twoFAStatus
 			},
 			token: authToken
 		  });
@@ -248,7 +253,8 @@ async function googleHandler(request, reply) {
 		  user: { 
 			  id: newUser.id,
 			  username: nickname, 
-			  email: email 
+			  email: email,
+			  twoFA: false // New users don't have 2FA enabled by default
 		  },
 		  token: authToken
 		});
