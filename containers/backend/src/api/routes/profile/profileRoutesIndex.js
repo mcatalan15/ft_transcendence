@@ -14,7 +14,7 @@ const {
 
  module.exports = async function (fastify, options) {
 	// Register all profile routes
-	fastify.post('/api/profile', { schema: profileSchema, preHandler: verifyToken }, getUserProfile);
+	fastify.get('/api/profile', { schema: profileSchema, preHandler: verifyToken }, getUserProfile);
 	fastify.post('/api/profile/avatar', { schema: uploadAvatarSchema, preHandler: verifyToken }, avatarUploadHandler);
 	fastify.get('/api/profile/avatar/:userId', { schema: fetchUserAvatarSchema, preHandler: verifyToken }, fetchUserAvatar)
 

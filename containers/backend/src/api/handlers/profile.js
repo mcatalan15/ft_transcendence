@@ -5,9 +5,9 @@ const { updateUserAvatar, getUserById } = require('../db/database');
 async function getUserProfile (request, reply) {
 	try {
 		const user = request.session.get('user');
-		
+
 		return reply.status(200).send({
-			id: user.id,
+			id: user.userId,
 			username: user.username,
 			email: user.email,
 		});
@@ -76,11 +76,10 @@ async function avatarUploadHandler(request, reply) {
 
 async function fetchUserAvatar(request, reply) {
 	try {
-		const { userId } = request.params;
+		const userId = request.session.get('user');
 		
-		let user;
 		try {
-			user = await getUserById(userId);
+			user = await getUserById(userId.userId);
 		} catch (dbError) {
 			return reply.status(500).send({ 
 				message: 'Database error',
