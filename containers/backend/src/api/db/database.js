@@ -134,6 +134,7 @@ async function getUserById(userId) {
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
+				//! Delete console.log in prod
                 console.log('getUserById result for userId', userId, ':', row);
                 resolve(row);
             }
