@@ -51,7 +51,7 @@ async function retrieveGamesHandler(request, reply) {
 	}
 };
 
-async function retrieveLastGameHandler(fastify) {
+async function retrieveLastGameHandler(request, reply) {
 	try {
 		const latestGame = await getLatestGame();
 		
