@@ -4,9 +4,7 @@
 module.exports = async function (fastify) {
 	fastify.register(require('./auth/authRoutesIndex'));
 	fastify.register(require('./profile/profileRoutesIndex'));
+	fastify.register(require('./games/gameRoutesIndex'));
 
 	// Add future routes here
-	fastify.register(require('./game/gameRoutes'));
-	fastify.register(require('./game/lastestGame.js'))
-	fastify.register(require('./blockchain/deployRoutes.js'))
 };

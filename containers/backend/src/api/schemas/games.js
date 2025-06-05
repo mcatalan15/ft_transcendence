@@ -1,6 +1,5 @@
-// schemas/game.js
-const gameSchema = {
-	tags: ['blockchain'],
+const saveGameSchema = {
+	tags: ['games'],
     body: {
         type: 'object',
         required: ['player1_score', 'player2_score'],
@@ -35,4 +34,6 @@ const gameSchema = {
     }
 };
 
-module.exports = gameSchema;
+module.exports = {
+	saveGameSchema,
+};
