@@ -23,8 +23,9 @@ export async function logUserOut(): Promise<{success: boolean, message: string}>
 		sessionStorage.removeItem('userId');
 		sessionStorage.removeItem('username');
 		sessionStorage.removeItem('token');
+		sessionStorage.removeItem('email');
 		
-		return { 
+		return {
 			success: true,
 			message: 'User logged out'
 		};
