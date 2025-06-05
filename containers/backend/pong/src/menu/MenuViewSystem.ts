@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 16:31:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 20:14:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ import { isMenuButton, isMenuXButton, isMenuHalfButton, isMenuOrnaments } from "
 import { getThemeColors } from "../utils/Utils";
 import { GameEvent } from "../utils/Types";
 import * as menuUtils from '../utils/MenuUtils'
+import { MenuThemeSystem } from "./MenuThemeSystem";
 
 
 export class MenuViewSystem implements System {
@@ -83,10 +84,11 @@ export class MenuViewSystem implements System {
 		}
 	
 		if (playButton) {
-			if (firstFlag && secondFlag) {
-				playButton.updateClickableState(true);
-			} else {
-				playButton.updateClickableState(false);
+			const shouldBeClickable = firstFlag && secondFlag;
+			
+			// Only update if state actually changed
+			if (playButton.isClickable !== shouldBeClickable) {
+				playButton.updateClickableState(shouldBeClickable);
 			}
 		}
 	}
@@ -98,21 +100,23 @@ export class MenuViewSystem implements System {
 				ornaments = entity;
 			}
 		}
-
+	
+		// Remove START button
 		for (const entity of entities) {
 			if (isMenuButton(entity) && entity.getText() === 'START') {
 				this.menu.removeEntity(entity.id);
 			}
 		}
-
+	
+		// Create PLAY button FIRST
 		this.createPlayButton();
-
+	
+		// Now update ornament with the NEW PLAY button
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(event.target! as MenuButton, graphic!.children[0], 'PLAY');
+		ornaments?.updateOrnament(this.menu.playButton!, graphic!.children[0], 'PLAY'); // ← Use this.menu.playButton
 		
 		this.createXButton('start');
-
 		this.createStartHalfButtons();
 	}
 
@@ -238,6 +242,11 @@ export class MenuViewSystem implements System {
 		menuPlayButton.setPosition(x!, y!);
 		this.menu.entities.push(menuPlayButton);
 		this.menu.menuContainer.addChild(menuPlayButton.getContainer());
+
+		const themeSystem = this.menu.systems.find(s => s instanceof MenuThemeSystem) as MenuThemeSystem;
+		if (themeSystem) {
+			themeSystem.markOrnamentsForUpdate();
+		}
 	}
 
 	createStartHalfButtons() {

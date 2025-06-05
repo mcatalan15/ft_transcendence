@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 17:40:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 19:50:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ export class MenuXButton extends Entity {
 	isClicked: boolean = false;
     private config: MenuButtonConfig;
     private menu: Menu;
+    public isAnimating: boolean = false;
+    public isStateChanging: boolean = false;
+    public isUpdating: boolean = false;
     
     // Store original polygon points for animation reference
     private originalButtonPolygonPoints: number[] = [];

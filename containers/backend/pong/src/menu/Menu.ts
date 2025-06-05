@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 17:32:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 19:59:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,25 +352,26 @@ export class Menu{
 	}
 
 	initSystems(): void {
-		const renderSystem = new MenuRenderSystem();
+		const menuViewSystem = new MenuViewSystem(this);
+		const themeSystem = new MenuThemeSystem(this);
+		const VFXSystem = new MenuVFXSystem();
 		const animationSystem = new MenuAnimationSystem(this);
+		const renderSystem = new MenuRenderSystem();
 		const particleSystem = new MenuParticleSystem(this);
 		const postProcessingSystem = new MenuPostProcessingSystem();
 		const physicsSystem = new MenuPhysicsSystem(this);
-		const VFXSystem = new MenuVFXSystem();
 		const lineSystem = new MenuLineSystem(this);
-		const menuViewSystem = new MenuViewSystem(this);
-		const themeSystem = new MenuThemeSystem(this);
 		
-		this.systems.push(renderSystem);
+		
+		this.systems.push(menuViewSystem);
+		this.systems.push(themeSystem);
+		this.systems.push(VFXSystem);
 		this.systems.push(animationSystem);
+		this.systems.push(renderSystem);
 		this.systems.push(particleSystem);
 		this.systems.push(postProcessingSystem);
 		this.systems.push(physicsSystem);
-		this.systems.push(VFXSystem);
 		this.systems.push(lineSystem);
-		this.systems.push(menuViewSystem);
-		this.systems.push(themeSystem);
 	}
 
 	addEntity(entity: Entity): void {

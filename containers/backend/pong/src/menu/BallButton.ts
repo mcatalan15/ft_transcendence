@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:00:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 19:50:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ export class BallButton extends Entity {
     private ballGraphic: Graphics;
     private isHovered: boolean = false;
     private onClick: () => void;
+    public isAnimating: boolean = false;
+    public isStateChanging: boolean = false;
+    public isUpdating: boolean = false;
 
     constructor(id: string, layer: string, menu: Menu, onClick: () => void) {
         super(id, layer);

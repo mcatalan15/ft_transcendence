@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 20:17:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 19:52:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ update(entities: Entity[], delta: FrameData): void {
 
 	// 2. Update entities
 	for (const entity of entities) {
-		// Remove title animation - let Title.ts handle its own positioning
 		if (entity.id === 'ballButton') {
 			this.animateBallButton(delta, entity as BallButton);
 		} else if (isMenuLine(entity)) {
@@ -145,6 +144,8 @@ update(entities: Entity[], delta: FrameData): void {
 	}
 
 	animateBallButton(delta: FrameData, entity: BallButton) {
+		entity.isAnimating = true;
+		
 		const animation = entity.getComponent('animation') as AnimationComponent;
 		const render = entity.getComponent('render') as RenderComponent;
 	
@@ -173,5 +174,7 @@ update(entities: Entity[], delta: FrameData): void {
 				(animationOptions.initialY as number) + (floatOffset * amplitudeMultiplier)
 			);
 		}
+
+		entity.isAnimating = false;
 	}
 }

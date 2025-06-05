@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 17:17:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 20:15:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,116 +26,128 @@ import { isBall, isMenuButton, isMenuHalfButton, isMenuOrnaments, isMenuXButton 
 import { RenderComponent } from '../components/RenderComponent';
 import { getThemeColors } from '../utils/Utils';
 import { MenuXButton } from './MenuXButton';
+import { MenuButton } from './MenuButton';
+import { MenuHalfButton } from './MenuHalfButton';
 
 export class MenuThemeSystem implements System {
 	private menu: Menu;
 	private isClassicModeOn: boolean = false;
+	private ornamentsNeedUpdate: boolean = false; // ← Add this flag
 
 	constructor(menu: Menu) {
 		this.menu = menu;
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
-		//!OJO
-		/* for (const entity of this.menu.entities) {
-			if (isMenuButton(entity)) {
-				console.log(`isClicked at ${entity.getText()}? ${entity.isClicked}`);
-			}
-		} */
-		
 		if (this.isClassicModeOn !== this.menu.config.classicMode) {
 			this.isClassicModeOn = this.menu.config.classicMode;
-
-
-			this.updateOrnaments();
-			
+			this.ornamentsNeedUpdate = true;
 			this.updateButtons();
-
 			this.remakeTitle();
 		}
+		
+		// Only update ornaments when needed
+		if (this.ornamentsNeedUpdate) {
+			this.updateOrnaments();
+			this.ornamentsNeedUpdate = false;
+		}
 	}
+    
+    // Call this when PLAY button is created/destroyed
+    public markOrnamentsForUpdate(): void {
+        this.ornamentsNeedUpdate = true;
+    }
 
 	updateButtons() {
-		const entitiesToRemove: string[] = [];
-
 		for (const entity of this.menu.entities) {
 			if (isMenuButton(entity) || isMenuHalfButton(entity) || isMenuXButton(entity)) {
-				entitiesToRemove.push(entity.id);
-				if (entity.id === this.menu.startButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (entity.id === this.menu.optionsButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-				} else if (entity.id === this.menu.glossaryButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuOrange);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuOrange);
-				} else if (entity.id === this.menu.aboutButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuPink);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuPink);
-				} else if (this.menu.playButton && entity.id === this.menu.playButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (this.menu.localButton && entity.id === this.menu.localButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (this.menu.onlineButton && entity.id === this.menu.onlineButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (this.menu.duelButton && entity.id === this.menu.duelButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (this.menu.IAButton && entity.id === this.menu.IAButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (this.menu.tournamentButton && entity.id === this.menu.tournamentButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-				} else if (entity.id === this.menu.filtersButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-				} else if (entity.id === this.menu.classicButton.id) {
-					entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-					entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-				} else if (isMenuXButton(entity)) {
-					if (entity.id.includes('options')) {
-						entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-						entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuGreen);
-					} else if (entity.id.includes('start')) {
-						entity.updateButtonPolygon(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-						entity.updateButtonTextColor(false, getThemeColors(this.menu.config.classicMode).menuBlue);
-					}
+				// Skip if button is in transition state
+				if (entity.isAnimating || entity.isStateChanging || entity.isUpdating) {
+					continue;
 				}
+				
+				// Mark as updating to prevent conflicts
+				entity.isUpdating = true;
+				
+				const buttonColors = this.getButtonThemeColors(entity);
+				if (buttonColors) {
+					entity.updateButtonPolygon(false, buttonColors.color);
+					entity.updateButtonTextColor(false, buttonColors.color);
+				}
+				
+				// Clear updating flag after a frame
+				requestAnimationFrame(() => {
+					entity.isUpdating = false;
+				});
 			}
 		}
 	}
+	
+	private getButtonThemeColors(entity: MenuButton | MenuHalfButton | MenuXButton): { color: number } | null {
+		const themeColors = getThemeColors(this.menu.config.classicMode);
+		
+		// Map button IDs to their theme colors
+		const colorMap = new Map([
+			[this.menu.startButton?.id, themeColors.menuBlue],
+			[this.menu.optionsButton?.id, themeColors.menuGreen],
+			[this.menu.glossaryButton?.id, themeColors.menuOrange],
+			[this.menu.aboutButton?.id, themeColors.menuPink],
+			[this.menu.playButton?.id, themeColors.menuBlue],
+			[this.menu.localButton?.id, themeColors.menuBlue],
+			[this.menu.onlineButton?.id, themeColors.menuBlue],
+			[this.menu.duelButton?.id, themeColors.menuBlue],
+			[this.menu.IAButton?.id, themeColors.menuBlue],
+			[this.menu.tournamentButton?.id, themeColors.menuBlue],
+			[this.menu.filtersButton?.id, themeColors.menuGreen],
+			[this.menu.classicButton?.id, themeColors.menuGreen],
+		]);
+		
+		// Handle X buttons by ID pattern
+		if (isMenuXButton(entity)) {
+			if (entity.id.includes('options')) {
+				return { color: themeColors.menuGreen };
+			} else if (entity.id.includes('start')) {
+				return { color: themeColors.menuBlue };
+			}
+		}
+		
+		const color = colorMap.get(entity.id);
+		return color ? { color } : null;
+	}
 
-	updateOrnaments(){
+	updateOrnaments() {
 		let ornaments;
-
+	
 		for (const entity of this.menu.entities) {
 			if (isMenuOrnaments(entity)) {
 				ornaments = entity;
 			}
 		}
-
-		const ornamentRender = ornaments?.getComponent('render') as RenderComponent;
-			console.log(this.menu.playButton);
-			for (let i = 0; i < 5; i++) {
-				switch (i) {
-					case (0): ornaments!.updateOrnament(this.menu.startButton, ornamentRender.graphic.children[i], 'START', false); break;
-					case (1): ornaments!.updateOrnament(this.menu.optionsButton, ornamentRender.graphic.children[i], 'OPTIONS', false); break;
-					case (2): ornaments!.updateOrnament(this.menu.glossaryButton, ornamentRender.graphic.children[i], 'GLOSSARY', false); break;
-					case (3): ornaments!.updateOrnament(this.menu.aboutButton, ornamentRender.graphic.children[i], 'ABOUT', false); break;
-					case (4): {
-						if (this.menu.playButton) {
-							ornaments!.updateOrnament(this.menu.playButton, ornamentRender.graphic.children[i], 'PLAY', false);
-						}
-						break;
-					} 
-				}
-				
+	
+		if (!ornaments) return;
+	
+		const ornamentRender = ornaments.getComponent('render') as RenderComponent;
+		
+		// Define button-ornament mappings
+		const buttonOrnamentMap = [
+			{ button: this.menu.startButton, text: 'START', index: 0 },
+			{ button: this.menu.optionsButton, text: 'OPTIONS', index: 1 },
+			{ button: this.menu.glossaryButton, text: 'GLOSSARY', index: 2 },
+			{ button: this.menu.aboutButton, text: 'ABOUT', index: 3 },
+			{ button: this.menu.playButton, text: 'PLAY', index: 4 }
+		];
+	
+		// Update all ornaments without state checking (for theme changes)
+		for (const mapping of buttonOrnamentMap) {
+			if (mapping.button && ornamentRender.graphic.children[mapping.index]) {
+				ornaments.updateOrnament(
+					mapping.button, 
+					ornamentRender.graphic.children[mapping.index], 
+					mapping.text, 
+					false
+				);
 			}
+		}
 	}
 
 	remakeTitle() {

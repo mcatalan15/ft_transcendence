@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 17:46:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 20:05:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ export class MenuButton extends Entity {
     isClickable: boolean = true;
     private config: MenuButtonConfig;
     private menu: Menu;
+    public isAnimating: boolean = false;
+    public isStateChanging: boolean = false;
+    public isUpdating: boolean = false;
     
     // Store original polygon points for animation reference
     private originalButtonPolygonPoints: number[] = [];
@@ -151,19 +154,23 @@ export class MenuButton extends Entity {
 
         this.buttonContainer.on('pointerenter', () => {
             if (!this.isHovered) {
+                this.isStateChanging = true;
                 this.isHovered = true;
                 this.updateButtonPolygon(true);
 				this.highlightOrnament(this);
 				this.buttonText.style.fill = getThemeColors(this.menu.config.classicMode).black;
                 this.menu.sounds.menuMove.play();
+                this.isStateChanging = false;
             }
         });
 
         this.buttonContainer.on('pointerleave', () => {
-				this.isHovered = false;
-            	this.updateButtonPolygon(false, this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
-				this.resetOrnamentColor(this);
-				this.buttonText.style.fill = { color: this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color, alpha: this.isClicked ? 0.3 : 1 };
+            this.isStateChanging = true;
+            this.isHovered = false;
+            this.updateButtonPolygon(false, this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
+            this.resetOrnamentColor(this);
+            this.buttonText.style.fill = { color: this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color, alpha: this.isClicked ? 0.3 : 1 };
+            this.isStateChanging = false;
         });
     }
 
@@ -347,7 +354,14 @@ export class MenuButton extends Entity {
 	}
 
     public updateClickableState(isClickable: boolean): void {
+        // Prevent updates during transitions
+        if (this.isStateChanging || this.isUpdating || this.isAnimating) {
+            return;
+        }
+        
+        this.isUpdating = true;
         this.config.isClicked = isClickable;
+        this.isClickable = isClickable;
         
         if (isClickable) {
             this.buttonContainer.eventMode = 'static';
@@ -360,5 +374,9 @@ export class MenuButton extends Entity {
         }
         
         this.createButton(this.isHovered, isClickable);
+        
+        requestAnimationFrame(() => {
+            this.isUpdating = false;
+        });
     }
 }
