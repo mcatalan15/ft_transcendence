@@ -7,7 +7,7 @@ const profileSchema = {
 	querystring: {
 	  type: 'object',
 	  properties: {
-		id: { type: 'string', description: 'User\s ID from the database' },
+		userId: { type: 'string', description: 'User\s ID from the database' },
 	  }
 	},
 	response: {
@@ -15,12 +15,12 @@ const profileSchema = {
 		description: 'Profile fetched successfully',
 		type: 'object',
 		properties: {
-		  id: { type: 'string', description: 'User\s ID' },
+		  userId: { type: 'string', description: 'User\s ID' },
 		  username: { type: 'string', description: 'Username' },
 		  email: { type: 'string', description: 'User\s email address' },
 		},
 		example: {
-		  id: '42',
+		  userId: '42',
 		  username: 'testuser',
 		  email: 'user@test.com'
 		}
@@ -29,12 +29,12 @@ const profileSchema = {
 		description: 'Couldn\'t fetch user\'s profile',
 		type: 'object',
 		properties: {
-		  id: { type: 'string', description: 'User\s ID', },
+		  userId: { type: 'string', description: 'User\s ID', },
 		  username: { type: 'string', description:'Username' },
 		  email: { type: 'string', description:'User\s email address' },
 		},
 		example: {
-		  id: '',
+		  userId: '',
 		  username: '',
 		  email: ''
 		}
@@ -43,12 +43,12 @@ const profileSchema = {
 		description: 'Internal server error',
 		type: 'object',
 		properties: {
-		  id: { type: 'string', description: 'User\s ID' },
+		  userId: { type: 'string', description: 'User\s ID' },
 		  username: { type: 'string', description: 'Username' },
 		  email: { type: 'string', description: 'User\s email address' },
 		},
 		example: {
-		  id: '',
+		  userId: '',
 		  username: '',
 		  email: ''
 		}

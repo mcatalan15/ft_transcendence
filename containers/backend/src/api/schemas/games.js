@@ -182,7 +182,7 @@ const retrieveLastGameSchema = {
 
 const deployContractSchema = {
     description: 'Deploy a smart contract with the latest game data to the blockchain',
-    tags: ['games', 'blockchain'],
+    tags: ['blockchain'],
     response: {
         200: {
             description: 'Contract deployed successfully',

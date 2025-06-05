@@ -178,62 +178,65 @@ const logoutSchema = {
   };
 
 const googleSchema = {
-	description: 'Create a new user account from the data provided by the user via the frontend. The password is received in plain text and is hashed before being stored in the database.',
+	description: 'Authenticate or register a user using Google OAuth credential token',
 	tags: ['authentication'],
 	body: {
-	  type: 'object',
-	  required: ['username', 'email', 'password'],
-	  properties: {
-		username: { type: 'string', description: 'Unique username' },
-		email: { type: 'string', format: 'email', description: 'User email address' },
-		password: { type: 'string', description: 'User password' }
-	  }
+		type: 'object',
+		required: ['credential'],
+		properties: {
+			credential: {
+				type: 'string',
+				description: 'JWT credential token from Google OAuth'
+			}
+		}
 	},
 	response: {
-	  201: {
-		description: 'Successful registration',
-		type: 'object',
-		properties: {
-		  success: { type: 'boolean' },
-		  message: { type: 'string' },
-		  userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
-		  username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
-		  email: { type: 'string', description: 'Email of the new user' }
+		200: {
+			description: 'Successful Google authentication',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				token: { type: 'string', description: 'JWT token for the authenticated user' },
+				userId: { type: 'number', description: 'ID of the user' },
+				user: { type: 'string', description: 'Username of the user' },
+				email: { type: 'string', description: 'Email of the user' }
+			},
+			example: {
+				success: true,
+				message: 'Google authentication successful',
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+				userId: 42,
+				user: 'googleuser',
+				email: 'user@gmail.com'
+			}
 		},
-		example: {
-		  success: true,
-		  message: 'User registered successfully',
-		  userId: 123,
-		  username: 'testuser',
-		  email: 'test@user.com'
-		}
-	  },
-	  400: {
-		description: 'Bad request - could be invalid data, or that the user/email already exists in the database',
-		type: 'object',
-		properties: {
-		  success: { type: 'boolean' },
-		  message: { type: 'string' }
+		400: {
+			description: 'Bad request - invalid or missing credential',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid Google credential'
+			}
 		},
-		example: {
-		  success: false,
-		  message: 'Username is already taken'
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Internal server error'
+			}
 		}
-	  },
-	  500: {
-		description: 'Server error',
-		type: 'object',
-		properties: {
-		  success: { type: 'boolean' },
-		  message: { type: 'string' }
-		},
-		example: {
-		  success: false,
-		  message: 'Internal server error'
-		}
-	  }
 	}
-  };
+};
 
 const setupTwoFaSchema = {
 	description: 'Fetches the user info after a successful sign-in to generate the 2FA code.',

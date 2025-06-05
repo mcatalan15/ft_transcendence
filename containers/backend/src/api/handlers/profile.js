@@ -7,7 +7,7 @@ async function getUserProfile (request, reply) {
 		const user = request.session.get('user');
 
 		return reply.status(200).send({
-			id: user.userId,
+			userId: user.userId,
 			username: user.username,
 			email: user.email,
 		});
