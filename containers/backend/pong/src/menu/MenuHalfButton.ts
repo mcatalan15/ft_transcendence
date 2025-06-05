@@ -6,19 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 18:58:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 17:40:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Container, Text, FederatedPointerEvent } from 'pixi.js';
+import { Graphics, Container, Text } from 'pixi.js';
 import { Entity } from '../engine/Entity';
 import { RenderComponent } from '../components/RenderComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
-import { GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
 import { getHalfButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
 import { getThemeColors } from '../utils/Utils';
-import { isMenuOrnaments, isMenuPostProcessingLayer } from '../utils/Guards';
+import { isMenuOrnaments } from '../utils/Guards';
 
 export class MenuHalfButton extends Entity {
     private buttonContainer: Container;
@@ -104,7 +103,7 @@ export class MenuHalfButton extends Entity {
     }
 
     private setupEventHandlers(): void {
-        this.buttonContainer.on('pointerdown', (event: FederatedPointerEvent) => { 
+        this.buttonContainer.on('pointerdown', () => { 
             if (this.getText().includes('FILTER') && this.getText().includes('ON')) {
                 this.updateText(this.getText().substring(0, this.getText().indexOf('ON')) + 'OFF');
                 this.menu.visualRoot.filters = [];
@@ -134,7 +133,7 @@ export class MenuHalfButton extends Entity {
             }
 
             this.toggleStartValues(this.getText(), this.isClicked);
-            this.toggleOptionValues(this.getText(), this.isClicked);
+            //this.toggleOptionValues(this.getText(), this.isClicked); //!OJO
 
             // ! OJO
             this.menu.eventQueue.push({
@@ -156,9 +155,9 @@ export class MenuHalfButton extends Entity {
 
         this.buttonContainer.on('pointerleave', () => {
 				this.isHovered = false;
-            	this.updateButtonPolygon(false, this.config.color);
-                this.updateButtonText();
-				
+            	this.updateButtonPolygon(false, this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
+				this.resetOrnamentColor(this);
+				this.buttonText.style.fill = { color: this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color, alpha: this.isClicked ? 1 : 0.3 };
         });
     }
 
@@ -259,6 +258,31 @@ export class MenuHalfButton extends Entity {
         }
     }
 
+    public updateButtonTextColor(filled?: boolean, color?: number): void {
+        let fillColor: { color: number, alpha: number};
+        
+        if (color) {
+            if (this.isClicked) {
+                fillColor = { color, alpha: 1 };
+            } else {
+                fillColor = { color, alpha: 0.3 };
+            }
+        } else {
+            if (this.isHovered) {
+                fillColor = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
+            } else {
+                fillColor = { color: this.config.color, alpha: 0.3 };
+            }
+        }
+    
+        const shouldFill = filled !== undefined ? filled : this.isHovered;
+        
+        if (shouldFill) {
+            this.buttonText.style.fill = getThemeColors(this.menu.config.classicMode).black;
+        } else {
+            this.buttonText.style.fill = fillColor;
+        }
+    }
 
     public resetPolygon(): void {
         this.createButton(this.isHovered);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:02:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 17:46:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ export class MenuButton extends Entity {
     private buttonText: Text;
     private isHovered: boolean = false;
 	isClicked: boolean = true;
+    isClickable: boolean = true;
     private config: MenuButtonConfig;
     private menu: Menu;
     
@@ -41,7 +42,7 @@ export class MenuButton extends Entity {
     
         this.buttonContainer = new Container();
         
-        if (this.isClicked) {
+        if (this.isClickable) {
             this.buttonContainer.eventMode = 'static';
             this.buttonContainer.cursor = 'pointer';
         } else {
@@ -76,9 +77,9 @@ export class MenuButton extends Entity {
             color = { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1};
         } else {
             if (this.isClicked) {
-                color = { color: this.config.color, alpha: 1};
+                color = { color: this.config.color, alpha: 0.3 };
             } else {
-                color = { color: this.config.color, alpha: 0.3};
+                color = { color: this.config.color, alpha: 1 };
             }
         }
 
@@ -106,40 +107,41 @@ export class MenuButton extends Entity {
             this.buttonPolygon.fill(color);
         } else {
             this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
-            this.buttonPolygon.stroke({color: color.color, width: 3, alpha: this.isClicked ? 1 : 0.3});
+            this.buttonPolygon.stroke({color: color.color, width: 3, alpha: this.isClicked ? 0.3 : 1});
         }
     }
 
     private setupEventHandlers(): void {
         this.buttonContainer.on('pointerdown', (event: FederatedPointerEvent) => { 
+            this.isClicked = !this.isClicked;
             if (this.config.text === 'START') {
                 this.menu.eventQueue.push({
                     type: 'START_CLICK',
-                    target: this.buttonContainer,
+                    target: this,
                     buttonName: this.config.text
                 });
             } else if (this.config.text === 'OPTIONS') {
                 this.menu.eventQueue.push({
                     type: 'OPTIONS_CLICK',
-                    target: this.buttonContainer,
+                    target: this,
                     buttonName: this.config.text
                 });
             } else if (this.config.text === 'GLOSSARY') {
                 this.menu.eventQueue.push({
                     type: 'GLOSSARY_CLICK',
-                    target: this.buttonContainer,
+                    target: this,
                     buttonName: this.config.text
                 });
             } else if (this.config.text === 'ABOUT') {
                 this.menu.eventQueue.push({
                     type: 'ABOUT_CLICK',
-                    target: this.buttonContainer,
+                    target: this,
                     buttonName: this.config.text
                 });
             } else if (this.config.text === 'PLAY') {
                 this.menu.eventQueue.push({
                     type: 'PLAY_CLICK',
-                    target: this.buttonContainer,
+                    target: this,
                     buttonName: this.config.text
                 });
             }
@@ -148,7 +150,7 @@ export class MenuButton extends Entity {
         });
 
         this.buttonContainer.on('pointerenter', () => {
-            if (!this.isHovered && this.isClicked) {
+            if (!this.isHovered) {
                 this.isHovered = true;
                 this.updateButtonPolygon(true);
 				this.highlightOrnament(this);
@@ -159,9 +161,9 @@ export class MenuButton extends Entity {
 
         this.buttonContainer.on('pointerleave', () => {
 				this.isHovered = false;
-            	this.updateButtonPolygon(false, this.config.color);
+            	this.updateButtonPolygon(false, this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
 				this.resetOrnamentColor(this);
-				this.buttonText.style.fill = { color: this.config.color, alpha: this.isClicked ? 1 : 0.3 };
+				this.buttonText.style.fill = { color: this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color, alpha: this.isClicked ? 0.3 : 1 };
         });
     }
 
@@ -233,13 +235,23 @@ export class MenuButton extends Entity {
         
         if (shouldFill) {
             this.buttonPolygon.fill(fillColor);
-            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
+            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 0.3 : 1});
         } else {
             this.buttonPolygon.fill(getThemeColors(this.menu.config.classicMode).black);
-            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 1 : 0.3});
+            this.buttonPolygon.stroke({color: fillColor, width: 3, alpha: this.isClicked ? 0.3 : 1});
         }
     }
 
+    public updateButtonTextColor(filled?: boolean, color?: number): void {
+        const fillColor = color || (this.isHovered ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
+        const shouldFill = filled !== undefined ? filled : this.isHovered;
+        
+        if (shouldFill) {
+            this.buttonText.style.fill = getThemeColors(this.menu.config.classicMode).black;
+        } else {
+            this.buttonText.style.fill = { color: fillColor, alpha: this.isClicked ? 0.3 : 1 };
+        }
+    }
 
     public resetPolygon(): void {
         this.createButton(this.isHovered);
@@ -251,7 +263,7 @@ export class MenuButton extends Entity {
 	}
 
 	highlightOrnament(button: MenuButton) {
-		let ornaments;
+        let ornaments;
 
 		for (const entity of this.menu.entities) {
 			if (isMenuOrnaments(entity)) {
@@ -262,7 +274,7 @@ export class MenuButton extends Entity {
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
 		let targetChild;
-		
+
 		switch(button.config.text) {
 			case ('START'): {
 				targetChild = graphic!.children[0] as Graphics;
@@ -292,7 +304,9 @@ export class MenuButton extends Entity {
 	}
 
 	resetOrnamentColor(button: MenuButton) {
-		let ornaments;
+		if (button.isClicked) return;
+        
+        let ornaments;
 
 		for (const entity of this.menu.entities) {
 			if (isMenuOrnaments(entity)) {
@@ -332,18 +346,19 @@ export class MenuButton extends Entity {
 		}
 	}
 
-    public updateClickableState(isClicked: boolean): void {
-        this.isClicked = isClicked;
-        this.config.isClicked = isClicked;
+    public updateClickableState(isClickable: boolean): void {
+        this.config.isClicked = isClickable;
         
-        if (isClicked) {
+        if (isClickable) {
             this.buttonContainer.eventMode = 'static';
             this.buttonContainer.cursor = 'pointer';
+            this.isClicked = false;
         } else {
             this.buttonContainer.eventMode = 'none';
             this.buttonContainer.cursor = 'default';
+            this.isClicked = true;
         }
         
-        this.createButton(this.isHovered, isClicked);
+        this.createButton(this.isHovered, isClickable);
     }
 }

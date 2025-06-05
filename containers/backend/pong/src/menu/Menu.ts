@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 20:20:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 17:32:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ import { MenuThemeSystem } from './MenuThemeSystem';
 import { GAME_COLORS , FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
-import { isRenderComponent } from '../utils/Guards';
+import { isMenuOrnaments, isRenderComponent } from '../utils/Guards';
 import { MenuHalfButton } from './MenuHalfButton';
 
 export class Menu{
@@ -94,18 +94,20 @@ export class Menu{
 	sounds!: MenuSounds;
 
 	//Buttons
-	filtersButton!: MenuHalfButton;
-	classicButton!: MenuHalfButton;
+	startButton!: MenuButton;
+	optionsButton!: MenuButton;
+	glossaryButton!: MenuButton;
+	aboutButton!: MenuButton;
+	playButton!: MenuButton | undefined;
 	localButton!: MenuHalfButton;
 	onlineButton!: MenuHalfButton;
 	duelButton!: MenuHalfButton;
 	IAButton!: MenuHalfButton;
 	tournamentButton!: MenuHalfButton;
+	filtersButton!: MenuHalfButton;
+	classicButton!: MenuHalfButton;
 
 	// SUB-MENU stuff
-	private isOptionsOpen: boolean = false;
-	private optionsButtonRef: Container | null = null;
-	private submenuButtons: Container[] = [];
 
 	constructor(app: Application) {
 		this.app = app;
@@ -157,8 +159,8 @@ export class Menu{
 	}
 
 	async init(): Promise<void> {
-		await this.createButtons(this.app);
 		await this.createEntities();
+		await this.createButtons(this.app);
 		await this.createTitle();
 		await this.createBallButton();
 		await this.initSystems();
@@ -186,17 +188,17 @@ export class Menu{
 	createButtons(app: Application): void {
 		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
-				isClicked: true,
+				isClicked: false,
 				text: 'START',
 				onClick: async () => {
-					console.log("Starting game...");
+					console.log("Start clicked");
 					this.sounds.menuSelect.play();
 				},
 				color: getThemeColors(this.config.classicMode).menuBlue,
 				index: 0
 			},
 			{
-				isClicked: true,
+				isClicked: false,
 				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Options clicked');
@@ -206,7 +208,7 @@ export class Menu{
 				index: 1
 			},
 			{
-				isClicked: true,
+				isClicked: false,
 				text: 'GLOSSARY',
 				onClick: () => {
 					console.log('Glossary clicked');
@@ -216,7 +218,7 @@ export class Menu{
 				index: 2
 			},
 			{
-				isClicked: true,
+				isClicked: false,
 				text: 'ABOUT',
 				onClick: () => {
 					console.log('About clicked');
@@ -242,7 +244,33 @@ export class Menu{
 			this.entities.push(menuButton);
 	
 			this.menuContainer.addChild(menuButton.getContainer());
+
+			switch (index) {
+				case (0): this.startButton = menuButton; break;
+				case (1): this.optionsButton = menuButton; break;
+				case (2): this.glossaryButton = menuButton; break;
+				case (3): this.aboutButton = menuButton; break;
+			}
 		});
+
+		let ornaments;
+
+			for (const entity of this.entities) {
+				if (isMenuOrnaments(entity)) {
+					ornaments = entity;
+				}
+			}
+			const ornamentRender = ornaments?.getComponent('render') as RenderComponent;
+
+			for (let i = 0; i < 4; i++) {
+				switch (i) {
+					case (0): ornaments!.updateOrnament(this.startButton, ornamentRender.graphic.children[0], 'START', false);; break;
+					case (1): ornaments!.updateOrnament(this.optionsButton, ornamentRender.graphic.children[1], 'OPTIONS', false);; break;
+					case (2): ornaments!.updateOrnament(this.glossaryButton, ornamentRender.graphic.children[2], 'GLOSSARY', false);; break;
+					case (3): ornaments!.updateOrnament(this.aboutButton, ornamentRender.graphic.children[i], 'ABOUT', false);; break;
+				}
+				
+			}
 	}
 
 	createTitle(){

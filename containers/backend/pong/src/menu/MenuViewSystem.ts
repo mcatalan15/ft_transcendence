@@ -6,11 +6,9 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:05:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 16:31:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-import { Filter } from "pixi.js";
 
 import { PongGame } from "../engine/Game";
 
@@ -25,7 +23,7 @@ import { RenderComponent } from "../components/RenderComponent";
 
 import { isMenuButton, isMenuXButton, isMenuHalfButton, isMenuOrnaments } from "../utils/Guards";
 import { getThemeColors } from "../utils/Utils";
-import { FrameData, GameEvent } from "../utils/Types";
+import { GameEvent } from "../utils/Types";
 import * as menuUtils from '../utils/MenuUtils'
 
 
@@ -36,7 +34,7 @@ export class MenuViewSystem implements System {
         this.menu = menu;
     }
 
-    update(entities: Entity[], delta: FrameData): void {
+    update(entities: Entity[]): void {
         const unhandledEvents = [];
 
         while (this.menu.eventQueue.length > 0) {
@@ -101,10 +99,6 @@ export class MenuViewSystem implements System {
 			}
 		}
 
-		const render = ornaments!.getComponent('render') as RenderComponent;
-		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[0], 'START');
-
 		for (const entity of entities) {
 			if (isMenuButton(entity) && entity.getText() === 'START') {
 				this.menu.removeEntity(entity.id);
@@ -112,6 +106,10 @@ export class MenuViewSystem implements System {
 		}
 
 		this.createPlayButton();
+
+		const render = ornaments!.getComponent('render') as RenderComponent;
+		const graphic = render?.graphic;
+		ornaments?.updateOrnament(event.target! as MenuButton, graphic!.children[0], 'PLAY');
 		
 		this.createXButton('start');
 
@@ -119,7 +117,8 @@ export class MenuViewSystem implements System {
 	}
 
 	handleOptionsClick(event: GameEvent, entities: Entity[]): void {
-        let ornaments;
+		let ornaments;
+		console.log((event.target! as MenuButton).isClicked);
 		for (const entity of this.menu.entities) {
 			if (isMenuOrnaments(entity)) {
 				ornaments = entity;
@@ -128,7 +127,7 @@ export class MenuViewSystem implements System {
 
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[1], 'OPTIONS');
+		ornaments?.updateOrnament(event.target! as MenuButton, graphic!.children[1], 'OPTIONS');
 		
 		for (const entity of entities) {
 			if (isMenuButton(entity) && entity.getText() === 'OPTIONS') {
@@ -151,7 +150,7 @@ export class MenuViewSystem implements System {
 
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[2], 'GLOSSARY');
+		ornaments?.updateOrnament(event.target! as MenuButton, graphic!.children[2], 'GLOSSARY');
 	}
 	
 
@@ -165,7 +164,7 @@ export class MenuViewSystem implements System {
 
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[3], 'ABOUT');
+		ornaments?.updateOrnament(event.target! as MenuButton, graphic!.children[3], 'ABOUT');
 	}
 
 	handlePlayClick(event: GameEvent, entities: Entity[]) : void {
@@ -214,7 +213,7 @@ export class MenuViewSystem implements System {
 
 	createPlayButton() {
 		const config: menuUtils.MenuButtonConfig = {
-			isClicked: false,
+			isClicked: true,
 			text: 'PLAY',
 			onClick: () => {
 				console.log('PLAY clicked');
@@ -224,19 +223,21 @@ export class MenuViewSystem implements System {
 			index: 0,
 		};
 	
-		const menuXButton = new MenuButton(
+		const menuPlayButton = new MenuButton(
 			`playButton_${config.text.toLowerCase()}`, 
 			'menuContainer', 
 			this.menu, 
 			config
 		);
+
+		this.menu.playButton = menuPlayButton;
 	
 		const x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2;
 		const y = (this.menu.app.screen.height / 3);
 	
-		menuXButton.setPosition(x!, y!);
-		this.menu.entities.push(menuXButton);
-		this.menu.menuContainer.addChild(menuXButton.getContainer());
+		menuPlayButton.setPosition(x!, y!);
+		this.menu.entities.push(menuPlayButton);
+		this.menu.menuContainer.addChild(menuPlayButton.getContainer());
 	}
 
 	createStartHalfButtons() {
@@ -332,8 +333,8 @@ export class MenuViewSystem implements System {
 	createOptionsHalfButtons() {
 		const HalfButtonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
-				isClicked: true,
-				text: (this.menu.menuContainer.filters && (this.menu.menuContainer.filters as Filter[]).length > 0) ? 'CRT FILTER: ON' : 'CRT FILTER: OFF',
+				isClicked: this.menu.config.filters ? true : false,
+				text: this.menu.config.filters ? 'CRT FILTER: ON' : 'CRT FILTER: OFF',
 				onClick: () => {
 					console.log('filter toggler clicked');
 					this.menu.sounds.menuSelect.play();
@@ -342,8 +343,8 @@ export class MenuViewSystem implements System {
 				index: 0,
 			},
 			{
-				isClicked: false,
-				text: 'CLASSIC: OFF',
+				isClicked: this.menu.config.classicMode ? true : false,
+				text: this.menu.config.classicMode ? 'CLASSIC: ON' : 'CLASSIC: OFF',
 				onClick: () => {
 					console.log('classic toggler clicked');
 					this.menu.sounds.menuSelect.play();
@@ -399,6 +400,7 @@ export class MenuViewSystem implements System {
 					entitiesToRemove.push(entity.id);
 				} else if (isMenuButton(entity) && entity.id.includes('play')) {
 					entitiesToRemove.push(entity.id);
+					this.menu.playButton = undefined;
 				}
 			}
 
@@ -411,9 +413,8 @@ export class MenuViewSystem implements System {
 	}
 
 	rebuildOptionsButton() {
-		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
-			{
-				isClicked: true,
+		const config: menuUtils.MenuButtonConfig = {
+				isClicked: false,
 				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Options clicked');
@@ -421,25 +422,24 @@ export class MenuViewSystem implements System {
 				},
 				color: getThemeColors(this.menu.config.classicMode).menuGreen,
 				index: 1,
-			},
-		];
+		};
 	
-		buttonConfigs.forEach((config, index) => {
-			const menuButton = new MenuButton(
-				`menuButton_${config.text.toLowerCase()}`, 
-				'menuContainer', 
-				this.menu, 
-				config
-			);
+		const menuButton = new MenuButton(
+			`menuButton_${config.text.toLowerCase()}`, 
+			'menuContainer', 
+			this.menu, 
+			config
+		);
 
-			const x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - ((this.menu.buttonSlant + 5));
-			const y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
-			menuButton.setPosition(x, y);
+		const x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - ((this.menu.buttonSlant + 5));
+		const y = (this.menu.app.screen.height / 3) + ((this.menu.buttonHeight + this.menu.buttonVerticalOffset));
+		menuButton.setPosition(x, y);
 
-			this.menu.entities.push(menuButton);
-	
-			this.menu.menuContainer.addChild(menuButton.getContainer());
-		});
+		this.menu.entities.push(menuButton);
+
+		this.menu.menuContainer.addChild(menuButton.getContainer());
+
+		this.menu.optionsButton = menuButton;
 
 		let ornaments;
 		for (const entity of this.menu.entities) {
@@ -450,14 +450,12 @@ export class MenuViewSystem implements System {
 
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[1], 'OPTIONS', true);
+		ornaments?.updateOrnament(menuButton, graphic!.children[1], 'OPTIONS', true);
 	}
 
 	rebuildStartButton() {
-		console.log('holiwi');
-		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
-			{
-				isClicked: true,
+		const config: menuUtils.MenuButtonConfig = {
+				isClicked: false,
 				text: 'START',
 				onClick: () => {
 					console.log('Start clicked');
@@ -465,27 +463,27 @@ export class MenuViewSystem implements System {
 				},
 				color: getThemeColors(this.menu.config.classicMode).menuBlue,
 				index: 0,
-			},
-		];
+			};
 	
-		buttonConfigs.forEach((config, index) => {
-			const menuButton = new MenuButton(
-				`menuButton_${config.text.toLowerCase()}`, 
-				'menuContainer', 
-				this.menu, 
-				config
-			);
+		const menuButton = new MenuButton(
+			`menuButton_${config.text.toLowerCase()}`, 
+			'menuContainer', 
+			this.menu, 
+			config
+		);
 
-			const x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2 - (index * (this.menu.buttonSlant + 5));
-			const y = (this.menu.app.screen.height / 3) + (index * (this.menu.buttonHeight + this.menu.buttonVerticalOffset));
-			menuButton.setPosition(x, y);
+		const x = (this.menu.app.screen.width - this.menu.buttonWidth) / 2;
+		const y = (this.menu.app.screen.height / 3);
+		menuButton.setPosition(x, y);
 
-			this.menu.entities.push(menuButton);
-	
-			this.menu.menuContainer.addChild(menuButton.getContainer());
-		});
+		this.menu.entities.push(menuButton);
+
+		this.menu.menuContainer.addChild(menuButton.getContainer());
+
+		this.menu.startButton = menuButton;
 
 		let ornaments;
+		
 		for (const entity of this.menu.entities) {
 			if (isMenuOrnaments(entity)) {
 				ornaments = entity;
@@ -494,7 +492,7 @@ export class MenuViewSystem implements System {
 
 		const render = ornaments!.getComponent('render') as RenderComponent;
 		const graphic = render?.graphic;
-		ornaments?.updateOrnament(graphic!.children[0], 'START', true);
+		ornaments?.updateOrnament(menuButton, graphic!.children[0], 'START', true);
 	}
 
 	changeStartOptions() {

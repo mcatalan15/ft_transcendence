@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 09:20:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 17:40:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import { Menu } from './Menu';
 import { getButtonPoints, getXButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
 import { MenuOrnaments } from './MenuOrnaments';
 import { isMenuOrnaments } from '../utils/Guards';
+import { getThemeColors } from '../utils/Utils';
 
 export class MenuXButton extends Entity {
     private buttonContainer: Container;
@@ -126,9 +127,9 @@ export class MenuXButton extends Entity {
 
         this.buttonContainer.on('pointerleave', () => {
 				this.isHovered = false;
-            	this.updateButtonPolygon(false, this.config.color);
+            	this.updateButtonPolygon(false, this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
 				this.resetOrnamentColor(this);
-				this.buttonText.style.fill = this.config.color;
+				this.buttonText.style.fill = { color: this.menu.config.classicMode ? getThemeColors(this.menu.config.classicMode).white : this.config.color, alpha: this.isClicked ? 1 : 0.3 };
         });
     }
 
@@ -207,6 +208,16 @@ export class MenuXButton extends Entity {
         }
     }
 
+    public updateButtonTextColor(filled?: boolean, color?: number): void {
+        const fillColor = color || (this.isHovered ? getThemeColors(this.menu.config.classicMode).white : this.config.color);
+        const shouldFill = filled !== undefined ? filled : this.isHovered;
+        
+        if (shouldFill) {
+            this.buttonText.style.fill = getThemeColors(this.menu.config.classicMode).black;
+        } else {
+            this.buttonText.style.fill = { color: fillColor, alpha: this.isClicked ? 0.3 : 1 };
+        }
+    }
 
     public resetPolygon(): void {
         this.createButton(this.isHovered);

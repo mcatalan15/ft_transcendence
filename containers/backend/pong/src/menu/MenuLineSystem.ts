@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:26:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:14:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 09:23:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,6 @@ export class MenuLineSystem implements System {
 
         this.menu.addEntity(line);
 		
-        this.depthLineCooldown = 60;
+        this.depthLineCooldown = 50;
     }
 }

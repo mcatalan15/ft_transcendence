@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 16:47:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 17:56:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/05 09:22:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ export class MenuLine extends Entity {
 	lifetime: number = 180;
 	
 	initialPoints: Point[] = [
-		new Point(0, 0),
-		new Point(113, 0),
-		new Point(298, 0),
-		new Point(410, 0),
-		new Point(430, 0),
-		new Point(546, 0),
+		new Point(0, 1),
+		new Point(113, 1),
+		new Point(298, 1),
+		new Point(410, 1),
+		new Point(430, 1),
+		new Point(546, 1),
 	];
 	
 	targetPoints: Point[] = [
