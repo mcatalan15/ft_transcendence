@@ -42,28 +42,6 @@ export function showAuth(container: HTMLElement): void {
         message.textContent = i18n.t('You have successfully created an account!');
         authDiv.appendChild(message);
 
-		// -- MAKE A GOOD HANDLER FOR THE VALUES!!!!!!! --
-        // // --- Retrieve user data from localStorage after signup redirect ---
-        // const storedUserId = localStorage.getItem('signupUserId');
-        // const storedUsername = localStorage.getItem('signupUsername');
-		// const storedEmail = localStorage.getItem('actualEmail');
-		
-        // if (storedUserId && storedUsername) {
-        //     actualUserId = parseInt(storedUserId, 10);
-        //     actualUsername = storedUsername;
-		// 	actualEmail = storedEmail;
-        //     // IMPORTANT: Clear localStorage items after use to prevent stale data
-        //     localStorage.removeItem('signupUserId');
-        //     localStorage.removeItem('signupUsername');
-        //     console.log(`[2FA Setup] Retrieved userId: ${actualUserId}, username: ${actualUsername}, email: ${actualEmail}.`);
-        // } else {
-        //     // Fallback for direct access or if signup process didn't store data
-        //     console.warn('[2FA Setup] User ID or username not found in localStorage. This might happen on direct page access or if signup flow is incomplete.');
-        //     // You might want to redirect to signup/signin here if data is missing,
-        //     // or just allow the page to render with default behavior (which might lead to errors).
-        //     // For now, we'll let it fail with a more descriptive error message during fetch.
-        // }
-
         // --- 2FA Setup Section ---
 		const twoFaSection = document.createElement('div');
 		twoFaSection.className = 'fixed inset-0 bg-neutral-900 text-amber-50 overflow-hidden';
