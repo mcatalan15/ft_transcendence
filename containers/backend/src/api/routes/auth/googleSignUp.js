@@ -59,7 +59,10 @@ async function googleAuthRoutes(fastify, options) {
 	  const lastName = parts[parts.length - 1];
 	  const nickname = `${firstInitial}${lastName}`;
 
-      const newUser = await saveUserToDatabase(nickname, email, null, 'google');
+	  const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
+	  const avatarFilename = `default_${defaultAvatarId}.png`;
+
+      const newUser = await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
 
       const authToken = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
