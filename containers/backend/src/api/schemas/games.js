@@ -90,6 +90,15 @@ const retrieveGamesSchema = {
                         player2_score: 3,
                         winner_name: 'Eva',
                         created_at: '2025-01-05T13:20:36.331Z'
+                    },
+					{
+                        id_game: 42,
+                        player1_name: 'Hugo',
+                        player1_score: 11,
+                        player2_name: 'Nicolas',
+                        player2_score: 3,
+                        winner_name: 'Hugo',
+                        created_at: '2025-01-08T16:20:36.331Z'
                     }
                 ]
             }
@@ -103,7 +112,7 @@ const retrieveGamesSchema = {
             },
             example: {
                 success: false,
-                message: 'Failed to fetch games'
+                message: 'Failed to retrieve games'
             }
         }
     }
