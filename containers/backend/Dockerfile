@@ -14,7 +14,7 @@ RUN npm cache clean --force \
 	typescript @types/node ts-node \
 	pino-pretty \
 	sqlite3 \
-	fastify-multipart \
+	@fastify/multipart \
 	bcrypt \
 	@fastify/cors \
 	@fastify/under-pressure \
@@ -34,6 +34,8 @@ RUN npm cache clean --force \
 COPY . .
 
 RUN chmod +x tools/init_db.sh
+
+RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 
 EXPOSE 3100
 

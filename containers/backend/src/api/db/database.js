@@ -20,10 +20,10 @@ function connectToDatabase(retries = 5, delay = 2000) {
 	return db;
 }
 
-async function saveUserToDatabase(username, email, hashedPassword, provider) {
-	return new Promise((resolve, reject) => {
-	const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
-	const params = [username, email, hashedPassword, provider];
+async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
+        const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
 
 		db.run(query, params, function (err) {
 			if (err) {
@@ -46,6 +46,19 @@ async function saveUserToDatabase(username, email, hashedPassword, provider) {
 			}
 		});
 	});
+}
+
+async function updateUserAvatar(userId, filename, type) {
+    return new Promise((resolve, reject) => {
+        const query = `UPDATE users SET avatar_filename = ?, avatar_type = ? WHERE id_user = ?`;
+        db.run(query, [filename, type, userId], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes > 0);
+            }
+        });
+    });
 }
 
 async function checkUserExists(username, email) {
@@ -111,6 +124,21 @@ async function getUserByEmail(email) {
 			}
 		});
 	});
+}
+
+async function getUserById(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type FROM users WHERE id_user = ?`;
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error('Database error in getUserById:', err);
+                reject(err);
+            } else {
+                console.log('getUserById result for userId', userId, ':', row);
+                resolve(row);
+            }
+        });
+    });
 }
 
 //ADD ASYN FUNC TO SCORES (API)
@@ -237,9 +265,11 @@ module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
+	updateUserAvatar,
 	isDatabaseHealthy,
 	getHashedPassword,
 	getUserByEmail,
+	getUserById,
 	saveGameToDatabase,
 	getLatestGame,
 	saveTwoFactorSecret,
