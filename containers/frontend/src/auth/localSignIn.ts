@@ -8,16 +8,23 @@ export async function localSignIn(email: string, password: string) {
 	  });
   
 	  const data = await response.json();
-	  
+
 	  if (response.ok) {
-		sessionStorage.setItem('username', data.user);
+		sessionStorage.setItem('username', data.username);
+		sessionStorage.setItem('userId', data.userId);
+		sessionStorage.setItem('email', data.email);
+		sessionStorage.setItem('token', data.token);
 	  }
 	  
 	  return {
 		success: response.ok,
 		message: data.message,
-		user: data.user
+		user: data.username,
+		userId: data.userId,
+		token: data.token,
+		email: data.email,
 	  };
+
 	} catch (error) {
 		console.error('Error during sign-in:', error);
 		return { 

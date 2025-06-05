@@ -101,7 +101,7 @@ async function signinHandler(request, reply) {
 
         request.session.set('token', authToken);
         request.session.set('user', {
-          id: user.id,
+		  userId: user.id_user,
           username: user.username,
           email: user.email,
           //! Never store sensitive data like passwords !
@@ -110,7 +110,10 @@ async function signinHandler(request, reply) {
         return reply.status(201).send({
           success: true,
           message: 'Authentication successful',
-		      user: user.username
+		  username: user.username,
+		  email: user.email,
+		  userId: user.id_user,
+		  token: authToken
         });
       }
       

@@ -72,6 +72,7 @@ export function showSignIn(container: HTMLElement): void {
 			} else {
 				alert('Sign-in successful, welcome ' + result.user + '!');
 				localStorage.setItem('token', result.token);
+
 				//window.location.href = '/auth?from=signin';
 				// navigate('/auth?from=signin');
 				//! Change for prod!

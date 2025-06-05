@@ -24,8 +24,9 @@ const signupSchema = {
       example: {
         success: true,
         message: 'User registered successfully',
-        userId: 123, // <--- UPDATE EXAMPLE IF YOU WANT
-        username: 'testuser' // <--- UPDATE EXAMPLE IF YOU WANT
+        userId: 123,
+        username: 'testuser',
+		email: 'test@user.com'
       }
     },
     400: {
@@ -76,13 +77,17 @@ const signinSchema = {
         success: { type: 'boolean' },
         message: { type: 'string' },
         token: { type: 'string', description: 'JWT token generated from a secret' },
-		user: { type: 'string' }
+        userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
+        username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
+		email: { type: 'string', description: 'Email of the new user' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
-		user: 'test-user'
+		user: 'test-user',
+		email: 'cucufu@gmail.com',
+		userId: 42
       }
     },
     400: {
