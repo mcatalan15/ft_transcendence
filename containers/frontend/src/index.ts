@@ -41,7 +41,7 @@ function router(path: string): void {
 	console.log('Current game destroyed');
   }
 
-  const url = new URL(window.location.href);
+/*   const url = new URL(window.location.href);
   const pathname = url.pathname;
 
   if (pathname === '/pong') {
@@ -49,7 +49,7 @@ function router(path: string): void {
     const isHost = url.searchParams.get('isHost') === 'true';
     showPong(app, gameId, isHost);
     return;
-  }
+  } */
 
   switch(path)
   {

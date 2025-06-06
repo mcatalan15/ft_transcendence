@@ -114,12 +114,11 @@ import { initGame } from '../pong/pong';
   }
 } */
   
-export function showPong(container: HTMLElement, gameId: string, isHost: boolean): void {
+export function showPong(container: HTMLElement): void {
 	const gameDiv = document.createElement('div');
 	gameDiv.innerHTML = `
 	  <h2>Pong</h2>
 	  <div id="game-container"></div>
-	  <button onclick="navigate('/home')">Back home</button>
 	`;
 	container.appendChild(gameDiv);
   

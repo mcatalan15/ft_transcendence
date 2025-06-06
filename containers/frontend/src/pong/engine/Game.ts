@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/29 20:36:25 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/06 16:05:38 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,19 +283,9 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void>  {
-		//Fetch player info from jsons
-		let playerData;
-		try {
-			const response = await fetch('../../data/players.json');
-			playerData = await response.json();
-		} catch (error) {
-			console.error("Failed to fetch player data, using mock data:", error);
-		}
 
-		console.log(playerData.type);
-
-		this.leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
-		this.rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
+		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
+		this.rightPlayer = { name: "Player 2" };
 
 		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
 
