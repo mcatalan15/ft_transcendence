@@ -128,12 +128,6 @@ const profileSchema = {
 	The user needs to be authenticated, obviously.\
 	',
 	tags: ['profile'],
-	querystring: {
-	  type: 'object',
-	  properties: {
-		id: { type: 'string', description: 'User\s ID from the database' },
-	  }
-	},
 	response: {
 	  404: {
 		description: 'Default avatar was not found',

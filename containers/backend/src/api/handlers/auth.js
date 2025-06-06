@@ -343,7 +343,7 @@ async function setupTwoFa(request, reply) {
 		const { secret, qrCodeUrl, otpAuthUrl } = await generateTwoFaSetup(username, userId, email);
 		reply.code(200).send({ secret, qrCodeUrl, otpAuthUrl });
 	} catch (error) {
-		fastify.log.error('Error generating 2FA setup for user:', username, error);
+		console.error('Error generating 2FA setup for user:', username, error);
 		reply.code(500).send({
 			message: 'Failed to generate 2FA setup.'
 		});
