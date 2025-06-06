@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/07 17:37:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ export class RenderSystem implements System {
 				(entity.id === 'paddleL' || entity.id === 'paddleR')
 			) {
 				const textComponent = entity.getComponent('text') as TextComponent;
-				const textObject = textComponent.getRenderable(); // assumed to return PIXI.Text or similar
+				const textObject = textComponent.getRenderable();
 
 				if (entity.id === 'paddleL') {
 					textObject.x = physicsComponent.x - 25;

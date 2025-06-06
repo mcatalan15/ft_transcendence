@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 13:36:11 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:36:25 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,20 @@ import { Howl } from 'howler';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
-import { Component } from '../engine/Component';
 import { System } from '../engine/System';
 
 // Import defined entities
 import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
-import { Ball } from '../entities/Ball'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
-import { PhysicsComponent } from '../components/PhysicsComponent';
+
+// Import pertinent spawners
+import { ParticleSpawner } from '../spawners/ParticleSpawner';
 
 // Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
@@ -42,10 +42,14 @@ import { UISystem } from '../systems/UISystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
 import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
+import { CrossCutSystem } from '../systems/CrossCutSystem';
+
+// Import spawners
+import { BallSpawner } from '../spawners/BallSpawner'
+import { SoundManager } from '../managers/SoundManager';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, WORLD_COLORS } from '../utils/Types'
-import { createWorld } from '../utils/Utils'
+import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
 export class PongGame {
 	app: Application;
@@ -57,25 +61,29 @@ export class PongGame {
     topWallOffset: number;
     bottomWallOffset: number;
     wallThickness: number;
+	paddleOffset: number;
+	paddleWidth: number;
+	paddleHeight: number;
 	renderLayers: {
 		bounding: Container;
 		background: Container;
 		midground: Container;
 		foreground: Container;
 		powerup: Container;
+		powerupGlitched: Container;
+		powerdown: Container;
+		ballChange: Container;
+		crossCut: Container;
 		ui: Container;
 		pp: Container;
 	};
-	backgroundLayer: Container;
-	powerupLayer: Container;
 	visualRoot: Container;
 	sounds!: GameSounds;
-	worldPool!: {
-		desertWorld: World,
-		cityWorld: World,
-		abyssWorld: World,
-	};
+	soundManager: SoundManager;
+	worldPool: World[] = [];
 	currentWorld!: World;
+	leftPlayer: any = '';
+	rightPlayer: any = '';
 
 	constructor(app: Application) {
 		this.app = app;
@@ -87,6 +95,9 @@ export class PongGame {
         this.topWallOffset = 60;
         this.bottomWallOffset = 80;
         this.wallThickness = 20;
+		this.paddleOffset = 60;
+		this.paddleWidth = 10;
+		this.paddleHeight = 80;
 
 		this.renderLayers = {
 			bounding: new Container(),
@@ -94,62 +105,34 @@ export class PongGame {
 			midground: new Container(),
 			foreground: new Container(),
 			powerup: new Container(),
+			powerupGlitched: new Container(),
+			powerdown: new Container(),
+			ballChange: new Container(),
+			crossCut: new Container(),
 			ui: new Container(),
 			pp: new Container()
 		};
-		this.backgroundLayer = new Container();
-		this.powerupLayer = new Container();
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
-			
-		this.backgroundLayer.addChild(this.renderLayers.background);
-		this.powerupLayer.addChild(this.renderLayers.powerup);
-		this.app.stage.addChild(this.backgroundLayer);
-		this.app.stage.addChild(this.powerupLayer);
+
+		this.app.stage.addChild(this.renderLayers.background);
+		this.app.stage.addChild(this.renderLayers.powerup);
+		this.app.stage.addChild(this.renderLayers.powerupGlitched);
+		this.app.stage.addChild(this.renderLayers.powerdown);
+		this.app.stage.addChild(this.renderLayers.ballChange);
+		this.app.stage.addChild(this.renderLayers.crossCut);
 		this.app.stage.addChild(this.visualRoot);
 
 		this.visualRoot.addChild(this.renderLayers.bounding);
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
-
 		this.visualRoot.addChild(this.renderLayers.ui);
+		
+		this.initSounds();
+		console.log(this.sounds);
+		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 	}
-
-	destroy() {
-
-		this.entities.forEach(entity => {
-			const render = entity.getComponent('render') as RenderComponent;
-			if (render?.graphic) {
-				render.graphic.destroy();
-			}
-	
-			const text = entity.getComponent('text') as TextComponent;
-			if (text) {
-				const renderable = text.getRenderable();
-				if (renderable) renderable.destroy();
-			}
-		});
-		this.entities = [];
-		Object.values(this.renderLayers).forEach(layer => {
-			layer.removeChildren();
-		});
-		Object.values(this.renderLayers).forEach(layer => {
-			layer.destroy({ children: true });
-		});
-		this.app.ticker.stop();
-		this.systems.forEach(system => {
-			if (system.destroy) system.destroy();
-		});
-		Object.values(this.sounds).forEach((sound) => {
-			sound.stop();
-			sound.unload();
-		});
-		this.app.stage.removeChildren();
-		this.app.destroy(true, { children: true, texture: true, baseTexture: true });
-
-		console.log("Game destroyed.");
-	  }
 
 	async init(): Promise<void> {
 		console.log("Initializing PongGame...");
@@ -157,21 +140,22 @@ export class PongGame {
 		await this.createEntities();
 		console.log('All Entities created');
 
-		this.populateWorlds();
-		this.currentWorld = this.worldPool.desertWorld;
-
 		this.initSystems();
-		console.log('All Systems initialized');
+		console.log('All Systems initialiazed');
 
-		this.initSounds();
+		this.initDust();
+
 		console.log('Sounds loaded');
+
+		
+		this.soundManager.startMusic();
 
 		this.app.ticker.add((ticker) => {
 			//!DEBUG
-			/*console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
+			/* console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
 				id,
 				type: entity.constructor.name
-			})));*/
+			}))); */
 			
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
@@ -187,42 +171,82 @@ export class PongGame {
 		const renderSystem = new RenderSystem();
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
-		const animationSystem = new AnimationSystem(this, this.app, this.width, this.height, this.topWallOffset, this.bottomWallOffset, this.wallThickness);
-		const vfxSystem = new VFXSystem(this, this.width, this.height);
+		const worldSystem = new WorldSystem(this);
+		const animationSystem = new AnimationSystem(this);
+		const vfxSystem = new VFXSystem();
 		const particleSystem = new ParticleSystem(this);
-		const uiSystem = new UISystem(this, this.app);
-		const powerupSystem = new PowerupSystem(this, this.app, this.width, this.height);
+		const uiSystem = new UISystem(this);
+		const powerupSystem = new PowerupSystem(this, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
-		const worldSystem = new WorldSystem(this, this.app);
-
+		const crossCutSystem = new CrossCutSystem(this);
+		
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
+		this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
+		this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		this.systems.push(vfxSystem);
 		this.systems.push(particleSystem);
 		this.systems.push(uiSystem);
 		this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
-		this.systems.push(worldSystem);
 	}
 
 	initSounds(): void {
 		this.sounds = {
+			bgm: new Howl({
+				src: ['src/assets/sfx/music/bgmFiltered01.mp3'],
+				preload: true,
+				loop: true,
+				volume: 0.5
+			}),
 			pong: new Howl({ 
-				src: ['src/assets/sfx/pong.wav'],
+				src: ['src/assets/sfx/used/pongFiltered02.mp3'],
 				preload: true
 			}),
+			thud: new Howl({ 
+				src: ['src/assets/sfx/used/thudFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			shoot: new Howl({ 
+				src: ['src/assets/sfx/used/shotFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			hit: new Howl({ 
+				src: ['src/assets/sfx/used/hitFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
+			shieldBreak: new Howl({ 
+				src: ['src/assets/sfx/used/shieldBreakFiltered01.mp3'],
+				preload: true,
+				volume: 0.3,
+			}),
 			powerup: new Howl({ 
-				src: ['src/assets/sfx/powerup.wav'],
+				src: ['src/assets/sfx/used/powerupFiltered01.mp3'],
+				preload: true,
+			}),
+			powerdown: new Howl({ 
+				src: ['src/assets/sfx/used/powerdownFiltered01.mp3'],
+				preload: true 
+			}),
+			ballchange: new Howl({ 
+				src: ['src/assets/sfx/used/ballchangeFiltered01.mp3'],
 				preload: true 
 			}),
 			death: new Howl({ 
-				src: ['src/assets/sfx/death.wav'],
+				src: ['src/assets/sfx/used/explosionFiltered01.mp3'],
 				preload: true
 			}),
-			paddleReset: new Howl({ 
-				src: ['src/assets/sfx/paddleReset.wav'],
+			paddleResetUp: new Howl({ 
+				src: ['src/assets/sfx/recoverUpFiltered01.mp3'],
+				preload: true
+			}),
+			paddleResetDown: new Howl({ 
+				src: ['src/assets/sfx/recoverDownFiltered01.mp3'],
 				preload: true
 			}),
 		};
@@ -242,10 +266,42 @@ export class PongGame {
 		document.addEventListener('keydown', warmUpAudio, { once: true });
 	}
 
+	initDust() {
+			ParticleSpawner.setAmbientDustDensity(40, 5);
+
+			ParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
+
+			ParticleSpawner.setAmbientDustSize(5, 12);
+
+			ParticleSpawner.setAmbientDustLifetime(200, 260);
+
+			ParticleSpawner.setAmbientDustAlpha(0.1, 0.3);
+
+			ParticleSpawner.setAmbientDustDriftSpeed(3);
+
+			ParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
+	}
+
 	async createEntities(): Promise<void>  {
+		//Fetch player info from jsons
+		let playerData;
+		try {
+			const response = await fetch('../../data/players.json');
+			playerData = await response.json();
+		} catch (error) {
+			console.error("Failed to fetch player data, using mock data:", error);
+		}
+
+		console.log(playerData.type);
+
+		this.leftPlayer = playerData.players.find((p: Player) => p.id === "paddleL") || { name: "Player 1" };
+		this.rightPlayer = playerData.players.find((p: Player) => p.id === "paddleR") || { name: "Player 2" };
+
+		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
+
 		
 		// Create Bounding Box
-		this.createBoundingBox();
+		this.createBoundingBoxes();
 		
 		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
@@ -260,11 +316,8 @@ export class PongGame {
 		this.entities.push(wallB);
 		console.log("Bottom wall created");
 
-
-		const Player1 = sessionStorage.getItem('username') || 'cucufu';
-
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, 40, this.height / 2, true, Player1!);
+		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name);
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -272,7 +325,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 		
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - 40, this.height / 2, false, 'Player 2');
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name);
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
@@ -280,17 +333,17 @@ export class PongGame {
 		this.entities.push(paddleR);
 		console.log("Right paddle created");
 
-		// Create Ball
-		const ball = new Ball('ball', 'foreground', this.width / 2, this.height / 2);
-		const ballRender = ball.getComponent('render') as RenderComponent;
-		this.renderLayers.foreground.addChild(ballRender.graphic);
-		this.entities.push(ball);
-		console.log("Ball created")
-
 		// Create UI
-		const ui = new UI('UI', 'ui', this.width, this.height, this.topWallOffset);
+		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
+
 		const uiText = ui.getComponent('text') as TextComponent;
 		this.renderLayers.ui.addChild(uiText.getRenderable());
+
+		const bars = ui.getComponent('render') as RenderComponent;
+		this.renderLayers.ui.addChild(bars.graphic);
+		
+		this.renderLayers.ui.addChild(uiText.getRenderable());
+		
 		this.entities.push(ui);
 		console.log("UI created")
 
@@ -300,14 +353,9 @@ export class PongGame {
 		this.renderLayers.pp.addChild(ppRender.graphic);
 		this.entities.push(postProcessingLayer);
 		console.log("PostProcessing Layer created")
-	}
 
-	populateWorlds() {
-		this.worldPool = {
-			desertWorld: createWorld('Desert of Spiked Reflections', WORLD_COLORS.fire),
-			cityWorld: createWorld('Ruins of Yonder', WORLD_COLORS.city),
-			abyssWorld: createWorld('Pelagic Netherscape', WORLD_COLORS.void),
-		};
+		// Spawn Ball
+		BallSpawner.spawnDefaultBall(this);
 	}
 
 	addEntity(entity: Entity): void {
@@ -353,48 +401,37 @@ export class PongGame {
 		}
 	}
 
-	createBoundingBox() {
-		const boundingBox = new Graphics();
-		boundingBox.rect(0, 0, this.width, this.height);
-		boundingBox.stroke('#171717');
-		this.renderLayers.bounding.addChild(boundingBox);;
-	}
+	createBoundingBoxes() {
+		const boundingBoxA = new Graphics();
+		boundingBoxA.rect(0, 0, this.width, this.height);
+		boundingBoxA.stroke({width: 0.1, color: GAME_COLORS.black});
 
-	gameStarted: boolean = false;
+		const boundingBoxB = new Graphics();
+		boundingBoxB.rect(0, 0, this.width, this.height);
+		boundingBoxB.stroke({width: 0.1, color: GAME_COLORS.black});
 
-	start(): void {
-		if (this.gameStarted) return;
+		const boundingBoxC = new Graphics();
+		boundingBoxC.rect(0, 0, this.width, this.height);
+		boundingBoxC.stroke({width: 0.1, color: GAME_COLORS.black});
 
-		// get UI to reset the score
-		const ui = this.entities.find(e => e.id === 'ui') as UI;
+		const boundingBoxD = new Graphics();
+		boundingBoxD.rect(0, 0, this.width, this.height);
+		boundingBoxD.stroke({width: 0.1, color: GAME_COLORS.black});
+
+		const boundingBoxE = new Graphics();
+		boundingBoxE.rect(0, 0, this.width, this.height);
+		boundingBoxE.stroke({width: 0.1, color: GAME_COLORS.black});
+
+		const boundingBoxF = new Graphics();
+		boundingBoxF.rect(0, 0, this.width, this.height);
+		boundingBoxF.stroke({width: 0.1, color: GAME_COLORS.black});
+
+		this.renderLayers.bounding.addChild(boundingBoxA);
+		this.renderLayers.powerup.addChild(boundingBoxB);
+		this.renderLayers.powerupGlitched.addChild(boundingBoxC);
+		this.renderLayers.powerdown.addChild(boundingBoxD);
+		this.renderLayers.ballChange.addChild(boundingBoxE);
+		this.renderLayers.pp.addChild(boundingBoxF);
 		
-		this.gameStarted = true;
-		this.resetBall();
-		ui.leftScore = 0;
-		ui.rightScore = 0;
-		
-		console.log("Game started!");
 	}
-
-	resetBall(): void {
-
-		const ball = this.entities.find(e => e.id === 'ball') as Ball;
-		ball.initBallPhysicsData(this.width / 2, this.height / 2);
-
-	}
-
-	updateState(
-		player1Position: { x: number, y: number },
-		player2Position: { x: number, y: number },
-	): void {
-
-		//const ball = this.entities.find(e => e.id === 'ball') as Ball;
-		const player1 = this.entities.find(e => e.id === 'paddleL') as Paddle;
-		const player2 = this.entities.find(e => e.id === 'paddleR') as Paddle;
-		
-		player1.updatePaddlePosition(player1Position.x, player1Position.y);
-		player2.updatePaddlePosition(player2Position.x, player2Position.y);
-		// Optionally, update velocities or other state if sent
-	}
-  
 }

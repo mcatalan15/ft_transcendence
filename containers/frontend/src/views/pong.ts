@@ -1,7 +1,8 @@
 import { Application, Graphics, Text } from 'pixi.js';
 import { WebSocketManager } from '../network/WebSocketManager';
+import { initGame } from '../pong/pong';
 
-async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
+/* async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
 
   let playerNumber = 0;
 
@@ -111,23 +112,18 @@ async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boole
   } catch (err) {
     console.error('Failed to connect to game session', err);
   }
-}
+} */
   
 export function showPong(container: HTMLElement, gameId: string, isHost: boolean): void {
 	const gameDiv = document.createElement('div');
 	gameDiv.innerHTML = `
 	  <h2>Pong</h2>
-	  <canvas id="game-canvas" width="1500" height="500"></canvas>
+	  <div id="game-container"></div>
 	  <button onclick="navigate('/home')">Back home</button>
 	`;
 	container.appendChild(gameDiv);
   
-	let canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
+	initGame();
 
-	if (canvas) {
-	  initGame(canvas, gameId, !!isHost);
-	} else {
-	  console.error('Container element not found');
-	}
 }
   

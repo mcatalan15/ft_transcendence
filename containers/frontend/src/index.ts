@@ -65,13 +65,13 @@ function router(path: string): void {
       showSignUp(app);
       break;
 
-/*     case '/pong':
+    case '/pong':
       if (!isUserAuthenticated()) {
         navigate('/');
         return;
       }
       showPong(app);
-      break; */
+      break;
 
     case '/home':
       if (!isUserAuthenticated()) {

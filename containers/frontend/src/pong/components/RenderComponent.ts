@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/29 12:21:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ export class RenderComponent implements Component {
 	instanceId?: string;
 	graphic: Graphics | Container;
 
-	constructor(graphic: Graphics | Container) {
+	constructor(graphic: Graphics | Container, id?:string) {
 		this.graphic = graphic;
+		this.instanceId = id;
 	}
 }

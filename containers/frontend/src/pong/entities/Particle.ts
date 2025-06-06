@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/24 12:50:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
 import { ParticleBehaviorComponent } from '../components/ParticleBehaviorComponent';
+
+import { GAME_COLORS } from '../utils/Types.js';
 
 // Options interface
 interface ParticleOptions {
@@ -31,13 +33,20 @@ interface ParticleOptions {
 	alphaDecay?: number;
 	fadeOut?: boolean;
 	despawn?: 'time' | 'offscreen' | string;
+	rotationSpeed?: number;
+	growShrink?: boolean; // New option for grow/shrink lifecycle
 }
 
 export class Particle extends Entity {
 	size: number;
+	targetSize: number;
 	alpha: number;
+	targetAlpha: number;
 	fadeOut: boolean;
 	alphaDecay: number;
+	growShrink: boolean;
+	currentScale: number;
+	rotationSpeed: number;
 
 	constructor(id: string, layer: string, x: number, y: number, options: ParticleOptions = {}) {
 		super(id, layer);
@@ -45,27 +54,40 @@ export class Particle extends Entity {
 		const {
 			velocityX = 0,
 			velocityY = 0,
-			lifetime = 30,
+			lifetime = 8,
 			size = 4,
 			type = 'square',
-			color = 0xFFFBEB,
+			color = GAME_COLORS.white,
 			shrink = false,
 			rotate = false,
 			alpha = 1,
 			alphaDecay = 0,
 			fadeOut = false,
 			despawn = 'time',
+			rotationSpeed = 0.01,
+			growShrink = false,
 		} = options;
 
 		this.size = size;
+		this.targetSize = size;
+		this.targetAlpha = alpha;
+		this.growShrink = growShrink;
+		this.currentScale = growShrink ? 0 : 1; // Start at 0 scale if using grow/shrink
+		this.rotationSpeed = rotationSpeed;
 
-		this.alpha = alpha;
+		// If using grow/shrink, start with 0 alpha, otherwise use target alpha
+		this.alpha = growShrink ? 0 : alpha;
 		this.fadeOut = fadeOut;
 		this.alphaDecay = alphaDecay;
 
 		const graphic = this.generateParticleGraphic(type, size, color);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
+
+		// Set initial scale if using grow/shrink
+		if (growShrink) {
+			graphic.scale.set(0, 0);
+		}
 
 		const physics = new PhysicsComponent({
 			x: x,
@@ -78,6 +100,7 @@ export class Particle extends Entity {
 			behaviour: 'none' as const,
 			restitution: 1.0,
 			mass: 1,
+			speed: 0,
 		});
 		this.addComponent(physics);
 
@@ -86,7 +109,8 @@ export class Particle extends Entity {
 
 		const behaviour = new ParticleBehaviorComponent({
 			rotate: rotate,
-			shrink: shrink,
+			shrink: !growShrink ? shrink : false, // Don't use old shrink if using growShrink
+			rotationSpeed: rotationSpeed,
 		});
 		this.addComponent(behaviour);
 	}
