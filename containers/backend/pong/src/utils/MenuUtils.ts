@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 14:27:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/06 10:07:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,8 @@ export function removeTextFromButton(button: Container) {
 }
 
 export interface MenuButtonConfig {
-    isClicked?: boolean;
+    isClickable?: boolean;
+	isClicked?: boolean;
 	text: string;
     onClick: () => void;
     color: number;

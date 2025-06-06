@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 20:15:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/06 10:41:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,16 @@ import type { System } from '../engine/System'
 import { Menu } from './Menu';
 import { Title } from './Title';
 import { ClassicO } from './ClassicO';
-import { BallButton } from './BallButton';
+
+import { MenuButton } from '../menu/buttons/MenuButton';
+import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
+import { MenuXButton } from '../menu/buttons/MenuXButton';
+import { BallButton } from '../menu/buttons/BallButton';
 
 import { FrameData, GameEvent } from '../utils/Types';
 import { isBall, isMenuButton, isMenuHalfButton, isMenuOrnaments, isMenuXButton } from '../utils/Guards';
 import { RenderComponent } from '../components/RenderComponent';
 import { getThemeColors } from '../utils/Utils';
-import { MenuXButton } from './MenuXButton';
-import { MenuButton } from './MenuButton';
-import { MenuHalfButton } from './MenuHalfButton';
 
 export class MenuThemeSystem implements System {
 	private menu: Menu;
@@ -72,7 +73,7 @@ export class MenuThemeSystem implements System {
 				const buttonColors = this.getButtonThemeColors(entity);
 				if (buttonColors) {
 					entity.updateButtonPolygon(false, buttonColors.color);
-					entity.updateButtonTextColor(false, buttonColors.color);
+					//entity.updateButtonTextColor(false, buttonColors.color);
 				}
 				
 				// Clear updating flag after a frame

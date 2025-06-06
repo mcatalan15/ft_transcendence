@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 14:58:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/06 10:40:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,10 @@ import { PowerupSystem } from '../systems/PowerupSystem';
 
 import { MenuPostProcessingLayer } from '../menu/MenuPostProcessingLayer';
 import { MenuLine } from '../menu/MenuLine';
-import { MenuButton } from '../menu/MenuButton';
-import { MenuXButton } from '../menu/MenuXButton';
-import { MenuHalfButton } from '../menu/MenuHalfButton';
+import { MenuButton } from '../menu/buttons/MenuButton';
+import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
+import { MenuXButton } from '../menu/buttons/MenuXButton';
+import { BallButton } from '../menu/buttons/BallButton';
 import { MenuOrnaments } from '../menu/MenuOrnaments';
 
 export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
