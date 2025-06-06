@@ -21,9 +21,9 @@ function connectToDatabase(retries = 5, delay = 2000) {
 }
 
 async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
-    return new Promise((resolve, reject) => {
-        const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
-        const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
+	return new Promise((resolve, reject) => {
+		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
+		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
 
 		db.run(query, params, function (err) {
 			if (err) {
@@ -32,7 +32,7 @@ async function saveUserToDatabase(username, email, hashedPassword, provider, ava
 					code: err.code,
 					errno: err.errno,
 					stack: err.stack
-				  });
+				});
 
 				if (err.message.includes('UNIQUE constraint failed')) {
 					const customError = new Error('Username or email already exists');

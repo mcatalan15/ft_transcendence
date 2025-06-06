@@ -211,6 +211,26 @@ const googleSchema = {
 				email: 'user@gmail.com'
 			}
 		},
+		201: {
+			description: 'Successful Google registration',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				token: { type: 'string', description: 'JWT token for the registrated user' },
+				userId: { type: 'number', description: 'ID of the user' },
+				username: { type: 'string', description: 'Username of the user' },
+				email: { type: 'string', description: 'Email of the user' }
+			},
+			example: {
+				success: true,
+				message: 'Google registration successful',
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+				userId: 42,
+				username: 'googleuser',
+				email: 'user@gmail.com'
+			}
+		},
 		400: {
 			description: 'Bad request - invalid or missing credential',
 			type: 'object',
