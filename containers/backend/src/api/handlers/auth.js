@@ -207,7 +207,7 @@ async function googleHandler(request, reply) {
 			email: user.email
 		  });
 
-		  // fastify.metrics.authAttempts.labels('local', 'success').inc();
+		  request.server.metrics.authAttempts.labels('google', 'success').inc();
 		  return reply.status(200).send({
 			success: true,
 			message: 'Google authentication successful',

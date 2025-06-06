@@ -37,13 +37,13 @@ async function saveGameHandler(request, reply){
 
 async function retrieveGamesHandler(request, reply) {
 	try {
-		const games = await fastify.db.all('SELECT * FROM games ORDER BY id_game DESC');
+		const games = await request.db.all('SELECT * FROM games ORDER BY id_game DESC');
 		reply.status(200).send({
 			success: true,
 			games
 		});
 	} catch (error) {
-		fastify.log.error('Error fetching games:', error);
+		console.log('Error fetching games:', error);
 		reply.status(500).send({
 			success: false,
 			message: 'Failed to fetch games'
@@ -67,7 +67,7 @@ async function retrieveLastGameHandler(request, reply) {
 			game: latestGame
 		});
 	} catch (error) {
-		fastify.log.error('Error fetching latest game:', error);
+		request.log.error('Error fetching latest game:', error);
 		reply.status(500).send({
 			success: false,
 			message: 'Failed to fetch latest game'
@@ -124,7 +124,7 @@ async function deployContractHandler(request, reply) {
 		  }
 		});
 	  } catch (error) {
-		fastify.log.error("Deployment failed:", error);
+		request.log.error("Deployment failed:", error);
 		reply.status(500).send({ 
 		  success: false, 
 		  error: error.message,
