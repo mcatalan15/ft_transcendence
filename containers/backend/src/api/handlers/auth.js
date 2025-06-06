@@ -173,7 +173,7 @@ async function logoutHandler(request, reply) {
 	}
 }
 
-async function googleHandler(request, reply) {
+async function googleHandler(request, reply, fastify) {
 	  const { credential } = request.body;
   
 	  if (!credential) {
@@ -207,7 +207,6 @@ async function googleHandler(request, reply) {
 			email: user.email
 		  });
 
-		  request.server.metrics.authAttempts.labels('google', 'success').inc();
 		  return reply.status(200).send({
 			success: true,
 			message: 'Google authentication successful',
