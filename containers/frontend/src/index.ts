@@ -27,7 +27,7 @@ function navigate(path: string): void {
 }
 window.navigate = navigate;
 
-let currentGame: PongGame | null = null;
+//let currentGame: PongGame | null = null;
 
 function router(path: string): void {
 
@@ -35,11 +35,11 @@ function router(path: string): void {
   app.innerHTML = '';
 
   //TODO destroy game when leaving /pong
-  if (path !== '/pong' && currentGame) {
+/*   if (path !== '/pong' && currentGame) {
     currentGame.destroy();
     currentGame = null;
 	console.log('Current game destroyed');
-  }
+  } */
 
 /*   const url = new URL(window.location.href);
   const pathname = url.pathname;
@@ -86,7 +86,8 @@ function router(path: string): void {
         navigate('/');
         return;
       }
-        showProfile(app);
+        const currentUsername = sessionStorage.getItem('username');
+        navigate(`/profile/${currentUsername}`);
         break;
 
     case '/chat':
@@ -115,11 +116,29 @@ function router(path: string): void {
 	case '/blockchain': //Delete when blockchain working!!
 		showBlockchain(app);
 		break;
+
   case '/auth':
   	showAuth(app);
-   break;
+    break;
   
    default:
+
+    if (path === '/profile' || path.startsWith('/profile/')) {
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
+
+      if (path === '/profile') {
+        const currentUsername = sessionStorage.getItem('username');
+        navigate(`/profile/${currentUsername}`);
+      } else {
+        const username = path.substring('/profile/'.length);
+        showProfile(app, username);
+      }
+      return;
+    }
+
       app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>
 	  <button onclick="navigate('/')">Back home</button>

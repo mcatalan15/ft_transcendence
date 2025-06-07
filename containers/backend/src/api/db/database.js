@@ -1,11 +1,4 @@
 const sqlite3 = require('sqlite3').verbose();
-const client = require('prom-client');
-const dbErrors = new client.Counter({
-  name: 'database_errors_total',
-  help: 'Total number of database errors',
-  labelNames: ['operation']
-});
-
 const dbPath = '/usr/src/app/db/mydatabase.db';
 const db = connectToDatabase();
 
@@ -33,7 +26,6 @@ async function saveUserToDatabase(username, email, hashedPassword, provider, ava
 
 		db.run(query, params, function (err) {
 			if (err) {
-				dbErrors.labels('saveUserToDatabase').inc();
 				console.error('[DB INSERT ERROR] Full error:', {
 					message: err.message,
 					code: err.code,
@@ -60,7 +52,6 @@ async function updateUserAvatar(userId, filename, type) {
         const query = `UPDATE users SET avatar_filename = ?, avatar_type = ? WHERE id_user = ?`;
         db.run(query, [filename, type, userId], function (err) {
             if (err) {
-				dbErrors.labels('updateUserAvatar').inc();
                 reject(err);
             } else {
                 resolve(this.changes > 0);
@@ -74,7 +65,6 @@ async function checkUserExists(username, email) {
 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
 		db.get(query, [username, email], (err, row) => {
 			if (err) {
-				dbErrors.labels('checkUserExists').inc();
 				console.error('[DB ERROR]', err);
 				reject(new Error('Database error'));
 				return;
@@ -104,7 +94,6 @@ async function getHashedPassword(email) {
 	const query = `SELECT password FROM users WHERE email = ?`;
 		db.get(query, [email], (err, row) => {
 			if (err) {
-				dbErrors.labels('getHashedPassword').inc();
 				console.error('[DB ERROR]', err);
 				reject(new Error('Database error'));
 				return;
@@ -123,7 +112,6 @@ async function getUserByEmail(email) {
 	const query = `SELECT * FROM users WHERE email = ?`;
 		db.get(query, [email], (err, row) => {
 			if (err) {
-				dbErrors.labels('getUserByEmail').inc();
 				console.error('[DB ERROR]', err);
 				reject(new Error('Database error'));
 				return;
@@ -142,7 +130,6 @@ async function getUserById(userId) {
         const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type FROM users WHERE id_user = ?`;
         db.get(query, [userId], (err, row) => {
             if (err) {
-				dbErrors.labels('getUserById').inc();
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
@@ -154,6 +141,20 @@ async function getUserById(userId) {
     });
 }
 
+async function getUserByUsername(username) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT id_user, username, email, avatar_filename, avatar_type FROM users WHERE username = ?`;
+        db.get(query, [username], (err, row) => {
+            if (err) {
+                console.error('[DB ERROR]', err);
+                reject(new Error('Database error'));
+                return;
+            }
+            resolve(row || null);
+        });
+    });
+}
+
 //ADD ASYN FUNC TO SCORES (API)
 async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
 	return new Promise((resolve, reject) => {
@@ -161,7 +162,6 @@ async function saveGameToDatabase(player1_name, player1_score,player2_name, play
 		const params = [player1_name, player1_score,player2_name, player2_score, winner_name];
 		db.run(query, params, function (err) {
 			if (err) {
-				dbErrors.labels('saveGameToDatabase').inc();
 				console.error('[DB INSERT ERROR] Full error:', {
 					message: err.message,
 					code: err.code,
@@ -181,7 +181,6 @@ async function getLatestGame() {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
         db.get(query, (err, row) => {
             if (err) {
-				dbErrors.labels('getLatestGame').inc();
                 console.error('[DB FETCH ERROR]', err);
                 reject(err);
             } else {
@@ -221,7 +220,6 @@ async function saveTwoFactorSecret(userId, secret) {
 
         db.run(query, params, function (err) {
             if (err) {
-				dbErrors.labels('saveTwoFactorSecret').inc();
                 console.error(`[DB ERROR] Failed to save 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error saving 2FA secret.'));
             } else if (this.changes === 0) {
@@ -242,7 +240,6 @@ async function getTwoFactorSecret(userId) {
 
         db.get(query, [userId], (err, row) => {
             if (err) {
-				dbErrors.labels('getTwoFactorSecret').inc();
                 console.error(`[DB ERROR] Failed to get 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error getting 2FA secret.'));
             } else if (row) {
@@ -265,7 +262,6 @@ async function enableTwoFactor(userId, secret) {
 
         db.run(query, params, function (err) {
             if (err) {
-				dbErrors.labels('enableTwoFactor').inc();
                 console.error(`[DB ERROR] Failed to enable 2FA for user ${userId}:`, err.message);
                 reject(new Error('Database error enabling 2FA.'));
             } else if (this.changes === 0) {
@@ -292,6 +288,6 @@ module.exports = {
 	getLatestGame,
 	saveTwoFactorSecret,
 	getTwoFactorSecret,
-	enableTwoFactor 
-	// Add other database functions here as needed
+	enableTwoFactor,
+	getUserByUsername
 };

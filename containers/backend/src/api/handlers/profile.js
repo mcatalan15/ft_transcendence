@@ -1,25 +1,50 @@
 const path = require('path');
 const fs = require('fs');
-const { updateUserAvatar, getUserById } = require('../db/database');
+const { updateUserAvatar, getUserById, getUserByUsername } = require('../db/database');
 
-async function getUserProfile (request, reply) {
+async function getUserProfile(request, reply) {
 	try {
-		const user = request.session.get('user');
+		const sessionUser = request.session.get('user');
+
+		// Check if a specific username is requested via URL parameter
+		const requestedUsername = request.params.username;
+
+		let targetUser;
+
+		if (requestedUsername) {
+			// Fetch the requested user's profile
+			targetUser = await getUserByUsername(requestedUsername);
+
+			if (!targetUser) {
+				return reply.status(404).send({
+					success: false,
+					message: 'User not found'
+				});
+			}
+		} else {
+			// Return the authenticated user's own profile
+			targetUser = {
+				id_user: sessionUser.userId,
+				username: sessionUser.username,
+				email: sessionUser.email
+			};
+		}
 
 		return reply.status(200).send({
-			userId: user.userId,
-			username: user.username,
-			email: user.email,
+			userId: targetUser.id_user,
+			username: targetUser.username,
+			email: targetUser.email,
+			isOwnProfile: !requestedUsername || requestedUsername === sessionUser.username
 		});
 
 	} catch (error) {
 		console.error('Error fetching profile:', error);
 		return reply.status(500).send({
-		  success: false,
-		  message: 'Internal server error'
-		});		
+			success: false,
+			message: 'Internal server error'
+		});
 	}
-  };
+}
 
 async function avatarUploadHandler(request, reply) {
 	try {
@@ -85,41 +110,49 @@ async function avatarUploadHandler(request, reply) {
 async function fetchUserAvatar(request, reply) {
     const defaultPath = path.join('/usr/src/app/public/avatars/defaults/default_1.png');
 
-	try {
-		const sessionUser = request.session.get('user');
-		const user = await getUserById(sessionUser.userId);
-		
-		if (!user) {
-			const defaultPath = path.join(__dirname, '../../../public/avatars/defaults/default_1.png');
-		
-			if (fs.existsSync(defaultPath)) {
-				return reply.type('image/png').send(fs.createReadStream(defaultPath));
-			} else {
-				return reply.status(404).send({
-					message: 'Default avatar not found',
-					path: defaultPath
-				});
-			}
-		}
-		
-		if (!user.avatar_filename) {
-			// Serve default fallback
-			return reply.type('image/png').send(fs.createReadStream(defaultPath));
-		}
+    try {
+        // Get the requested userId from URL params, not from session!
+        const requestedUserId = request.params.userId;
+        
+        if (!requestedUserId) {
+            return reply.status(400).send({
+                message: 'User ID is required'
+            });
+        }
+        
+        const user = await getUserById(requestedUserId); // Use requested user ID
+        
+        if (!user) {
+            // Return default avatar if user not found
+            if (fs.existsSync(defaultPath)) {
+                return reply.type('image/png').send(fs.createReadStream(defaultPath));
+            } else {
+                return reply.status(404).send({
+                    message: 'Default avatar not found',
+                    path: defaultPath
+                });
+            }
+        }
+        
+        if (!user.avatar_filename) {
+            // Serve default fallback
+            return reply.type('image/png').send(fs.createReadStream(defaultPath));
+        }
 
-		const avatarPath = user.avatar_type === 'default' 
-			? path.join('/usr/src/app/public/avatars/defaults', user.avatar_filename)
-			: path.join('/usr/src/app/public/avatars/uploads', user.avatar_filename);
-		
-		if (fs.existsSync(avatarPath)) {
-			return reply.type('image/*').send(fs.createReadStream(avatarPath));
-		} else {
-			return reply.status(404).send({ message: 'Avatar file not found', path: avatarPath });
-		}
-		
-	} catch (error) {
-		return reply.status(500).send({ message: 'Server error', error: error.message });
-	}
+        const avatarPath = user.avatar_type === 'default' 
+            ? path.join('/usr/src/app/public/avatars/defaults', user.avatar_filename)
+            : path.join('/usr/src/app/public/avatars/uploads', user.avatar_filename);
+        
+        if (fs.existsSync(avatarPath)) {
+            return reply.type('image/*').send(fs.createReadStream(avatarPath));
+        } else {
+            return reply.type('image/png').send(fs.createReadStream(defaultPath));
+        }
+        
+    } catch (error) {
+        console.error('Error fetching avatar:', error);
+        return reply.status(500).send({ message: 'Server error', error: error.message });
+    }
 }
 
 

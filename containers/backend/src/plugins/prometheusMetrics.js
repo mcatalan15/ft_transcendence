@@ -1,5 +1,11 @@
 const client = require('prom-client');
 
+const dbErrors = new client.Counter({
+  name: 'database_errors_total',
+  help: 'Total number of database errors',
+  labelNames: ['operation']
+});
+
 const httpRequestsTotal = new client.Counter({
 	name: 'http_requests_total',
 	help: 'Total number of HTTP requests',
@@ -72,6 +78,7 @@ module.exports = async function (fastify) {
     activeGames,
     gamesTotal,
     wsConnections,
-    authAttempts
+    authAttempts,
+    dbErrors
   });
 };
