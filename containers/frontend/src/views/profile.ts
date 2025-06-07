@@ -7,7 +7,7 @@ export function showProfile(container: HTMLElement, username?: string): void {
     const currentUser = sessionStorage.getItem('username');
     const isOwnProfile = !username || username === currentUser;
     
-    // Determine API endpoint
+    // API endpoint
     const apiEndpoint = username ? `/api/profile/${username}` : '/api/profile';
     
     profileDiv.innerHTML = `

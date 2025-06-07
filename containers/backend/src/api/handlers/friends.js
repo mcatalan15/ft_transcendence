@@ -12,7 +12,6 @@ async function addFriendHandler(request, reply) {
             });
         }
 
-        // Get friend's user data
         const friendUser = await getUserByUsername(username);
         if (!friendUser) {
             return reply.status(404).send({
@@ -21,7 +20,6 @@ async function addFriendHandler(request, reply) {
             });
         }
 
-        // Add friendship
         await addFriend(sessionUser.userId, friendUser.id_user);
 
         return reply.status(201).send({

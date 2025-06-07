@@ -12,7 +12,8 @@ import { showProfile} from './views/profile';
 import { showChat } from './views/chat';
 import { showLobby } from './views/lobby';
 import { showBlockchain } from './views/blockchain'; // Delete when blockchain working!
-import { showAuth } from './views/auth'; 
+import { showAuth } from './views/auth';
+import { showFriends } from './views/friends';
 
 import { logUserOut } from './auth/userLogout';
 
@@ -88,6 +89,14 @@ function router(path: string): void {
       }
         const currentUsername = sessionStorage.getItem('username');
         navigate(`/profile/${currentUsername}`);
+        break;
+
+    case '/friends':
+      if (!isUserAuthenticated()) {
+        navigate('/');
+        return;
+      }
+        showFriends(app);
         break;
 
     case '/chat':
