@@ -1,49 +1,54 @@
 const path = require('path');
 const fs = require('fs');
-const { updateUserAvatar, getUserById, getUserByUsername } = require('../db/database');
+const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship } = require('../db/database');
 
 async function getUserProfile(request, reply) {
-	try {
-		const sessionUser = request.session.get('user');
+    try {
+        const sessionUser = request.session.get('user');
+        const requestedUsername = request.params.username;
 
-		// Check if a specific username is requested via URL parameter
-		const requestedUsername = request.params.username;
+        let targetUser;
+        let isFriend = false;
 
-		let targetUser;
+        if (requestedUsername) {
+            targetUser = await getUserByUsername(requestedUsername);
 
-		if (requestedUsername) {
-			// Fetch the requested user's profile
-			targetUser = await getUserByUsername(requestedUsername);
+            if (!targetUser) {
+                return reply.status(404).send({
+                    success: false,
+                    message: 'User not found'
+                });
+            }
 
-			if (!targetUser) {
-				return reply.status(404).send({
-					success: false,
-					message: 'User not found'
-				});
-			}
-		} else {
-			// Return the authenticated user's own profile
-			targetUser = {
-				id_user: sessionUser.userId,
-				username: sessionUser.username,
-				email: sessionUser.email
-			};
-		}
+            // Check if they are friends (only if viewing someone else's profile)
+            if (targetUser.id_user !== sessionUser.userId) {
+                isFriend = await checkFriendship(sessionUser.userId, targetUser.id_user);
+            }
+        } else {
+            targetUser = {
+                id_user: sessionUser.userId,
+                username: sessionUser.username,
+                email: sessionUser.email
+            };
+        }
 
-		return reply.status(200).send({
-			userId: targetUser.id_user,
-			username: targetUser.username,
-			email: targetUser.email,
-			isOwnProfile: !requestedUsername || requestedUsername === sessionUser.username
-		});
+        const isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
 
-	} catch (error) {
-		console.error('Error fetching profile:', error);
-		return reply.status(500).send({
-			success: false,
-			message: 'Internal server error'
-		});
-	}
+        return reply.status(200).send({
+            userId: targetUser.id_user,
+            username: targetUser.username,
+            email: targetUser.email,
+            isOwnProfile: isOwnProfile,
+            isFriend: isFriend
+        });
+
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        return reply.status(500).send({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
 }
 
 async function avatarUploadHandler(request, reply) {

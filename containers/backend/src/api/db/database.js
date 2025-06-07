@@ -275,6 +275,78 @@ async function enableTwoFactor(userId, secret) {
     });
 }
 
+async function addFriend(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        // Prevent self-friending
+        if (userId === friendId) {
+            reject(new Error('Cannot add yourself as a friend'));
+            return;
+        }
+
+        const query = `INSERT INTO friends (user_id, friend_id) VALUES (?, ?)`;
+        db.run(query, [userId, friendId], function (err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    reject(new Error('Already friends'));
+                } else {
+                    console.error('[DB ERROR] Adding friend:', err);
+                    reject(new Error('Database error'));
+                }
+            } else {
+                resolve(this.lastID);
+            }
+        });
+    });
+}
+
+async function removeFriend(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        const query = `DELETE FROM friends WHERE user_id = ? AND friend_id = ?`;
+        db.run(query, [userId, friendId], function (err) {
+            if (err) {
+                console.error('[DB ERROR] Removing friend:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(this.changes > 0);
+            }
+        });
+    });
+}
+
+async function getFriendsList(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT u.id_user, u.username, u.email, u.avatar_filename, u.avatar_type, f.created_at
+            FROM friends f
+            JOIN users u ON f.friend_id = u.id_user
+            WHERE f.user_id = ?
+            ORDER BY f.created_at DESC
+        `;
+        db.all(query, [userId], (err, rows) => {
+            if (err) {
+                console.error('[DB ERROR] Getting friends list:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(rows || []);
+            }
+        });
+    });
+}
+
+async function checkFriendship(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?`;
+        db.get(query, [userId, friendId], (err, row) => {
+            if (err) {
+                console.error('[DB ERROR] Checking friendship:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(!!row);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -289,5 +361,9 @@ module.exports = {
 	saveTwoFactorSecret,
 	getTwoFactorSecret,
 	enableTwoFactor,
-	getUserByUsername
+	getUserByUsername,
+    addFriend,
+    removeFriend,
+    getFriendsList,
+    checkFriendship
 };

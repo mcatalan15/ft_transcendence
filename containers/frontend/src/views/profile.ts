@@ -20,19 +20,22 @@ export function showProfile(container: HTMLElement, username?: string): void {
             ${isOwnProfile ? `
                 <input type="file" id="avatarInput" accept="image/*" style="display: none;">
                 <button id="changeAvatarBtn">Change Avatar</button>
-            ` : ''}
+            ` : `
+                <div id="friendActions"></div>
+            `}
         </div>
         <div id="profileInfo">Loading...</div>
+        ${isOwnProfile ? `
+            <button onclick="navigate('/friends')">View Friends</button>
+        ` : ''}
         <button onclick="navigate('/home')">Return home</button>
     `;
 
-    // Append the profile div immediately to avoid timing issues
     container.appendChild(profileDiv);
 
     const profileInfo = profileDiv.querySelector('#profileInfo') as HTMLParagraphElement;
     const userAvatar = profileDiv.querySelector('#userAvatar') as HTMLImageElement;
 
-    // Set a placeholder/loading state for the avatar
     userAvatar.src = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#ddd"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999">Loading...</text></svg>');
 
     if (isOwnProfile) {
@@ -71,7 +74,6 @@ export function showProfile(container: HTMLElement, username?: string): void {
         });
     }
 
-    // Fetch and display user profile information
     fetch(apiEndpoint, {
         credentials: 'include',
         headers: {
@@ -80,27 +82,84 @@ export function showProfile(container: HTMLElement, username?: string): void {
     })
         .then(response => response.json())
         .then(data => {
-            // Force refresh the avatar with cache-busting and error handling
-            const avatarUrl = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
             
-            userAvatar.onload = () => {
-                console.log('Avatar loaded successfully for user:', data.username);
-            };
-            
-            userAvatar.onerror = () => {
-                console.log('Avatar failed to load, using fallback');
-                userAvatar.src = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#ccc"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#666">No Avatar</text></svg>');
-            };
-            
-            userAvatar.src = avatarUrl;
-            
+			userAvatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
+
             profileInfo.innerHTML = `
                 <div>Username: ${data.username}</div>
                 <div>${isOwnProfile ? 'Email: ' + data.email : ''}</div>
             `;
+
+            if (!isOwnProfile) {
+                const friendActions = profileDiv.querySelector('#friendActions') as HTMLDivElement;
+                if (data.isFriend) {
+                    friendActions.innerHTML = `
+                        <button id="removeFriendBtn" style="background-color: #dc3545; color: white;">Remove Friend</button>
+                    `;
+                    
+                    const removeFriendBtn = friendActions.querySelector('#removeFriendBtn') as HTMLButtonElement;
+                    removeFriendBtn.addEventListener('click', () => removeFriend(data.username));
+                } else {
+                    friendActions.innerHTML = `
+                        <button id="addFriendBtn" style="background-color: #28a745; color: white;">Add Friend</button>
+                    `;
+                    
+                    const addFriendBtn = friendActions.querySelector('#addFriendBtn') as HTMLButtonElement;
+                    addFriendBtn.addEventListener('click', () => addFriend(data.username));
+                }
+            }
         })
         .catch(error => {
             console.error('Error fetching profile:', error);
             profileInfo.innerHTML = '<div>Error loading profile</div>';
         });
+}
+
+async function addFriend(username: string) {
+    try {
+        const response = await fetch('/api/friends/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ username })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert(`${username} added as friend!`);
+            showProfile(document.getElementById('app') as HTMLElement, username);
+        } else {
+            alert('Failed to add friend: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error adding friend:', error);
+        alert('Failed to add friend');
+    }
+}
+
+async function removeFriend(username: string) {
+    try {
+        const response = await fetch('/api/friends/remove', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ username })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert(`${username} removed from friends`);
+            // Refresh the profile to update the button
+            showProfile(document.getElementById('app') as HTMLElement, username);
+        } else {
+            alert('Failed to remove friend: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        alert('Failed to remove friend');
+    }
 }

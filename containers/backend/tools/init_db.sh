@@ -36,6 +36,16 @@ if [ ! -f "$DB_PATH" ]; then
         player2_score INTEGER,
         winner_name TEXT 
     );
+
+    CREATE TABLE IF NOT EXISTS friends (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        friend_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id_user),
+        FOREIGN KEY (friend_id) REFERENCES users(id_user),
+        UNIQUE(user_id, friend_id)
+    );
     
     -- Add more initialization logic as needed
 EOF

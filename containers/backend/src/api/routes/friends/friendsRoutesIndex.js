@@ -1,0 +1,8 @@
+const { verifyToken } = require('../../../config/middleware/auth');
+const { addFriendHandler, removeFriendHandler, getFriendsHandler } = require('../../handlers/friends');
+
+module.exports = async function (fastify, options) {
+    fastify.post('/api/friends/add', { preHandler: verifyToken }, addFriendHandler);
+    fastify.delete('/api/friends/remove', { preHandler: verifyToken }, removeFriendHandler);
+    fastify.get('/api/friends', { preHandler: verifyToken }, getFriendsHandler);
+};
