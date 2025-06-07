@@ -82,7 +82,6 @@ async function checkUserExists(username, email) {
 	});
 }
 
-
 async function isDatabaseHealthy() {
 	return new Promise((resolve) => {
 	db.get('SELECT 1', (err) => resolve(!err));
@@ -106,6 +105,13 @@ async function getHashedPassword(email) {
 		});
 	});
 }
+
+/* 
+    GET USER FUNCTIONS
+    - getUserByEmail: Retrieves a user by their email address.
+    - getUserById: Retrieves a user by their ID.
+    - getUserByUsername: Retrieves a user by their username.
+*/
 
 async function getUserByEmail(email) {
 	return new Promise((resolve, reject) => {
@@ -274,6 +280,14 @@ async function enableTwoFactor(userId, secret) {
         });
     });
 }
+
+/* 
+    FRIENDS FUNCTIONS
+    - addFriend: Adds a friend relationship between two users.
+    - removeFriend: Removes a friend relationship between two users.
+    - getFriendsList: Retrieves a list of friends for a user.
+    - checkFriendship: Checks if two users are friends.
+*/
 
 async function addFriend(userId, friendId) {
     return new Promise((resolve, reject) => {

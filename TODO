@@ -1,6 +1,6 @@
 FRIENDS:
   - Implement the friends view in the frontend.
-
+  - Implement the blocked users system and view in the frontend.
 
 WEBSOCKETS:
 	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
