@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 15:57:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/07 13:02:57 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ import { MenuHalfButton } from './buttons/MenuHalfButton';
 import { MenuXButton } from './buttons/MenuXButton';
 import { BallButton } from './buttons/BallButton';
 
-import { MenuOrnaments } from './MenuOrnaments';
+import { MenuOrnament } from './MenuOrnaments';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -51,7 +51,7 @@ import { MenuPhysicsSystem } from './MenuPhysicsSystem';
 import { MenuVFXSystem } from './MenuVFXSystem';
 import { MenuLineSystem } from './MenuLineSystem';
 import { VFXComponent } from '../components/VFXComponent';
-import { ButtonSystem } from './ButtonSystem';
+import { ButtonSystem } from './MenuButtonSystem';
 import { MenuThemeSystem } from './MenuThemeSystem';
 
 
@@ -218,10 +218,14 @@ export class Menu{
 		this.createBoundingBoxes();
 		
 		// Create ornaments
-		const ornaments = new MenuOrnaments('menuOrnaments', 'menuContainer', this)
+		/*const ornaments = new MenuOrnaments('menuOrnaments', 'menuContainer', this)
 		const ornamentsRender = ornaments.getComponent('render') as RenderComponent;
 		this.menuContainer.addChild(ornamentsRender.graphic);
-		this.entities.push(ornaments);
+		this.entities.push(ornaments);*/
+		const startOrnament = new MenuOrnament('start-ornament', 'ui', this, 'START');
+		const ornamentRender = startOrnament.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(ornamentRender.graphic);
+		this.entities.push(startOrnament);
 
 		// Create subtitle
 		const subtitle = new Subtitle("subtitle", "menuContainer", this);
