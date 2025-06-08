@@ -1,7 +1,9 @@
+import { removeFriend } from '../utils/profile/friends';
+
 export function showFriends(container: HTMLElement): void {
-    // clear the container first
+    // Clear the container first
     container.innerHTML = '';
-    
+
     const friendsDiv = document.createElement('div');
     friendsDiv.innerHTML = `
         <h1>My Friends</h1>
@@ -65,32 +67,14 @@ export function showFriends(container: HTMLElement): void {
         });
 }
 
-// global function to remove friends
-(window as any).removeFriendFromList = async function(username: string) {
+// Global function to remove friend from the list
+(window as any).removeFriendFromList = async function (username: string) {
     if (!confirm(`Are you sure you want to remove ${username} from your friends?`)) {
         return;
     }
 
-    try {
-        const response = await fetch('/api/friends/remove', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({ username })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert(`${username} removed from friends`);
-            // Refresh the friends list
-            showFriends(document.getElementById('app') as HTMLElement);
-        } else {
-            alert('Failed to remove friend: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error removing friend:', error);
-        alert('Failed to remove friend');
-    }
+    removeFriend(username, () => {
+        // Refresh the friends list
+        showFriends(document.getElementById('app') as HTMLElement);
+    });
 };

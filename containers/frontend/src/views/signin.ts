@@ -1,10 +1,10 @@
-import { loadGoogleScript, setupGoogleSignUp } from "../auth/googleSignUp";
+import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
 
 import i18n from '../i18n';
 import i18next from 'i18next';
 
 import { LanguageSelector } from '../components/languageSelector';
-import { localSignIn } from '../auth/localSignIn';
+import { localSignIn } from '../utils/auth/localSignIn';
 
 export function showSignIn(container: HTMLElement): void {
 	loadGoogleScript();

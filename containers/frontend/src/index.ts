@@ -2,7 +2,7 @@ import './styles/tailwind.css';
 import './i18n';
 // import i18next from 'i18next';
 
-import { isUserAuthenticated } from './auth/authGuard';
+import { isUserAuthenticated } from './utils/auth/authGuard';
 import { showLanding } from './views/landing';
 import { showHome } from './views/home';
 import { showPong } from './views/pong';
@@ -15,7 +15,7 @@ import { showBlockchain } from './views/blockchain'; // Delete when blockchain w
 import { showAuth } from './views/auth';
 import { showFriends } from './views/friends';
 
-import { logUserOut } from './auth/userLogout';
+import { logUserOut } from './utils/auth/userLogout';
 
 const app = document.getElementById('app') as HTMLElement | null;
 

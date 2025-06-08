@@ -1,5 +1,5 @@
 import { Application, Graphics, Text } from 'pixi.js';
-import { WebSocketManager } from '../network/WebSocketManager';
+import { WebSocketManager } from '../utils/network/WebSocketManager';
 import { initGame } from '../pong/pong';
 
 /* async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {

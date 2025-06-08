@@ -1,6 +1,7 @@
 FRIENDS:
   - Implement the friends view in the frontend.
   - Implement the blocked users system and view in the frontend.
+  - Turn button 'Add Friend' into 'Remove Friend' when the user is already friends with the other user.
 
 WEBSOCKETS:
 	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.

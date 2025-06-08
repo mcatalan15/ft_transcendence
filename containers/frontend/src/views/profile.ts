@@ -1,15 +1,17 @@
+import { addFriend, removeFriend } from '../utils/profile/friends';
+
 export function showProfile(container: HTMLElement, username?: string): void {
-    
+
     // Clear the container first to ensure fresh render
     container.innerHTML = '';
-    
+
     const profileDiv = document.createElement('div');
     const currentUser = sessionStorage.getItem('username');
     const isOwnProfile = !username || username === currentUser;
-    
+
     // API endpoint
     const apiEndpoint = username ? `/api/profile/${username}` : '/api/profile';
-    
+
     profileDiv.innerHTML = `
         <h1>${isOwnProfile ? 'My Profile' : `${username}'s Profile`}</h1>
         <div id="avatarSection">
@@ -80,7 +82,6 @@ export function showProfile(container: HTMLElement, username?: string): void {
             'Content-Type': 'application/json'
         },
     })
-
         .then(response => {
             // Check if user exists (404 = user not found)
             if (response.status === 404) {
@@ -94,20 +95,19 @@ export function showProfile(container: HTMLElement, username?: string): void {
                     </div>
                 `;
                 return null; // Don't continue processing
-                }
-            
+            }
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-        return response.json();
+            return response.json();
         })
-
         .then(data => {
-            
+
             if (!data) return;
 
-			userAvatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
+            userAvatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
 
             profileInfo.innerHTML = `
                 <div>Username: ${data.username}</div>
@@ -120,16 +120,26 @@ export function showProfile(container: HTMLElement, username?: string): void {
                     friendActions.innerHTML = `
                         <button id="removeFriendBtn" style="background-color: #dc3545; color: white;">Remove Friend</button>
                     `;
-                    
+
                     const removeFriendBtn = friendActions.querySelector('#removeFriendBtn') as HTMLButtonElement;
-                    removeFriendBtn.addEventListener('click', () => removeFriend(data.username));
+                    removeFriendBtn.addEventListener('click', () => {
+                        removeFriend(data.username, () => {
+                            // Refresh the profile to update the button
+                            showProfile(container, username);
+                        });
+                    });
                 } else {
                     friendActions.innerHTML = `
                         <button id="addFriendBtn" style="background-color: #28a745; color: white;">Add Friend</button>
                     `;
-                    
+
                     const addFriendBtn = friendActions.querySelector('#addFriendBtn') as HTMLButtonElement;
-                    addFriendBtn.addEventListener('click', () => addFriend(data.username));
+                    addFriendBtn.addEventListener('click', () => {
+                        addFriend(data.username, () => {
+                            // Refresh the profile to update the button
+                            showProfile(container, username);
+                        });
+                    });
                 }
             }
         })
@@ -137,53 +147,4 @@ export function showProfile(container: HTMLElement, username?: string): void {
             console.error('Error fetching profile:', error);
             profileInfo.innerHTML = '<div>Error loading profile</div>';
         });
-}
-
-async function addFriend(username: string) {
-    try {
-        const response = await fetch('/api/friends/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({ username })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert(`${username} added as friend!`);
-            showProfile(document.getElementById('app') as HTMLElement, username);
-        } else {
-            alert('Failed to add friend: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error adding friend:', error);
-        alert('Failed to add friend');
-    }
-}
-
-async function removeFriend(username: string) {
-    try {
-        const response = await fetch('/api/friends/remove', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({ username })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert(`${username} removed from friends`);
-            // Refresh the profile to update the button
-            showProfile(document.getElementById('app') as HTMLElement, username);
-        } else {
-            alert('Failed to remove friend: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error removing friend:', error);
-        alert('Failed to remove friend');
-    }
 }

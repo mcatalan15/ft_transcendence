@@ -1,4 +1,4 @@
-import { WebSocketManager } from '../../network/WebSocketManager';
+import { WebSocketManager } from '../../utils/network/WebSocketManager';
 import { PongGame } from '../engine/Game';
 
 export class PongNetworkManager {
