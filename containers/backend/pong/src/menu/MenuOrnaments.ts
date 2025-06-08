@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuOrnaments.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/07 13:01:00 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/08 19:02:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ export class MenuOrnament extends Entity {
 		this.menu = menu;
 		this.ornamentContainer = new Container();
 		
-		// Generate config based on the ornament layer
 		this.config = this.generateOrnamentConfig(ornamentLayer || layer);
 		
 		this.ornamentGraphic = this.createOrnament();
@@ -67,7 +66,7 @@ export class MenuOrnament extends Entity {
 			},
 			'PLAY': {
 				layer: 'PLAY',
-				color: themeColors.menuBlue,
+				color: themeColors.white,
 				points: this.calculatePoints('PLAY', false),
 				position: { x: 0, y: baseY },
 				clickedPoints: this.calculatePoints('PLAY', true),
@@ -77,6 +76,14 @@ export class MenuOrnament extends Entity {
 				layer: 'OPTIONS',
 				color: themeColors.menuGreen,
 				points: this.calculatePoints('OPTIONS', false),
+				position: { x: 0, y: baseY + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) },
+				clickedPoints: this.calculatePoints('OPTIONS', true),
+				clickedColor: themeColors.white
+			},
+			'OPTIONS_CLICKED': {
+				layer: 'OPTIONS_CLICKED',
+				color: themeColors.white,
+				points: this.calculatePoints('OPTIONS_CLICKED', false),
 				position: { x: 0, y: baseY + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) },
 				clickedPoints: this.calculatePoints('OPTIONS', true),
 				clickedColor: themeColors.white
@@ -103,73 +110,51 @@ export class MenuOrnament extends Entity {
 	}
 
 	private calculatePoints(layer: string, isClicked: boolean): number[] {
-		if (!isClicked) {
-			switch (layer) {
-				case 'START':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'PLAY':
-					return [0, 0, 0, 0, 0, 0, 0, this.menu.buttonHeight];
-				case 'OPTIONS':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'GLOSSARY':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'ABOUT':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-			}
-		} else {
-			switch (layer) {
-				case 'START':
-					return [0, 0, 0, 0, 0, 0, 0, this.menu.buttonHeight];
-				case 'PLAY':
-					return [
-						0, 0,
-						(this.menu.buttonWidth) + this.menu.buttonSlant - 10, 0,
-						(this.menu.buttonWidth) - 10, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'OPTIONS':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.buttonSlant + 15, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + 15, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'GLOSSARY':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-				case 'ABOUT':
-					return [
-						0, 0,
-						(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
-						(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
-						0, this.menu.buttonHeight
-					];
-			}
+		switch (layer) {
+			case 'START':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'PLAY':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap + this.menu.buttonSlant - ((this.menu.buttonWidth * 2) + (this.menu.ornamentGap * 2) + 5), 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 3) + this.menu.ornamentGap - ((this.menu.buttonWidth * 2) + (this.menu.ornamentGap * 2) + 5), this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'OPTIONS':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'OPTIONS_CLICKED':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap + this.menu.buttonSlant - (this.menu.buttonXWidth * 2) - this.menu.ornamentOffset, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset * 2) + this.menu.ornamentGap - (this.menu.buttonXWidth * 2) - this.menu.ornamentOffset, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'GLOSSARY':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'ABOUT':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
 		}
+
 		return [0, 0, 0, 0, 0, 0, 0, 0];
 	}
 
@@ -196,23 +181,43 @@ export class MenuOrnament extends Entity {
 		return this.config.color;
 	}
 
-	public updateOrnament(button: MenuButton, reset: boolean = false): void {
-		this.isClicked = button.getIsClicked() && !reset;
-		
-		const points = this.isClicked && this.config.clickedPoints 
-			? this.config.clickedPoints 
-			: this.config.points;
-			
-		const color = reset ? this.config.color : this.getDisplayColor();
-		
-		this.ornamentGraphic.clear();
-		this.ornamentGraphic.poly(points);
-		this.ornamentGraphic.fill(color);
-		this.ornamentGraphic.stroke({ color: color, width: 3 });
-		this.ornamentGraphic.x = this.config.position.x;
-		this.ornamentGraphic.y = this.config.position.y;
-		this.ornamentGraphic.label = `${this.config.layer.toLowerCase()}Ornament`;
-	}
+	public highlightOrnament(): void {
+        const highlightColor = getThemeColors(this.menu.config.classicMode).white;
+        
+        this.ornamentGraphic.clear();
+        this.ornamentGraphic.poly(this.config.points);
+        this.ornamentGraphic.fill(highlightColor);
+        this.ornamentGraphic.stroke({ color: highlightColor, width: 3 });
+        this.ornamentGraphic.x = this.config.position.x;
+        this.ornamentGraphic.y = this.config.position.y;
+        this.ornamentGraphic.label = `${this.config.layer.toLowerCase()}Ornament`;
+    }
+
+    public resetOrnament(): void {
+        const originalColor = this.getOriginalColor();
+        
+        this.ornamentGraphic.clear();
+        this.ornamentGraphic.poly(this.config.points);
+        this.ornamentGraphic.fill(originalColor);
+        this.ornamentGraphic.stroke({ color: originalColor, width: 3 });
+        this.ornamentGraphic.x = this.config.position.x;
+        this.ornamentGraphic.y = this.config.position.y;
+        this.ornamentGraphic.label = `${this.config.layer.toLowerCase()}Ornament`;
+    }
+
+	public getGraphic(): Graphics {
+        return this.ornamentGraphic;
+    }
+
+    private getOriginalColor(): number {
+        const themeColors = getThemeColors(this.menu.config.classicMode);
+        
+        if (this.menu.config.classicMode) {
+            return themeColors.white;
+        }
+        
+        return this.config.color;
+    }
 
 	// Getter methods for accessing ornament properties
 	public getLayer(): string {

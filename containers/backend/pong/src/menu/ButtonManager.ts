@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 18:24:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:10:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ export class ButtonManager {
 				index: 0
 			},
 			{
-				isClicked: false,
+				isClicked: true,
 				isClickable: false,
 				text: 'PLAY',
 				onClick: async () => {
@@ -216,7 +216,7 @@ export class ButtonManager {
 			switch (index) {
 				case (0): {
 					menu.localButton = halfButton;
-					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.ornamentOffset * 2) - (menu.halfButtonWidth * 2) - (index * menu.halfButtonSlant) + 3;
+					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.ornamentOffset * 2) - (menu.halfButtonWidth * 2) - (index * menu.halfButtonSlant) + 4;
 					y = (menu.app.screen.height / 3) + (index * menu.halfButtonOffset);
 					break;
 				}
@@ -228,13 +228,13 @@ export class ButtonManager {
 				}
 				case (2): {
 					menu.IAButton = halfButton;
-					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.halfButtonWidth) - (2 * menu.halfButtonSlant) + (2 * 4.5);
+					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.halfButtonWidth) - (2 * menu.halfButtonSlant) + (2 * 5.5);
 					y = (menu.app.screen.height / 3) + ((2 - 2) * menu.halfButtonOffset);
 					break;
 				}
 				case (3): {
 					menu.tournamentButton = halfButton;
-					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.halfButtonWidth) - (2 * menu.halfButtonSlant) + (2 * 4.5);
+					x = (menu.app.screen.width - menu.buttonWidth) / 2 - menu.ornamentOffset - (menu.halfButtonWidth) - (2 * menu.halfButtonSlant) + (2 * 5.5);
 					y = (menu.app.screen.height / 3) + ((2 - 2) * menu.halfButtonOffset);
 					break;
 				}
@@ -371,5 +371,7 @@ export class ButtonManager {
 		menu.entities.push(ballButton);
 
 		menu.renderLayers.foreground.addChild(ballButton.getContainer());
+
+		menu.ballButton = ballButton;
 	}
 }

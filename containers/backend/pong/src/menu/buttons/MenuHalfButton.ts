@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:33:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 18:28:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:13:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,16 @@ export class MenuHalfButton extends MenuButton {
             return { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 };
         }
         
+        const themeColor = this.menu.config.classicMode ? 
+            getThemeColors(this.menu.config.classicMode).white : 
+            this.config.color;
+        
         return {
-            color: this.config.color,
+            color: themeColor,
             alpha: this.isClicked ? 1 : 0.3
         };
     }
-
+    
     protected getStrokeColor(): { color: number, alpha: number, width: number } {
         const fillColor = this.getFillColor();
         return {
@@ -79,6 +83,7 @@ export class MenuHalfButton extends MenuButton {
         else if (this.config.text.includes('LOCAL')) return 'LOCAL_CLICK';
         else if (this.config.text.includes('ONLINE')) return 'ONLINE_CLICK';
         else if (this.config.text.includes('1 vs IA')) return 'IA_CLICK';
+        else if (this.config.text.includes('TOURNAMENT')) return 'TOURNAMENT_CLICK';
         else if (this.config.text.includes('1 vs 1')) return 'DUEL_CLICK';
         else return null;
     }

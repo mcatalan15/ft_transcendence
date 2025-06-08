@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 17:18:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:17:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,15 +71,19 @@ export class MenuXButton extends MenuButton {
         if (this.originalPolygonPoints.length === 0) {
             this.originalPolygonPoints = [...points];
         }
-
+    
         this.buttonGraphic.poly(points);
         
-        const color = this.isHovered ? GAME_COLORS.white : this.config.color;
+        const themeColor = this.menu.config.classicMode ? 
+            getThemeColors(this.menu.config.classicMode).white : 
+            this.config.color;
+        
+        const color = this.isHovered ? getThemeColors(this.menu.config.classicMode).white : themeColor;
         
         if (this.isHovered) {
             this.buttonGraphic.fill(color);
         } else {
-            this.buttonGraphic.fill(GAME_COLORS.black);
+            this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonGraphic.stroke({ color, width: 3 });
         }
     }

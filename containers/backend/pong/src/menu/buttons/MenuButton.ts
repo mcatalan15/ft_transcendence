@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 17:50:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:45:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { BaseButton, ButtonAnimationConfig, ButtonStyle } from "./BaseButton";
 import { getButtonPoints } from "../../utils/MenuUtils";
 import { getThemeColors } from "../../utils/Utils";
 import { RenderComponent } from "../../components/RenderComponent";
-import { isMenuOrnaments } from "../../utils/Guards";
+import { isMenuOrnament } from "../../utils/Guards";
 
 export class MenuButton extends BaseButton {
     protected createButton(): void {
@@ -26,7 +26,7 @@ export class MenuButton extends BaseButton {
         if (this.originalPolygonPoints.length === 0) {
             this.originalPolygonPoints = [...points];
         }
-
+    
         this.buttonGraphic.poly(points);
         
         const fillColor = this.getFillColor();
@@ -71,6 +71,7 @@ export class MenuButton extends BaseButton {
 
     protected onButtonClick(): void {
         const eventType = this.getEventType();
+        console.log(`type: ${eventType}`);
         if (eventType) {
             this.menu.eventQueue.push({
                 type: eventType,
@@ -81,6 +82,7 @@ export class MenuButton extends BaseButton {
     }
 
     protected getEventType(): string | null {
+        console.log(`text: ${this.config.text}`);
         switch (this.config.text) {
             case 'START': return 'START_CLICK';
             case 'OPTIONS': return 'OPTIONS_CLICK';
@@ -91,45 +93,34 @@ export class MenuButton extends BaseButton {
         }
     }
 
-    protected highlightOrnament(): void {
-        const ornaments = this.findOrnaments();
-        if (!ornaments) return;
-
-        const render = ornaments.getComponent('render') as RenderComponent;
-        const graphic = render?.graphic;
-        if (!graphic) return;
-
-        const childIndex = this.getOrnamentChildIndex();
-        if (childIndex !== -1) {
-            const targetChild = graphic.children[childIndex] as Graphics;
-            const color = getThemeColors(this.menu.config.classicMode).white;
-            targetChild.fill(color);
-            targetChild.stroke({ color, width: 3 });
+    protected highlightOrnament(button: MenuButton): void {
+        const ornament = this.getOrnament(button);
+        if (!ornament) return;
+    
+        if (isMenuOrnament(ornament)) {
+            ornament.highlightOrnament();
         }
     }
 
     protected resetOrnamentColor(): void {
         if (this.isClicked) return;
         
-        const ornaments = this.findOrnaments();
-        if (!ornaments) return;
-
-        const render = ornaments.getComponent('render') as RenderComponent;
-        const graphic = render?.graphic;
-        if (!graphic) return;
-
-        const childIndex = this.getOrnamentChildIndex();
-        const color = this.getOrnamentColor();
-        
-        if (childIndex !== -1 && color) {
-            const targetChild = graphic.children[childIndex] as Graphics;
-            targetChild.fill(color);
-            targetChild.stroke({ color, width: 3 });
+        const ornament = this.getOrnament(this);
+        if (!ornament) return;
+    
+        // Use the MenuOrnament's updateOrnament method with reset = true
+        if (isMenuOrnament(ornament)) {
+            ornament.resetOrnament();
         }
     }
 
-    private findOrnaments() {
-        return this.menu.entities.find(entity => isMenuOrnaments(entity));
+    private getOrnament(button: BaseButton) {
+        switch ((button as MenuButton).getText()) {
+            case ('START'): return this.menu.startOrnament;
+            case ('OPTIONS'): return this.menu.optionsOrnament;
+            case ('GLOSSARY'): return this.menu.glossaryOrnament;
+            case ('ABOUT'): return this.menu.aboutOrnament;
+        }
     }
 
     private getOrnamentChildIndex(): number {

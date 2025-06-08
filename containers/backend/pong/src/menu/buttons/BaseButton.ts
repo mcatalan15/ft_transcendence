@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 17:18:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:12:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,11 @@ export abstract class BaseButton extends Entity {
         this.config = config;
         this.isClicked = config.isClicked || false;
         this.isClickable = config.isClickable !== false;
-
+    
         this.initializeContainer();
         this.initializeGraphics();
         this.initializeText();
-        this.createButton(); // Call initial button creation
+        this.createButton();
         this.setupEventHandlers();
         this.setupComponents();
     }
@@ -107,17 +107,19 @@ export abstract class BaseButton extends Entity {
         }
     }
 
-    protected setupEventHandlers(): void {
+    public setupEventHandlers(): void {
         if (!this.isClickable) return;
-
+    
+        this.buttonContainer.removeAllListeners();
+    
         this.buttonContainer.on('pointerdown', () => {
             this.handleClick();
         });
-
+    
         this.buttonContainer.on('pointerenter', () => {
             this.handlePointerEnter();
         });
-
+    
         this.buttonContainer.on('pointerleave', () => {
             this.handlePointerLeave();
         });
@@ -155,7 +157,7 @@ export abstract class BaseButton extends Entity {
         this.isStateChanging = true;
         this.isHovered = true;
         this.updateVisualState();
-        this.highlightOrnament();
+        this.highlightOrnament(this);
         this.updateTextColor(getThemeColors(this.menu.config.classicMode).black);
         if (this.menu.sounds && this.menu.sounds.menuMove) {
             this.menu.sounds.menuMove.play();
@@ -164,12 +166,7 @@ export abstract class BaseButton extends Entity {
     }
 
     protected handlePointerLeave(): void {
-        this.isStateChanging = true;
-        this.isHovered = false;
-        this.updateVisualState();
-        this.resetOrnamentColor();
-        this.resetTextColor();
-        this.isStateChanging = false;
+        this.resetButton();
     }
 
     protected updateVisualState(): void {
@@ -177,6 +174,14 @@ export abstract class BaseButton extends Entity {
         this.updateTextPosition();
     }
 
+    public resetButton() {
+        this.isStateChanging = true;
+        this.isHovered = false;
+        this.updateVisualState();
+        this.resetOrnamentColor();
+        this.resetTextColor();
+        this.isStateChanging = false;
+    }
     
     protected updateTextPosition(): void {
         if (!this.buttonText) return;
@@ -217,9 +222,13 @@ export abstract class BaseButton extends Entity {
             return { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 };
         }
         
+        const themeColor = this.menu.config.classicMode ? 
+            getThemeColors(this.menu.config.classicMode).white : 
+            this.config.color;
+        
         return {
-            color: this.config.color,
-            alpha: this.isClicked ? 0.3 : 1 // Fixed: inverted logic to match original
+            color: themeColor,
+            alpha: this.isClicked ? 0.3 : 1
         };
     }
 
@@ -227,7 +236,7 @@ export abstract class BaseButton extends Entity {
         const fillColor = this.getFillColor();
         return {
             color: fillColor.color,
-            alpha: this.isClicked ? 0.3 : 1, // Fixed: inverted logic to match original
+            alpha: this.isClicked ? 0.3 : 1,
             width: 3
         };
     }
@@ -239,7 +248,7 @@ export abstract class BaseButton extends Entity {
     protected abstract getTextStyle(): ButtonStyle;
     protected abstract getAnimationConfig(): ButtonAnimationConfig;
     protected abstract onButtonClick(): void;
-    protected abstract highlightOrnament(): void;
+    protected abstract highlightOrnament(button: BaseButton): void;
     protected abstract resetOrnamentColor(): void;
 
     // Optional overrides
@@ -288,6 +297,10 @@ export abstract class BaseButton extends Entity {
         return this.isClicked;
     }
 
+    public getIsClickable(): boolean {
+        return this.isClickable;
+    }
+
     public getIsHidden(): boolean {
         return this.isHidden;
     }
@@ -315,30 +328,16 @@ export abstract class BaseButton extends Entity {
     public setClicked(clicked: boolean): void {
         this.isClicked = clicked;
     }
-
-    public updateClickableState(isClickable: boolean): void {
-        if (this.isStateChanging || this.isUpdating || this.isAnimating) {
-            return;
-        }
+    
+    public setClickable(clickable: boolean): void {
+        this.isClickable = clickable;
         
-        this.isUpdating = true;
-        this.config.isClicked = isClickable;
-        this.isClickable = isClickable;
-        
-        if (isClickable) {
+        if (clickable) {
             this.buttonContainer.eventMode = 'static';
             this.buttonContainer.cursor = 'pointer';
-            this.isClicked = false;
         } else {
             this.buttonContainer.eventMode = 'none';
             this.buttonContainer.cursor = 'default';
-            this.isClicked = true;
         }
-        
-        this.createButton();
-        
-        requestAnimationFrame(() => {
-            this.isUpdating = false;
-        });
     }
 }
