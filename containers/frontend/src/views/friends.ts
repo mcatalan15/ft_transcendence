@@ -1,5 +1,5 @@
 export function showFriends(container: HTMLElement): void {
-    // Clear the container first
+    // clear the container first
     container.innerHTML = '';
     
     const friendsDiv = document.createElement('div');
@@ -65,7 +65,7 @@ export function showFriends(container: HTMLElement): void {
         });
 }
 
-// Global function to remove friend from the list
+// global function to remove friends
 (window as any).removeFriendFromList = async function(username: string) {
     if (!confirm(`Are you sure you want to remove ${username} from your friends?`)) {
         return;

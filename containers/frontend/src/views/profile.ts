@@ -80,9 +80,33 @@ export function showProfile(container: HTMLElement, username?: string): void {
             'Content-Type': 'application/json'
         },
     })
-        .then(response => response.json())
+
+        .then(response => {
+            // Check if user exists (404 = user not found)
+            if (response.status === 404) {
+                container.innerHTML = `
+                    <div style="text-align: center; margin-top: 50px;">
+                        <h1>User Not Found</h1>
+                        <p>The user "${username}" does not exist.</p>
+                        <button onclick="navigate('/home')" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            Back to Home
+                        </button>
+                    </div>
+                `;
+                return null; // Don't continue processing
+                }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+        return response.json();
+        })
+
         .then(data => {
             
+            if (!data) return;
+
 			userAvatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
 
             profileInfo.innerHTML = `
