@@ -6,13 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:45:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 15:18:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
 import { Application, Container, Graphics, FederatedPointerEvent } from 'pixi.js';
-import { Howl } from 'howler';
+import { Howl, Howler } from 'howler';
 
 // Import G A M E
 import { PongGame } from '../engine/Game';
@@ -91,6 +91,8 @@ export class Menu{
 
 	// Sound stuff
 	sounds!: MenuSounds;
+	private audioInitialized: boolean = false;
+	private pendingAudio: (() => void)[] = [];
 
 	// Button related values
 	buttonWidth: number = 200;
@@ -191,8 +193,6 @@ export class Menu{
 		await this.createTitle();
 		await this.initSystems();
 		await this.initDust();
-
-		this.sounds.menuBGM.play();
 
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
@@ -513,47 +513,93 @@ export class Menu{
 	}
 
 	initSounds(): void {
-		this.sounds = {
-			menuBGM: new Howl({
-				src: ['src/assets/sfx/music/menuFiltered01.mp3'],
-				preload: true,
-				loop: true,
-				volume: 0.5
-			}),
-			menuMove: new Howl({
-				src: ['src/assets/sfx/used/shieldBreakFiltered01.mp3'],
-				preload: true,
-				volume: 0.5
-			}),
-			menuSelect: new Howl({ 
-				src: ['src/assets/sfx/used/menuFiltered01.mp3'],
-				preload: true,
-				volume: 0.5,	
-			}),
-			menuConfirm: new Howl({ 
-				src: ['src/assets/sfx/used/menuFiltered02.mp3'],
-				preload: true,
-				volume: 0.5,
-			}),
-			ballClick: new Howl({ 
-				src: ['src/assets/sfx/used/pongFiltered02.mp3'],
-				preload: true,
-				volume: 0.5,
-			}),
+		// Don't create Howl instances immediately
+		this.setupAudioContext();
+	}
+
+	private setupAudioContext(): void {
+		const initializeAudio = () => {
+			if (this.audioInitialized) return;
+			
+			// Create Howl objects AFTER user interaction
+			this.sounds = {
+				menuBGM: new Howl({
+					src: ['/assets/sfx/music/menuFiltered01.mp3'],
+					html5: true,  // Force HTML5 audio
+					preload: true,
+					loop: true,
+					volume: 1.0,
+					onload: () => console.log('menuBGM loaded successfully'),
+					onloaderror: (id: number, error: any) => console.error('menuBGM failed to load:', error)
+				}),
+				menuMove: new Howl({
+					src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
+					html5: true,  // Force HTML5 audio
+					preload: true,
+					volume: 1.0,
+					onload: () => console.log('menuMove loaded successfully'),
+					onloaderror: (id: number, error: any) => console.error('menuMove failed to load:', error)
+				}),
+				menuSelect: new Howl({ 
+					src: ['/assets/sfx/used/menuFiltered01.mp3'],
+					html5: true,
+					preload: true,
+					volume: 0.5,
+					onload: () => console.log('menuSelect loaded successfully'),
+					onloaderror: (id: number, error: any) => console.error('menuSelect failed to load:', error)
+				}),
+				menuConfirm: new Howl({ 
+					src: ['/assets/sfx/used/menuFiltered02.mp3'],
+					html5: true,
+					preload: true,
+					volume: 0.5,
+					onload: () => console.log('menuConfirm loaded successfully'),
+					onloaderror: (id: number, error: any) => console.error('menuConfirm failed to load:', error)
+				}),
+				ballClick: new Howl({ 
+					src: ['/assets/sfx/used/pongFiltered02.mp3'],
+					html5: true,
+					preload: true,
+					volume: 0.5,
+					onload: () => console.log('ballClick loaded successfully'),
+					onloaderror: (id: number, error: any) => console.error('ballClick failed to load:', error)
+				}),
+			};
+			
+			this.audioInitialized = true;
+			
+			const bgmId = this.sounds.menuBGM.play();
+			
+			// Process any pending audio
+			this.pendingAudio.forEach(fn => fn());
+			this.pendingAudio = [];
 		};
+	
+		// Listen for any user interaction
+		const events = ['click', 'keydown', 'touchstart', 'mousedown'];
+		events.forEach(event => {
+			document.addEventListener(event, initializeAudio, { once: true });
+		});
+	}
+	
+	// Helper method for playing sounds
+	public playSound(soundKey: keyof MenuSounds): void {
+		console.log(`Attempting to play sound: ${soundKey}`);
+		console.log(`Audio initialized: ${this.audioInitialized}`);
+		console.log(`Sounds object exists: ${!!this.sounds}`);
 		
-		// Create a better warm-up mechanism
-		const warmUpAudio = () => {
-			// Only attempt warm-up on user interaction
-			const silence = new Howl({
-				src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'],
-				volume: 0.01
+		if (this.audioInitialized && this.sounds && this.sounds[soundKey]) {
+			console.log(`Playing ${soundKey}...`);
+			const soundId = this.sounds[soundKey].play();
+			console.log(`${soundKey} play returned ID:`, soundId);
+		} else {
+			console.log(`Queueing ${soundKey} for later playback`);
+			this.pendingAudio.push(() => {
+				if (this.sounds && this.sounds[soundKey]) {
+					console.log(`Playing queued ${soundKey}...`);
+					this.sounds[soundKey].play();
+				}
 			});
-			silence.play();
-		};
-		
-		// Add the warm-up to a user interaction event
-		document.addEventListener('click', warmUpAudio, { once: true });
-		document.addEventListener('keydown', warmUpAudio, { once: true });
+		}
 	}
 }

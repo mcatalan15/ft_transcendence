@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 14:05:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:34:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,88 +184,110 @@ export class PongGame {
 		
 		this.systems.push(renderSystem);
 		this.systems.push(inputSystem);
-		this.systems.push(crossCutSystem);
+		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
-		this.systems.push(worldSystem);
+		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
-		this.systems.push(vfxSystem);
-		this.systems.push(particleSystem);
+		if (!this.config.classicMode) this.systems.push(vfxSystem);
+		if (!this.config.classicMode) this.systems.push(particleSystem);
 		this.systems.push(uiSystem);
-		this.systems.push(powerupSystem);
+		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
 	}
 
 	initSounds(): void {
 		this.sounds = {
 			bgm: new Howl({
-				src: ['src/assets/sfx/music/bgmFiltered01.mp3'],
+				src: ['/assets/sfx/music/bgmFiltered01.mp3'],
+				html5: true,
 				preload: true,
 				loop: true,
-				volume: 0.5
+				volume: 0.5,
+				onload: () => console.log('bgm loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('bgm failed to load:', error)
 			}),
 			pong: new Howl({ 
-				src: ['src/assets/sfx/used/pongFiltered02.mp3'],
-				preload: true
+				src: ['/assets/sfx/used/pongFiltered02.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('pong loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('pong failed to load:', error)
 			}),
 			thud: new Howl({ 
-				src: ['src/assets/sfx/used/thudFiltered01.mp3'],
+				src: ['/assets/sfx/used/thudFiltered01.mp3'],
+				html5: true,
 				preload: true,
 				volume: 0.3,
+				onload: () => console.log('thud loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('thud failed to load:', error)
 			}),
 			shoot: new Howl({ 
-				src: ['src/assets/sfx/used/shotFiltered01.mp3'],
+				src: ['/assets/sfx/used/shotFiltered01.mp3'],
+				html5: true,
 				preload: true,
 				volume: 0.3,
+				onload: () => console.log('shoot loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('shoot failed to load:', error)
 			}),
 			hit: new Howl({ 
-				src: ['src/assets/sfx/used/hitFiltered01.mp3'],
+				src: ['/assets/sfx/used/hitFiltered01.mp3'],
+				html5: true,
 				preload: true,
 				volume: 0.3,
+				onload: () => console.log('hit loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('hit failed to load:', error)
 			}),
 			shieldBreak: new Howl({ 
-				src: ['src/assets/sfx/used/shieldBreakFiltered01.mp3'],
+				src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
+				html5: true,
 				preload: true,
 				volume: 0.3,
+				onload: () => console.log('shieldBreak loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('shieldBreak failed to load:', error)
 			}),
 			powerup: new Howl({ 
-				src: ['src/assets/sfx/used/powerupFiltered01.mp3'],
+				src: ['/assets/sfx/used/powerupFiltered01.mp3'],
+				html5: true,
 				preload: true,
+				onload: () => console.log('powerup loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('powerup failed to load:', error)
 			}),
 			powerdown: new Howl({ 
-				src: ['src/assets/sfx/used/powerdownFiltered01.mp3'],
-				preload: true 
+				src: ['/assets/sfx/used/powerdownFiltered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('powerdown loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('powerdown failed to load:', error)
 			}),
 			ballchange: new Howl({ 
-				src: ['src/assets/sfx/used/ballchangeFiltered01.mp3'],
-				preload: true 
+				src: ['/assets/sfx/used/ballchangeFiltered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('ballchange loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('ballchange failed to load:', error)
 			}),
 			death: new Howl({ 
-				src: ['src/assets/sfx/used/explosionFiltered01.mp3'],
-				preload: true
+				src: ['/assets/sfx/used/explosionFiltered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('death loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({ 
-				src: ['src/assets/sfx/recoverUpFiltered01.mp3'],
-				preload: true
+				src: ['/assets/sfx/recoverUpFiltered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('paddleResetUp loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({ 
-				src: ['src/assets/sfx/recoverDownFiltered01.mp3'],
-				preload: true
+				src: ['/assets/sfx/recoverDownFiltered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('paddleResetDown loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 		};
-		
-		// Create a better warm-up mechanism
-		const warmUpAudio = () => {
-			// Only attempt warm-up on user interaction
-			const silence = new Howl({
-				src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'],
-				volume: 0.01
-			});
-			silence.play();
-		};
-		
-		// Add the warm-up to a user interaction event
-		document.addEventListener('click', warmUpAudio, { once: true });
-		document.addEventListener('keydown', warmUpAudio, { once: true });
 	}
 
 	initDust() {
@@ -331,20 +353,24 @@ export class PongGame {
 		const uiText = ui.getComponent('text') as TextComponent;
 		this.renderLayers.ui.addChild(uiText.getRenderable());
 
-		const bars = ui.getComponent('render') as RenderComponent;
-		this.renderLayers.ui.addChild(bars.graphic);
-		
-		this.renderLayers.ui.addChild(uiText.getRenderable());
+		if (!this.config.classicMode) {
+			const bars = ui.getComponent('render') as RenderComponent;
+			this.renderLayers.ui.addChild(bars.graphic);
+			
+			this.renderLayers.ui.addChild(uiText.getRenderable());
+		}
 		
 		this.entities.push(ui);
 		console.log("UI created")
 
 		// Create Postprocessing Layer
-		const postProcessingLayer = new PostProcessingLayer('postProcessing', 'pp', this);
-		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
-		this.renderLayers.pp.addChild(ppRender.graphic);
-		this.entities.push(postProcessingLayer);
-		console.log("PostProcessing Layer created")
+		if (this.config.filters) {
+			const postProcessingLayer = new PostProcessingLayer('postProcessing', 'pp', this);
+			const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
+			this.renderLayers.pp.addChild(ppRender.graphic);
+			this.entities.push(postProcessingLayer);
+			console.log("PostProcessing Layer created")
+		}
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);

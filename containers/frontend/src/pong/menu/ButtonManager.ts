@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:29:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:34:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ export class ButtonManager {
 				text: 'START',
 				onClick: async () => {
 					console.log("Start clicked");
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 0
@@ -43,7 +43,7 @@ export class ButtonManager {
 				text: 'PLAY',
 				onClick: async () => {
 					console.log("Play clicked");
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 1
@@ -53,7 +53,7 @@ export class ButtonManager {
 				text: 'OPTIONS',
 				onClick: () => {
 					console.log('Options clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 2
@@ -63,7 +63,7 @@ export class ButtonManager {
 				text: 'GLOSSARY',
 				onClick: () => {
 					console.log('Glossary clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuOrange,
 				index: 3
@@ -73,7 +73,7 @@ export class ButtonManager {
 				text: 'ABOUT',
 				onClick: () => {
 					console.log('About clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuPink,
 				index: 4
@@ -154,7 +154,7 @@ export class ButtonManager {
 				text: "LOCAL",
 				onClick: () => {
 					console.log('LOCAL clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 0,
@@ -164,7 +164,7 @@ export class ButtonManager {
 				text: 'ONLINE',
 				onClick: () => {
 					console.log('ONLINE clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 1,	
@@ -174,7 +174,7 @@ export class ButtonManager {
 				text: '1 vs IA',
 				onClick: () => {
 					console.log('1 VS IA clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 2,
@@ -184,7 +184,7 @@ export class ButtonManager {
 				text: 'TOURNAMENT',
 				onClick: () => {
 					console.log('TOURNAMENT clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 3,
@@ -194,7 +194,7 @@ export class ButtonManager {
 				text: '1 vs 1',
 				onClick: () => {
 					console.log('1 VS 1 clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 4,
@@ -258,7 +258,7 @@ export class ButtonManager {
 				text: menu.config.filters ? 'CRT FILTER: ON' : 'CRT FILTER: OFF',
 				onClick: () => {
 					console.log('filter toggler clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 0,
@@ -268,7 +268,7 @@ export class ButtonManager {
 				text: menu.config.classicMode ? 'CLASSIC: ON' : 'CLASSIC: OFF',
 				onClick: () => {
 					console.log('classic toggler clicked');
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 1,
@@ -306,7 +306,7 @@ export class ButtonManager {
 				text: 'X',
 				onClick: () => {
 					console.log(`return at start clicked`);
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
 				index: 0
@@ -316,7 +316,7 @@ export class ButtonManager {
 				text: 'X',
 				onClick: () => {
 					console.log(`return at options clicked`);
-					menu.sounds.menuSelect.play();
+					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 1

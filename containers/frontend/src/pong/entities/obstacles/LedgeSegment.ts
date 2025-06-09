@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 12:59:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:22:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ export class LedgeSegment extends Obstacle {
 	segmentIndices: { start: number; count: number; }[] = [];
 	color: number = this.game.currentWorld.color;
 
-	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string) {
+	constructor(game: PongGame, options: ObstacleOptions, id: string, layer: string) {
 		super(game, id, layer, options);
 		
 		const render = this.getComponent('render') as RenderComponent;

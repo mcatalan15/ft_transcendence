@@ -6,15 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 17:03:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:14:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Container } from 'pixi.js';
 
-import { PongGame } from '../../engine/Game.js';
-import { Entity } from '../../engine/Entity.js';
-import { Powerup } from './Powerup.js';
+import { PongGame } from '../../engine/Game';
+import { Entity } from '../../engine/Entity';
+import { Powerup } from './Powerup';
 
 import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 

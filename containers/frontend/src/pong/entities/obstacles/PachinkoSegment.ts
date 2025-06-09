@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 11:59:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 17:22:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:21:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ import { drawPointPath, generateCirclePoints } from '../../utils/Utils';
 export class PachinkoSegment extends Obstacle {
 	points: Point[] = [];
 
-	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string, pattern: number) {
+	constructor(game: PongGame, options: ObstacleOptions, id: string, layer: string, pattern: number) {
 		super(game, id, layer, options);
 		
 		const color = this.game.currentWorld.color;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 11:21:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:36:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,17 @@ export class UI extends Entity {
 		const scoreTextComponent = new TextComponent(scoreText);
 		this.addComponent(scoreTextComponent, "scoreText");
 
-		const timerText = this.setUpTimerText();
-		const timerTextComponent = new TextComponent(timerText);
-		this.addComponent(timerTextComponent, "timerText");
+		if (!this.game.config.classicMode) {
+			const timerText = this.setUpTimerText();
+			const timerTextComponent = new TextComponent(timerText);
+			this.addComponent(timerTextComponent, "timerText");
+		}
 
-		const worldText = this.setUpWorldText();
-		const worldTextComponent = new TextComponent(worldText);
-		this.addComponent(worldTextComponent, "worldText");
+		if (!this.game.config.classicMode) {
+			const worldText = this.setUpWorldText();
+			const worldTextComponent = new TextComponent(worldText);
+			this.addComponent(worldTextComponent, "worldText");
+		}
 	}
 
 	private setUpBars(): Container {
