@@ -256,3 +256,5 @@ WEBSOCKETS:
      │ case sensitivity   │                     │                     │
      │ or socket issues   │                     │                     │
      │                    │                     │                     │
+
+I need to take a major step in the development of this web app: the implementation of online gaming via WebSockets and a server authoritative approach. I already have a minimalistic implementation that worked with a simple pong game using a lobby system. However, I need to do something similar but with the actual game located in the frontend in the folder /pong. The game itself already has some mechanics implemented, for example the menu 'Start' has options such as 'local' or 'online', '1v1' or 'tournament', etc. For the moment I only need to work on 'online' with '1v1' selected. Selecting this should create a token and open a WebSocket connection, and make the player wait for the second player to join. When the second player joins using the token, the game should start and both players should be able to see the paddles move, player1 on the left and player2 on the right, and the ball movements. 
