@@ -48,10 +48,10 @@ function renderRoute(path: string) {
 			break;
 
 		case '/pong':
-			if (!isUserAuthenticated()) {
+			/* if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
-			}
+			} */
 			showPong(app);
 			break;
 

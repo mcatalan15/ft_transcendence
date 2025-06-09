@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 19:59:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:50:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,24 @@ import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { Title } from './Title';
 import { Subtitle } from './Subtitle';
-import { BallButton } from './BallButton';
+import { ClassicO } from './ClassicO';
 
 import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
-import { MenuButton } from './MenuButton';
-import { MenuOrnaments } from './MenuOrnaments';
+import { MenuButton } from './buttons/MenuButton';
+import { MenuHalfButton } from './buttons/MenuHalfButton';
+import { MenuXButton } from './buttons/MenuXButton';
+import { BallButton } from './buttons/BallButton';
+
+import { MenuOrnament } from './MenuOrnaments';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 
-// Import spawners
+// Import spawners and Managers
 import { MenuParticleSpawner } from './MenuParticleSpawner';
 import { MenuBallSpawner } from './MenuBallSpawner';
+import { ButtonManager } from './ButtonManager';
 
 // Import Implemented Systems
 import { MenuRenderSystem } from './MenuRenderSystem';
@@ -47,15 +52,13 @@ import { MenuPhysicsSystem } from './MenuPhysicsSystem';
 import { MenuVFXSystem } from './MenuVFXSystem';
 import { MenuLineSystem } from './MenuLineSystem';
 import { VFXComponent } from '../components/VFXComponent';
-import { MenuViewSystem } from './MenuViewSystem';
-import { MenuThemeSystem } from './MenuThemeSystem';
+import { ButtonSystem } from './MenuButtonSystem';
 
 
 import { GAME_COLORS , FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
-import { isMenuOrnaments, isRenderComponent } from '../utils/Guards';
-import { MenuHalfButton } from './MenuHalfButton';
+import { isMenuOrnament, isRenderComponent } from '../utils/Guards';
 
 export class Menu{
 	config: GameConfig;
@@ -67,18 +70,12 @@ export class Menu{
 	entities: Entity[] = [];
     systems: System[] = [];
 	eventQueue: GameEvent[] = [];
+	title!: Title;
+	titleO!: ClassicO;
+
+	// Visual layers
 	menuContainer: Container;
-	buttonWidth: number = 200;
-	buttonHeight:number = 60;
-	buttonVerticalOffset: number = 20;
-	buttonSlant: number = 20;
-	buttonXWidth: number = 20;
-	halfButtonWidth = this.buttonWidth + 11;
-	halfButtonHeight = 25;
-	halfButtonOffset = 35;
-	halfButtonSlant = this.buttonSlant * (25 / 60) + 0.5;
-	ornamentOffset: number = 25;
-	ornamentGap: number = 80;
+	menuHidden: Container;
 	renderLayers: {
 		blackEnd: Container;
 		logo: Container;
@@ -91,14 +88,29 @@ export class Menu{
 	visualRoot: Container;
 	visualRootFilters: any[] = [];
 	menuContainerFilters: any[] = [];
+
+	// Sound stuff
 	sounds!: MenuSounds;
 
-	//Buttons
+	// Button related values
+	buttonWidth: number = 200;
+	buttonHeight:number = 60;
+	buttonVerticalOffset: number = 20;
+	buttonSlant: number = 20;
+	buttonXWidth: number = 20;
+	halfButtonWidth = this.buttonWidth + 11;
+	halfButtonHeight = 25;
+	halfButtonOffset = 35;
+	halfButtonSlant = this.buttonSlant * (25 / 60) + 0.5;
+	ornamentOffset: number = 25;
+	ornamentGap: number = 80;
+
+	// Button Containers
 	startButton!: MenuButton;
 	optionsButton!: MenuButton;
 	glossaryButton!: MenuButton;
 	aboutButton!: MenuButton;
-	playButton!: MenuButton | undefined;
+	playButton!: MenuButton;
 	localButton!: MenuHalfButton;
 	onlineButton!: MenuHalfButton;
 	duelButton!: MenuHalfButton;
@@ -106,14 +118,25 @@ export class Menu{
 	tournamentButton!: MenuHalfButton;
 	filtersButton!: MenuHalfButton;
 	classicButton!: MenuHalfButton;
+	startXButton!: MenuXButton;
+	optionsXButton!: MenuXButton;
+	ballButton!: BallButton;
 
-	// SUB-MENU stuff
+	// Ornaments
+	frame!: Graphics;
+	startOrnament!: MenuOrnament;
+	playOrnament!: MenuOrnament;
+	optionsOrnament!: MenuOrnament;
+	optionsClickedOrnament!: MenuOrnament;
+	glossaryOrnament!: MenuOrnament;
+	aboutOrnament!: MenuOrnament;
 
 	constructor(app: Application) {
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
 		this.menuContainer = new Container();
+		this.menuHidden = new Container();
 
 		this.renderLayers = {
 			blackEnd: new Container(),
@@ -159,22 +182,19 @@ export class Menu{
 	}
 
 	async init(): Promise<void> {
+		await ButtonManager.createMainButtons(this);
+		await ButtonManager.createHalfButtons(this);
+		await ButtonManager.createXButtons(this);
+		await ButtonManager.createBallButton(this);
+		await this.createOrnaments();
 		await this.createEntities();
-		await this.createButtons(this.app);
 		await this.createTitle();
-		await this.createBallButton();
 		await this.initSystems();
 		await this.initDust();
 
 		this.sounds.menuBGM.play();
 
 		this.app.ticker.add((ticker) => {
-			//!DEBUG
-			/* console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
-				id,
-				type: entity.constructor.name
-			}))); */
-
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};
@@ -185,99 +205,12 @@ export class Menu{
 		});
 	}
 
-	createButtons(app: Application): void {
-		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
-			{
-				isClicked: false,
-				text: 'START',
-				onClick: async () => {
-					console.log("Start clicked");
-					this.sounds.menuSelect.play();
-				},
-				color: getThemeColors(this.config.classicMode).menuBlue,
-				index: 0
-			},
-			{
-				isClicked: false,
-				text: 'OPTIONS',
-				onClick: () => {
-					console.log('Options clicked');
-					this.sounds.menuSelect.play();
-				},
-				color: getThemeColors(this.config.classicMode).menuGreen,
-				index: 1
-			},
-			{
-				isClicked: false,
-				text: 'GLOSSARY',
-				onClick: () => {
-					console.log('Glossary clicked');
-					this.sounds.menuSelect.play();
-				},
-				color: getThemeColors(this.config.classicMode).menuOrange,
-				index: 2
-			},
-			{
-				isClicked: false,
-				text: 'ABOUT',
-				onClick: () => {
-					console.log('About clicked');
-					this.sounds.menuSelect.play();
-				},
-				color: getThemeColors(this.config.classicMode).menuPink,
-				index: 3
-			}
-		];
-	
-		buttonConfigs.forEach((config, index) => {
-			const menuButton = new MenuButton(
-				`menuButton_${config.text.toLowerCase()}`, 
-				'menuContainer', 
-				this, 
-				config
-			);
-
-			const x = (app.screen.width - this.buttonWidth) / 2 - (index * (this.buttonSlant + 5));
-			const y = (app.screen.height / 3) + (index * (this.buttonHeight + this.buttonVerticalOffset));
-			menuButton.setPosition(x, y);
-
-			this.entities.push(menuButton);
-	
-			this.menuContainer.addChild(menuButton.getContainer());
-
-			switch (index) {
-				case (0): this.startButton = menuButton; break;
-				case (1): this.optionsButton = menuButton; break;
-				case (2): this.glossaryButton = menuButton; break;
-				case (3): this.aboutButton = menuButton; break;
-			}
-		});
-
-		let ornaments;
-
-			for (const entity of this.entities) {
-				if (isMenuOrnaments(entity)) {
-					ornaments = entity;
-				}
-			}
-			const ornamentRender = ornaments?.getComponent('render') as RenderComponent;
-
-			for (let i = 0; i < 4; i++) {
-				switch (i) {
-					case (0): ornaments!.updateOrnament(this.startButton, ornamentRender.graphic.children[0], 'START', false);; break;
-					case (1): ornaments!.updateOrnament(this.optionsButton, ornamentRender.graphic.children[1], 'OPTIONS', false);; break;
-					case (2): ornaments!.updateOrnament(this.glossaryButton, ornamentRender.graphic.children[2], 'GLOSSARY', false);; break;
-					case (3): ornaments!.updateOrnament(this.aboutButton, ornamentRender.graphic.children[i], 'ABOUT', false);; break;
-				}
-				
-			}
-	}
-
 	createTitle(){
 		const title = new Title("title", "menuContainer", this);
 		let titleBackdrop;
 		let titleText;
 		let titleBlock;
+		
 		for (const [key, component] of title.components) {
 			if (isRenderComponent(component)) {
 				if (component.instanceId === 'backDrop') titleBackdrop = component;
@@ -285,40 +218,24 @@ export class Menu{
 				else if (component.instanceId === 'block') titleBlock = component;
 			}
 		}
-
+	
 		this.renderLayers.background.addChild(titleBackdrop!.graphic);
 		this.renderLayers.logo.addChild(titleText!.graphic);
-		if (!this.config.classicMode) {
-			this.renderLayers.logo.addChild(titleBlock!.graphic);
-		}
+		this.renderLayers.logo.addChild(titleBlock!.graphic);
+		
 		this.entities.push(title);
-	}
+		
+		this.title = title;
 
-	createBallButton() {
-		const ballButton = new BallButton('ballButton', 'foreground', this, () => {
-			const vfx = ballButton.getComponent('vfx') as VFXComponent;
-			if (vfx) {
-				vfx.startFlash(getThemeColors(this.config.classicMode).white, 10);
-			}
-			MenuBallSpawner.spawnDefaultBallInMenu(this);
-			this.sounds.ballClick.play();
-		});
-	
-		ballButton.setPosition(this.width - 470, 320);
-
-		this.entities.push(ballButton);
-
-		this.renderLayers.foreground.addChild(ballButton.getContainer());
+		const titleO = new ClassicO("titleO", "menuContainer", this);
+		let titleORender = titleO.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(titleORender.graphic);
+		this.entities.push(titleO);
+		this.titleO = titleO;
 	}
 
 	async createEntities(): Promise<void>  {
 		this.createBoundingBoxes();
-		
-		// Create ornaments
-		const ornaments = new MenuOrnaments('menuOrnaments', 'menuContainer', this)
-		const ornamentsRender = ornaments.getComponent('render') as RenderComponent;
-		this.menuContainer.addChild(ornamentsRender.graphic);
-		this.entities.push(ornaments);
 
 		// Create subtitle
 		const subtitle = new Subtitle("subtitle", "menuContainer", this);
@@ -345,15 +262,18 @@ export class Menu{
 		this.createPostProcessingLayer();
 
 		// Create frame
-		const frame = new Graphics();
-		frame.rect(0, 0, this.width, this.height);
-		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
-		this.menuContainer.addChild(frame);
+		this.createFrame();
+	}
+
+	createPostProcessingLayer() {
+		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
+		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
+		this.renderLayers.pp.addChild(ppRender.graphic);
+		this.entities.push(postProcessingLayer);
 	}
 
 	initSystems(): void {
-		const menuViewSystem = new MenuViewSystem(this);
-		const themeSystem = new MenuThemeSystem(this);
+		const buttonSystem = new ButtonSystem(this);
 		const VFXSystem = new MenuVFXSystem();
 		const animationSystem = new MenuAnimationSystem(this);
 		const renderSystem = new MenuRenderSystem();
@@ -362,9 +282,7 @@ export class Menu{
 		const physicsSystem = new MenuPhysicsSystem(this);
 		const lineSystem = new MenuLineSystem(this);
 		
-		
-		this.systems.push(menuViewSystem);
-		this.systems.push(themeSystem);
+		this.systems.push(buttonSystem);
 		this.systems.push(VFXSystem);
 		this.systems.push(animationSystem);
 		this.systems.push(renderSystem);
@@ -372,13 +290,17 @@ export class Menu{
 		this.systems.push(postProcessingSystem);
 		this.systems.push(physicsSystem);
 		this.systems.push(lineSystem);
+
+		if (buttonSystem) {
+            buttonSystem.updatePlayButtonState();
+        }
 	}
 
 	addEntity(entity: Entity): void {
 		this.entities.push(entity);
 		let targetLayer = this.renderLayers.midground;
 	
-		if (entity.layer) {
+		if (entity.layer) { //!OJO
 			switch(entity.layer) {
 				case 'background': targetLayer = this.renderLayers.background; break;
 				case 'foreground': targetLayer = this.renderLayers.foreground; break;
@@ -430,12 +352,43 @@ export class Menu{
 
 		MenuParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
 	}
-	
-	createPostProcessingLayer() {
-		const postProcessingLayer = new MenuPostProcessingLayer('postProcessing', 'pp', this);
-		const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
-		this.renderLayers.pp.addChild(ppRender.graphic);
-		this.entities.push(postProcessingLayer);
+
+	createOrnaments() {
+		const startOrnament = new MenuOrnament('start-ornament', 'menuContainer', this, 'START');
+		const startOrnamentRender = startOrnament.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(startOrnamentRender.graphic);
+		this.entities.push(startOrnament);
+		this.startOrnament = startOrnament;
+
+		const playOrnament = new MenuOrnament('play-ornament', 'menuContainer', this, 'PLAY');
+		const playOrnamentRender = playOrnament.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(playOrnamentRender.graphic);
+		this.entities.push(playOrnament);
+		this.playOrnament = playOrnament;
+
+		const optionsOrnament = new MenuOrnament('options-ornament', 'menuContainer', this, 'OPTIONS');
+		const optionsOrnamentRender = optionsOrnament.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(optionsOrnamentRender.graphic);
+		this.entities.push(optionsOrnament);
+		this.optionsOrnament = optionsOrnament;
+
+		const optionsClickedOrnament = new MenuOrnament('options-clicked-ornament', 'menuContainer', this, 'OPTIONS_CLICKED');
+		const optionsClickedOrnamentRender = optionsClickedOrnament.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(optionsClickedOrnamentRender.graphic);
+		this.entities.push(optionsClickedOrnament);
+		this.optionsClickedOrnament = optionsClickedOrnament;
+
+		const glossaryOrnament = new MenuOrnament('glossary-ornament', 'menuContainer', this, 'GLOSSARY');
+		const glossaryOrnamentRender = glossaryOrnament.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(glossaryOrnamentRender.graphic);
+		this.entities.push(glossaryOrnament);
+		this.glossaryOrnament = glossaryOrnament;
+
+		const aboutOrnament = new MenuOrnament('about-ornament', 'menuContainer', this, 'ABOUT');
+		const aboutOrnamentRender = aboutOrnament.getComponent('render') as RenderComponent;
+		this.menuContainer.addChild(aboutOrnamentRender.graphic);
+		this.entities.push(aboutOrnament);
+		this.aboutOrnament = aboutOrnament;
 	}
 
 	createBoundingBoxes() {
@@ -470,6 +423,22 @@ export class Menu{
 		this.menuContainer.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
 		
+	}
+
+	createFrame() {
+		const frame = new Graphics();
+		frame.rect(0, 0, this.width, this.height);
+		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
+		this.menuContainer.addChild(frame);
+		this.frame = frame;
+	}
+
+	redrawFrame() {
+		const frame = this.frame;
+		frame.clear();
+		frame.rect(0, 0, this.width, this.height);
+		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
+		this.menuContainer.addChild(frame);
 	}
 
 	//! EXPAND THIS TO MAKE A DEEP CLEANUP
