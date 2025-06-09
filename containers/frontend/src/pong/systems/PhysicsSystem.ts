@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:31:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:45:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,8 +197,11 @@ export class PhysicsSystem implements System {
 			if (!this.game.config.classicMode) {
 				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
 			}
-			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
-			this.game.sounds.thud.play();
+			
+			if (!this.game.config.classicMode) {
+				this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
+				this.game.sounds.thud.play();
+			}
 		}
 		
 		if (isSpinBall(ball) && collided) {
@@ -373,7 +376,10 @@ export class PhysicsSystem implements System {
 			const prevVelocity = {x: physics.velocityX, y: physics.velocityY};
 			
 			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
-			this.game.sounds.thud.play();
+			if (!this.game.config.classicMode) {
+				this.game.sounds.thud.play();
+			}
+			
 			if (!this.game.config.classicMode) {
 				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
 			}
@@ -429,8 +435,10 @@ export class PhysicsSystem implements System {
 				if (ballLeft < shieldRight) {
 					physics.velocityX *= -1;
 
-					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.shieldBreak.play();
+					if (!this.game.config.classicMode) {
+						this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.shieldBreak.play();
+					}
 
 					if (!this.game.config.classicMode) {
 						ParticleSpawner.spawnBurst(
@@ -454,8 +462,11 @@ export class PhysicsSystem implements System {
 				if (ballRight > shieldLeft) {
 					physics.velocityX *= -1;
 
-					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.shieldBreak.play();
+					if (!this.game.config.classicMode) {
+						this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.shieldBreak.play();
+					}
+					
 					if (!this.game.config.classicMode) {
 						ParticleSpawner.spawnBurst(
 							this.game,
@@ -517,8 +528,10 @@ export class PhysicsSystem implements System {
 				);
 				
 				if (collision.hit && collision.time >= 0 && collision.time <= 1) {
-					this.game.sounds.pong.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.pong.play();
+					if (!this.game.config.classicMode) {
+						this.game.sounds.pong.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.pong.play();
+					}
 					
 					physics.x = collision.position.x;
 					physics.y = collision.position.y;
@@ -645,7 +658,9 @@ export class PhysicsSystem implements System {
 
 		if (ballLeft > this.width) {
 			if (ball.isGoodBall) {
-				this.game.sounds.death.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.death.play();
+				}
 
 				if (!this.game.config.classicMode) {
 					ParticleSpawner.spawnBurst(
@@ -672,7 +687,9 @@ export class PhysicsSystem implements System {
 		// Ball exits left side
 		if (ballRight < 0) {
 			if 	(ball.isGoodBall) {
-				this.game.sounds.death.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.death.play();
+				}
 
 				if (!this.game.config.classicMode) {
 						ParticleSpawner.spawnBurst(
@@ -686,7 +703,6 @@ export class PhysicsSystem implements System {
 					);
 				}
 				
-				this.game.sounds.death.play();
 				this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
 				this.game.removeEntity(ball.id);
 				this.mustResetBall = true;
@@ -756,8 +772,10 @@ export class PhysicsSystem implements System {
 				
 				changePaddleLayer(this.game, 'right', 'powerDown');
 
-				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-				this.game.sounds.hit.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.hit.play();
+				}
 
 				console.log('Bullet hit!');
 			}
@@ -781,8 +799,10 @@ export class PhysicsSystem implements System {
 				}
 				changePaddleLayer(this.game, 'left', 'powerDown');
 
-				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-				this.game.sounds.hit.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.hit.play();
+				}
 				
 				console.log('Bullet hit!');
 			}
@@ -856,8 +876,10 @@ export class PhysicsSystem implements System {
 							ParticleSpawner.spawnBasicExplosion(this.game, bulletPhysics.x + bulletPhysics.width / 4, bulletPhysics.y, GAME_COLORS.rose, 1);
 						}
 						
-						this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-						this.game.sounds.hit.play();
+						if (!this.game.config.classicMode) {
+							this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+							this.game.sounds.hit.play();
+						}
 						
 						PowerupSpawner.despawnBullet(this.game, bullet.id);
 						return;

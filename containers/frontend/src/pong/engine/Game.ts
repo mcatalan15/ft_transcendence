@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:34:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:41:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,10 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.pp);
 		this.visualRoot.addChild(this.renderLayers.ui);
 		
-		this.initSounds();
-		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
+		if (!this.config.classicMode) {
+			this.initSounds();
+			this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
+		}
 	}
 
 	async init(): Promise<void> {
@@ -156,7 +158,7 @@ export class PongGame {
 		this.initDust();
 		console.log('Sounds loaded');
 	
-		this.soundManager.startMusic();
+		if (!this.config.classicMode) this.soundManager.startMusic();
 	
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
@@ -198,7 +200,7 @@ export class PongGame {
 	initSounds(): void {
 		this.sounds = {
 			bgm: new Howl({
-				src: ['/assets/sfx/music/bgmFiltered01.mp3'],
+				src: this.config.filters ? ['/assets/sfx/music/bgmFiltered01.mp3'] : ['/assets/sfx/music/bgm.mp3'],
 				html5: true,
 				preload: true,
 				loop: true,
