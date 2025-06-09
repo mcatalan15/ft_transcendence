@@ -9,10 +9,59 @@
     (function(d) {
       var config = {
         kitId: 'rla1kou',
-        scriptTimeout: 3000,
+        scriptTimeout: 8000, // Longer timeout for Firefox
         async: true
-      },
-      h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+      };
+      
+      var h = d.documentElement;
+      var t = setTimeout(function() {
+        h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+        console.log('Font loading timeout - showing content anyway');
+      }, config.scriptTimeout);
+      
+      var tk = d.createElement("script");
+      var f = false;
+      var s = d.getElementsByTagName("script")[0];
+      
+      // Add loading class immediately
+      h.className += " wf-loading";
+      console.log('Font loading started');
+      
+      tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
+      tk.async = true;
+      
+      tk.onload = tk.onreadystatechange = function() {
+        var a = this.readyState;
+        if (f || a && a != "complete" && a != "loaded") return;
+        f = true;
+        clearTimeout(t);
+        
+        try {
+          Typekit.load({
+            kitId: config.kitId,
+            scriptTimeout: config.scriptTimeout,
+            active: function() {
+              h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-active";
+              console.log('Fonts loaded successfully');
+            },
+            inactive: function() {
+              h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+              console.log('Font loading failed - using fallback');
+            }
+          });
+        } catch(e) {
+          console.error('Typekit error:', e);
+          h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+        }
+      };
+      
+      tk.onerror = function() {
+        console.error('Typekit script failed to load');
+        clearTimeout(t);
+        h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+      };
+      
+      s.parentNode.insertBefore(tk, s);
     })(document);
   </script>
 

@@ -19,8 +19,8 @@ const profileSchema = {
 		  username: { type: 'string', description: 'Username' },
 		  email: { type: 'string', description: 'User\'s email address' },
 		  avatarUrl: { type: 'string', description: 'URL of the user\'s avatar' },
-		  isOwnProfile: { type: 'boolean', description: 'Whether this is the current user\'s own profile' }, // ADD THIS
-		  isFriend: { type: 'boolean', description: 'Whether the current user is friends with this profile user' } // ADD THIS
+		  isOwnProfile: { type: 'boolean', description: 'Whether this is the current user\'s own profile' },
+		  isFriend: { type: 'boolean', description: 'Whether the current user is friends with this profile user' }
 		},
 		example: {
 		  userId: '42',

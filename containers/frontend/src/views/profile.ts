@@ -297,7 +297,6 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 		  stat3.querySelector('span.font-bold').textContent = data.victories;
 		}
 	  
-		// Handle friend button for other users' profiles
 		if (!isOwnProfile) {
 			console.log(data.isFriend);
 			const friendButtonContainer = document.getElementById('friendButtonContainer');
@@ -305,28 +304,24 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 			  friendButtonContainer.innerHTML = '';
 			  
 			  if (data.isFriend) {
-				// Show Remove Friend button (red)
 				const removeFriendButton = createButton(
 				  'red',
 				  i18n.t('removeFriend', { ns: 'profile' }) || 'Remove Friend',
 				  async () => {
 					const success = await removeFriend(username);
 					if (success) {
-					  // Refresh profile to update the button
 					  showProfile(container, username);
 					}
 				  }
 				);
 				friendButtonContainer.appendChild(removeFriendButton);
 			  } else {
-				// Show Add Friend button (green)
 				const addFriendButton = createButton(
 				  'green',
 				  i18n.t('addFriend', { ns: 'profile' }) || 'Add Friend',
 				  async () => {
 					const success = await addFriend(username);
 					if (success) {
-					  // Refresh profile to update the button
 					  showProfile(container, username);
 					}
 				  }
