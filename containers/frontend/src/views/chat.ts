@@ -79,7 +79,11 @@ function formatMessage(message: ChatMessage): string {
     if (username === currentUser) {
       return username; // Don't make your own username clickable
     }
-    return `<span class="username-clickable cursor-pointer hover:underline text-white font-semibold" data-username="${username}" title="Right-click for options">${username}</span>`;
+    return `<span class="username-clickable cursor-pointer hover:underline text-white font-semibold" 
+                  data-username="${username}" 
+                  title="Left-click for profile, Right-click for options">
+              ${username}
+            </span>`;
   }
   
   switch (message.type) {
@@ -306,10 +310,11 @@ function displayMessage(message: ChatMessage) {
         showUserContextMenu(e as MouseEvent, username);
       });
       
-      // Optional: Left-click for quick actions
+      // Left-click for profile navigation
       usernameElement.addEventListener('click', (e) => {
         e.preventDefault();
-        showUserContextMenu(e as MouseEvent, username);
+        // Navigate to user profile
+        navigate(`/profile/${username}`);
       });
     }
   });
@@ -411,11 +416,7 @@ function declineGameInvite(inviteId: string, fromUser: string) {
 function startPongGameFromInvite(opponent: string, inviteId: string) {
   addSystemMessage('Initializing Pong game...', MessageType.GAME);
 
-  navigate('/pong', { 
-    opponent: opponent, 
-    inviteId: inviteId,
-    mode: 'invited' 
-  });
+  navigate(`/pong`);
 }
 
 function showUserContextMenu(event: MouseEvent, username: string) {
