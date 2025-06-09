@@ -277,11 +277,8 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 
 	.then(data => {
 		if (!data) return;
-	  
-		console.log(data);
 
 		const username = data.username;
-	  
 		if (isOwnProfile) {
 		  profileTitle.textContent = i18n.t('profileTitleOwn', { ns: 'profile', username }) || `${username}'s profile`;
 		} else {
@@ -322,7 +319,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 				friendButtonContainer.appendChild(removeFriendButton);
 			  } else {
 				const addFriendButton = createButton(
-				  'green',
+				  'lime',
 				  i18n.t('addFriend', { ns: 'profile' }) || 'Add Friend',
 				  async () => {
 					const success = await addFriend(username);

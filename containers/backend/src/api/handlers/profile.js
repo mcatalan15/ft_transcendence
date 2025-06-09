@@ -8,6 +8,7 @@ async function getUserProfile(request, reply) {
         const requestedUsername = request.params.username;
 
         let targetUser;
+        let isOwnProfile = false;
         let isFriend = false;
 
         if (requestedUsername) {
@@ -34,7 +35,7 @@ async function getUserProfile(request, reply) {
             };
         }
 
-        const isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
+        isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
 
         return reply.status(200).send({
             userId: targetUser.id_user,

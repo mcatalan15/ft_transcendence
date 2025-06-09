@@ -90,11 +90,6 @@ export function showChat(container: HTMLElement): void {
   headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
   container.appendChild(headerWrapper);
 
-  // Language selector
-  const langSelector = new LanguageSelector(() => showChat(container)).getElement();
-  langSelector.classList.add('fixed', 'top-4', 'right-4', 'z-40');
-  container.appendChild(langSelector);
-
   // Main content wrapper
   const contentWrapper = document.createElement('div');
   contentWrapper.className = `
@@ -369,27 +364,4 @@ export function showChat(container: HTMLElement): void {
       messageInput.placeholder = 'Type your message...';
     }
   });
-
-  // Add some demo messages for immediate feedback (remove in production)
-  setTimeout(() => {
-    if (!isIdentified) {
-      addSystemMessage('Connecting to chat server...');
-      
-      // Add demo messages for testing UI
-      addMessage({
-        id: '1',
-        type: MessageType.GENERAL,
-        username: 'System',
-        content: 'Welcome to Transcendence Chat!',
-        timestamp: new Date()
-      });
-      addMessage({
-        id: '2',
-        type: MessageType.PRIVATE,
-        username: 'Hugo',
-        content: 'Coucou! This is a private message.',
-        timestamp: new Date()
-      });
-    }
-  }, 1000);
 }
