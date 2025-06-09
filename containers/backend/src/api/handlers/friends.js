@@ -103,8 +103,29 @@ async function getFriendsHandler(request, reply) {
     }
 }
 
+async function checkFriendshipHandler(request, reply) {
+	try {
+        const sessionUser = request.session.get('user');
+		const friendUser = request.username;
+		const isFriend = await checkFriendship(sessionUser, );
+
+		return reply.status(200).send({
+            success: true,
+            isFriend: isFriend
+        });
+
+	} catch (error) {
+        console.error('Error checking friendship:', error);
+        return reply.status(500).send({
+            success: false,
+            message: 'Internal server error'
+        });
+	}
+}
+
 module.exports = {
     addFriendHandler,
     removeFriendHandler,
     getFriendsHandler,
+	checkFriendshipHandler,
 };

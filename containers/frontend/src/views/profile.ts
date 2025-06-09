@@ -273,6 +273,8 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	.then(data => {
 		if (!data) return;
 	  
+		console.log(data);
+
 		const username = data.username;
 	  
 		if (isOwnProfile) {
@@ -297,67 +299,39 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	  
 		// Handle friend button for other users' profiles
 		if (!isOwnProfile) {
-		  const friendButtonContainer = document.getElementById('friendButtonContainer');
-		  if (friendButtonContainer) {
-			// Clear any existing button
-			friendButtonContainer.innerHTML = '';
-			
-			// Check if they are friends based on the API response
-			if (data.isFriend) {
-			  // Show Remove Friend button (red)
-			  const removeFriendButton = createButton(
-				'red',
-				i18n.t('removeFriend', { ns: 'profile' }) || 'Remove Friend',
-				async () => {
-				  try {
-					const response = await fetch('/api/friends/remove', {
-					  method: 'DELETE',
-					  headers: {
-						'Content-Type': 'application/json',
-					  },
-					  credentials: 'include',
-					  body: JSON.stringify({ username: username })
-					});
-					
-					if (response.ok) {
+			console.log(data.isFriend);
+			const friendButtonContainer = document.getElementById('friendButtonContainer');
+			if (friendButtonContainer) {
+			  friendButtonContainer.innerHTML = '';
+			  
+			  if (data.isFriend) {
+				// Show Remove Friend button (red)
+				const removeFriendButton = createButton(
+				  'red',
+				  i18n.t('removeFriend', { ns: 'profile' }) || 'Remove Friend',
+				  async () => {
+					const success = await removeFriend(username);
+					if (success) {
 					  // Refresh profile to update the button
 					  showProfile(container, username);
-					} else {
-					  console.error('Failed to remove friend');
 					}
-				  } catch (error) {
-					console.error('Error removing friend:', error);
 				  }
-				}
-			  );
-			  friendButtonContainer.appendChild(removeFriendButton);
-			} else {
-			  // Show Add Friend button (green)
-			  const addFriendButton = createButton(
-				'green',
-				i18n.t('addFriend', { ns: 'profile' }) || 'Add Friend',
-				async () => {
-				  try {
-					const response = await fetch('/api/friends/add', {
-					  method: 'POST',
-					  headers: {
-						'Content-Type': 'application/json',
-					  },
-					  body: JSON.stringify({ username: username })
-					});
-					
-					if (response.ok) {
+				);
+				friendButtonContainer.appendChild(removeFriendButton);
+			  } else {
+				// Show Add Friend button (green)
+				const addFriendButton = createButton(
+				  'green',
+				  i18n.t('addFriend', { ns: 'profile' }) || 'Add Friend',
+				  async () => {
+					const success = await addFriend(username);
+					if (success) {
 					  // Refresh profile to update the button
 					  showProfile(container, username);
-					} else {
-					  console.error('Failed to add friend');
 					}
-				  } catch (error) {
-					console.error('Error adding friend:', error);
 				  }
-				}
-			  );
-			  friendButtonContainer.appendChild(addFriendButton);
+				);
+				friendButtonContainer.appendChild(addFriendButton);
 			}
 		  }
 		}

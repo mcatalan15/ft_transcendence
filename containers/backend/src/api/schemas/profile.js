@@ -1,13 +1,13 @@
 const profileSchema = {
 	description: 'Get non-sensitive data from the user\'s profile.\
 	The user needs to be logged-in prior to accessing the profile.\
-	Returns empty strings in case of failure.\
+	Returns null values in case of failure.\
 	',
 	tags: ['profile'],
 	querystring: {
 	  type: 'object',
 	  properties: {
-		userId: { type: 'string', description: 'User\s ID from the database' },
+		userId: { type: 'string', description: 'User\'s ID from the database' },
 	  }
 	},
 	response: {
@@ -15,42 +15,52 @@ const profileSchema = {
 		description: 'Profile fetched successfully',
 		type: 'object',
 		properties: {
-		  userId: { type: 'string', description: 'User\s ID' },
+		  userId: { type: 'string', description: 'User\'s ID' },
 		  username: { type: 'string', description: 'Username' },
-		  email: { type: 'string', description: 'User\s email address' },
+		  email: { type: 'string', description: 'User\'s email address' },
+		  avatarUrl: { type: 'string', description: 'URL of the user\'s avatar' },
+		  isOwnProfile: { type: 'boolean', description: 'Whether this is the current user\'s own profile' }, // ADD THIS
+		  isFriend: { type: 'boolean', description: 'Whether the current user is friends with this profile user' } // ADD THIS
 		},
 		example: {
 		  userId: '42',
 		  username: 'testuser',
-		  email: 'user@test.com'
+		  email: 'user@test.com',
+		  avatarUrl: '/api/profile/avatar/42',
+		  isOwnProfile: false,
+		  isFriend: true
 		}
 	  },
 	  400: {
 		description: 'Couldn\'t fetch user\'s profile',
 		type: 'object',
 		properties: {
-		  userId: { type: 'string', description: 'User\s ID', },
-		  username: { type: 'string', description:'Username' },
-		  email: { type: 'string', description:'User\s email address' },
+		  userId: { type: 'null', description: 'User\'s ID' },
+		  username: { type: 'null', description: 'Username' },
+		  email: { type: 'null', description: 'User\'s email address' },
+		  avatarUrl: { type: 'null', description: 'URL of the user\'s avatar' },
 		},
 		example: {
-		  userId: '',
-		  username: '',
-		  email: ''
+		  userId: null,
+		  username: null,
+		  email: null,
+		  avatarUrl: null
 		}
 	  },
 	  500: {
 		description: 'Internal server error',
 		type: 'object',
 		properties: {
-		  userId: { type: 'string', description: 'User\s ID' },
-		  username: { type: 'string', description: 'Username' },
-		  email: { type: 'string', description: 'User\s email address' },
+		  userId: { type: 'null', description: 'User\'s ID' },
+		  username: { type: 'null', description: 'Username' },
+		  email: { type: 'null', description: 'User\'s email address' },
+		  avatarUrl: { type: 'null', description: 'URL of the user\'s avatar' },
 		},
 		example: {
-		  userId: '',
-		  username: '',
-		  email: ''
+		  userId: null,
+		  username: null,
+		  email: null,
+		  avatarUrl: null
 		}
 	  }
 	}

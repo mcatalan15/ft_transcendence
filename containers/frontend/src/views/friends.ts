@@ -68,14 +68,11 @@ export function showFriends(container: HTMLElement): void {
         });
 }
 
-// Global function to remove friend from the list
 (window as any).removeFriendFromList = async function (username: string) {
     if (!confirm(`Are you sure you want to remove ${username} from your friends?`)) {
         return;
     }
-
     removeFriend(username, () => {
-        // Refresh the friends list
         showFriends(document.getElementById('app') as HTMLElement);
     });
 };
