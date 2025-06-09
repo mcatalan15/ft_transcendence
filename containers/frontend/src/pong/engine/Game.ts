@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 16:05:38 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:05:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
 import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
+
+// Import GameConfig
+import { GameConfig } from '../menu/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -51,7 +54,9 @@ import { SoundManager } from '../managers/SoundManager';
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
+
 export class PongGame {
+	config: GameConfig;
 	app: Application;
 	width: number;
 	height: number;
@@ -85,7 +90,8 @@ export class PongGame {
 	leftPlayer: any = '';
 	rightPlayer: any = '';
 
-	constructor(app: Application) {
+	constructor(app: Application, config: GameConfig) {
+		this.config = config;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
@@ -130,33 +136,29 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.ui);
 		
 		this.initSounds();
-		console.log(this.sounds);
 		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 	}
 
 	async init(): Promise<void> {
+		console.log(this.config);
 		console.log("Initializing PongGame...");
+		
+		if (!this.app.ticker.started) {
+			this.app.ticker.start();
+		}
 		
 		await this.createEntities();
 		console.log('All Entities created');
-
+	
 		this.initSystems();
-		console.log('All Systems initialiazed');
-
+		console.log('All Systems initialized');
+	
 		this.initDust();
-
 		console.log('Sounds loaded');
-
-		
+	
 		this.soundManager.startMusic();
-
+	
 		this.app.ticker.add((ticker) => {
-			//!DEBUG
-			/* console.log("Current entities:", Array.from(this.entities.entries()).map(([id, entity]) => ({
-				id,
-				type: entity.constructor.name
-			}))); */
-			
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};

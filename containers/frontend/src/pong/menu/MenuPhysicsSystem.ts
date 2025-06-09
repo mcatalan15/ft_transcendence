@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 11:50:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/30 15:14:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 12:42:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,18 @@ export class MenuPhysicsSystem implements System {
 			}
 		}
 	}
+
+	cleanup(): void {
+        // Remove all balls
+        const ballsToRemove: string[] = [];
+        for (const entity of this.menu.entities) {
+            if (isBall(entity)) {
+                ballsToRemove.push(entity.id);
+            }
+        }
+        
+        for (const entityId of ballsToRemove) {
+            this.menu.removeEntity(entityId);
+        }
+    }
 }

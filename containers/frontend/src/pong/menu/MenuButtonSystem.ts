@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 10:27:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:09:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,9 @@ export class ButtonSystem implements System {
     handlePlayClick(){
         this.menu.cleanup();
 
-        const game = new PongGame(this.menu.app); //! send menu config to the game
+        this.setFinalConfig();
+
+        const game = new PongGame(this.menu.app, this.menu.config); //! send menu config to the game
         game.init();
     }
 
@@ -262,7 +264,8 @@ export class ButtonSystem implements System {
         }
 
         if (this.menu.tournamentButton.getIsClicked()) {    
-            this.menu.config.mode = 'tournament';
+            this.menu.config.mode = 'online';
+            this.menu.config.variant = 'tournament';
         }
 
         this.menu.tournamentButton.resetButton();
@@ -413,6 +416,46 @@ export class ButtonSystem implements System {
             }
             
             playButton.resetButton();
+        }
+    }
+
+    cleanup(): void {
+        // Clear event queue
+        this.menu.eventQueue = [];
+        
+        // Reset all button states to default
+        if (this.menu.startButton) this.menu.startButton.resetButton();
+        if (this.menu.playButton) this.menu.playButton.resetButton();
+        if (this.menu.optionsButton) this.menu.optionsButton.resetButton();
+        if (this.menu.glossaryButton) this.menu.glossaryButton.resetButton();
+        if (this.menu.aboutButton) this.menu.aboutButton.resetButton();
+        if (this.menu.localButton) this.menu.localButton.resetButton();
+        if (this.menu.onlineButton) this.menu.onlineButton.resetButton();
+        if (this.menu.IAButton) this.menu.IAButton.resetButton();
+        if (this.menu.duelButton) this.menu.duelButton.resetButton();
+        if (this.menu.tournamentButton) this.menu.tournamentButton.resetButton();
+        if (this.menu.filtersButton) this.menu.filtersButton.resetButton();
+        if (this.menu.classicButton) this.menu.classicButton.resetButton();
+        if (this.menu.startXButton) this.menu.startXButton.resetButton();
+        if (this.menu.optionsXButton) this.menu.optionsXButton.resetButton();
+        if (this.menu.ballButton) this.menu.ballButton.resetButton();
+    }
+
+    protected setFinalConfig() {
+        if (this.menu.localButton.getIsClicked()) {
+            this.menu.config.mode = 'local';
+            if (this.menu.IAButton.getIsClicked()) {
+                this.menu.config.variant = '1vAI';
+            } else if (this.menu.duelButton.getIsClicked()) {
+                this.menu.config.variant = '1v1';
+            }
+        } else if (this.menu.onlineButton.getIsClicked()) {
+            this.menu.config.mode = 'online';
+            if (this.menu.tournamentButton.getIsClicked()) {
+                this.menu.config.variant = 'tournament';
+            } else if (this.menu.duelButton.getIsClicked()) {
+                this.menu.config.variant = '1v1';
+            }
         }
     }
 }

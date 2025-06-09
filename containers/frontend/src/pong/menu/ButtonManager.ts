@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 10:23:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 12:29:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ export class ButtonManager {
 			},
 			{
 				isClicked: false,
-				isClickable: false,
 				text: 'PLAY',
 				onClick: async () => {
 					console.log("Play clicked");

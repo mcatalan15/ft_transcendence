@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:50:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 12:45:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,30 +441,54 @@ export class Menu{
 		this.menuContainer.addChild(frame);
 	}
 
-	//! EXPAND THIS TO MAKE A DEEP CLEANUP
 	cleanup(): void {
 		console.log("Cleaning up menu...");
 		
+		// Stop and cleanup sounds
+		if (this.sounds) {
+			Object.values(this.sounds).forEach(sound => {
+				if (sound && typeof sound.stop === 'function') {
+					sound.stop();
+				}
+				if (sound && typeof sound.unload === 'function') {
+					sound.unload();
+				}
+			});
+		}
+		
+		// Remove ticker callbacks but DON'T destroy the ticker
+		this.app.ticker.stop();
+		
+		// Cleanup systems properly
 		this.systems.forEach(system => {
-			if ('cleanup' in system && typeof system.cleanup === 'function') {
-				(system as any).cleanup();
+			if (system.cleanup) {
+				system.cleanup();
 			}
 		});
 		this.systems = [];
 		
+		// Cleanup entities
 		this.entities.forEach(entity => {
 			const render = entity.getComponent('render') as RenderComponent;
 			if (render && render.graphic) {
-				render.graphic.destroy();
+				if (render.graphic.parent) {
+					render.graphic.parent.removeChild(render.graphic);
+				}
+				render.graphic.destroy({ children: true });
 			}
 			
 			const text = entity.getComponent('text') as TextComponent;
 			if (text && text.getRenderable()) {
-				text.getRenderable().destroy();
+				const renderable = text.getRenderable();
+				if (renderable.parent) {
+					renderable.parent.removeChild(renderable);
+				}
+				renderable.destroy();
 			}
 		});
 		this.entities = [];
 		
+		// Cleanup render layers
 		Object.values(this.renderLayers).forEach(layer => {
 			if (layer.parent) {
 				layer.parent.removeChild(layer);
@@ -472,23 +496,18 @@ export class Menu{
 			layer.destroy({ children: true });
 		});
 		
-		if (this.menuContainer.parent) {
-			this.menuContainer.parent.removeChild(this.menuContainer);
-		}
-		this.menuContainer.destroy({ children: true });
-		
-		if (this.visualRoot.parent) {
-			this.visualRoot.parent.removeChild(this.visualRoot);
-		}
-		this.visualRoot.destroy({ children: true });
-		
-		this.app.stage.removeChildren();
-		
-		this.app.stage.children.forEach(child => {
-			if (child && child.destroy) {
-				child.destroy({ children: true });
+		// Cleanup containers
+		[this.menuContainer, this.menuHidden, this.visualRoot].forEach(container => {
+			if (container && container.parent) {
+				container.parent.removeChild(container);
+			}
+			if (container) {
+				container.destroy({ children: true });
 			}
 		});
+		
+		// Clear stage completely
+		this.app.stage.removeChildren();
 		
 		console.log("Menu cleanup complete");
 	}

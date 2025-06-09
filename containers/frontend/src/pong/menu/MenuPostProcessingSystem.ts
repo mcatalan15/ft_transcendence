@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 17:05:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 12:43:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,5 +86,11 @@ export class MenuPostProcessingSystem implements System {
                 options.powerupGlow.alpha = baseAlpha + Math.sin(this.powerupGlowTime) * alphaAmplitude;
             }
         });
+    }
+
+    cleanup(): void {
+        // Reset time counters
+        this.time = 0;
+        this.powerupGlowTime = 0;
     }
 }
