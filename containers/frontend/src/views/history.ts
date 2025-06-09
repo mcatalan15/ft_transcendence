@@ -1,14 +1,13 @@
 import i18n from '../i18n';
 import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
-import { Menu } from '../components/menu';
-import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
+import { MatchTableComponent } from '../components/profileComponents/history/table';
+import { PongBoxComponent } from '../components/profileComponents/pongBox';
 
-export function showHistory(container: HTMLElement): void {
-  console.log('showFriends ejecutado', container);
+export function showHistory(container: HTMLElement) {
   i18n
-    .loadNamespaces('friends')
+    .loadNamespaces('history')
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       container.innerHTML = '';
@@ -27,63 +26,27 @@ export function showHistory(container: HTMLElement): void {
       ].join(' ');
 
       const langSelector = new LanguageSelector(() => showHistory(container)).getElement();
-      langSelector.classList.add(
-        'row-start-1',
-        hasMenu ? 'col-start-2' : 'col-start-1',
-        'justify-self-end',
-        'p-4',
-        'z-40'
-      );
       container.appendChild(langSelector);
 
-      const arcadeBox = document.createElement('div');
-      arcadeBox.className = `
-        w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-cyan-400
-        flex flex-col md:flex-row overflow-hidden shadow-xl
-        min-h-[600px]
-      `.replace(/\s+/g, ' ').trim();
+      const matchResults = [
+        { song: 'The Sliding Mr. Bones (Next Stop, Pottersville)', artist: 'Malcolm Lockyer', year: 1961 },
+        { song: 'Witchy Woman', artist: 'The Eagles', year: 1972 },
+        { song: 'Shining Star', artist: 'Earth, Wind, and Fire', year: 1975 }
+      ];
+      const matchTableComponent = new MatchTableComponent(matchResults);
+      const tableWrapper = document.createElement('div');
+      tableWrapper.className = "w-full flex justify-center p-8";
+      tableWrapper.appendChild(matchTableComponent.getElement());
 
-      const leftCol = document.createElement('div');
-      leftCol.className = `
-        w-full md:w-1/3 flex flex-col items-center
-        bg-neutral-900 pt-6 pb-10 px-4 h-full relative
-      `.replace(/\s+/g, ' ').trim();
+      // 2. Crea PongBox con datos estáticos por defecto (los puedes actualizar luego tras el fetch)
+      const pongBox = new PongBoxComponent({
+        title: '', // Se actualizará con el username tras el fetch
+        avatarUrl: '...',
+        nickname: '...',
+        mainContent: tableWrapper
+      });
 
-      const profileTitle = document.createElement('div');
-      profileTitle.className = `
-        text-amber-50 text-2xl font-bold tracking-wide break-all text-left w-full mb-6
-      `.replace(/\s+/g, ' ').trim();
-
-      const avatar = document.createElement('img');
-      avatar.src = 'https://randomuser.me/api/portraits/men/32.jpg';
-      avatar.alt = 'Profile';
-      avatar.className = `
-        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
-        shadow-xl transition-all duration-300 mt-20
-      `.replace(/\s+/g, ' ').trim();
-
-      const nicknameSpan = document.createElement('span');
-      nicknameSpan.className = `
-        mt-6 text-amber-50 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
-      `.replace(/\s+/g, ' ').trim();
-      nicknameSpan.textContent = '...';
-
-      leftCol.appendChild(profileTitle);
-      leftCol.appendChild(avatar);
-      leftCol.appendChild(nicknameSpan);
-
-      const rightCol = document.createElement('div');
-      rightCol.className = `
-        w-full md:w-2/3 flex flex-col bg-neutral-900
-      `.replace(/\s+/g, ' ').trim();
-
-      const matchTable
-
-      arcadeBox.appendChild(leftCol);
-      arcadeBox.appendChild(rightCol);
-      
-      contentWrapper.appendChild(arcadeBox);
+      contentWrapper.appendChild(pongBox.getElement());
       container.appendChild(contentWrapper);
 
       const headerWrapper = new Header().getElement();
@@ -96,14 +59,38 @@ export function showHistory(container: HTMLElement): void {
       })
         .then(response => response.json())
         .then(data => {
-          const username = data.username;
-          profileTitle.textContent = i18n.t('friendsTitle', { ns: 'friends', username });
-          nicknameSpan.textContent = username;
-          if (data.avatar) avatar.src = data.avatar;
+          // Aquí buscas los elementos que quieres actualizar dentro de PongBox:
+          // Puedes hacerlo accediendo a los nodos del DOM de PongBox:
+          const pongBoxElement = pongBox.getElement();
+          const titleEl = pongBoxElement.querySelector('div.text-amber-50');
+          const nicknameEl = pongBoxElement.querySelector('span.text-amber-50');
+          const avatarImg = pongBoxElement.querySelector('img');
+
+          if (titleEl)
+            titleEl.textContent = i18n.t('historyTitle', { ns: 'history', username: data.username });
+          if (nicknameEl)
+            nicknameEl.textContent = data.username;
+          if (avatarImg && data.avatar)
+            (avatarImg as HTMLImageElement).src = data.avatar;
         })
         .catch(error => {
           navigate('/home');
           console.error('Error fetching profile:', error);
         });
+
+      // ----------- EXTRA: FUNCIÓN PARA ACTUALIZAR LA TABLA DINÁMICAMENTE -----------
+      function updateTable(newData) {
+        tableWrapper.innerHTML = '';
+        const newTable = new MatchTableComponent(newData);
+        tableWrapper.appendChild(newTable.getElement());
+      }
+
+      // // Ejemplo de cómo usar updateTable:
+      // setTimeout(() => {
+      //   updateTable([
+      //     ...matchResults,
+      //     { song: 'Nueva Canción', artist: 'Nuevo Artista', year: 2025 }
+      //   ]);
+      // }, 3000);
     });
 }
