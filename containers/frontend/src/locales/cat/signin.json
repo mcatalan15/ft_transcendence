@@ -1,8 +1,11 @@
 {
-    "Sign in": "Iniciar sessió",
-    "EN": "EN",
-    "ES": "ES",
-    "FR": "FR",
-    "E-mail": "Correu electrònic",
-    "Password": "Contrasenya"
-}
+    "title": "Juguem!",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "signIn": "Inicia sessió",
+    "signUp": "Registrar-se",
+    "errorAllFields": "Tots els camps són obligatoris!",
+    "errorInvalidCredentials": "Correu o contrasenya incorrectes.",
+    "success": "Sessió iniciada correctament!"
+  }
+  
