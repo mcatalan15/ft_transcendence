@@ -9,6 +9,7 @@ import { showFriends } from '../views/friends';
 import { showChat } from '../views/chat';
 import { showLobby } from '../views/lobby';
 import { showAuth } from '../views/auth';
+import { showSettings } from '../views/settings';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
 
@@ -110,6 +111,14 @@ function renderRoute(path: string) {
 		case '/auth':
 			showAuth(app);
 			break;
+
+		case '/settings':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showSettings(app);
+			return;;
 
 		default:
 

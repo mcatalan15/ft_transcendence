@@ -28,7 +28,9 @@ async function getUserProfile(request, reply) {
             targetUser = {
                 id_user: sessionUser.userId,
                 username: sessionUser.username,
-                email: sessionUser.email
+                email: sessionUser.email,
+				isOwnProfile: isOwnProfile,
+            	isFriend: isFriend
             };
         }
 

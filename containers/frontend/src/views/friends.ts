@@ -8,6 +8,7 @@ export function showFriends(container: HTMLElement): void {
     friendsDiv.innerHTML = `
         <h1>My Friends</h1>
         <div id="friendsList">Loading friends...</div>
+		<button onclick="navigate('/profile')">Back to Profile</button><div>
         <button onclick="navigate('/home')">Back to Home</button>
     `;
 

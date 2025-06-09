@@ -106,5 +106,5 @@ async function getFriendsHandler(request, reply) {
 module.exports = {
     addFriendHandler,
     removeFriendHandler,
-    getFriendsHandler
+    getFriendsHandler,
 };

@@ -49,3 +49,25 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
         alert('Failed to remove friend');
     }
 }
+
+export async function statusFriend(username: string): Promise<boolean> {
+	try {
+		const response = await fetch(`/api/friends/status/${username}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include'
+		});
+
+		const result = await response.json();
+		if (result.success && result.isFriend) {
+			return true;
+		} else {
+			return false;
+		}
+	} catch (error) {
+		console.error('Error checking friendship status:', error);
+		return false;
+	}
+}
