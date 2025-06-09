@@ -27,26 +27,23 @@ export function showStats(container: HTMLElement) {
       const langSelector = new LanguageSelector(() => showStats(container)).getElement();
       container.appendChild(langSelector);
 
-      // Inicializa PongBoxComponent con datos vacíos o placeholder
       const pongBox = new PongBoxComponent({
-        title: '', // Será actualizado tras el fetch
-        avatarUrl: '', // Será actualizado tras el fetch
-        nickname: '', // Será actualizado tras el fetch
-        mainContent: document.createElement('div'), // O lo que corresponda
+        title: '',
+        avatarUrl: '',
+        nickname: '',
+        mainContent: document.createElement('div'),
       });
 
       const pongBoxElement = pongBox.getElement();
       contentWrapper.appendChild(pongBoxElement);
       container.appendChild(contentWrapper);
 
-      // Ahora fetch de datos y actualización de PongBox
       fetch('/api/profile', {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })
         .then(response => response.json())
         .then(data => {
-          // Busca los elementos a actualizar dentro de PongBox:
           const titleEl = pongBoxElement.querySelector('div.text-amber-50');
           const nicknameEl = pongBoxElement.querySelector('span.text-amber-50');
           const avatarImg = pongBoxElement.querySelector('img');
