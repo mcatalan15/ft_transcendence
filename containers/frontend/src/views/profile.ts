@@ -222,7 +222,12 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 		label: () => i18n.t('settings', { ns: 'profile' }) || 'Ajustes',
 		action: () => navigate('/settings'),
 		color: 'amber'
-	  }] : []),
+	  }] : [{
+		label: () => i18n.t('chat', { ns: 'profile' }) || 'Ajustes',
+		action: () => navigate('/chat'),
+		color: 'amber'
+	  }]
+   ),
     {
       label: () => i18n.t('stats', { ns: 'profile' }) || 'Estadísticas',
       action: () => navigate('/stats'),
