@@ -4,6 +4,8 @@ import { showPong } from '../views/pong';
 import { showSignIn } from '../views/signin';
 import { showSignUp } from '../views/signup';
 import { showProfile } from '../views/profile';
+import { showFriends } from '../views/friends';
+import { showHistory } from '../views/history';
 import { showBlockchain } from '../views/blockchain'; // si sigue en uso
 import { isUserAuthenticated } from '../auth/authGuard';
 import { logUserOut } from '../auth/userLogout';
@@ -49,6 +51,12 @@ function renderRoute(path: string) {
       break;
     case '/home':
       showHome(appContainer);
+      break;
+    case '/friends':
+      showFriends(appContainer);
+      break;
+    case '/history':
+      showHistory(appContainer);
       break;
     case '/pong':
       if (!isUserAuthenticated()) {

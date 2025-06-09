@@ -3,6 +3,9 @@ import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
 
 export function showLanding(container: HTMLElement): void {
+  
+  container.innerHTML = '';
+
   i18n
     .loadNamespaces('landing')
     .then(() => i18n.changeLanguage(i18n.language))

@@ -11,32 +11,6 @@ export async function showProfile(container: HTMLElement): Promise<void> {
   container.innerHTML = '';
   const hasMenu = false;
 
-  if (hasMenu) {
-    container.className = [
-      'grid',
-      'grid-rows-[auto_1fr]',
-      'grid-cols-[200px_1fr]',
-      'h-screen',
-      'overflow-hidden'
-    ].join(' ');
-  } else {
-    container.className = [
-      'grid',
-      'grid-rows-[auto_1fr]',
-      'h-screen',
-      'overflow-hidden'
-    ].join(' ');
-  }
-
-  const headerWrapper = new Header().getElement();
-  headerWrapper.classList.add(
-    'row-start-1',
-    hasMenu ? 'col-span-2' : 'col-span-1',
-    'w-full',
-    'z-30'
-  );
-  container.appendChild(headerWrapper);
-
   const langSelector = new LanguageSelector(() => showProfile(container)).getElement();
   langSelector.classList.add(
     'row-start-1',
@@ -46,20 +20,6 @@ export async function showProfile(container: HTMLElement): Promise<void> {
     'z-40'
   );
   container.appendChild(langSelector);
-
-  if (hasMenu) {
-    const menuWrapper = new Menu().getElement();
-    menuWrapper.classList.add(
-      'row-start-2',
-      'col-start-1',
-      'h-full',
-      'overflow-auto',
-      'bg-gray-50',
-      'border-r',
-      'z-20'
-    );
-    container.appendChild(menuWrapper);
-  }
 
   const contentWrapper = document.createElement('div');
   contentWrapper.className = [
@@ -177,7 +137,7 @@ export async function showProfile(container: HTMLElement): Promise<void> {
   const buttons = [
     {
       label: () => i18n.t('matches', { ns: 'profile' }) || 'Partidas',
-      action: () => navigate('/matches'),
+      action: () => navigate('/history'),
       color: 'cyan'
     },
     {

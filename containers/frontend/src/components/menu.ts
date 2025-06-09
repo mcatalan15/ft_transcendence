@@ -24,44 +24,44 @@ export class Menu {
 
       <!-- Menú de pantalla completa con animación -->
       <div id="dropdown" class="fixed inset-0 bg-neutral-900 backdrop-blur-md text-amber-50 z-40 flex flex-col transform translate-x-full opacity-0 transition-all duration-300 ease-in-out">
-        <!-- Header del menú -->
-        <div class="flex items-center justify-between px-6 py-6 border-b border-white/20">
-          <div id="language-slot" class="flex justify-start"></div>
-          <div id="close-button" class="font-bold flex items-center gap-1 cursor-pointer text-amber-50 hover:text-amber-300 ml-2">
-            <span class="text-sm">Close</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M6 18 18 6M6 6l12 12" />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Cuerpo del menú -->
-        <div class="grid grid-cols-12 gap-x-12 px-10 py-12 text-font-bold-xl flex-grow">
-          <!-- Columna izquierda -->
-          <div class="col-span-3 space-y-6">
-            <a href="/profile" class="font-bold hover:text-teal-300">Perfil</a>
-          </div>
-
-          <!-- Columna centro -->
-          <div class="col-span-3 space-y-6">
-            <a href="/pong" class="font-bold hover:text-fuchsia-500">Pong</a>
-          </div>
-
-          <!-- Columna derecha -->
-          <div class="col-span-4 space-y-6 text-right">
-            <a href="/logout"
-              class="inline-block border border-amber-50 text-amber-50 px-4 py-2 rounded-full text-sm hover:bg-amber-50 hover:text-black transition-colors">
-              Logout
-            </a>
-            <div class="h-8"></div>
-            <a href="/about" class="block font-bold hover:text-amber-300">About</a>
-            <a href="/faq" class="block font-bold hover:text-amber-300">FAQ</a>
-          </div>
-          
+      <!-- Header del menú -->
+      <div class="flex items-center px-6 py-6 border-b border-white/20">
+        <div class="flex-1"></div>
+        <div id="close-button" class="font-bold flex items-center gap-1 cursor-pointer text-amber-50 hover:text-amber-300 ml-auto">
+          <span class="text-sm">Close</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 18 18 6M6 6l12 12" />
+          </svg>
         </div>
       </div>
+      
+      <!-- Cuerpo del menú -->
+      <div class="grid grid-cols-12 gap-x-12 px-12 py-12 text-xl font-semibold flex-grow">
+        <!-- Columna izquierda -->
+        <div class="col-span-4 flex flex-col gap-6">
+          <a href="/profile" class="hover:text-teal-400 transition-colors">Perfil</a>
+          <!-- Puedes añadir más navegación aquí si lo deseas -->
+        </div>
+      
+        <!-- Columna centro (con un destacado visual) -->
+        <div class="col-span-4 flex flex-col items-center gap-8">
+          <a href="/pong" class="bg-amber-300 hover:bg-amber-400 text-white px-6 py-3 rounded-full shadow-lg transition-all text-2xl font-extrabold">
+            Pong
+          </a>
+        </div>
+      
+        <!-- Columna derecha -->
+        <div class="col-span-4 flex flex-col items-end gap-6">
+          <a href="/logout"
+            class="border border-amber-50 text-amber-50 px-4 py-2 rounded-full text-base hover:bg-amber-50 hover:text-black transition-colors">
+            Logout
+          </a>
+          <a href="/about" class="font-bold hover:text-amber-300 transition-colors">About</a>
+          <a href="/faq" class="font-bold hover:text-amber-300 transition-colors">FAQ</a>
+        </div>
+      </div>      
     `;
 
     this.setupEvents();
