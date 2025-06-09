@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:17:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 10:37:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ import { ButtonStyle } from "./BaseButton";
 
 import { getThemeColors } from "../../utils/Utils";
 import { getXButtonPoints } from "../../utils/MenuUtils";
-import { GAME_COLORS } from "../../utils/Types";
 
 export class MenuXButton extends MenuButton {
     protected getButtonPoints(): number[] {
@@ -74,48 +73,65 @@ export class MenuXButton extends MenuButton {
     
         this.buttonGraphic.poly(points);
         
-        const themeColor = this.menu.config.classicMode ? 
-            getThemeColors(this.menu.config.classicMode).white : 
-            this.config.color;
-        
-        const color = this.isHovered ? getThemeColors(this.menu.config.classicMode).white : themeColor;
+        const strokeColor = this.getStrokeColor();
         
         if (this.isHovered) {
-            this.buttonGraphic.fill(color);
+            this.buttonGraphic.fill({ color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 });
+            this.buttonGraphic.stroke({ color: getThemeColors(this.menu.config.classicMode).white, width: 3, alpha: 1 });
         } else {
             this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
-            this.buttonGraphic.stroke({ color, width: 3 });
+            this.buttonGraphic.stroke(strokeColor);
         }
     }
 
     protected getFillColor(): { color: number, alpha: number } {
+        if (this.isHovered) {
+            return { color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 };
+        }
+        
+        const themeColor = this.menu.config.classicMode ? 
+            getThemeColors(this.menu.config.classicMode).white : 
+            this.config.color;
+        
         return {
-            color: this.isHovered ? GAME_COLORS.white : this.config.color,
-            alpha: this.isClicked ? 0.3 : 1 
+            color: themeColor,
+            alpha: this.getEffectiveAlpha()
         };
     }
-
+    
     protected getStrokeColor(): { color: number, alpha: number, width: number } {
         const fillColor = this.getFillColor();
         return {
             color: fillColor.color,
-            alpha: this.isClicked ? 0.3 : 1,
+            alpha: fillColor.alpha,
             width: 3
         };
+    }
+
+    protected getEffectiveAlpha(): number {
+        const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
+        
+        if (!this.isClickable) {
+            return 0.3; 
+        } else if (isToggleButton && this.isClicked) {
+            return 0.3;
+        } else {
+            return 1;
+        }
     }
 
     protected updateTextColor(color?: number): void {
         if (!this.buttonText) return;
         
         if (color !== undefined) {
-            this.buttonText.style.fill = GAME_COLORS.black;
+            this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
         } else {
             const themeColor = this.menu.config.classicMode ? 
                 getThemeColors(this.menu.config.classicMode).white : 
                 this.config.color;
             this.buttonText.style.fill = { 
                 color: themeColor, 
-                alpha: this.isClicked ? 0.3 : 1
+                alpha: this.getEffectiveAlpha()
             };
         }
     }

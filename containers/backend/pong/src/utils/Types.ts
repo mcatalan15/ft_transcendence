@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/06 10:32:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 09:44:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowF
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 import { CrossCut } from '../entities/crossCuts/CrossCut';
-import { MenuButton } from '../menu/MenuButton';
+import { MenuButton } from '../menu/buttons/MenuButton';
 
 export interface DepthLineBehavior {
     movement?: 'vertical' | 'horizontal' | string;

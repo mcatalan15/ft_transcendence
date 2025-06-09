@@ -6,19 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:45:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 10:37:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-import { Graphics} from "pixi.js";
 
 import { BaseButton, ButtonAnimationConfig, ButtonStyle } from "./BaseButton";
 import { getButtonPoints } from "../../utils/MenuUtils";
 import { getThemeColors } from "../../utils/Utils";
-import { RenderComponent } from "../../components/RenderComponent";
 import { isMenuOrnament } from "../../utils/Guards";
 
 export class MenuButton extends BaseButton {
+    protected hoverTimeout: number | null = null;
+
     protected createButton(): void {
         this.buttonGraphic.clear();
         
@@ -39,6 +38,85 @@ export class MenuButton extends BaseButton {
             this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
             this.buttonGraphic.stroke(strokeColor);
         }
+    }
+
+    protected handlePointerEnter(): void {
+        if (!this.isClickable) return;
+        
+        if (this.hoverTimeout) {
+            clearTimeout(this.hoverTimeout);
+        }
+        
+        this.isHovered = true;
+        
+        this.buttonGraphic.clear();
+        const points = this.getButtonPoints();
+        this.buttonGraphic.poly(points);
+        this.buttonGraphic.fill({ color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 });
+        this.buttonGraphic.stroke({ color: getThemeColors(this.menu.config.classicMode).white, width: 3, alpha: 1 });
+        
+        if (this.buttonText) {
+            this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
+        }
+        
+        this.highlightOrnament(this);
+
+        if (this.menu.sounds && this.menu.sounds.menuMove) {
+            this.menu.sounds.menuMove.play();
+        }
+    }
+
+    protected handlePointerLeave(): void {
+        this.isHovered = false;
+        
+        if (this.hoverTimeout) {
+            clearTimeout(this.hoverTimeout);
+        }
+        
+        this.hoverTimeout = window.setTimeout(() => {
+            if (!this.isHovered) {
+                this.resetButtonState();
+            }
+        }, 10)
+    }
+
+    protected resetButtonState(): void {
+        this.buttonGraphic.clear();
+        const points = this.getButtonPoints();
+        this.buttonGraphic.poly(points);
+        
+        const strokeColor = this.getStrokeColor();
+        
+        this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
+        this.buttonGraphic.stroke(strokeColor);
+        
+        if (this.buttonText) {
+            const themeColor = this.menu.config.classicMode ? 
+                getThemeColors(this.menu.config.classicMode).white : 
+                this.config.color;
+            
+            const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
+            let textAlpha: number;
+            
+            if (!this.isClickable) {
+                textAlpha = 0.3;
+            } else if (isToggleButton && this.isClicked) {
+                textAlpha = 0.3;
+            } else {
+                textAlpha = 1;
+            }
+            
+            this.buttonText.style.fill = { color: themeColor, alpha: textAlpha };
+        }
+        
+        this.resetOrnamentColor();
+    }
+
+    public resetButton(): void {
+        this.isStateChanging = true;
+        this.isHovered = false;
+        this.resetButtonState();
+        this.isStateChanging = false;
     }
 
     protected getButtonPoints(): number[] {
@@ -108,7 +186,6 @@ export class MenuButton extends BaseButton {
         const ornament = this.getOrnament(this);
         if (!ornament) return;
     
-        // Use the MenuOrnament's updateOrnament method with reset = true
         if (isMenuOrnament(ornament)) {
             ornament.resetOrnament();
         }
@@ -120,29 +197,6 @@ export class MenuButton extends BaseButton {
             case ('OPTIONS'): return this.menu.optionsOrnament;
             case ('GLOSSARY'): return this.menu.glossaryOrnament;
             case ('ABOUT'): return this.menu.aboutOrnament;
-        }
-    }
-
-    private getOrnamentChildIndex(): number {
-        switch (this.config.text) {
-            case 'START': return 0;
-            case 'PLAY': return 0;
-            case 'OPTIONS': return 1;
-            case 'GLOSSARY': return 2;
-            case 'ABOUT': return 3;
-            default: return -1;
-        }
-    }
-
-    private getOrnamentColor(): number | null {
-        const colors = getThemeColors(this.menu.config.classicMode);
-        switch (this.config.text) {
-            case 'START': return colors.menuBlue;
-            case 'PLAY': return colors.menuBlue;
-            case 'OPTIONS': return colors.menuGreen;
-            case 'GLOSSARY': return colors.menuOrange;
-            case 'ABOUT': return colors.menuPink;
-            default: return null;
         }
     }
 
@@ -174,7 +228,6 @@ export class MenuButton extends BaseButton {
         this.createButton();
     }
 
-    // Additional method to ensure text positioning matches old behavior
     public updateButtonTextColor(filled?: boolean, color?: number): void {
         if (!this.buttonText) return;
         

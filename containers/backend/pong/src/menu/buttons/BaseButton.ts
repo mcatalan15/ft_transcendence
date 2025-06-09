@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:12:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 10:36:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,9 @@ export abstract class BaseButton extends Entity {
     }
 
     protected handlePointerEnter(): void {
-        if (this.isHovered) return;
+        if (this.constructor.name === 'MenuHalfButton' || this.constructor.name === 'MenuButton') return;
+    
+        if (!this.isClickable) return;
         
         this.isStateChanging = true;
         this.isHovered = true;
@@ -186,7 +188,6 @@ export abstract class BaseButton extends Entity {
     protected updateTextPosition(): void {
         if (!this.buttonText) return;
         
-        // Always center the text regardless of clicked state
         this.buttonText.anchor.set(0.5);
         const dimensions = this.getButtonDimensions();
         this.buttonText.x = dimensions.width / 2;
@@ -214,7 +215,15 @@ export abstract class BaseButton extends Entity {
     }
 
     protected getTextAlpha(): number {
-        return this.isClicked ? 0.3 : 1; // Fixed: inverted logic to match original
+        const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
+        
+        if (!this.isClickable) {
+            return 0.3;
+        } else if (isToggleButton && this.isClicked) {
+            return 0.3;
+        } else {
+            return 1;
+        }
     }
 
     protected getFillColor(): { color: number, alpha: number } {
@@ -226,22 +235,32 @@ export abstract class BaseButton extends Entity {
             getThemeColors(this.menu.config.classicMode).white : 
             this.config.color;
         
+        const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
+        
+        let alpha: number;
+        if (!this.isClickable) {
+            alpha = 0.3;
+        } else if (isToggleButton && this.isClicked) {
+            alpha = 0.3;
+        } else {
+            alpha = 1;
+        }
+        
         return {
             color: themeColor,
-            alpha: this.isClicked ? 0.3 : 1
+            alpha: alpha
         };
     }
-
+    
     protected getStrokeColor(): { color: number, alpha: number, width: number } {
         const fillColor = this.getFillColor();
         return {
             color: fillColor.color,
-            alpha: this.isClicked ? 0.3 : 1,
+            alpha: fillColor.alpha,
             width: 3
         };
     }
 
-    // Abstract methods to be implemented by subclasses
     protected abstract createButton(): void;
     protected abstract getButtonPoints(): number[];
     protected abstract getButtonDimensions(): { width: number, height: number };
@@ -251,9 +270,8 @@ export abstract class BaseButton extends Entity {
     protected abstract highlightOrnament(button: BaseButton): void;
     protected abstract resetOrnamentColor(): void;
 
-    // Optional overrides
     protected getRenderComponentKey(): string {
-        return 'menuButton'; // Match original key
+        return 'menuButton';
     }
 
     protected getAnimationComponentKey(): string {
@@ -264,7 +282,6 @@ export abstract class BaseButton extends Entity {
         return false;
     }
 
-    // Public interface methods
     public setPosition(x: number, y: number): void {
         this.buttonContainer.position.set(x, y);
     }

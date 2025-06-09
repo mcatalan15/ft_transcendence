@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:55:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 10:27:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { System } from "../engine/System";
 import { GameEvent } from "../utils/Types";
 import { PongGame } from "../engine/Game";
 import { RenderComponent } from "../components/RenderComponent";
+import { isBall } from "../utils/Guards";
 
 export class ButtonSystem implements System {
     private menu: Menu;
@@ -123,6 +124,7 @@ export class ButtonSystem implements System {
 
     handleAboutClick() {
         this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked())
+        this.menu.aboutButton.resetButton();
     }
 
     resetLayer(event: GameEvent){
@@ -326,6 +328,18 @@ export class ButtonSystem implements System {
         this.menu.classicButton.setClicked(!this.menu.classicButton.getIsClicked());
     
         const menu = this.menu;
+
+        const entitiesToRemove: string[] = [];
+        // Remove balls
+        for (const entity of this.menu.entities) {
+            if (isBall(entity)) {
+                entitiesToRemove.push(entity.id);
+            }
+        }
+
+        for (const id of entitiesToRemove) {
+            this.menu.removeEntity(id);
+        }
     
         // Reset all buttons
         menu.startButton.resetButton();
