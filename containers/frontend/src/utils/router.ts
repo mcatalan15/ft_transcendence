@@ -1,15 +1,4 @@
-import { showLanding } from '../views/landing';
-import { showHome } from '../views/home';
-import { showPong } from '../views/pong';
-import { showSignIn } from '../views/signin';
-import { showSignUp } from '../views/signup';
-import { showProfile } from '../views/profile';
-import { showBlockchain } from '../views/blockchain'; // si sigue en uso
-import { showFriends } from '../views/friends';
-import { showChat } from '../views/chat';
-import { showLobby } from '../views/lobby';
-import { showAuth } from '../views/auth';
-import { showSettings } from '../views/settings';
+import views from './viewsRoutesLoader';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
 
@@ -37,15 +26,15 @@ function renderRoute(path: string) {
 
 	switch (path) {
 		case '/':
-			showLanding(app);
+			views.showLanding(app);
 			break;
 
 		case '/signin':
-			showSignIn(app);
+			views.showSignIn(app);
 			break;
 
 		case '/signup':
-			showSignUp(app);
+			views.showSignUp(app);
 			break;
 
 		case '/pong':
@@ -53,7 +42,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			} */
-			showPong(app);
+			views.showPong(app);
 			break;
 
 		case '/home':
@@ -61,7 +50,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showHome(app);
+			views.showHome(app);
 			break;
 
 		case '/profile':
@@ -78,7 +67,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showFriends(app);
+			views.showFriends(app);
 			break;
 
 		case '/chat':
@@ -86,7 +75,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showChat(app);
+			views.showChat(app);
 			break;
 
 		case '/logout':
@@ -101,15 +90,15 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
+			views.showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
 			break;
 
 		case '/blockchain': //Delete when blockchain working!!
-			showBlockchain(app);
+			views.showBlockchain(app);
 			break;
 
 		case '/auth':
-			showAuth(app);
+			views.showAuth(app);
 			break;
 
 		case '/settings':
@@ -117,7 +106,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showSettings(app);
+			views.showSettings(app);
 			return;;
 
 		default:
@@ -133,7 +122,7 @@ function renderRoute(path: string) {
 					navigate(`/profile/${currentUsername}`);
 				} else {
 					const username = path.substring('/profile/'.length);
-					showProfile(app, username);
+					views.showProfile(app, username);
 				}
 				return;
 			}
