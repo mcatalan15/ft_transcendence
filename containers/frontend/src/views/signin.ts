@@ -65,6 +65,8 @@ export function showSignIn(container: HTMLElement): void {
       const form = wrapper.querySelector('#login-form') as HTMLFormElement;
       const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
 
+      errorMessageDiv.textContent = '';
+
       form.onsubmit = async (e) => {
         e.preventDefault();
         const email = (wrapper.querySelector('#email') as HTMLInputElement).value;
