@@ -7,6 +7,8 @@
     "settings": "Settings",
     "matches": "Matches",
     "friends": "Friends",
-    "stats": "Stats"
+    "stats": "Stats",
+	"addFriend": "Add Friend",
+	"removeFriend": "Remove Friend"
   }
   

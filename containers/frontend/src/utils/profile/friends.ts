@@ -1,4 +1,4 @@
-export async function addFriend(username: string, onSuccess?: () => void): Promise<void> {
+export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
         const response = await fetch('/api/friends/add', {
             method: 'POST',
@@ -15,16 +15,18 @@ export async function addFriend(username: string, onSuccess?: () => void): Promi
             if (onSuccess) {
                 onSuccess();
             }
+			return true;
         } else {
             alert('Failed to add friend: ' + result.message);
-        }
+			return false;
+		}
     } catch (error) {
-        console.error('Error adding friend:', error);
         alert('Failed to add friend');
+		return false;
     }
 }
 
-export async function removeFriend(username: string, onSuccess?: () => void): Promise<void> {
+export async function removeFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
         const response = await fetch('/api/friends/remove', {
             method: 'DELETE',
@@ -41,11 +43,35 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
             if (onSuccess) {
                 onSuccess();
             }
+			return true;
         } else {
             alert('Failed to remove friend: ' + result.message);
+			return false;
         }
     } catch (error) {
-        console.error('Error removing friend:', error);
         alert('Failed to remove friend');
+		return false;
     }
+}
+
+export async function statusFriend(username: string): Promise<boolean> {
+	try {
+		const response = await fetch(`/api/friends/status/${username}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include'
+		});
+
+		const result = await response.json();
+		if (result.success && result.isFriend) {
+			return true;
+		} else {
+			return false;
+		}
+	} catch (error) {
+		console.error('Error checking friendship status:', error);
+		return false;
+	}
 }

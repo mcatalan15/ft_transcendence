@@ -103,8 +103,38 @@ async function getFriendsHandler(request, reply) {
     }
 }
 
+async function checkFriendshipHandler(request, reply) {
+    try {
+        const sessionUser = request.session.get('user');
+        const { username } = request.params;
+        
+        const friendUser = await getUserByUsername(username);
+        if (!friendUser) {
+            return reply.status(404).send({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        
+        const isFriend = await checkFriendship(sessionUser.userId, friendUser.id_user);
+
+        return reply.status(200).send({
+            success: true,
+            isFriend: isFriend
+        });
+
+    } catch (error) {
+        console.error('Error checking friendship:', error);
+        return reply.status(500).send({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+}
+
 module.exports = {
     addFriendHandler,
     removeFriendHandler,
-    getFriendsHandler
+    getFriendsHandler,
+	checkFriendshipHandler,
 };

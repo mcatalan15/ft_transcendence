@@ -196,6 +196,20 @@ async function getLatestGame() {
     });
 }
 
+async function getAllGames() {
+	return new Promise ((resolve, reject) => {
+		const query = `SELECT * FROM games ORDER BY id_game DESC`;
+		db.all(query, (err, row) => {
+            if (err) {
+                console.error('[DB FETCH ERROR]', err);
+                reject(err);
+            } else {
+                resolve(row || null);
+            }
+        });
+	});
+}
+
 // async function check2FA(username, email) {
 // 	return new Promise((resolve, reject) => {
 // 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
@@ -372,6 +386,7 @@ module.exports = {
 	getUserById,
 	saveGameToDatabase,
 	getLatestGame,
+	getAllGames,
 	saveTwoFactorSecret,
 	getTwoFactorSecret,
 	enableTwoFactor,
