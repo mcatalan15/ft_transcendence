@@ -364,7 +364,10 @@ function displayMessage(message: ChatMessage) {
   
   chatContainer.appendChild(messageDiv);
   chatContainer.scrollTop = chatContainer.scrollHeight;
+<<<<<<< HEAD
 
+=======
+>>>>>>> eva-develop5
 }
 
 function acceptGameInvite(inviteId: string, fromUser: string) {
@@ -595,8 +598,13 @@ Tip: Right-click on usernames for quick actions!`, MessageType.SYSTEM);
     let content = messageText;
     
     if (messageType === MessageType.PRIVATE) {
+<<<<<<< HEAD
 		const whisperMatch = messageText.match(/^@([a-zA-Z0-9-]{3,8})\s+(.+)$/);
 	  if (whisperMatch) {
+=======
+      const whisperMatch = messageText.match(/^@(\w+)\s+(.+)$/);
+      if (whisperMatch) {
+>>>>>>> eva-develop5
         targetUser = whisperMatch[1];
         content = whisperMatch[2];
       } else {
@@ -760,5 +768,10 @@ try {
     socket.send(JSON.stringify(inviteMessage));
     addSystemMessage(`Game invitation sent to @${targetUser}`, MessageType.GAME);
   }
+<<<<<<< HEAD
 });
 }
+=======
+}
+
+>>>>>>> eva-develop5

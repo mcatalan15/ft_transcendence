@@ -1,4 +1,3 @@
-
 export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
         const response = await fetch('/api/friends/add', {
@@ -75,4 +74,8 @@ export async function statusFriend(username: string): Promise<boolean> {
 		console.error('Error checking friendship status:', error);
 		return false;
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> eva-develop5

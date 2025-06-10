@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> eva-develop5
 /* import { removeFriend } from '../utils/profile/friends';
 
 export function showFriends(container: HTMLElement): void {

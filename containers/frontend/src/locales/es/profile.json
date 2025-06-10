@@ -7,5 +7,7 @@
   "settings": "Ajustes",
   "matches": "Partidas",
   "friends": "Amigos",
-  "stats": "Estadísticas"
+  "stats": "Estadísticas",
+  "addFriend": "Añadir Amigo",
+  "removeFriend": "Remove Friend"
 }

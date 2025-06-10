@@ -22,9 +22,9 @@ export function showAuth(container: HTMLElement): void {
     console.log('Current URL:', window.location.href);
     console.log('URL params:', urlParams.toString());
     console.log('fromPage value:', fromPage);
-    console.log(sessionStorage.getItem('userId'));
-    console.log(sessionStorage.getItem('username'));
-	console.log(sessionStorage.getItem('email'));
+		console.log('UserId: ',sessionStorage.getItem('userId'));
+    console.log('Username: ',sessionStorage.getItem('username'));
+    console.log('Email: ', sessionStorage.getItem('email'));
     // Create the main container
     const authDiv = document.createElement('div');
     authDiv.className = "auth-container";

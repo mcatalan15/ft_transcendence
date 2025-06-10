@@ -2,13 +2,37 @@
 @import url('https://use.typekit.net/rla1kou.css');
 
 @tailwind base;
-
 @tailwind components;
-
-
 @tailwind utilities;
 
+/* Font loading management - add this section */
+.wf-loading #app {
+  visibility: hidden;
+}
 
+.wf-active #app,
+.wf-inactive #app {
+  visibility: visible;
+}
+
+/* Optional: Show a loading indicator while fonts load */
+.wf-loading body::before {
+  content: "Loading fonts...";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #feeee2;
+  font-size: 18px;
+  z-index: 9999;
+}
+
+.wf-active body::before,
+.wf-inactive body::before {
+  display: none;
+}
+
+/* Your existing styles */
 body {
   background-color: #171717;
   color: #feeee2;
@@ -64,7 +88,7 @@ body {
   transform: translate(-50%, -50%);
   font-family: monospace;
   font-size: 120px;
-  color: #feeee2;
+  color: #1b1612;
   letter-spacing: 10px;
   z-index: 1;
   pointer-events: none;
@@ -85,8 +109,8 @@ body {
 }
 
 #game-container {
-	width: 1500px;
-	height: 500px;
+	width: 1800px;
+	height: 800px;
   }
 
   /* src/styles/lobby.css */

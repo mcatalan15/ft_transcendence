@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:08:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
 import { ParticleBehaviorComponent } from '../components/ParticleBehaviorComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
+
+import { ParticleSpawner } from '../spawners/ParticleSpawner';
 
 import type { FrameData } from '../utils/Types';
 import { isParticle } from '../utils/Guards'
@@ -32,6 +34,13 @@ export class ParticleSystem implements System {
 	update(entities: Entity[], delta: FrameData): void {
 		const particlesToRemove: string[] = [];
 
+		ParticleSpawner.updateAmbientDust(
+			this.game,
+			delta.deltaTime, 
+			this.game.width,
+			this.game.height - 300,
+		);
+
 		for (const entity of entities) {
 			if (!isParticle(entity)) {
 				continue;
@@ -45,7 +54,6 @@ export class ParticleSystem implements System {
 
 				if (!render) continue;
 
-				// Handle despawn by time
 				if (lifetime.despawn === 'time') {
 					lifetime.remaining -= delta.deltaTime;
 
@@ -55,16 +63,18 @@ export class ParticleSystem implements System {
 					}
 				}
 
-				// Handle alpha fade
-				render.graphic.alpha = entity.alpha;
-				if (entity.fadeOut) {
-					entity.alpha -= entity.alphaDecay * delta.deltaTime;
-					if (entity.alpha < 0) {
-						entity.alpha = 0;
+				if (entity.growShrink) {
+					this.updateGrowShrinkParticle(entity, lifetime, render);
+				} else {
+					render.graphic.alpha = entity.alpha;
+					if (entity.fadeOut) {
+						entity.alpha -= entity.alphaDecay * delta.deltaTime;
+						if (entity.alpha < 0) {
+							entity.alpha = 0;
+						}
 					}
 				}
 
-				// Update position
 				if (physics) {
 					physics.x += physics.velocityX * delta.deltaTime * 0.1;
 					physics.y += physics.velocityY * delta.deltaTime * 0.1;
@@ -72,22 +82,55 @@ export class ParticleSystem implements System {
 					render.graphic.y = physics.y;
 				}
 
-				// Shrinking effect
-				if (behavior?.shrink && lifetime.initial > 0) {
+				if (behavior?.shrink && !entity.growShrink && lifetime.initial > 0) {
 					const scale = lifetime.remaining / lifetime.initial;
 					render.graphic.scale.set(scale);
 				}
-
-				// Rotation effect
+				
 				if (behavior?.rotate && lifetime.initial > 0) {
-					render.graphic.rotation += behavior.rotationSpeed * delta.deltaTime;
+					if (entity.id.includes('ambientDust')) {
+						render.graphic.rotation += entity.rotationSpeed * delta.deltaTime;
+					} else {
+						render.graphic.rotation += behavior.rotationSpeed * delta.deltaTime;
+					}
 				}
 			}
 		}
 
-		// Remove expired particles
 		for (const entityId of particlesToRemove) {
 			this.game.removeEntity(entityId);
 		}
+	}
+
+	private updateGrowShrinkParticle(entity: any, lifetime: LifetimeComponent, render: RenderComponent): void {
+		const totalLifetime = lifetime.initial;
+		const remainingLifetime = lifetime.remaining;
+		const progress = 1 - (remainingLifetime / totalLifetime);
+
+		let scale: number;
+		let alpha: number;
+
+		if (progress <= 0.5) {
+			const growProgress = progress * 2;
+			scale = this.easeInCubic(growProgress);
+    		alpha = this.easeInCubic(growProgress) * entity.targetAlpha;
+		} else {
+			const shrinkProgress = (progress - 0.5) * 2;
+			scale = this.easeOutCubic(1 - shrinkProgress);
+    		alpha = this.easeOutCubic(1 - shrinkProgress) * entity.targetAlpha;
+		}
+
+		entity.currentScale = scale;
+		entity.alpha = alpha;
+		render.graphic.scale.set(scale);
+		render.graphic.alpha = alpha;
+	}
+
+	private easeOutCubic(t: number): number {
+		return 1 - Math.pow(1 - t, 3);
+	}
+
+	private easeInCubic(t: number): number {
+		return t * t * t;
 	}
 }

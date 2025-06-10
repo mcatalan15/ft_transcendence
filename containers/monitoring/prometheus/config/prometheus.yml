@@ -27,6 +27,7 @@ scrape_configs:
       - targets:
         - localhost:9090
 
-  - job_name: fastify
+  - job_name: backend
     static_configs:
-      - targets: ['fastify:3100']
+      - targets: ['backend:3100']
+    metrics_path: /metrics

@@ -10,93 +10,142 @@ import { showStats } from '../views/stats';
 import { showScore } from '../views/score';
 import { showChat } from '../views/chat';
 import { showBlockchain } from '../views/blockchain'; // si sigue en uso
-import { isUserAuthenticated } from '../auth/authGuard';
-import { logUserOut } from '../auth/userLogout';
+import { showFriends } from '../views/friends';
+import { showChat } from '../views/chat';
+import { showLobby } from '../views/lobby';
+import { showAuth } from '../views/auth';
+import { showSettings } from '../views/settings';
+import { isUserAuthenticated } from './auth/authGuard';
+import { logUserOut } from './auth/userLogout';
 
-let appContainer: HTMLElement | null = null;
-let currentGame: PongGame | null = null;
+let app: HTMLElement | null = null;
 
 export function startRouter(container: HTMLElement) {
-  appContainer = container;
+	app = container;
 
-  window.addEventListener('popstate', () => {
-    renderRoute(location.pathname);
-  });
+	window.addEventListener('popstate', () => {
+		renderRoute(location.pathname);
+	});
 
-  renderRoute(location.pathname);
+	renderRoute(location.pathname);
 }
 
 export function navigate(path: string) {
-  history.pushState({}, '', path);
-  renderRoute(path);
+	history.pushState({}, '', path);
+	renderRoute(path);
 }
 
 function renderRoute(path: string) {
-  if (!appContainer) return;
+	if (!app) return;
 
-  appContainer.innerHTML = '';
+	app.innerHTML = '';
 
-  if (path !== '/pong' && currentGame) {
-    currentGame.destroy();
-    currentGame = null;
-    console.log('Current game destroyed');
-  }
+	switch (path) {
+		case '/':
+			showLanding(app);
+			break;
 
-  switch (path) {
-    case '/':
-      showLanding(appContainer);
-      break;
-    case '/signin':
-      showSignIn(appContainer);
-      break;
-    case '/signup':
-      showSignUp(appContainer);
-      break;
-    case '/home':
-      showHome(appContainer);
-      break;
-    case '/friends':
-      showFriends(appContainer);
-      break;
-    case '/history':
-      showHistory(appContainer);
-      break;
-    case '/stats':
-      showStats(appContainer);
-      break;
-    case '/score':
-      showScore(appContainer);
-      break;
-    case '/chat':
-      showChat(appContainer);
-      break;
-    case '/pong':
-      if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }
-      showPong(appContainer);
-      break;
-    case '/profile':
-      /*if (!isUserAuthenticated()) {
-        navigate('/');
-        return;
-      }*/
-      showProfile(appContainer);
-      break;
-    case '/logout':
-      if (isUserAuthenticated()) {
-        logUserOut();
-      }
-      navigate('/');
-      break;
-    case '/blockchain':
-      showBlockchain(appContainer);
-      break;
-    default:
-      appContainer.innerHTML = `
-        <h2 class="text-xl mb-4">Page not found</h2>
-        <button onclick="navigate('/')" class="text-blue-500 underline">Back home</button>
-      `;
-  }
+		case '/signin':
+			showSignIn(app);
+			break;
+
+		case '/signup':
+			showSignUp(app);
+			break;
+
+		case '/pong':
+			/* if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			} */
+			showPong(app);
+			break;
+
+		case '/home':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showHome(app);
+			break;
+
+		case '/profile':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			const currentUsername = sessionStorage.getItem('username');
+			navigate(`/profile/${currentUsername}`);
+			break;
+
+		case '/friends':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showFriends(app);
+			break;
+
+		case '/chat':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showChat(app);
+			break;
+
+		case '/logout':
+			if (isUserAuthenticated()) {
+				logUserOut();
+			}
+			navigate('/');
+			break;
+
+		case '/lobby':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
+			break;
+
+		case '/blockchain': //Delete when blockchain working!!
+			showBlockchain(app);
+			break;
+
+		case '/auth':
+			showAuth(app);
+			break;
+
+		case '/settings':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showSettings(app);
+			return;;
+
+		default:
+
+			if (path === '/profile' || path.startsWith('/profile/')) {
+				if (!isUserAuthenticated()) {
+					navigate('/');
+					return;
+				}
+
+				if (path === '/profile') {
+					const currentUsername = sessionStorage.getItem('username');
+					navigate(`/profile/${currentUsername}`);
+				} else {
+					const username = path.substring('/profile/'.length);
+					showProfile(app, username);
+				}
+				return;
+			}
+
+			app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
+	  <span style="display: block; height: 20px;"></span>
+	  <button onclick="navigate('/')">Back home</button>
+	  `;
+	}
 }

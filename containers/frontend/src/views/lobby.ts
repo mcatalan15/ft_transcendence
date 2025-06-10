@@ -1,5 +1,5 @@
 // src/views/lobby.ts
-import { WebSocketManager } from '../network/WebSocketManager';
+import { WebSocketManager } from '../utils/network/WebSocketManager';
 
 export function showLobby(container: HTMLElement, userId: string) {
   const wsManager = WebSocketManager.getInstance(userId);

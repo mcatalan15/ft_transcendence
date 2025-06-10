@@ -6,82 +6,227 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/27 17:58:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Application } from 'pixi.js';
-
 import type { PongGame } from '../engine/Game';
 import type { Entity } from '../engine/Entity';
-import type { System } from '../engine/System'
+import type { System } from '../engine/System';
 
-import { FrameData, GameEvent, World } from '../utils/Types';
-import { isUI } from '../utils/Guards';
+import { DepthLine } from '../entities/background/DepthLine';
+import { RenderComponent } from '../components/RenderComponent';
+import { WallFigureManager } from '../managers/WallFigureManager';
+import { ObstacleManager } from '../managers/ObstacleManager';
+import { WorldManager } from '../managers/WorldManager';
+import { FigureFactory } from '../factories/FigureFactory';
+
+import { DepthLineBehavior, FrameData, GameEvent, World } from '../utils/Types';
+import { isUI, isDepthLine } from '../utils/Guards';
+import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
-	game: PongGame;
-	app: Application;
-	timer: number;
-	
-	constructor(game: PongGame, app: Application) {
-		this.game = game;
-		this.app = app;
-		this.timer = 200;
-		
-		this.game.entities.forEach(entity => {
-			if (isUI(entity)) {
-				entity.setWorldText(game.currentWorld.name);
-			}
-		});
-	}
+    private static readonly DEPTH_LINE_COOLDOWN = 8;
+    private static readonly SPAWNING_TIMER = 200;
+    private static readonly MODE_SWITCH_TIMER = {
+        WALL_FIGURES: 2000,
+        OBSTACLES: 1500
+    };
 
-	update(entities: Entity[], delta: FrameData){
-		this.timer -= delta.deltaTime;
+    game: PongGame;
+    private depthLineCooldown: number = 10;
+    private lastLineSpawnTime: number = 0;
+    figureQueue: DepthLine[] = [];
+    obstacleQueue: Obstacle[] = [];
+        
+    private wallFigureManager: WallFigureManager;
+    private obstacleManager: ObstacleManager;
+    private worldManager: WorldManager;
 
-		if (this.timer <= 0){
-			this.changeWorld();
-			this.timer = 200;
-		}
+    private spawningMode: number = 1;
+    private spawningTimer: number = WorldSystem.SPAWNING_TIMER;
+    
+    constructor(game: PongGame) {
+        this.game = game;
+        
+        this.wallFigureManager = new WallFigureManager();
+        this.obstacleManager = new ObstacleManager();
+        this.worldManager = new WorldManager();
 
-		// Catch and handle world change events
-		const unhandledEvents = [];
+        this.initializeWorld();
+    }
 
-		while (this.game.eventQueue.length > 0) {
-			const event = this.game.eventQueue.shift() as GameEvent;
+    private initializeWorld(): void {
+        this.worldManager.populateWorlds(this.game.worldPool);
+        this.game.currentWorld = this.game.worldPool[0];
+        
+        this.updateUIWorldText();
+    }
 
-			if (event.type === 'CHANGE_WORLD') {
-				const targetWorld = event.target;
+    private updateUIWorldText(): void {
+        this.game.entities.forEach(entity => {
+            if (isUI(entity)) {
+                entity.setWorldText(this.game.currentWorld.name);
+            }
+        });
+    }
 
-				this.game.currentWorld = targetWorld as World;
+    update(entities: Entity[], delta: FrameData) {
+        this.updateTimers(delta.deltaTime);
+        this.handleDepthLineSpawning();
+        this.handleModeSwitching();
+        this.updateManagers();
+        this.processEvents(entities);
+        this.initializeDepthLines(entities);
+    }
 
-				for (const entity of entities) {
-					if (!isUI(entity)) {
-						continue ;
-					} else {
-						entity.setWorldText((targetWorld as World).name);
-					}
-				}
-			} else {
-				unhandledEvents.push(event);
-			}
-		}
-		this.game.eventQueue.push(...unhandledEvents);
-	}
+    private updateTimers(deltaTime: number): void {
+        this.spawningTimer -= deltaTime;
+        this.depthLineCooldown -= deltaTime;
+    }
 
-	changeWorld() {
-		const worldKeys = Object.keys(this.game.worldPool) as Array<keyof typeof this.game.worldPool>;
-		
-		const randomWorldKey = worldKeys[Math.floor(Math.random() * worldKeys.length)];
-		
-		const randomWorld = this.game.worldPool[randomWorldKey];
-		
-		const changeWorldEvent: GameEvent = {
-		  type: "CHANGE_WORLD",
-		  target: randomWorld
-		};
-		
-		this.game.eventQueue.push(changeWorldEvent);
-	  }
-	
+    private handleDepthLineSpawning(): void {
+        if (this.depthLineCooldown > 0) return;
+
+        if (this.figureQueue.length > 0) {
+            this.spawnFromFigureQueue();
+        } else {
+            this.spawnDepthLines();
+            if (this.obstacleQueue.length > 0) {
+                this.spawnFromObstacleQueue();
+            }
+        }
+        this.depthLineCooldown = WorldSystem.DEPTH_LINE_COOLDOWN;
+    }
+
+    private handleModeSwitching(): void {
+        if (this.spawningTimer > 0) return;
+
+        if (this.spawningMode === 1) {
+            this.wallFigureManager.activateSpawning();
+            this.spawningTimer = WorldSystem.MODE_SWITCH_TIMER.WALL_FIGURES;
+        } else {
+            this.obstacleManager.activateSpawning();
+            this.spawningTimer = WorldSystem.MODE_SWITCH_TIMER.OBSTACLES;
+        }
+        this.spawningMode *= -1;
+    }
+
+    private updateManagers(): void {
+        this.wallFigureManager.update(this);
+        this.obstacleManager.update(this);
+        
+        if (this.wallFigureManager.isSpawning() && this.figureQueue.length === 0) {
+            this.wallFigureManager.finishedSpawning();
+        }
+
+        if (this.obstacleManager.isSpawning() && this.figureQueue.length === 0) {
+            this.obstacleManager.finishedSpawning();
+        }
+    }
+    
+    processEvents(entities: Entity[]): void {
+        const unhandledEvents: GameEvent[] = [];
+
+        while (this.game.eventQueue.length > 0) {
+            const event = this.game.eventQueue.shift() as GameEvent;
+
+            if (event.type === 'CHANGE_WORLD') {
+                this.handleWorldChange(event, entities);
+            } else {
+                unhandledEvents.push(event);
+            }
+        }
+        this.game.eventQueue.push(...unhandledEvents);
+    }
+
+    private handleWorldChange(event: GameEvent, entities: Entity[]): void {
+        this.game.currentWorld = event.target as World;
+        entities.forEach(entity => {
+            if (isUI(entity)) {
+                entity.setWorldText((event.target as World).name);
+            }
+        });
+    }
+    
+    private spawnDepthLines(): void {
+        this.lastLineSpawnTime = Date.now();
+        const uniqueId = `StandardDepthLine-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        
+        this.worldManager.changeWorld(this.game, uniqueId);
+
+        const bottomLine = this.createDepthLine(uniqueId, 'bottom', 'downwards');
+        const topLine = this.createDepthLine(uniqueId, 'top', 'upwards');
+
+        this.addEntitiesToGame([bottomLine, topLine]);
+    }
+
+    private createDepthLine(id: string, position: 'top' | 'bottom', direction: 'upwards' | 'downwards'): DepthLine {
+        const behavior = this.generateDepthLineBehavior('vertical', direction, 'in');
+        return FigureFactory.createDepthLine(
+            'standard', 
+            this.game, 
+            id, 
+            this.game.width, 
+            this.game.height, 
+            this.game.topWallOffset, 
+            this.game.bottomWallOffset, 
+            this.game.wallThickness, 
+            position, 
+            behavior
+        );
+    }
+
+    private addEntitiesToGame(entities: Entity[]): void {
+        entities.forEach(entity => {
+            this.game.addEntity(entity);
+            const render = entity.getComponent('render') as RenderComponent;
+            if (render) {
+                this.game.renderLayers.background.addChild(render.graphic);
+            }
+        });
+    }
+
+    spawnFromFigureQueue() {
+        const line = this.figureQueue.pop();
+        if (!line) return;
+
+        this.worldManager.changeWorld(this.game, line.id);
+        this.addEntitiesToGame([line]);
+    }
+
+    spawnFromObstacleQueue() {
+        const obstacle = this.obstacleQueue.pop();
+        if (!obstacle) return;
+
+        this.worldManager.changeWorld(this.game, obstacle.id);
+        this.addEntitiesToGame([obstacle]);
+    }
+
+    private generateDepthLineBehavior(
+        movement: string, 
+        direction: string, 
+        fade: string
+    ): DepthLineBehavior {
+        return { movement, direction, fade };
+    }
+
+    private initializeDepthLines(entities: Entity[]): void {
+        entities
+            .filter(isDepthLine)
+            .filter(entity => !entity.initialized)
+            .forEach(entity => {
+                const idParts = entity.id.split('-');
+                const timestamp = parseInt(idParts[1]);
+                if (timestamp >= this.lastLineSpawnTime - 100) {
+                    const render = entity.getComponent('render') as RenderComponent;
+                    if (render) {
+                        entity.initialized = true;
+                        entity.initialY = entity.y;
+                        entity.alpha = 0;
+                        render.graphic.alpha = 0;
+                    }
+                }
+            });
+    }
 }

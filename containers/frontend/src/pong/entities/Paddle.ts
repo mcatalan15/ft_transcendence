@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Paddle.ts                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/15 13:33:41 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:07:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,39 +18,39 @@ import { PhysicsComponent } from "../components/PhysicsComponent";
 import { InputComponent } from '../components/InputComponent';
 import { TextComponent } from '../components/TextComponent';
 
+import { GAME_COLORS } from '../utils/Types.js';
+
 export class Paddle extends Entity {
     game: PongGame;
     name: string;
-    isEnlarged: boolean;
-    enlargeTimer: number;
-	enlargeProgress: number;
-    baseWidth: number;
-    originalWidth: number;
-    baseHeight: number;
-    originalHeight: number;
-    overshootTarget: number;
-    overshootPhase: string;
-    targetHeight: number;
+    isEnlarged: boolean = false;
+    wasEnlarged: boolean = false;
+    affectedTimer: number = 0;
+	enlargeProgress: number = 0;
+    isShrinked: boolean = false;
+    wasShrinked: boolean = false;
+    shrinkProgress: number = 0;
+    isInverted: boolean = false;
+    inversion: number = 1;
+    isSlowed: boolean = false;
+    slowness: number = 1;
+    isFlat: boolean = false;
+    isMagnetized: boolean = false;
+    isStunned: boolean = false;
+    baseWidth: number = 0;
+    originalWidth: number = 0;
+    baseHeight: number = 0;
+    originalHeight: number = 0;
+    overshootTarget: number = 0;
+    overshootPhase: string = '';
+    targetHeight: number = 0;
+    currentLayer: string = 'foreground';
 
     constructor(id: string, layer: string, game: PongGame, x: number, y: number, isLeftPaddle: boolean, name: string) {
         super(id, layer);
 
         this.game = game;
         this.name = name;
-        
-        this.isEnlarged = false;
-        this.enlargeTimer = 0;
-		this.enlargeProgress = 0;
-
-        this.overshootTarget = 0;
-        this.overshootPhase = '';
-        this.targetHeight = 0;
-        
-        // These will be initialized in the code below
-        this.baseWidth = 0;
-        this.originalWidth = 0;
-        this.baseHeight = 0;
-        this.originalHeight = 0;
 
         const paddleGraphic = this.createPaddleGraphic();
         const renderComponent = new RenderComponent(paddleGraphic);
@@ -61,14 +61,13 @@ export class Paddle extends Entity {
         this.baseWidth = physicsComponent.width;
         this.originalWidth = this.baseWidth;
         this.baseHeight = physicsComponent.height;
-        this.originalHeight = this.baseHeight;
+        this.originalHeight = this.baseHeight; 
         this.addComponent(physicsComponent);
 
-		// to be modified to use websockets instead of local keyboard directly
-/*         const keys = this.setUpPaddleKeys(isLeftPaddle);
+        const keys = this.setUpPaddleKeys(isLeftPaddle);
         const inputComponent = new InputComponent(keys);
         inputComponent.side = isLeftPaddle ? 'left' : 'right';
-        this.addComponent(inputComponent); */
+        this.addComponent(inputComponent);
         
         const paddleName = this.setPaddleName(isLeftPaddle, name);
         const textComponent = new TextComponent(paddleName);
@@ -77,8 +76,8 @@ export class Paddle extends Entity {
 
     createPaddleGraphic(): Graphics {
         const paddleGraphic = new Graphics();
-        paddleGraphic.rect(0, 0, 10, 80);
-        paddleGraphic.fill('#FFFBEB');
+        paddleGraphic.rect(0, 0, this.game.paddleWidth, this.game.paddleHeight);
+        paddleGraphic.fill(GAME_COLORS.white);
         paddleGraphic.pivot.set(5, 40);
         return paddleGraphic;
     }
@@ -101,17 +100,9 @@ export class Paddle extends Entity {
         return data;
     }
 
-    updatePaddlePosition(x: number, y: number): void {
-        const physicsComponent = this.getComponent('physics') as PhysicsComponent;
-        if (physicsComponent) {
-            physicsComponent.x = x;
-            physicsComponent.y = y;
-        }
-    }
-
     setUpPaddleKeys(isLeftPaddle: boolean): { up: string[], down: string[] } {
         if (isLeftPaddle) {
-            return { up: ['w'], down: ['s'] };
+            return { up: ['w', 'W'], down: ['s', 'S'] };
         }
         return { up: ['ArrowUp'], down: ['ArrowDown'] };
     }
@@ -122,7 +113,7 @@ export class Paddle extends Entity {
 			x: 0,
 			y: 0,
 			style: {
-				fill: 0xFFFBEB,
+				fill: GAME_COLORS.white,
 				fontSize: 10,
 				fontWeight: 'bold' as const,
 			},
@@ -132,10 +123,18 @@ export class Paddle extends Entity {
 	}
 
     resetPaddleSize(paddle: Paddle): void {
-        if (!paddle.isEnlarged) return;
+        if (!paddle.isEnlarged && !paddle.isShrinked) return;
 
+        if (paddle.isEnlarged) {
+            paddle.wasEnlarged = true;
+        } else if (paddle.isShrinked) {
+            paddle.wasShrinked = true;
+        }
+        
         paddle.isEnlarged = false;
+        paddle.isShrinked = false;
         paddle.enlargeProgress = 0;
+        paddle.shrinkProgress = 0;
 
         this.game.eventQueue.push({
             type: 'RESET_PADDLE',

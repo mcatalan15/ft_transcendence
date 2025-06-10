@@ -12,7 +12,7 @@ ADMIN_EMAIL='ft.transcendence.42.pong@gmail.com'
 DB_PATH='/usr/src/app/db/mydatabase.db'
 
 # For evaluation only
-BLOCKCHAIN_PRIVATE_KEY=f7e2e781445f041877efab5ddwadwadwa6163a51242e6407e05ce1d6137cbf36a1a
+BLOCKCHAIN_PRIVATE_KEY=f7e2e781445f041877efab5a1c66d66163a51242e6407e05ce1d6137cbf36a1a
 AVALANCHE_RPC_URL=https://api.avax-test.network/ext/c/C/rpc
 EOF
 

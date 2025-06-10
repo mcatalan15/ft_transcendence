@@ -6,11 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 09:51:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/20 11:38:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Point } from 'pixi.js';
+
 import type { Component } from '../engine/Component';
+
+import type { PhysicsData } from '../utils/Types';
 
 type PhysicsBehaviour = 'bounce' | 'block' | 'trigger' | 'none';
 
@@ -28,43 +32,25 @@ export class PhysicsComponent implements Component {
 	behaviour: PhysicsBehaviour;
 	restitution: number;
 	mass: number;
-	speed: number;
+	speed?: number;
+	isPolygonal?: boolean;
+	nPolygons?: number;
+	physicsPoints?: Point[][];
 
-	constructor({
-		x,
-		y,
-		width,
-		height,
-		velocityX = 0,
-		velocityY = 0,
-		isStatic = false,
-		behaviour = 'bounce',
-		restitution = 0,
-		mass = 0,
-		speed = 5,
-	}: {
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-		velocityX?: number;
-		velocityY?: number;
-		isStatic?: boolean;
-		behaviour?: PhysicsBehaviour;
-		restitution?: number;
-		mass?: number;
-		speed?: number;
-	}) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
-		this.isStatic = isStatic;
-		this.behaviour = behaviour;
-		this.restitution = restitution;
-		this.mass = mass;
-		this.speed = speed;
+	constructor(physicsData: PhysicsData){
+		this.x = physicsData.x;
+		this.y = physicsData.y;
+		this.width = physicsData.width;
+		this.height = physicsData.height;
+		this.velocityX = physicsData.velocityX;
+		this.velocityY = physicsData.velocityY;
+		this.isStatic = physicsData.isStatic;
+		this.behaviour = physicsData.behaviour;
+		this.restitution = physicsData.restitution;
+		this.mass = physicsData.mass;
+		this.speed = physicsData.speed;
+		this.isPolygonal = physicsData.isPolygonal;
+		this.nPolygons = physicsData.nPolygons;
+		this.physicsPoints = physicsData.physicsPoints;
 	}
 }

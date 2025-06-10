@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 import { addFriend, removeFriend } from '../utils/profile/friends';
 
@@ -8,6 +9,17 @@ import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
 
+=======
+import { addFriend, removeFriend } from '../utils/profile/friends';
+
+import i18n from '../i18n';
+import { Header } from '../components/header';
+import { LanguageSelector } from '../components/languageSelector';
+import { Menu } from '../components/menu';
+import { translateDOM } from '../utils/translateDOM';
+import { navigate } from '../utils/router';
+
+>>>>>>> eva-develop5
 function createButton(color: string, text: string, action: () => void) {
     let btn = document.createElement('button');
     btn.type = 'button';
@@ -334,4 +346,8 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 		  }
 		}
 	  })
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> eva-develop5

@@ -1,16 +1,13 @@
+FRIENDS:
+  - Implement the friends view in the frontend.
+  - Implement the blocked users system and view in the frontend.
+  - Turn button 'Add Friend' into 'Remove Friend' when the user is already friends with the other user.
+
 WEBSOCKETS:
 	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
 	- Backend updates ball position as well as paddle positions every frame (60FPS).
 	- CLEAN THE CODE!! Remove all unnecessary console.log()
 	- Refactor main.js: gameSession.js, gameServer.js, etc.
-		
-
-GOOGLE SIGN-IN:
-	- After user successfully logs in with their Google account, send a an API request to the backend with the email address in the data.
-	- Check their email and the provider is 'google': if true, then log them in.
-	- If the user does not exist, create a new user in the database and log them in.
-
-
 
 <!-- class TournamentManager {
   constructor(gameManager, redisService) {
@@ -259,3 +256,5 @@ GOOGLE SIGN-IN:
      │ case sensitivity   │                     │                     │
      │ or socket issues   │                     │                     │
      │                    │                     │                     │
+
+I need to take a major step in the development of this web app: the implementation of online gaming via WebSockets and a server authoritative approach. I already have a minimalistic implementation that worked with a simple pong game using a lobby system. However, I need to do something similar but with the actual game located in the frontend in the folder /pong. The game itself already has some mechanics implemented, for example the menu 'Start' has options such as 'local' or 'online', '1v1' or 'tournament', etc. For the moment I only need to work on 'online' with '1v1' selected. Selecting this should create a token and open a WebSocket connection, and make the player wait for the second player to join. When the second player joins using the token, the game should start and both players should be able to see the paddles move, player1 on the left and player2 on the right, and the ball movements. 

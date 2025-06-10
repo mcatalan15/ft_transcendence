@@ -30,7 +30,16 @@ const server = http.createServer((req, res) => {
           }));
           return;
         }
+        // Get the required environment variables from the parent process (server.js's env)
+        const blockchainPrivateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
+        const avalancheRpcUrl = process.env.AVALANCHE_RPC_URL;
+        const snowtraceApiKey = process.env.SNOWTRACE_API_KEY || ''; // Ensure this is also passed if used
         
+        // --- MODIFIED DEBUGGING LINES START ---
+        console.log("DEBUG: server.js sees BLOCKCHAIN_PRIVATE_KEY (FULL):", blockchainPrivateKey);
+        console.log("DEBUG: server.js sees AVALANCHE_RPC_URL:", avalancheRpcUrl);
+        console.log("DEBUG: server.js sees SNOWTRACE_API_KEY (exists):", !!snowtraceApiKey); // Still just check existence for API key
+        // --- MODIFIED DEBUGGING LINES END ---
         // Execute the deployment using environment variable
         const command = `GAME_DATA='${JSON.stringify(gameData)}' npx hardhat run scripts/deploy.js --network fuji`;
         

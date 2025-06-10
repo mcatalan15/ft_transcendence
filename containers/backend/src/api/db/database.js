@@ -1,5 +1,4 @@
 const sqlite3 = require('sqlite3').verbose();
-
 const dbPath = '/usr/src/app/db/mydatabase.db';
 const db = connectToDatabase();
 
@@ -20,10 +19,10 @@ function connectToDatabase(retries = 5, delay = 2000) {
 	return db;
 }
 
-async function saveUserToDatabase(username, email, hashedPassword, provider) {
+async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
 	return new Promise((resolve, reject) => {
-	const query = `INSERT INTO users (username, email, password, provider) VALUES (?, ?, ?, ?)`;
-	const params = [username, email, hashedPassword, provider];
+		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
+		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
 
 		db.run(query, params, function (err) {
 			if (err) {
@@ -32,7 +31,7 @@ async function saveUserToDatabase(username, email, hashedPassword, provider) {
 					code: err.code,
 					errno: err.errno,
 					stack: err.stack
-				  });
+				});
 
 				if (err.message.includes('UNIQUE constraint failed')) {
 					const customError = new Error('Username or email already exists');
@@ -46,6 +45,19 @@ async function saveUserToDatabase(username, email, hashedPassword, provider) {
 			}
 		});
 	});
+}
+
+async function updateUserAvatar(userId, filename, type) {
+    return new Promise((resolve, reject) => {
+        const query = `UPDATE users SET avatar_filename = ?, avatar_type = ? WHERE id_user = ?`;
+        db.run(query, [filename, type, userId], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes > 0);
+            }
+        });
+    });
 }
 
 async function checkUserExists(username, email) {
@@ -94,6 +106,13 @@ async function getHashedPassword(email) {
 	});
 }
 
+/* 
+    GET USER FUNCTIONS
+    - getUserByEmail: Retrieves a user by their email address.
+    - getUserById: Retrieves a user by their ID.
+    - getUserByUsername: Retrieves a user by their username.
+*/
+
 async function getUserByEmail(email) {
 	return new Promise((resolve, reject) => {
 	const query = `SELECT * FROM users WHERE email = ?`;
@@ -110,6 +129,36 @@ async function getUserByEmail(email) {
 			}
 		});
 	});
+}
+
+async function getUserById(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type FROM users WHERE id_user = ?`;
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error('Database error in getUserById:', err);
+                reject(err);
+            } else {
+				//! Delete console.log in prod
+                console.log('getUserById result for userId', userId, ':', row);
+                resolve(row);
+            }
+        });
+    });
+}
+
+async function getUserByUsername(username) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT id_user, username, email, avatar_filename, avatar_type FROM users WHERE username = ?`;
+        db.get(query, [username], (err, row) => {
+            if (err) {
+                console.error('[DB ERROR]', err);
+                reject(new Error('Database error'));
+                return;
+            }
+            resolve(row || null);
+        });
+    });
 }
 
 //ADD ASYN FUNC TO SCORES (API)
@@ -146,6 +195,42 @@ async function getLatestGame() {
         });
     });
 }
+
+async function getAllGames() {
+	return new Promise ((resolve, reject) => {
+		const query = `SELECT * FROM games ORDER BY id_game DESC`;
+		db.all(query, (err, row) => {
+            if (err) {
+                console.error('[DB FETCH ERROR]', err);
+                reject(err);
+            } else {
+                resolve(row || null);
+            }
+        });
+	});
+}
+
+// async function check2FA(username, email) {
+// 	return new Promise((resolve, reject) => {
+// 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+// 		db.get(query, [username, email], (err, row) => {
+// 			if (err) {
+// 				console.error('[DB ERROR]', err);
+// 				reject(new Error('Database error'));
+// 				return;
+// 			}
+// 			if (row) {
+// 				resolve({
+// 					exists: true,
+// 					usernameExists: row.username === username,
+// 					emailExists: row.email === email
+// 				});
+// 			} else {
+// 				resolve({ exists: false });
+// 			}
+// 		});
+// 	});
+// }
 
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
@@ -210,17 +295,104 @@ async function enableTwoFactor(userId, secret) {
     });
 }
 
+/* 
+    FRIENDS FUNCTIONS
+    - addFriend: Adds a friend relationship between two users.
+    - removeFriend: Removes a friend relationship between two users.
+    - getFriendsList: Retrieves a list of friends for a user.
+    - checkFriendship: Checks if two users are friends.
+*/
+
+async function addFriend(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        // Prevent self-friending
+        if (userId === friendId) {
+            reject(new Error('Cannot add yourself as a friend'));
+            return;
+        }
+
+        const query = `INSERT INTO friends (user_id, friend_id) VALUES (?, ?)`;
+        db.run(query, [userId, friendId], function (err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    reject(new Error('Already friends'));
+                } else {
+                    console.error('[DB ERROR] Adding friend:', err);
+                    reject(new Error('Database error'));
+                }
+            } else {
+                resolve(this.lastID);
+            }
+        });
+    });
+}
+
+async function removeFriend(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        const query = `DELETE FROM friends WHERE user_id = ? AND friend_id = ?`;
+        db.run(query, [userId, friendId], function (err) {
+            if (err) {
+                console.error('[DB ERROR] Removing friend:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(this.changes > 0);
+            }
+        });
+    });
+}
+
+async function getFriendsList(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT u.id_user, u.username, u.email, u.avatar_filename, u.avatar_type, f.created_at
+            FROM friends f
+            JOIN users u ON f.friend_id = u.id_user
+            WHERE f.user_id = ?
+            ORDER BY f.created_at DESC
+        `;
+        db.all(query, [userId], (err, rows) => {
+            if (err) {
+                console.error('[DB ERROR] Getting friends list:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(rows || []);
+            }
+        });
+    });
+}
+
+async function checkFriendship(userId, friendId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?`;
+        db.get(query, [userId, friendId], (err, row) => {
+            if (err) {
+                console.error('[DB ERROR] Checking friendship:', err);
+                reject(new Error('Database error'));
+            } else {
+                resolve(!!row);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
 	saveUserToDatabase,
+	updateUserAvatar,
 	isDatabaseHealthy,
 	getHashedPassword,
 	getUserByEmail,
+	getUserById,
 	saveGameToDatabase,
 	getLatestGame,
+	getAllGames,
 	saveTwoFactorSecret,
-  getTwoFactorSecret,
-  enableTwoFactor 
-	// Add other database functions here as needed
+	getTwoFactorSecret,
+	enableTwoFactor,
+	getUserByUsername,
+    addFriend,
+    removeFriend,
+    getFriendsList,
+    checkFriendship
 };

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:58:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/25 16:00:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@ import { Graphics } from "pixi.js";
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from '../components/RenderComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
+
+import { GAME_COLORS } from '../utils/Types.js';
 
 export class Wall extends Entity {
     constructor(id: string, layer:string, width: number, thickness: number, offset: number) {
@@ -32,7 +34,7 @@ export class Wall extends Entity {
     createWallGraphic(width: number, thickness: number): Graphics {
         const wallGraphic = new Graphics();
         wallGraphic.rect(0, 0, width, thickness);
-        wallGraphic.fill('#FFFBEB');
+        wallGraphic.fill(GAME_COLORS.white);
         wallGraphic.pivot.set(width / 2, thickness / 2);
         return wallGraphic;
     }
@@ -49,6 +51,7 @@ export class Wall extends Entity {
             behaviour: 'block' as const,
             restitution: 1.0,
             mass: 100,
+            speed: 0,
         };
         
         return data;

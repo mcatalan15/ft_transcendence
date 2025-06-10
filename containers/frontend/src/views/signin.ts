@@ -1,17 +1,14 @@
-import { loadGoogleScript, setupGoogleSignUp } from "../auth/googleSignUp";
+import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
 
 import i18n from '../i18n';
+import i18next from 'i18next';
+
 import { LanguageSelector } from '../components/languageSelector';
-import { localSignIn } from '../auth/localSignIn';
-import { navigate } from '../utils/router';
+import { localSignIn } from '../utils/auth/localSignIn';
 
 export function showSignIn(container: HTMLElement): void {
-  i18n
-    .loadNamespaces('signin')
-    .then(() => i18n.changeLanguage(i18n.language))
-    .then(() => {
-      	loadGoogleScript();
-	      setupGoogleSignUp()
+	loadGoogleScript();
+	setupGoogleSignUp()
 
       const wrapper = document.createElement('div');
       wrapper.innerHTML = `
@@ -60,10 +57,18 @@ export function showSignIn(container: HTMLElement): void {
         </div>
       `;
 
-      container.appendChild(wrapper);
+				<form id="login-form" class="space-y-4">
+					<input type="email" id="email" placeholder="${i18n.t('E-mail')}" required class="w-full border px-3 py-2 rounded" />
+					<input type="password" id="password" placeholder="${i18n.t('Password')}" required class="w-full border px-3 py-2 rounded" />
+					<div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+					<button type="submit" id="sign-in-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+					${i18n.t('Sign in')}
+					</button>
+				</form>
 
-      const form = wrapper.querySelector('#login-form') as HTMLFormElement;
-      const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
+				<div class="flex items-center gap-2 text-sm text-gray-500">
+					<hr class="flex-1 border-gray-300" />
+				</div>
 
       errorMessageDiv.textContent = '';
 
@@ -73,45 +78,46 @@ export function showSignIn(container: HTMLElement): void {
         const password = (wrapper.querySelector('#password') as HTMLInputElement).value;
         errorMessageDiv.textContent = '';
 
-        if (!email || !password) {
-          errorMessageDiv.textContent = i18n.t('errorAllFields', { ns: 'signin' });
-          return;
-        }
+	`;
 
-        const result = await localSignIn(email, password);
-        if (!result.success) {
-          errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
-        } else {
-          alert(i18n.t('success', { ns: 'signin' }));
-          navigate('/home'); // ✅ SPA redirection
-        }
-      };
+	const form = SignInDiv.querySelector('#login-form') as HTMLFormElement;
+	const errorMessageDiv = SignInDiv.querySelector('#errorMessage') as HTMLInputElement;
 
-      // SPA link to signup
-      const signUpLink = wrapper.querySelector('a[href="/signup"]');
-      signUpLink?.addEventListener('click', (e) => {
-        e.preventDefault();
-        navigate('/signup');
-      });
+	errorMessageDiv.textContent = '';
 
+	form.onsubmit = async (e) => {
+		e.preventDefault();
+		const email = (SignInDiv.querySelector('#email') as HTMLInputElement).value;
+		const password = (SignInDiv.querySelector('#password') as HTMLInputElement).value;
 
-      const langSelector = new LanguageSelector(() => {
-        const emailInput = wrapper.querySelector('#email') as HTMLInputElement;
-        const passwordInput = wrapper.querySelector('#password') as HTMLInputElement;
-        const btn = wrapper.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const title = wrapper.querySelector('h2')!;
-        const link = wrapper.querySelector('a');
+		if (email && password) {
+			const result = await localSignIn(email, password);
+			if (!result.success) {
+				errorMessageDiv.textContent = result.message;
+			} else {
+				alert('Sign-in successful, welcome ' + result.user + '!');
+				localStorage.setItem('token', result.token);
 
-        emailInput.placeholder = i18n.t('email', { ns: 'signin' });
-        passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
-        btn.textContent = i18n.t('signIn', { ns: 'signin' });
-        title.textContent = i18n.t('title', { ns: 'signin' });
-        link!.textContent = i18n.t('signUp', { ns: 'signin' });
-      });
+				//window.location.href = '/auth?from=signin';
+				// navigate('/auth?from=signin');
+				//! Change for prod!
+				navigate('/home');
+			}
+		} else {
+			errorMessageDiv.textContent = 'Invalid email or password';
+		}
+	};
 
-      const selectorWrapper = document.createElement('div');
-      selectorWrapper.className = 'absolute bottom-4 w-full flex justify-center z-30';
-      selectorWrapper.appendChild(langSelector.getElement());
-      document.body.appendChild(selectorWrapper);
-    });
+	container.appendChild(SignInDiv);
+
+	const wrapper = SignInDiv.querySelector('.flex-col')!;
+	const langSelector = new LanguageSelector(() => {
+		const emailInput = SignInDiv.querySelector('#email') as HTMLButtonElement;
+		const passwordInput = SignInDiv.querySelector('#password') as HTMLButtonElement;
+		const signUpBtn = SignInDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
+		emailInput.placeholder = i18n.t('signin:E-mail');
+		passwordInput.placeholder = i18n.t('signin:Password');
+		signUpBtn.textContent = i18n.t('Sign in');
+	});
+	wrapper.appendChild(langSelector.getElement());
 }

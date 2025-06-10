@@ -24,8 +24,9 @@ const signupSchema = {
       example: {
         success: true,
         message: 'User registered successfully',
-        userId: 123, // <--- UPDATE EXAMPLE IF YOU WANT
-        username: 'testuser' // <--- UPDATE EXAMPLE IF YOU WANT
+        userId: 123,
+        username: 'testuser',
+		email: 'test@user.com'
       }
     },
     400: {
@@ -76,13 +77,17 @@ const signinSchema = {
         success: { type: 'boolean' },
         message: { type: 'string' },
         token: { type: 'string', description: 'JWT token generated from a secret' },
-		user: { type: 'string' }
+        userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
+        username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
+		email: { type: 'string', description: 'Email of the new user' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
-		user: 'test-user'
+		user: 'test-user',
+		email: 'cucufu@gmail.com',
+		userId: 42
       }
     },
     400: {
@@ -172,8 +177,198 @@ const logoutSchema = {
 	}
   };
 
+const googleSchema = {
+	description: 'Authenticate or register a user using Google OAuth credential token',
+	tags: ['authentication'],
+	body: {
+		type: 'object',
+		required: ['credential'],
+		properties: {
+			credential: {
+				type: 'string',
+				description: 'JWT credential token from Google OAuth'
+			}
+		}
+	},
+	response: {
+		200: {
+			description: 'Successful Google authentication',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				token: { type: 'string', description: 'JWT token for the authenticated user' },
+				userId: { type: 'number', description: 'ID of the user' },
+				username: { type: 'string', description: 'Username of the user' },
+				email: { type: 'string', description: 'Email of the user' }
+			},
+			example: {
+				success: true,
+				message: 'Google authentication successful',
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+				userId: 42,
+				username: 'googleuser',
+				email: 'user@gmail.com'
+			}
+		},
+		201: {
+			description: 'Successful Google registration',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				token: { type: 'string', description: 'JWT token for the registrated user' },
+				userId: { type: 'number', description: 'ID of the user' },
+				username: { type: 'string', description: 'Username of the user' },
+				email: { type: 'string', description: 'Email of the user' }
+			},
+			example: {
+				success: true,
+				message: 'Google registration successful',
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+				userId: 42,
+				username: 'googleuser',
+				email: 'user@gmail.com'
+			}
+		},
+		400: {
+			description: 'Bad request - invalid or missing credential',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid Google credential'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Internal server error'
+			}
+		}
+	}
+};
+
+const setupTwoFaSchema = {
+	description: 'Fetches the user info after a successful sign-in to generate the 2FA code.',
+	tags: ['authentication'],
+	body: {
+		type: 'object',
+		properties: {
+		  username: { type: 'string', description: 'The username of the user.' },
+		  userId: { type: 'number', description: 'The ID of the registered user.' },
+		  email: { type: 'string', description: 'The email of the user'}
+		},
+		required: ['username', 'userId', 'email']
+	},
+	response: {
+		200: {
+			description: 'Code successfully generated',
+			type: 'object',
+			properties: {
+				secret: {
+					type: 'string',
+					description: 'The TOTP secret key for the user'
+				},
+				qrCodeUrl: {
+					type: 'string',
+					description: 'Base64 data URL of the QR code image'
+				},
+				otpAuthUrl: {
+					type: 'string',
+					description: 'OTPAuth URL for manual entry in authenticator apps'
+				}
+			},
+			example: {
+				secret: 'JBSWY3DPEHPK3PXP',
+				qrCodeUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...',
+				otpAuthUrl: 'otpauth://totp/testuser@test@example.com?secret=JBSWY3DPEHPK3PXP&issuer=ft_transcendence'
+			}
+		},
+		400: {
+			description: 'Bad request - invalid user data provided',
+			type: 'object',
+			properties: {
+				message: { type: 'string' }
+			},
+			example: {
+				message: 'Invalid user data provided for 2FA setup.'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				message: { type: 'string' }
+			},
+			example: {
+				message: 'Failed to generate 2FA setup.'
+			}
+		}
+	}
+};
+
+const verifyTwoFaSchema = {
+	description: 'Verifies the 2FA token entered by the user.',
+	tags: ['authentication'],
+	body: {
+		type: 'object',
+		properties: {
+		  userId: { type: 'number', description: 'The ID of the registered user.' },
+		  token: { type: 'string', description: 'The token of the user'}
+		},
+		required: ['userId', 'token']
+	},
+	response: {
+		200: {
+			description: 'Code successfully verified',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+				verified: { type: 'boolean' }
+			},
+			example: {
+				message: '2FA token verified successfully!',
+				verified: true
+			}
+		},
+		400: {
+			description: 'Bad request - invalid user data provided',
+			type: 'object',
+			properties: {
+				message: { type: 'string' }
+			},
+			example: {
+				message: 'Invalid 2FA token.'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				message: { type: 'string' }
+			},
+			example: {
+				message: 'Failed to verify 2FA token.'
+			}
+		}
+	}
+};
+
 module.exports = {
   signupSchema,
   signinSchema,
-  logoutSchema
+  logoutSchema,
+  googleSchema,
+  setupTwoFaSchema,
+  verifyTwoFaSchema
 };

@@ -1,9 +1,14 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
+// const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
+const FUJI_RPC_URL = process.env.AVALANCHE_RPC_URL;
 const PRIVATE_KEY = process.env.BLOCKCHAIN_PRIVATE_KEY;
 const SNOWTRACE_API_KEY = process.env.SNOWTRACE_API_KEY || "snowtrace";
+
+// hardhat.config.js
+require('@nomicfoundation/hardhat-toolbox');
+require('dotenv').config(); // Ensure this is at the top
 
 module.exports = {
 	solidity: "0.8.18",
