@@ -530,31 +530,31 @@ function closeContextMenu() {
   const username = sessionStorage.getItem('username') || 'Anonymous';
   
   // Check for game invite command
-  const inviteMatch = messageText.match(/^\/invite\s+@?(\w+)$/i);
+  const inviteMatch = messageText.match(/^\/invite\s+@([a-zA-Z0-9-]{3,8})(?:\s+(.*))?$/i);
   if (inviteMatch) {
-    const targetUser = inviteMatch[1];
-    sendGameInvitation(targetUser);
-    messageInput.value = '';
-    return;
-  }
-  
-  // Check for block command
-  const blockMatch = messageText.match(/^\/block\s+@?(\w+)$/i);
-  if (blockMatch) {
-    const targetUser = blockMatch[1];
-    blockUser(targetUser);
-    messageInput.value = '';
-    return;
-  }
-  
-  // Check for unblock command
-  const unblockMatch = messageText.match(/^\/unblock\s+@?(\w+)$/i);
-  if (unblockMatch) {
-    const targetUser = unblockMatch[1];
-    unblockUser(targetUser);
-    messageInput.value = '';
-    return;
-  }
+	const targetUser = inviteMatch[1];
+	sendGameInvitation(targetUser);
+	messageInput.value = '';
+	return;
+}
+
+// Check for block command
+const blockMatch = messageText.match(/^\/block\s+@([a-zA-Z0-9-]{3,8})(?:\s+(.*))?$/i);
+if (blockMatch) {
+	const targetUser = blockMatch[1];
+	blockUser(targetUser);
+	messageInput.value = '';
+	return;
+}
+
+// Check for unblock command
+const unblockMatch = messageText.match(/^\/unblock\s+@([a-zA-Z0-9-]{3,8})(?:\s+(.*))?$/i);
+if (unblockMatch) {
+	const targetUser = unblockMatch[1];
+	unblockUser(targetUser);
+	messageInput.value = '';
+	return;
+}
   
   // Check for blocklist command
   if (messageText === '/blocklist') {

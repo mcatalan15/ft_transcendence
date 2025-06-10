@@ -46,15 +46,17 @@ function setupChatWebSocket(wss, redisService) {
           return;
         }
 
-        // Enrich message with server-side data
-        const enrichedMessage = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          type: data.type,
-          username: data.username || username || 'Anonymous',
-          content: data.content,
-          timestamp: new Date().toISOString(),
-          userId: userId
-        };
+		const enrichedMessage = {
+			id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+			type: data.type,
+			username: data.username || username || 'Anonymous',
+			content: data.content,
+			timestamp: new Date().toISOString(),
+			userId: userId,
+			targetUser: data.targetUser,
+			inviteId: data.inviteId,
+			gameRoomId: data.gameRoomId
+		  };
 
         // Handle different message types
         switch (data.type) {
@@ -67,6 +69,13 @@ function setupChatWebSocket(wss, redisService) {
             // Handle friend messages (could check if users are actually friends)
             await redisService.publishChatMessage(JSON.stringify(enrichedMessage));
             break;
+
+		  case 'game_invite':
+			// Handle game invitations like private messages
+			console.log('PROCESSING GAME_INVITE');
+
+			await handleGameInvite(enrichedMessage, data.targetUser, wss, redisService, ws);
+			break;
             
           default:
             // Handle general, game, server messages
@@ -150,6 +159,39 @@ function setupChatWebSocket(wss, redisService) {
       }
     }
   }
+  
+	async function handleGameInvite(message, targetUser, wss, redisService, senderWs) {
+	console.log(`Handling game invite from ${message.username} to ${targetUser}`);
+	
+	// Create the complete message with all required fields
+	const gameInviteMessage = {
+		...message, // includes id, type, username, content, timestamp, userId
+		targetUser: targetUser, // Add the missing targetUser field
+		inviteId: message.inviteId || `invite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` // Ensure inviteId exists
+	};
+	
+	let targetWs = null;
+	for (const [ws, userInfo] of connectedUsers) {
+		if (userInfo.username === targetUser) {
+		targetWs = ws;
+		break;
+		}
+	}
+
+	if (targetWs && targetWs.readyState === WebSocket.OPEN) {
+		console.log(`Sending game invite to ${targetUser}:`, gameInviteMessage);
+		targetWs.send(JSON.stringify(gameInviteMessage));
+	} else {
+		console.log(`User ${targetUser} is not online`);
+		if (senderWs && senderWs.readyState === WebSocket.OPEN) {
+		senderWs.send(JSON.stringify({
+			type: 'system',
+			content: `User ${targetUser} is not online`,
+			timestamp: new Date().toISOString()
+		}));
+		}
+	}
+	}
 
   return wss;
 }
