@@ -5,13 +5,13 @@ const db = connectToDatabase();
 function connectToDatabase(retries = 5, delay = 2000) {
 	const db = new sqlite3.Database(dbPath, (err) => {
 		if (err) {
-		console.error(`Error opening database (attempts left: ${retries}):`, err.message);
-		if (retries > 0) {
-			console.log(`Retrying in ${delay/1000} seconds...`);
-			setTimeout(() => connectToDatabase(retries - 1, delay), delay);
-		} else {
-			console.error('Failed to connect to database after multiple attempts');
-		}
+			console.error(`Error opening database (attempts left: ${retries}):`, err.message);
+			if (retries > 0) {
+				console.log(`Retrying in ${delay/1000} seconds...`);
+				setTimeout(() => connectToDatabase(retries - 1, delay), delay);
+			} else {
+				console.error('Failed to connect to database after multiple attempts');
+			}
 		} else {
 		console.log('Connected to SQLite database successfully');
 		}
@@ -84,7 +84,7 @@ async function checkUserExists(username, email) {
 
 async function isDatabaseHealthy() {
 	return new Promise((resolve) => {
-	db.get('SELECT 1', (err) => resolve(!err));
+		db.get('SELECT 1', (err) => resolve(!err));
 	});
 }
 
