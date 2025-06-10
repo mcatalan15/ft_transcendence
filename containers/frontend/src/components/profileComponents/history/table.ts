@@ -1,7 +1,7 @@
 type MatchRow = {
-    song: string;
-    artist: string;
-    year: number;
+    date: string;
+    vs: string;
+    score: number;
   };
 
 export class MatchTableComponent {
@@ -19,18 +19,18 @@ export class MatchTableComponent {
       this.table.innerHTML = `
         <thead class="bg-neutral-900">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Song</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Artist</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Year</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">1vs1</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Score</th>
           </tr>
         </thead>
         <tbody class="bg-neutral-900 divide-y divide-gray-200">
           ${
             this.data.map(row => `
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-200 font-medium">${row.song}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-200">${row.artist}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-200">${row.year}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-200 font-medium">${row.date}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-200">${row.vs}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-200">${row.score}</td>
               </tr>
             `).join('')
           }

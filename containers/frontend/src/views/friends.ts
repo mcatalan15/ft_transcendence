@@ -1,3 +1,83 @@
+
+/* import { removeFriend } from '../utils/profile/friends';
+
+export function showFriends(container: HTMLElement): void {
+    // Clear the container first
+    container.innerHTML = '';
+
+    const friendsDiv = document.createElement('div');
+    friendsDiv.innerHTML = `
+        <h1>My Friends</h1>
+        <div id="friendsList">Loading friends...</div>
+		<button onclick="navigate('/profile')">Back to Profile</button><div>
+        <button onclick="navigate('/home')">Back to Home</button>
+    `;
+
+    container.appendChild(friendsDiv);
+
+    const friendsList = friendsDiv.querySelector('#friendsList') as HTMLDivElement;
+
+    // Fetch friends list
+    fetch('/api/friends', {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.friends.length === 0) {
+                    friendsList.innerHTML = `
+                        <p>You don't have any friends yet.</p>
+                        <p>Visit other users' profiles to add them as friends!</p>
+                    `;
+                } else {
+                    friendsList.innerHTML = `
+                        <p>You have ${data.friends.length} friend${data.friends.length > 1 ? 's' : ''}:</p>
+                        <ul style="list-style-type: none; padding: 0;">
+                            ${data.friends.map(friend => `
+                                <li style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
+                                    <img src="/api/profile/avatar/${friend.id_user}" 
+                                         alt="${friend.username}'s avatar" 
+                                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    <div style="flex-grow: 1;">
+                                        <strong>${friend.username}</strong>
+                                        <br>
+                                        <small>Friends since: ${new Date(friend.created_at).toLocaleDateString()}</small>
+                                    </div>
+                                    <button onclick="navigate('/profile/${friend.username}')" 
+                                            style="background-color: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                                        View Profile
+                                    </button>
+                                    <button onclick="removeFriendFromList('${friend.username}')" 
+                                            style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                                        Remove
+                                    </button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+            } else {
+                friendsList.innerHTML = '<p>Error loading friends list.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching friends:', error);
+            friendsList.innerHTML = '<p>Error loading friends list.</p>';
+        });
+}
+
+(window as any).removeFriendFromList = async function (username: string) {
+    if (!confirm(`Are you sure you want to remove ${username} from your friends?`)) {
+        return;
+    }
+    removeFriend(username, () => {
+        showFriends(document.getElementById('app') as HTMLElement);
+    });
+}; */
+
 import i18n from '../i18n';
 import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
@@ -39,7 +119,7 @@ export function showFriends(container: HTMLElement): void {
       const arcadeBox = document.createElement('div');
       arcadeBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-lime-400
+        mx-auto bg-neutral-900 border-4 border-white-400
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();
@@ -56,7 +136,8 @@ export function showFriends(container: HTMLElement): void {
       `.replace(/\s+/g, ' ').trim();
 
       const avatar = document.createElement('img');
-      avatar.src = 'https://randomuser.me/api/portraits/men/32.jpg';
+      const userId = sessionStorage.getItem('userId') || 'defaultUserId';
+      avatar.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
       avatar.alt = 'Profile';
       avatar.className = `
         w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
@@ -114,16 +195,10 @@ export function showFriends(container: HTMLElement): void {
         grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-48 w-full justify-items-center
       `.replace(/\s+/g, ' ').trim();
 
-      // Datos ejemplo
-      let friendsData = [
-        { username: 'Anna', avatar: '...' },
-        { username: 'Mike', avatar: '...' },
-        { username: 'Sara', avatar: '...' },
-        { username: 'Max', avatar: '...' },
-        { username: 'Chris', avatar: '...' },
-        { username: 'Jess', avatar: '...' },
-      ];
+      // Store friends data for search functionality
+      let friendsData = [];
 
+      // Function to render friends
       function renderFriends(friends) {
         friendsList.innerHTML = '';
         if (friends.length === 0) {
@@ -133,12 +208,18 @@ export function showFriends(container: HTMLElement): void {
           friendsList.appendChild(empty);
           return;
         }
+
         friends.forEach((friend, idx) => {
           const friendDiv = document.createElement('div');
-          friendDiv.className = 'flex flex-col items-center w-full max-w-[100px] md:max-w-[120px] mx-auto';
+          friendDiv.className = 'flex flex-col items-center w-full max-w-[100px] md:max-w-[120px] mx-auto cursor-pointer';
+          
+          // Add click handler to navigate to friend's profile
+          friendDiv.addEventListener('click', () => {
+            navigate(`/profile/${friend.username}`);
+          });
 
           const friendAvatar = document.createElement('img');
-          friendAvatar.src = friend.avatar;
+          friendAvatar.src = `/api/profile/avatar/${friend.id_user}?t=${Date.now()}`;
           friendAvatar.alt = friend.username;
           friendAvatar.className = 'w-16 h-16 md:w-24 md:h-24 rounded-full border-4 border-lime-400 object-cover shadow transition duration-200 hover:scale-105';
 
@@ -153,7 +234,32 @@ export function showFriends(container: HTMLElement): void {
         });
       }
 
-      renderFriends(friendsData);
+      // Fetch friends from API
+      fetch('/api/friends', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          friendsData = data.friends; // Store the data
+          renderFriends(friendsData); // Render all friends initially
+        } else {
+          const errorDiv = document.createElement('div');
+          errorDiv.textContent = 'Error loading friends list';
+          errorDiv.className = 'col-span-full text-red-400 mt-8 text-center';
+          friendsList.appendChild(errorDiv);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching friends:', error);
+        const errorDiv = document.createElement('div');
+        errorDiv.textContent = 'Error loading friends list';
+        errorDiv.className = 'col-span-full text-red-400 mt-8 text-center';
+        friendsList.appendChild(errorDiv);
+      });
 
       // Filtro búsqueda
       const searchInput = searchBarWrapper.querySelector('input');
