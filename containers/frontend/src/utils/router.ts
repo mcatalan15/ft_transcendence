@@ -7,6 +7,7 @@ import { showProfile } from '../views/profile';
 import { showBlockchain } from '../views/blockchain'; // si sigue en uso
 import { showFriends } from '../views/friends';
 import { showChat } from '../views/chat';
+import { showHistory} from '../views/history';
 import { showLobby } from '../views/lobby';
 import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
@@ -63,7 +64,13 @@ function renderRoute(path: string) {
 			}
 			showHome(app);
 			break;
-
+		case '/history':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showHistory(app);
+			break;
 		case '/profile':
 			if (!isUserAuthenticated()) {
 				navigate('/');
