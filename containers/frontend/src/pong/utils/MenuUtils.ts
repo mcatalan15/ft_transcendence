@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 14:27:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 09:22:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@ import { Graphics, Container, Text, Application } from 'pixi.js';
 import { Menu } from '../menu/Menu';
 
 import { GAME_COLORS } from './Types';
-import { MenuButton } from '../menu/MenuButton';
-import { MenuHalfButton } from '../menu/MenuHalfButton';
-import { MenuXButton } from '../menu/MenuXButton';
+import { MenuButton } from '../menu/buttons/MenuButton';
+import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
+import { MenuXButton } from '../menu/buttons/MenuXButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -104,6 +104,22 @@ export interface MenuButtonConfig {
     index: number;
 }
 
+export interface SecretCode {
+    name: string;
+    sequence: string[];
+    timeout: number;
+    effect: () => void;
+}
+
+export function getRandomGameColor(excludeColors: (keyof typeof GAME_COLORS)[] = []): number {
+    const availableColors = Object.entries(GAME_COLORS)
+        .filter(([key]) => !excludeColors.includes(key as keyof typeof GAME_COLORS))
+        .map(([, value]) => value);
+    
+    const randomIndex = Math.floor(Math.random() * availableColors.length);
+    return availableColors[randomIndex];
+}
+
 export function getButtonPoints(menu: Menu, button: MenuButton): number[] | undefined {
 	return [
 		0, 0,
@@ -123,7 +139,7 @@ export function getHalfButtonPoints(menu: Menu, button: MenuHalfButton): number[
 }
 
 export function getXButtonPoints(menu: Menu, button: MenuXButton): number[] | undefined {
-	if (!button.isClicked) {
+	if (!button.getIsClicked()) {
 		return [
 			0, 0,
 			menu.buttonXWidth + menu.buttonSlant, 0,

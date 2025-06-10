@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 14:09:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:57:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,12 +121,46 @@ export class ButtonSystem implements System {
     }
 
     handleGlossaryClick() {
-        this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked())
+        this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
+        
+        if (this.menu.glossaryButton.getIsClicked()) {
+            // Show overlay with fade-in animation
+            this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+            this.menu.overlayBackground.fadeIn();
+        } else {
+            // Start fade-out animation
+            this.menu.overlayBackground.fadeOut();
+            
+            // Remove from layer after animation completes
+            setTimeout(() => {
+                if (this.menu.overlayBackground.isAnimationComplete() && 
+                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
+                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                }
+            }, 500); // Adjust timing based on your animation speed
+        }
     }
 
     handleAboutClick() {
-        this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked())
+        this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
         this.menu.aboutButton.resetButton();
+
+        if (this.menu.aboutButton.getIsClicked()) {
+            // Show overlay with fade-in animation
+            this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+            this.menu.overlayBackground.fadeIn();
+        } else {
+            // Start fade-out animation
+            this.menu.overlayBackground.fadeOut();
+            
+            // Remove from layer after animation completes
+            setTimeout(() => {
+                if (this.menu.overlayBackground.isAnimationComplete() && 
+                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
+                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                }
+            }, 500); // Adjust timing based on your animation speed
+        }
     }
 
     resetLayer(event: GameEvent){
@@ -333,7 +367,7 @@ export class ButtonSystem implements System {
         const menu = this.menu;
 
         const entitiesToRemove: string[] = [];
-        // Remove balls
+
         for (const entity of this.menu.entities) {
             if (isBall(entity)) {
                 entitiesToRemove.push(entity.id);
@@ -344,7 +378,6 @@ export class ButtonSystem implements System {
             this.menu.removeEntity(id);
         }
     
-        // Reset all buttons
         menu.startButton.resetButton();
         menu.playButton.resetButton();
         menu.optionsButton.resetButton();
@@ -360,27 +393,22 @@ export class ButtonSystem implements System {
         menu.startXButton.resetButton();
         menu.optionsXButton.resetButton();
         
-        // Reset ornaments
         menu.playOrnament.resetOrnament();
         menu.startOrnament.resetOrnament();
         menu.optionsOrnament.resetOrnament();
         menu.optionsClickedOrnament.resetOrnament();
     
-        // Update title blocking visibility
         if (menu.title) {
             menu.title.updateBlockingVisibility();
         }
 
-        // Handle ball button
         const titleORender = this.menu.titleO.getComponent('render') as RenderComponent;
 
         if (this.menu.config.classicMode) {
-            this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());
-
-            
+            this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());       
             this.menu.renderLayers.logo.addChild(titleORender.graphic);
         } else {
-            this.menu.menuContainer.addChild(this.menu.ballButton.getContainer());
+            this.menu.renderLayers.foreground.addChild(this.menu.ballButton.getContainer());
             this.menu.menuHidden.addChild(titleORender.graphic);
         }
     }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 15:45:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:40:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
 import { MenuXButton } from '../menu/buttons/MenuXButton';
 import { BallButton } from '../menu/buttons/BallButton';
 import { MenuOrnament } from '../menu/MenuOrnaments';
+import { OverlayBackground } from '../menu/OverlayBackground';
 
 export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
 	return entity instanceof MenuPostProcessingLayer
@@ -106,6 +107,10 @@ export function isMenuHalfButton(entity: Entity): entity is MenuHalfButton {
 
 export function isMenuOrnament(entity: Entity): entity is MenuOrnament {
 	return entity instanceof MenuOrnament;
+}
+
+export function isOverlayBackground(entity: Entity): entity is OverlayBackground {
+    return entity.id === 'overlay_background';
 }
 
 export function isMenuLine(entity: Entity): entity is MenuLine {

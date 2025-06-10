@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 15:18:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:31:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ import { MenuXButton } from './buttons/MenuXButton';
 import { BallButton } from './buttons/BallButton';
 
 import { MenuOrnament } from './MenuOrnaments';
+import { OverlayBackground } from './OverlayBackground';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -47,6 +48,7 @@ import { MenuRenderSystem } from './MenuRenderSystem';
 import { MenuAnimationSystem } from './MenuAnimationSystem';
 import { MenuParticleSystem } from './MenuParticleSystem';
 import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
+import { SecretCodeSystem } from './MenuSecretCodeSystem';
 
 import { MenuPhysicsSystem } from './MenuPhysicsSystem';
 import { MenuVFXSystem } from './MenuVFXSystem';
@@ -83,6 +85,8 @@ export class Menu{
 		subtitle: Container;
 		background: Container;
 		foreground: Container;
+		overlays: Container;
+		dust: Container;
 		pp: Container;
 	};
 	visualRoot: Container;
@@ -133,6 +137,9 @@ export class Menu{
 	glossaryOrnament!: MenuOrnament;
 	aboutOrnament!: MenuOrnament;
 
+	// Overlay items
+	overlayBackground!: OverlayBackground;
+
 	constructor(app: Application) {
 		this.app = app;
 		this.width = app.screen.width;
@@ -145,8 +152,10 @@ export class Menu{
 			background: new Container(),
 			logo: new Container(),
 			subtitle: new Container(),
+			overlays: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
+			dust: new Container(),
 			pp: new Container(),
 		};
 		this.visualRoot = new Container();
@@ -164,6 +173,8 @@ export class Menu{
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.subtitle);
 		this.visualRoot.addChild(this.renderLayers.foreground);
+		this.visualRoot.addChild(this.renderLayers.overlays);
+		this.visualRoot.addChild(this.renderLayers.dust);
 		this.visualRoot.addChild(this.renderLayers.pp);
 
 		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
@@ -263,6 +274,9 @@ export class Menu{
 
 		// Create frame
 		this.createFrame();
+
+		// Create overlay items
+		this.createOverlays();
 	}
 
 	createPostProcessingLayer() {
@@ -281,6 +295,7 @@ export class Menu{
 		const postProcessingSystem = new MenuPostProcessingSystem();
 		const physicsSystem = new MenuPhysicsSystem(this);
 		const lineSystem = new MenuLineSystem(this);
+		const secretCodeSystem = new SecretCodeSystem(this);
 		
 		this.systems.push(buttonSystem);
 		this.systems.push(VFXSystem);
@@ -290,6 +305,7 @@ export class Menu{
 		this.systems.push(postProcessingSystem);
 		this.systems.push(physicsSystem);
 		this.systems.push(lineSystem);
+		this.systems.push(secretCodeSystem);
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();
@@ -439,6 +455,14 @@ export class Menu{
 		frame.rect(0, 0, this.width, this.height);
 		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
 		this.menuContainer.addChild(frame);
+	}
+	
+	createOverlays() {
+		const overlayBackground = new OverlayBackground('overlay_background', 'overlays', this.width, this.height);
+		this.entities.push(overlayBackground);
+		const overlayRender = overlayBackground.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(overlayRender.graphic);
+		this.overlayBackground = overlayBackground;
 	}
 
 	cleanup(): void {
