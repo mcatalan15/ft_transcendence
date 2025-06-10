@@ -62,7 +62,7 @@ export function showProfile(container: HTMLElement): void {
 		.then(response => response.json())
 		.then(data => {
 			profileInfo.innerHTML = `
-			<div>ID: ${data.id}</div>
+			<div>ID: ${data.userId}</div>
 			<div>Username: ${data.username}</div>
 			<div>Email: ${data.email}</div>
 		  `;

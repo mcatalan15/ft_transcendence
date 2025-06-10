@@ -1,11 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const otplib = require('otplib');
-
 otplib.authenticator.options = {
 	step: 30, // Default is 30 seconds
 	digits: 6 // Default is 6 digits
   };
+
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const qrcode = require('qrcode');
 
@@ -203,12 +205,12 @@ async function googleHandler(request, reply) {
   
 		  request.session.set('token', authToken);
 		  request.session.set('user', {
-			id: user.id_user,
+			userId: user.id_user,
 			username: user.username,
 			email: user.email,
 			twoFAEnabled: twoFAStatus
 		  });
-  
+
 		  // fastify.metrics.authAttempts.labels('local', 'success').inc();
 		  return reply.status(200).send({
 			success: true,
@@ -219,7 +221,10 @@ async function googleHandler(request, reply) {
 			  email: user.email,
 			  twoFA: twoFAStatus
 			},
-			token: authToken
+			token: authToken,
+			userId: user.id_user,
+			username: user.username,
+			email: user.email
 		  });
 		}
   
@@ -234,22 +239,23 @@ async function googleHandler(request, reply) {
 		const avatarFilename = `default_${defaultAvatarId}.png`;
   
 		const newUser = await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
-  
+
 		const authToken = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
 		  expiresIn: process.env.JWT_EXPIRES_IN
 		});
-  
-			request.session.set('token', authToken);
+
+		  request.session.set('token', authToken);
 		  request.session.set('user', {
-			  id: newUser.id_user,
-			  username: nickname,
-			  email: email
+			userId: newUser.id_user,
+			username: newUser.username,
+			email: newUser.email
 		  });
-  
+
 		//fastify.metrics.authAttempts.labels('local', 'success').inc();
 		return reply.status(201).send({
 		  success: true,
 		  message: 'User registered successfully',
+<<<<<<< HEAD
 		  user: { 
 			  id: newUser.id,
 			  username: nickname, 
@@ -257,10 +263,16 @@ async function googleHandler(request, reply) {
 			  twoFA: false // New users don't have 2FA enabled by default
 		  },
 		  token: authToken
+=======
+		  token: authToken,
+		  userId: newUser.id_user,
+		  username: newUser.username,
+		  email: newUser.email
+>>>>>>> develop4
 		});
   
 	  } catch (error) {
-		fastify.log.error(error);
+		console.error(error);
 		//fastify.metrics.authAttempts.labels('local', 'failure').inc();
 		return reply.status(401).send({
 		  success: false,
