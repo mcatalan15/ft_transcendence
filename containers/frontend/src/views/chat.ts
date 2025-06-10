@@ -185,7 +185,7 @@ export function showChat(container: HTMLElement): void {
     text-amber-50 text-2xl font-bold tracking-wide text-center mb-4
     border-b border-amber-50/20 pb-2
   `.replace(/\s+/g, ' ').trim();
-  chatTitle.textContent = 'Transcendence Chat';
+  chatTitle.textContent = 'Pong Chat';
 
   // Channel tabs/filters
   const channelTabs = document.createElement('div');

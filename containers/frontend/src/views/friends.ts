@@ -118,7 +118,7 @@ export function showFriends(container: HTMLElement): void {
       const arcadeBox = document.createElement('div');
       arcadeBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-lime-400
+        mx-auto bg-neutral-900 border-4 border-white-400
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();

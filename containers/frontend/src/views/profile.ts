@@ -143,35 +143,35 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
   leftCol.appendChild(centerCol);
 
   if (!isOwnProfile) {
-	// Create a placeholder container for the friend button
-	const friendButtonContainer = document.createElement('div');
-	friendButtonContainer.id = 'friendButtonContainer';
-	centerCol.appendChild(friendButtonContainer);
+    // Create a placeholder container for the friend button
+    const friendButtonContainer = document.createElement('div');
+    friendButtonContainer.id = 'friendButtonContainer';
+    centerCol.appendChild(friendButtonContainer);
 
-	const settingsRow = document.createElement('div');
-	settingsRow.className = `
-		w-full flex items-end py-56
-	`.replace(/\s+/g, ' ').trim();
+    const settingsRow = document.createElement('div');
+    settingsRow.className = `
+      w-full flex items-end py-56
+    `.replace(/\s+/g, ' ').trim();
 
-	const settingsIcon = document.createElement('span');
-	settingsIcon.className = `
-		inline-flex items-center justify-center cursor-pointer
-		text-amber-50 hover:text-amber-100 transition
-	`
-	settingsIcon.title = i18n.t('settings', { ns: 'profile' }) || 'Ajustes';
-	settingsIcon.innerHTML = `
-		<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-			viewBox="0 0 24 24" stroke-width="1.5"
-			stroke="currentColor" class="w-9 h-9">
-		<path stroke-linecap="round" stroke-linejoin="round"
-				d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.527-.98 3.362.855 2.382 2.382a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.98 1.527-.855 3.362-2.382 2.382a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.527.98-3.362-.855-2.382-2.382a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35A1.724 1.724 0 004.318 7.765c-.98-1.527.855-3.362 2.382-2.382.996.64 2.334.063 2.572-1.066z" />
-		<path stroke-linecap="round" stroke-linejoin="round"
-				d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-		</svg>
-	`;
-	settingsIcon.onclick = () => navigate('/settings');
-	settingsRow.appendChild(settingsIcon);
-	leftCol.appendChild(settingsRow);
+    const settingsIcon = document.createElement('span');
+    settingsIcon.className = `
+      inline-flex items-center justify-center cursor-pointer
+      text-amber-50 hover:text-amber-100 transition
+    `
+    settingsIcon.title = i18n.t('settings', { ns: 'profile' }) || 'Ajustes';
+    settingsIcon.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24" stroke-width="1.5"
+        stroke="currentColor" class="w-9 h-9">
+      <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.527-.98 3.362.855 2.382 2.382a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.98 1.527-.855 3.362-2.382 2.382a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.527.98-3.362-.855-2.382-2.382a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35A1.724 1.724 0 004.318 7.765c-.98-1.527.855-3.362 2.382-2.382.996.64 2.334.063 2.572-1.066z" />
+      <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    `;
+    settingsIcon.onclick = () => navigate('/settings');
+    settingsRow.appendChild(settingsIcon);
+    leftCol.appendChild(settingsRow);
   }  
 
   // MIDDLE COL
