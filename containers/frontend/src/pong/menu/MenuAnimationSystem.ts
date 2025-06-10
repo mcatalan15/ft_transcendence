@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 19:52:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:41:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ import type { System } from '../engine/System'
 
 import { Menu } from './Menu';
 import { Title } from './Title';
-import { BallButton } from './BallButton';
+import { BallButton } from './buttons/BallButton';
 
 import { Paddle } from '../entities/Paddle'
 import { Powerup } from '../entities/powerups/Powerup';
@@ -37,8 +37,9 @@ import { GAME_COLORS } from '../utils/Types';
 import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
 import { FrameData, GameEvent } from '../utils/Types';
 import { lerp } from '../utils/Utils';
-import { isRenderComponent, isMenuLine } from '../utils/Guards'
+import { isRenderComponent, isMenuLine, isOverlayBackground } from '../utils/Guards'
 import { MenuLine } from './MenuLine';
+import { OverlayBackground } from './OverlayBackground';
 
 export class MenuAnimationSystem implements System {
 	private menu: Menu;
@@ -63,6 +64,8 @@ update(entities: Entity[], delta: FrameData): void {
 			this.animateBallButton(delta, entity as BallButton);
 		} else if (isMenuLine(entity)) {
 			this.animateMenuLine(delta, entitiesToRemove, entity);
+		} else if (isOverlayBackground(entity)) {
+			this.animateOverlayBackground(delta, entity as OverlayBackground);
 		}
 	}
 	
@@ -177,4 +180,29 @@ update(entities: Entity[], delta: FrameData): void {
 
 		entity.isAnimating = false;
 	}
+
+	animateOverlayBackground(delta: FrameData, entity: OverlayBackground) {
+        if (entity.getIsAnimating()) {
+            entity.updateAnimation(delta.deltaTime);
+        }
+    }
+
+	cleanup(): void {
+        // Reset frame counter and timers
+        this.frameCounter = 0;
+        this.lastCutId = null;
+        this.isDespawningCrossCut = false;
+        
+        // Clean up any remaining animated entities
+        const entitiesToRemove: string[] = [];
+        for (const entity of this.menu.entities) {
+            if (isMenuLine(entity)) {
+                entitiesToRemove.push(entity.id);
+            }
+        }
+        
+        for (const entityId of entitiesToRemove) {
+            this.menu.removeEntity(entityId);
+        }
+    }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BallSpawner.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/24 16:21:02 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/09 16:33:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ export class BallSpawner {
 		const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
 
-        ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
+        if (!game.config.classicMode) {
+            ParticleSpawner.spawnBasicExplosion(game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.orange, 2);
+        }
 
         ballRender.graphic.x = ballPhysics.x;
 		ballRender.graphic.y = ballPhysics.y;

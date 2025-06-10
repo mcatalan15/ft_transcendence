@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 11:04:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:45:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ import { createEntitiesMap, changePaddleLayer } from '../utils/Utils';
 import * as physicsUtils from '../utils/PhysicsUtils'
 import { isPaddle, isBall, isSpinBall, isBurstBall, isPowerup, isBullet, isUI } from '../utils/Guards';
 import { FrameData, GAME_COLORS } from '../utils/Types';
-import { ShockwaveFilter } from 'pixi-filters';
 
 
 export class PhysicsSystem implements System {
@@ -195,9 +194,14 @@ export class PhysicsSystem implements System {
 		}
 
 		if (collided) {
-			ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
-			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
-			this.game.sounds.thud.play();
+			if (!this.game.config.classicMode) {
+				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
+			}
+			
+			if (!this.game.config.classicMode) {
+				this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
+				this.game.sounds.thud.play();
+			}
 		}
 		
 		if (isSpinBall(ball) && collided) {
@@ -372,8 +376,13 @@ export class PhysicsSystem implements System {
 			const prevVelocity = {x: physics.velocityX, y: physics.velocityY};
 			
 			this.game.sounds.thud.rate(Math.random() * 0.2 + 1.1);
-			this.game.sounds.thud.play();
-			ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
+			if (!this.game.config.classicMode) {
+				this.game.sounds.thud.play();
+			}
+			
+			if (!this.game.config.classicMode) {
+				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
+			}
 			
 			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
@@ -426,18 +435,22 @@ export class PhysicsSystem implements System {
 				if (ballLeft < shieldRight) {
 					physics.velocityX *= -1;
 
-					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.shieldBreak.play();
+					if (!this.game.config.classicMode) {
+						this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.shieldBreak.play();
+					}
 
-					ParticleSpawner.spawnBurst(
-						this.game,
-						shieldPhysics.x,
-						physics.y,
-						10,
-						-physics.velocityX,
-						physics.velocityY,
-						GAME_COLORS.green,
-					)
+					if (!this.game.config.classicMode) {
+						ParticleSpawner.spawnBurst(
+							this.game,
+							shieldPhysics.x,
+							physics.y,
+							10,
+							-physics.velocityX,
+							physics.velocityY,
+							GAME_COLORS.green,
+						)
+					}	
 
 					this.UI.resetBars('left');
 					
@@ -449,18 +462,22 @@ export class PhysicsSystem implements System {
 				if (ballRight > shieldLeft) {
 					physics.velocityX *= -1;
 
-					this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.shieldBreak.play();
-
-					ParticleSpawner.spawnBurst(
-						this.game,
-						shieldPhysics.x,
-						physics.y,
-						10,
-						-physics.velocityX,
-						physics.velocityY,
-						GAME_COLORS.green,
-					);
+					if (!this.game.config.classicMode) {
+						this.game.sounds.shieldBreak.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.shieldBreak.play();
+					}
+					
+					if (!this.game.config.classicMode) {
+						ParticleSpawner.spawnBurst(
+							this.game,
+							shieldPhysics.x,
+							physics.y,
+							10,
+							-physics.velocityX,
+							physics.velocityY,
+							GAME_COLORS.green,
+						);
+					}
 
 					this.UI.resetBars('right');
 
@@ -511,8 +528,10 @@ export class PhysicsSystem implements System {
 				);
 				
 				if (collision.hit && collision.time >= 0 && collision.time <= 1) {
-					this.game.sounds.pong.rate(Math.random() * 0.2 + 1.1);
-					this.game.sounds.pong.play();
+					if (!this.game.config.classicMode) {
+						this.game.sounds.pong.rate(Math.random() * 0.2 + 1.1);
+						this.game.sounds.pong.play();
+					}
 					
 					physics.x = collision.position.x;
 					physics.y = collision.position.y;
@@ -572,7 +591,9 @@ export class PhysicsSystem implements System {
 					}
 					
 					if (paddleSide === "left") {
-						ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.greenParticle, 1);
+						if (!this.game.config.classicMode) {
+							ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.greenParticle, 1);
+						}
 						
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
@@ -580,7 +601,9 @@ export class PhysicsSystem implements System {
 						}
 
 					} else {
-						ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, GAME_COLORS.violetParticle, 1);
+						if (!this.game.config.classicMode) {
+							ParticleSpawner.spawnBasicExplosion(this.game, physics.x + physics.width / 4, physics.y, GAME_COLORS.violetParticle, 1);
+						}
 						
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
@@ -608,9 +631,13 @@ export class PhysicsSystem implements System {
                     console.log(`Triggered powerup: ${entity.id}`);
 
 					if (entity.id.includes('Down')) {
-						ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.red, 1);
+						if (!this.game.config.classicMode) {
+							ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.red, 1);
+						}
 					} else if (entity.id.includes('Up')) {
-						ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.green, 1);
+						if (!this.game.config.classicMode) {
+							ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.green, 1);
+						}
 					}
 
                     const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
@@ -631,23 +658,25 @@ export class PhysicsSystem implements System {
 
 		if (ballLeft > this.width) {
 			if (ball.isGoodBall) {
-				this.game.sounds.death.play();
-				ParticleSpawner.spawnBurst(
-					this.game,
-					physics.x - physics.width,
-					physics.y,
-					10,
-					physics.velocityX,
-					physics.velocityY,
-					GAME_COLORS.orange,
-				);
+				if (!this.game.config.classicMode) {
+					this.game.sounds.death.play();
+				}
+
+				if (!this.game.config.classicMode) {
+					ParticleSpawner.spawnBurst(
+						this.game,
+						this.game.config.filters ? physics.x - physics.width : physics.x,
+						physics.y,
+						10,
+						physics.velocityX,
+						physics.velocityY,
+						GAME_COLORS.orange,
+					);
+				}
+				
 				this.game.eventQueue.push({ type: 'SCORE', side: 'left' });
 				this.game.removeEntity(ball.id);
-				for (const effect of this.game.visualRoot.effects!) {
-					if (effect instanceof ShockwaveFilter) {
-						effect.speed = 1080;
-					}
-				}
+
 				this.mustResetBall = true;
 				this.ballResetTime = 200;
 			} else if (ball.isFakeBall) {
@@ -658,17 +687,22 @@ export class PhysicsSystem implements System {
 		// Ball exits left side
 		if (ballRight < 0) {
 			if 	(ball.isGoodBall) {
-				this.game.sounds.death.play();
-				ParticleSpawner.spawnBurst(
-					this.game,
-					physics.x + physics.width,
-					physics.y,
-					10,
-					physics.velocityX,
-					physics.velocityY,
-					GAME_COLORS.orange,
-				);
-				this.game.sounds.death.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.death.play();
+				}
+
+				if (!this.game.config.classicMode) {
+						ParticleSpawner.spawnBurst(
+						this.game,
+						this.game.config.filters ? physics.x + physics.width : physics.x,
+						physics.y,
+						10,
+						physics.velocityX,
+						physics.velocityY,
+						GAME_COLORS.orange,
+					);
+				}
+				
 				this.game.eventQueue.push({ type: 'SCORE', side: 'right' });
 				this.game.removeEntity(ball.id);
 				this.mustResetBall = true;
@@ -678,20 +712,6 @@ export class PhysicsSystem implements System {
 			}
 		}
     }
-    
-    /* resetBall(ball: Ball, physics: PhysicsComponent, direction: number) {
-		physics.x = this.width / 2;
-        physics.y = this.height / 2;
-		
-		BallSpawner.spawnDefaultBall(this.game);
-    
-        const angle = (Math.random() * 60 - 30) * (Math.PI / 180);
-        const speed = 10;
-        
-        physics.velocityX = Math.cos(angle) * speed * direction;
-        physics.velocityY = Math.sin(angle) * speed;
-        ball.lastHit = '';
-    } */
 
 	updateBullet(bullet: Bullet, entitiesMap: Map<string, Entity>) {
 		const physics = bullet.getComponent('physics') as PhysicsComponent;
@@ -737,19 +757,25 @@ export class PhysicsSystem implements System {
 				paddleR.affectedTimer = 100;
 				this.UI.setBarTimer('right', 100);
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
-				ParticleSpawner.spawnBurst(
-					this.game,
-					bulletPhysics.x - bulletPhysics.width,
-					bulletPhysics.y,
-					10,
-					bulletPhysics.velocityX,
-					bulletPhysics.velocityY,
-					GAME_COLORS.rose,
-				);
+
+				if (!this.game.config.classicMode) {
+					ParticleSpawner.spawnBurst(
+						this.game,
+						bulletPhysics.x - bulletPhysics.width,
+						bulletPhysics.y,
+						10,
+						bulletPhysics.velocityX,
+						bulletPhysics.velocityY,
+						GAME_COLORS.rose,
+					);
+				}
+				
 				changePaddleLayer(this.game, 'right', 'powerDown');
 
-				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-				this.game.sounds.hit.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.hit.play();
+				}
 
 				console.log('Bullet hit!');
 			}
@@ -759,19 +785,24 @@ export class PhysicsSystem implements System {
 				paddleL.affectedTimer = 100;
 				this.UI.setBarTimer('left', 100);
 				PowerupSpawner.despawnBullet(this.game, bullet.id);
-				ParticleSpawner.spawnBurst(
-					this.game,
-					bulletPhysics.x + bulletPhysics.width,
-					bulletPhysics.y,
-					10,
-					-bulletPhysics.velocityX,
-					bulletPhysics.velocityY,
-					GAME_COLORS.rose,
-				);
+
+				if (!this.game.config.classicMode) {
+					ParticleSpawner.spawnBurst(
+						this.game,
+						bulletPhysics.x + bulletPhysics.width,
+						bulletPhysics.y,
+						10,
+						-bulletPhysics.velocityX,
+						bulletPhysics.velocityY,
+						GAME_COLORS.rose,
+					);
+				}
 				changePaddleLayer(this.game, 'left', 'powerDown');
 
-				this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-				this.game.sounds.hit.play();
+				if (!this.game.config.classicMode) {
+					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+					this.game.sounds.hit.play();
+				}
 				
 				console.log('Bullet hit!');
 			}
@@ -841,10 +872,14 @@ export class PhysicsSystem implements System {
 					}
 					
 					if (collided) {
-						ParticleSpawner.spawnBasicExplosion(this.game, bulletPhysics.x + bulletPhysics.width / 4, bulletPhysics.y, GAME_COLORS.rose, 1);
+						if (!this.game.config.classicMode) {
+							ParticleSpawner.spawnBasicExplosion(this.game, bulletPhysics.x + bulletPhysics.width / 4, bulletPhysics.y, GAME_COLORS.rose, 1);
+						}
 						
-						this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
-						this.game.sounds.hit.play();
+						if (!this.game.config.classicMode) {
+							this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
+							this.game.sounds.hit.play();
+						}
 						
 						PowerupSpawner.despawnBullet(this.game, bullet.id);
 						return;

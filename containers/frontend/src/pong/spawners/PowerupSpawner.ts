@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 10:30:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:18:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ export class PowerupSpawner {
 		let powerup;
 
 		switch(idx) {
-			/* case(0):
+			case(0):
 				powerup = new EnlargePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;
 			case(1):
@@ -177,7 +177,7 @@ export class PowerupSpawner {
 			case(2):
 				uniqueId = `${uniqueId}shieldPowerup`;
 				powerup = new ShieldPowerup(uniqueId, 'powerup', game, randomY, randomX);
-				break; */
+				break;
 			default:
 				powerup = new MagnetizePowerup(uniqueId, 'powerup', game, randomY, randomX);
 				break;

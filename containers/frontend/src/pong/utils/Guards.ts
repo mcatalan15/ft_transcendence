@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 14:58:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:40:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,12 @@ import { PowerupSystem } from '../systems/PowerupSystem';
 
 import { MenuPostProcessingLayer } from '../menu/MenuPostProcessingLayer';
 import { MenuLine } from '../menu/MenuLine';
-import { MenuButton } from '../menu/MenuButton';
-import { MenuXButton } from '../menu/MenuXButton';
-import { MenuHalfButton } from '../menu/MenuHalfButton';
-import { MenuOrnaments } from '../menu/MenuOrnaments';
+import { MenuButton } from '../menu/buttons/MenuButton';
+import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
+import { MenuXButton } from '../menu/buttons/MenuXButton';
+import { BallButton } from '../menu/buttons/BallButton';
+import { MenuOrnament } from '../menu/MenuOrnaments';
+import { OverlayBackground } from '../menu/OverlayBackground';
 
 export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
 	return entity instanceof MenuPostProcessingLayer
@@ -103,8 +105,12 @@ export function isMenuHalfButton(entity: Entity): entity is MenuHalfButton {
 	return entity instanceof MenuHalfButton;
 }
 
-export function isMenuOrnaments(entity: Entity): entity is MenuOrnaments {
-	return entity instanceof MenuOrnaments;
+export function isMenuOrnament(entity: Entity): entity is MenuOrnament {
+	return entity instanceof MenuOrnament;
+}
+
+export function isOverlayBackground(entity: Entity): entity is OverlayBackground {
+    return entity.id === 'overlay_background';
 }
 
 export function isMenuLine(entity: Entity): entity is MenuLine {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:10:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/09 12:42:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,4 +140,18 @@ export class MenuParticleSystem implements System {
 	private easeInCubic(t: number): number {
 		return t * t * t;
 	}
+
+	cleanup(): void {
+        // Remove all particles from the menu
+        const particlesToRemove: string[] = [];
+        for (const entity of this.menu.entities) {
+            if (isParticle(entity)) {
+                particlesToRemove.push(entity.id);
+            }
+        }
+        
+        for (const entityId of particlesToRemove) {
+            this.menu.removeEntity(entityId);
+        }
+    }
 }

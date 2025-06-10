@@ -19,7 +19,7 @@ import { RenderComponent } from "../../components/RenderComponent";
 
 import { SnakePatternManager} from '../../managers/SnakePatternManager';
 
-import { ObstacleBehavior, ObstacleOptions } from '../../utils/Types';
+import { ObstacleOptions } from '../../utils/Types';
 import { drawPointPath, generateSnakePoints } from '../../utils/Utils';
 
 export class SnakeSegment extends Obstacle {
@@ -27,7 +27,7 @@ export class SnakeSegment extends Obstacle {
 	segmentIndices: { start: number; count: number; }[] = [];
 	color: number = this.game.currentWorld.color;
 
-	constructor(game: PongGame, options: ObstacleOptions, type: string, id: string, layer: string, pattern: number, position: number) {
+	constructor(game: PongGame, options: ObstacleOptions, id: string, layer: string, pattern: number, position: number) {
 		super(game, id, layer, options);
 		
 		const render = this.getComponent('render') as RenderComponent;
