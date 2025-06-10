@@ -1,5 +1,6 @@
 const { saveGameToDatabase,
 	getLatestGame,
+	getAllGames
  } = require('../db/database');
 
 async function saveGameHandler(request, reply){
@@ -37,7 +38,7 @@ async function saveGameHandler(request, reply){
 
 async function retrieveGamesHandler(request, reply) {
 	try {
-		const games = await request.db.all('SELECT * FROM games ORDER BY id_game DESC');
+		const games = await getAllGames();
 		reply.status(200).send({
 			success: true,
 			games
