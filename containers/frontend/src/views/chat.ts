@@ -587,8 +587,8 @@ Tip: Right-click on usernames for quick actions!`, MessageType.SYSTEM);
     let content = messageText;
     
     if (messageType === MessageType.PRIVATE) {
-      const whisperMatch = messageText.match(/^@(\w+)\s+(.+)$/);
-      if (whisperMatch) {
+		const whisperMatch = messageText.match(/^@([a-zA-Z0-9-]{3,8})\s+(.+)$/);
+	  if (whisperMatch) {
         targetUser = whisperMatch[1];
         content = whisperMatch[2];
       } else {

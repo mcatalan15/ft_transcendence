@@ -60,7 +60,7 @@ function setupChatWebSocket(wss, redisService) {
         switch (data.type) {
           case 'private':
             // Handle private messages (whispers)
-            await handlePrivateMessage(enrichedMessage, data.targetUser, wss, redisService);
+            await handlePrivateMessage(enrichedMessage, data.targetUser, wss, redisService, ws);
             break;
             
           case 'friend':
@@ -120,7 +120,7 @@ function setupChatWebSocket(wss, redisService) {
   });
 
   // Helper function for private messages
-  async function handlePrivateMessage(message, targetUser, wss, redisService) {
+  async function handlePrivateMessage(message, targetUser, wss, redisService, senderWs) {
     // Find target user's connection
     let targetWs = null;
     for (const [ws, userInfo] of connectedUsers) {
@@ -134,10 +134,6 @@ function setupChatWebSocket(wss, redisService) {
       // Send to target user
       targetWs.send(JSON.stringify(message));
       
-      // Send confirmation back to sender
-      const senderWs = Array.from(connectedUsers.entries())
-        .find(([ws, info]) => info.username === message.username)?.[0];
-      
       if (senderWs && senderWs.readyState === WebSocket.OPEN) {
         senderWs.send(JSON.stringify({
           ...message,
@@ -145,10 +141,6 @@ function setupChatWebSocket(wss, redisService) {
         }));
       }
     } else {
-      // User not found or offline
-      const senderWs = Array.from(connectedUsers.entries())
-        .find(([ws, info]) => info.username === message.username)?.[0];
-        
       if (senderWs && senderWs.readyState === WebSocket.OPEN) {
         senderWs.send(JSON.stringify({
           type: 'system',
