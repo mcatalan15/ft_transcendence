@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 10:37:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:01:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,30 @@ export class MenuXButton extends MenuButton {
     }
 
     protected onButtonClick(): void {
-        if (this.id.includes('options')) {
+        if (this.id.includes('start')) {
+            this.menu.eventQueue.push({
+                type: 'START_BACK',
+                target: this.buttonContainer,
+                buttonName: 'startXButton'
+            });
+        } else if (this.id.includes('options')) {
             this.menu.eventQueue.push({
                 type: 'OPTIONS_BACK',
                 target: this.buttonContainer,
                 buttonName: 'optionsXButton'
             });
-        } else if (this.id.includes('start')) {
+        } else if (this.id.includes('glossary')) {
             this.menu.eventQueue.push({
-                type: 'START_BACK',
+                type: 'GLOSSARY_BACK',
                 target: this.buttonContainer,
-                buttonName: 'startXButton'
+                buttonName: 'glossaryXButton'
+            });
+
+        } else if (this.id.includes('about')) {
+            this.menu.eventQueue.push({
+                type: 'ABOUT_BACK',
+                target: this.buttonContainer,
+                buttonName: 'aboutXButton'
             });
         }
     }

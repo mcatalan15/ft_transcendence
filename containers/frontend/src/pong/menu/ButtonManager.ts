@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 14:34:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:01:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,6 @@ export class ButtonManager {
 	}
 
 	static createHalfButtons(menu: Menu) {
-		// START half buttons
 		const HalfButtonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
 				isClicked: true,
@@ -321,11 +320,52 @@ export class ButtonManager {
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 1
 			},
+			{
+				isClicked: false,
+				text: 'X',
+				onClick: () => {
+					console.log(`return at options clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuOrange,
+				index: 2
+			},
+			{
+				isClicked: false,
+				text: 'X',
+				onClick: () => {
+					console.log(`return at options clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuPink	,
+				index: 3
+			},
 		];
 
 		xButtonConfigs.forEach((config, index) => {
+			let tag;
+			
+			switch (index) {
+				case (0): {
+					tag = `xButton_start_${config.text.toLowerCase()}`;
+					break;
+				}
+				case (1): {
+					tag = `xButton_options_${config.text.toLowerCase()}`
+					break;
+				}
+				case (2): {
+					tag = `xButton_glossary_${config.text.toLowerCase()}`
+					break;
+				}
+				case (3): {
+					tag = `xButton_about_${config.text.toLowerCase()}`
+					break;
+				}
+			}
+			
 			const xButton = new MenuXButton(
-				index === 0 ? `xButton_start_${config.text.toLowerCase()}` : `xButton_options_${config.text.toLowerCase()}`, 
+				tag!, 
 				'menuContainer', 
 				menu, 
 				config,
@@ -345,6 +385,18 @@ export class ButtonManager {
 					menu.optionsXButton = xButton;
 					x = (menu.app.screen.width - menu.buttonWidth) / 2 - (menu.buttonWidth / 2) - menu.ornamentOffset + 35;
 					y = (menu.app.screen.height / 3) + ((menu.buttonHeight + menu.buttonVerticalOffset));
+					break;
+				}
+				case (2): {
+					menu.glossaryXButton = xButton;
+					x = (menu.app.screen.width - menu.buttonWidth) / 2 - 115;
+					y = (menu.app.screen.height / 3) + (2 * (menu.buttonHeight + menu.buttonVerticalOffset));
+					break;
+				}
+				case (3): {
+					menu.aboutXButton = xButton;
+					x = (menu.app.screen.width - menu.buttonWidth) / 2  - 140;
+					y = (menu.app.screen.height / 3) + (3 * (menu.buttonHeight + menu.buttonVerticalOffset));
 					break;
 				}
 			}

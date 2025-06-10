@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 11:57:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:58:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ import { GameEvent } from "../utils/Types";
 import { PongGame } from "../engine/Game";
 import { RenderComponent } from "../components/RenderComponent";
 import { isBall } from "../utils/Guards";
+import { TextComponent } from "../components/TextComponent";
 
 export class ButtonSystem implements System {
     private menu: Menu;
@@ -122,45 +123,55 @@ export class ButtonSystem implements System {
 
     handleGlossaryClick() {
         this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
+        this.menu.glossaryButton.setClickable(!this.menu.glossaryButton.getIsClicked());
+        this.menu.glossaryButton.resetButton();
+
+        this.menu.menuHidden.addChild(this.menu.glossaryOrnament.getGraphic());
+        this.menu.menuContainer.addChild(this.menu.glossaryClickedOrnament.getGraphic());
+        this.menu.redrawFrame();
         
         if (this.menu.glossaryButton.getIsClicked()) {
-            // Show overlay with fade-in animation
-            this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-            this.menu.overlayBackground.fadeIn();
-        } else {
-            // Start fade-out animation
-            this.menu.overlayBackground.fadeOut();
-            
-            // Remove from layer after animation completes
-            setTimeout(() => {
-                if (this.menu.overlayBackground.isAnimationComplete() && 
-                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
-                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                }
-            }, 500); // Adjust timing based on your animation speed
+            if (!this.menu.overlayBackground.getIsDisplayed()) {
+                this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                this.menu.overlayBackground.fadeIn();
+                this.menu.overlayBackground.setIsDisplayed(true);
+                
+                const glossaryText = this.menu.glossaryES.getComponent('text') as TextComponent;
+		        this.menu.renderLayers.overlays.addChild(glossaryText.getRenderable());
+            }
+
+            if (this.menu.aboutButton.getIsClicked()) {
+                this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
+                this.menu.aboutButton.resetButton();
+            }
+
+            this.menu.menuContainer.addChild(this.menu.glossaryXButton.getContainer());
         }
     }
 
     handleAboutClick() {
         this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
+        this.menu.aboutButton.setClickable(!this.menu.aboutButton.getIsClicked());
         this.menu.aboutButton.resetButton();
 
+        this.menu.menuHidden.addChild(this.menu.aboutOrnament.getGraphic());
+        this.menu.menuContainer.addChild(this.menu.aboutClickedOrnament.getGraphic());
+        this.menu.redrawFrame();
+
         if (this.menu.aboutButton.getIsClicked()) {
-            // Show overlay with fade-in animation
-            this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-            this.menu.overlayBackground.fadeIn();
-        } else {
-            // Start fade-out animation
-            this.menu.overlayBackground.fadeOut();
-            
-            // Remove from layer after animation completes
-            setTimeout(() => {
-                if (this.menu.overlayBackground.isAnimationComplete() && 
-                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
-                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                }
-            }, 500); // Adjust timing based on your animation speed
-        }
+            if (!this.menu.overlayBackground.getIsDisplayed()) {
+                this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                this.menu.overlayBackground.fadeIn();
+                this.menu.overlayBackground.setIsDisplayed(true);
+            }
+
+            if (this.menu.glossaryButton.getIsClicked()) {
+                this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
+                this.menu.glossaryButton.resetButton();
+            }
+
+            this.menu.menuContainer.addChild(this.menu.aboutXButton.getContainer());
+        } 
     }
 
     resetLayer(event: GameEvent){
@@ -212,6 +223,57 @@ export class ButtonSystem implements System {
 
             this.menu.optionsButton.resetButton();
             this.menu.optionsXButton.resetButton();
+        } else if (event.type.includes('GLOSSARY')) {
+            this.menu.glossaryXButton.setHidden(!this.menu.glossaryButton.getIsHidden());
+            this.menu.menuHidden.addChild(this.menu.glossaryXButton.getContainer());
+
+            this.menu.glossaryButton.setClicked(false);
+            this.menu.glossaryButton.setClickable(true);
+            this.menu.glossaryButton.setHidden(false);
+
+            this.menu.menuContainer.addChild(this.menu.glossaryOrnament.getGraphic());
+            this.menu.menuHidden.addChild(this.menu.glossaryClickedOrnament.getGraphic());
+
+            this.menu.overlayBackground.fadeOut();
+            this.menu.overlayBackground.setIsDisplayed(false);
+
+            const glossaryText = this.menu.glossaryES.getComponent('text') as TextComponent;
+		    this.menu.menuHidden.addChild(glossaryText.getRenderable());
+            
+            setTimeout(() => {
+                if (this.menu.overlayBackground.isAnimationComplete() && 
+                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
+                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                }
+            }, 500);
+
+            this.menu.redrawFrame();
+            this.menu.glossaryButton.resetButton();
+            this.menu.glossaryXButton.resetButton();
+        } else if (event.type.includes('ABOUT')) {
+            this.menu.aboutXButton.setHidden(!this.menu.aboutButton.getIsHidden());
+            this.menu.menuHidden.addChild(this.menu.aboutXButton.getContainer());
+
+            this.menu.aboutButton.setClicked(false);
+            this.menu.aboutButton.setClickable(true);
+            this.menu.aboutButton.setHidden(false);
+
+            this.menu.menuContainer.addChild(this.menu.aboutOrnament.getGraphic());
+            this.menu.menuHidden.addChild(this.menu.aboutClickedOrnament.getGraphic());
+
+            this.menu.overlayBackground.fadeOut();
+            this.menu.overlayBackground.setIsDisplayed(false);
+            
+            setTimeout(() => {
+                if (this.menu.overlayBackground.isAnimationComplete() && 
+                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
+                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                }
+            }, 500);
+
+            this.menu.redrawFrame();
+            this.menu.aboutButton.resetButton();
+            this.menu.aboutXButton.resetButton();
         }
     }
 
@@ -392,6 +454,8 @@ export class ButtonSystem implements System {
         menu.tournamentButton.resetButton();
         menu.startXButton.resetButton();
         menu.optionsXButton.resetButton();
+        menu.glossaryXButton.resetButton();
+        menu.aboutXButton.resetButton();
         
         menu.playOrnament.resetOrnament();
         menu.startOrnament.resetOrnament();

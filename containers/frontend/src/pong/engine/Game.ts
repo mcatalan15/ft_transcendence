@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:41:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:39:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ export class PongGame {
 	};
 	visualRoot: Container;
 	sounds!: GameSounds;
-	soundManager: SoundManager;
+	soundManager!: SoundManager;
 	worldPool: World[] = [];
 	currentWorld!: World;
 	leftPlayer: any = '';

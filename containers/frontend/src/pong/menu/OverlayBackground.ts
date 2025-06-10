@@ -10,6 +10,7 @@ export class OverlayBackground extends Entity {
     private animationProgress: number = 0;
     private animationSpeed: number = 0.08; // Adjust for faster/slower fade
     private isAnimating: boolean = false;
+    private isDisplayed: boolean = false;
 
     constructor(id: string, layer: string, width: number, height: number) {
         super(id, layer);
@@ -85,5 +86,13 @@ export class OverlayBackground extends Entity {
 
     public getCurrentAlpha(): number {
         return this.currentAlpha;
+    }
+    
+    public getIsDisplayed(): boolean {
+        return this.isDisplayed;
+    }
+
+    public setIsDisplayed(displayed: boolean): void {
+        this.isDisplayed = displayed;
     }
 }

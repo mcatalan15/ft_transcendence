@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 19:02:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:36:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,28 @@ export class MenuOrnament extends Entity {
 				clickedPoints: this.calculatePoints('GLOSSARY', true),
 				clickedColor: themeColors.white
 			},
+			'GLOSSARY_CLICKED': {
+				layer: 'GLOSSARY_CLICKED',
+				color: themeColors.white,
+				points: this.calculatePoints('GLOSSARY_CLICKED', false),
+				position: { x: 0, y: baseY + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 2 },
+				clickedPoints: this.calculatePoints('GLOSSARY_CLICKED', true),
+				clickedColor: themeColors.white
+			},
 			'ABOUT': {
 				layer: 'ABOUT',
 				color: themeColors.menuPink,
 				points: this.calculatePoints('ABOUT', false),
 				position: { x: 0, y: baseY + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3 },
 				clickedPoints: this.calculatePoints('ABOUT', true),
+				clickedColor: themeColors.white
+			},
+			'ABOUT_CLICKED': {
+				layer: 'ABOUT_CICKED',
+				color: themeColors.white,
+				points: this.calculatePoints('ABOUT_CLICKED', false),
+				position: { x: 0, y: baseY + (this.menu.buttonHeight + this.menu.buttonVerticalOffset) * 3 },
+				clickedPoints: this.calculatePoints('ABOUT_CLICKED', true),
 				clickedColor: themeColors.white
 			}
 		};
@@ -146,11 +162,25 @@ export class MenuOrnament extends Entity {
 					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
 					0, this.menu.buttonHeight
 				];
+			case 'GLOSSARY_CLICKED':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant - this.menu.ornamentOffset - 40, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap - this.menu.ornamentOffset - 40, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
 			case 'ABOUT':
 				return [
 					0, 0,
 					(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
 					(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
+					0, this.menu.buttonHeight
+				];
+			case 'ABOUT_CLICKED':
+				return [
+					0, 0,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant - this.menu.ornamentOffset - 40, 0,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap - this.menu.ornamentOffset - 40, this.menu.buttonHeight,
 					0, this.menu.buttonHeight
 				];
 		}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 11:31:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/10 17:46:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ import { BallButton } from './buttons/BallButton';
 
 import { MenuOrnament } from './MenuOrnaments';
 import { OverlayBackground } from './OverlayBackground';
+import { Glossary } from './Glossary';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -126,6 +127,8 @@ export class Menu{
 	classicButton!: MenuHalfButton;
 	startXButton!: MenuXButton;
 	optionsXButton!: MenuXButton;
+	glossaryXButton!: MenuXButton;
+	aboutXButton!: MenuXButton;
 	ballButton!: BallButton;
 
 	// Ornaments
@@ -135,10 +138,13 @@ export class Menu{
 	optionsOrnament!: MenuOrnament;
 	optionsClickedOrnament!: MenuOrnament;
 	glossaryOrnament!: MenuOrnament;
+	glossaryClickedOrnament!: MenuOrnament;
 	aboutOrnament!: MenuOrnament;
+	aboutClickedOrnament!: MenuOrnament;
 
 	// Overlay items
 	overlayBackground!: OverlayBackground;
+	glossaryES!: Glossary;
 
 	constructor(app: Application) {
 		this.app = app;
@@ -202,6 +208,7 @@ export class Menu{
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
+		await this.createGlossaries();
 		await this.initSystems();
 		await this.initDust();
 
@@ -400,11 +407,23 @@ export class Menu{
 		this.entities.push(glossaryOrnament);
 		this.glossaryOrnament = glossaryOrnament;
 
+		const glossaryClickedOrnament = new MenuOrnament('glossary-clicked-ornament', 'menuContainer', this, 'GLOSSARY_CLICKED');
+		const glossaryClickedOrnamentRender = glossaryClickedOrnament.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(glossaryClickedOrnamentRender.graphic);
+		this.entities.push(glossaryClickedOrnament);
+		this.glossaryClickedOrnament = glossaryClickedOrnament;
+
 		const aboutOrnament = new MenuOrnament('about-ornament', 'menuContainer', this, 'ABOUT');
 		const aboutOrnamentRender = aboutOrnament.getComponent('render') as RenderComponent;
 		this.menuContainer.addChild(aboutOrnamentRender.graphic);
 		this.entities.push(aboutOrnament);
 		this.aboutOrnament = aboutOrnament;
+
+		const aboutClickedOrnament = new MenuOrnament('about-clicked-ornament', 'menuContainer', this, 'ABOUT_CLICKED');
+		const aboutClickedOrnamentRender = aboutClickedOrnament.getComponent('render') as RenderComponent;
+		this.menuHidden.addChild(aboutClickedOrnamentRender.graphic);
+		this.entities.push(aboutClickedOrnament);
+		this.aboutClickedOrnament = aboutClickedOrnament;
 	}
 
 	createBoundingBoxes() {
@@ -463,6 +482,14 @@ export class Menu{
 		const overlayRender = overlayBackground.getComponent('render') as RenderComponent;
 		this.menuHidden.addChild(overlayRender.graphic);
 		this.overlayBackground = overlayBackground;
+	}
+
+	createGlossaries() {
+		const glossary = new Glossary('glossary', 'overlays');
+		const glossaryText = glossary.getComponent('text') as TextComponent;
+		this.menuHidden.addChild(glossaryText.getRenderable());
+		this.entities.push(glossary);
+		this.glossaryES = glossary;
 	}
 
 	cleanup(): void {
