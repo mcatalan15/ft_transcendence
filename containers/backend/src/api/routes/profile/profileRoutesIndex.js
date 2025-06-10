@@ -3,13 +3,15 @@ const { verifyToken } = require('../../../config/middleware/auth');
 const { 
 	profileSchema,
 	uploadAvatarSchema,
-	fetchUserAvatarSchema
+	fetchUserAvatarSchema,
+	getUserOnlineStatusSchema
  } = require('../../schemas/profile');
 
  const { 
 	getUserProfile,
 	avatarUploadHandler,
-	fetchUserAvatar
+	fetchUserAvatar,
+	getUserOnlineStatus
  } = require('../../handlers/profile');
 
  module.exports = async function (fastify, options) {
@@ -19,5 +21,6 @@ const {
 	fastify.get('/api/profile', { schema: profileSchema, preHandler: verifyToken }, getUserProfile);
 	fastify.post('/api/profile/avatar', { schema: uploadAvatarSchema, preHandler: verifyToken }, avatarUploadHandler);
 	fastify.get('/api/profile/avatar/:userId', { schema: fetchUserAvatarSchema, preHandler: verifyToken }, fetchUserAvatar)
+	fastify.get('/api/profile/status/:userId', { schema: getUserOnlineStatusSchema,	preHandler: verifyToken }, getUserOnlineStatus);
 
-  };
+};

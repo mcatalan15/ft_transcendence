@@ -150,14 +150,20 @@ async function signinHandler(request, reply) {
 async function logoutHandler(request, reply) {
 	try {
 
-		// Check if request.session exists
-		if (request.session.get('user')) {
-			request.session.destroy();
-			return reply.status(200).send({
-				success: true,
-				message: 'User session destroyed'
-			});
-		}
+        const user = request.session.get('user');
+        
+        if (user) {
+            // Remove user from online tracker
+            if (user.userId) {
+                onlineTracker.removeUser(user.userId);
+            }
+            
+            request.session.destroy();
+            return reply.status(200).send({
+                success: true,
+                message: 'User session destroyed'
+            });
+        }
 
 		return reply.status(400).send({
 			success: false,

@@ -7,6 +7,38 @@ import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
 
+// Add this function before the showProfile function
+async function updateOnlineStatus(userId: string): Promise<void> {
+    try {
+        const response = await fetch(`/api/profile/status/${userId}`, {
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const statusDot = document.getElementById('status-dot');
+            const statusIndicator = document.getElementById('online-status-indicator');
+            
+            if (statusDot && statusIndicator) {
+                if (data.isOnline) {
+                    statusDot.className = 'w-4 h-4 rounded-full bg-green-500';
+                    statusIndicator.title = 'Online';
+                } else {
+                    statusDot.className = 'w-4 h-4 rounded-full bg-gray-500';
+                    statusIndicator.title = 'Offline';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching online status:', error);
+        // Default to offline state
+        const statusDot = document.getElementById('status-dot');
+        if (statusDot) {
+            statusDot.className = 'w-4 h-4 rounded-full bg-gray-500';
+        }
+    }
+}
+
 function createButton(color: string, text: string, action: () => void) {
     let btn = document.createElement('button');
     btn.type = 'button';
@@ -123,20 +155,41 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
   centerCol.className = "flex flex-col place-items-center gap-4 w-full mt-32";
 
   const avatar = document.createElement('img');
+    avatar.alt = 'Profile';
+    avatar.className = `
+        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
+        shadow-xl transition-all duration-300
+    `.replace(/\s+/g, ' ').trim();
 
-  avatar.alt = 'Profile';
-  avatar.className = `
-    w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
-    shadow-xl transition-all duration-300
-  `.replace(/\s+/g, ' ').trim();
+    // Create avatar container with better positioning
+    const avatarContainer = document.createElement('div');
+    avatarContainer.className = 'relative inline-block';
+    
+    // Create the status indicator with improved positioning
+    const statusIndicator = document.createElement('div');
+    statusIndicator.className = `
+        absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-2 border-neutral-900
+        transition-all duration-300 flex items-center justify-center bg-neutral-900
+    `.replace(/\s+/g, ' ').trim();
+    statusIndicator.id = 'online-status-indicator';
+    
+    // Create status dot
+    const statusDot = document.createElement('div');
+    statusDot.className = 'w-5 h-5 rounded-full bg-gray-500'; // Default to offline
+    statusDot.id = 'status-dot';
+    
+    statusIndicator.appendChild(statusDot);
+    avatarContainer.appendChild(avatar);
+    avatarContainer.appendChild(statusIndicator);
+    
+    // Replace the direct avatar append with the container
+    centerCol.appendChild(avatarContainer);
 
-  const nicknameSpan = document.createElement('span');
+    const nicknameSpan = document.createElement('span');
   nicknameSpan.className = `
     mt-6 text-amber-50 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
   `.replace(/\s+/g, ' ').trim();
   nicknameSpan.textContent = '...';
-
-  centerCol.appendChild(avatar);
   centerCol.appendChild(nicknameSpan);
 
   leftCol.appendChild(profileTitle);
@@ -287,7 +340,24 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	  
 		nicknameSpan.textContent = username;
 		avatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
-		
+		if (!isOwnProfile) {
+			updateOnlineStatus(data.userId);
+			
+			// Optional: Set up periodic status updates
+			const statusInterval = setInterval(() => {
+				updateOnlineStatus(data.userId);
+			}, 30000); // Update every 30 seconds
+			
+			// Clean up interval when navigating away (you might want to add this to a cleanup function)
+			(window as any).profileStatusInterval = statusInterval;
+		} else {
+            // Hide status indicator for own profile
+            const statusIndicator = document.getElementById('online-status-indicator');
+            if (statusIndicator) {
+                statusIndicator.style.display = 'none';
+            }
+		}
+
 		// Update stats if they exist
 		if (data.matchesPlayed !== undefined) {
 		  stat1.querySelector('span.font-bold').textContent = data.matchesPlayed;

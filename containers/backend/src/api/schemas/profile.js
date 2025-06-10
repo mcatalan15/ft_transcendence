@@ -66,7 +66,7 @@ const profileSchema = {
 	}
   };
 
-  const uploadAvatarSchema = {
+const uploadAvatarSchema = {
 	description: 'Allow the user to upload a new avatar to replace the old one.\
 	The user needs to be authenticated, obviously.\
 	',
@@ -133,7 +133,7 @@ const profileSchema = {
 	}
   };
 
-  const fetchUserAvatarSchema = {
+const fetchUserAvatarSchema = {
 	description: 'Fetches the actual user\'s avatar to display it in the profile.\
 	The user needs to be authenticated, obviously.\
 	',
@@ -166,8 +166,55 @@ const profileSchema = {
 	}
   };
 
+  const getUserOnlineStatusSchema = {
+    description: 'Check if a user is currently online based on recent activity',
+    tags: ['profile'],
+    params: {
+        type: 'object',
+        required: ['userId'],
+        properties: {
+            userId: { type: 'string', description: 'User ID to check online status for' }
+        }
+    },
+    response: {
+        200: {
+            description: 'Online status retrieved successfully',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                userId: { type: 'string' },
+                isOnline: { type: 'boolean' },
+                lastSeen: { type: ['string', 'null'] }
+            },
+            example: {
+                success: true,
+                userId: '42',
+                isOnline: true,
+                lastSeen: '2024-01-10T16:38:43.105Z'
+            }
+        },
+        400: {
+            description: 'Bad request - missing userId',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' }
+            }
+        },
+        404: {
+            description: 'User not found',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' }
+            }
+        }
+    }
+};
+
 module.exports = {
-	profileSchema,
-	uploadAvatarSchema,
-	fetchUserAvatarSchema
-  };
+    profileSchema,
+    uploadAvatarSchema,
+    fetchUserAvatarSchema,
+    getUserOnlineStatusSchema
+};

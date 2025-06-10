@@ -10,6 +10,9 @@ const GameManager = require('./game/gameManager');
 
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
 
+const onlineTracker = require('./utils/onlineTracker');
+const { trackUserActivity } = require('./config/middleware/activityTracker');
+
 async function startServer() {
   const app = buildApp();
   
@@ -23,6 +26,9 @@ async function startServer() {
   
   const { wss, gameWss } = setupWebSocketServers();
   
+  onlineTracker.start();
+  app.addHook('preHandler', trackUserActivity);
+
   await app.listen({ host: serverConfig.ADDRESS, port: serverConfig.PORT });
   const nodeServer = app.server;
   
@@ -32,7 +38,7 @@ async function startServer() {
   setupGameWebSocket(gameWss, redisService, gameManager);
   
   ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
-    process.on(signal, () => serverConfig.gracefulShutdown(app, db, signal));
+    process.on(signal, () => serverConfig.gracefulShutdown(app, db, onlineTracker, signal));
   });
 }
 

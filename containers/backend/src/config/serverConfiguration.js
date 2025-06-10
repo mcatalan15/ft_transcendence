@@ -1,5 +1,9 @@
-function gracefulShutdown(app, db, signal) {
+const onlineTracker = require("../utils/onlineTracker");
+
+function gracefulShutdown(app, db, onlineTracker, signal) {
   console.log(`Received ${signal}, shutting down gracefully`);
+
+  onlineTracker.stop();
 
   app.close(() => {
     console.log('Server closed');

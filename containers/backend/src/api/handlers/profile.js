@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship } = require('../db/database');
+const onlineTracker = require('../../utils/onlineTracker');
 
 async function getUserProfile(request, reply) {
     try {
@@ -163,9 +164,52 @@ async function fetchUserAvatar(request, reply) {
     }
 }
 
+async function getUserOnlineStatus(request, reply) {
+    try {
+        const requestedUserId = request.params.userId;
+        
+        if (!requestedUserId) {
+            return reply.status(400).send({
+                success: false,
+                message: 'User ID is required'
+            });
+        }
+
+        // Check if user exists
+        const user = await getUserById(requestedUserId);
+        if (!user) {
+            return reply.status(404).send({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Check online status using our tracker
+        const isOnline = onlineTracker.isUserOnline(requestedUserId);
+        const lastActivity = onlineTracker.getUserLastActivity(requestedUserId);
+        
+        console.log(`User ${requestedUserId} online status: ${isOnline}`);
+        console.log(`Last activity: ${lastActivity ? new Date(lastActivity).toISOString() : 'Never'}`);
+        
+        return reply.status(200).send({
+            success: true,
+            userId: requestedUserId,
+            isOnline: isOnline,
+            lastSeen: lastActivity ? new Date(lastActivity).toISOString() : null
+        });
+        
+    } catch (error) {
+        console.error('Error checking online status:', error);
+        return reply.status(500).send({
+            success: false,
+            message: 'Server error'
+        });
+    }
+}
 
 module.exports = {
 	getUserProfile,
 	avatarUploadHandler,
-	fetchUserAvatar
+	fetchUserAvatar,
+	getUserOnlineStatus
 }
