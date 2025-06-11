@@ -125,6 +125,14 @@ function renderRoute(path: string) {
 					views.showProfile(app, username);
 				}
 				return;
+			} 
+			else if (path === '/pong' || path.startsWith('/pong?')) {
+				if (!isUserAuthenticated()) {
+					navigate('/');
+					return;
+				}
+					views.showPong(app);
+				return;
 			}
 
 			app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
