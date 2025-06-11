@@ -8,32 +8,49 @@ export class PongNetworkManager {
   private lastUpdateTime: number = 0;
   
   constructor(game: PongGame, gameId: string) {
-    this.game = game;
-    this.wsManager = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
-    
-    // Register handlers
-    this.setupHandlers();
-    
-    // Connect to game
-    this.connect(gameId);
-  }
+  this.game = game;
+  
+  // Create a new WebSocketManager instance specifically for this game
+  // Don't use getInstance() - create a dedicated instance for the game
+  this.wsManager = new WebSocketManager(
+    sessionStorage.getItem('username') ?? 'undefined',
+    `ws://localhost:3100/ws/socket/game` // Base URL, gameId will be appended
+  );
+
+  // Set reference in game for bidirectional communication
+  this.game.networkManager = this;
+
+  // Register handlers
+  this.setupHandlers();
+  
+  // Connect to game
+  this.connect(gameId);
+}
   
   private setupHandlers() {
     this.wsManager.registerHandler('GAME_START', () => {
-      console.log('Game started!');
+      console.log('Game started by server!');
       this.game.start();
     });
     
     this.wsManager.registerHandler('PLAYER_ASSIGNED', (message) => {
       this.playerNumber = message.playerNumber;
-      // Also set on the game for reference in updateFromServer
       this.game.localPlayerNumber = message.playerNumber;
       console.log('Server assigned player number:', this.playerNumber);
+      
+      // Show player assignment in UI
+      this.showPlayerAssignment();
+    });
+    
+    this.wsManager.registerHandler('PLAYER_CONNECTED', (message) => {
+      console.log('Player connected:', message);
+      // Show opponent connection status
     });
     
     this.wsManager.registerHandler('PLAYER_DISCONNECTED', () => {
       console.log('Other player disconnected');
       // Show disconnection message in game
+      this.showDisconnectionMessage();
     });
     
     this.wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
@@ -45,20 +62,49 @@ export class PongNetworkManager {
         this.game.updateFromServer(gameState);
       }
     });
+    
+    this.wsManager.registerHandler('GAME_READY', () => {
+      console.log('Both players connected, game is ready to start');
+      // Hide loading UI, show ready state
+    });
   }
   
   async connect(gameId: string) {
     try {
-      await this.wsManager.connect(gameId);
-      console.log('Connected to game session');
+      console.log('Connecting to game session:', gameId);
       
-      // Set up input handlers
-      this.setupInputHandlers();
-    } catch (err) {
-      console.error('Failed to connect to game session', err);
+      // Use WebSocketManager to join the game
+      const success = await this.wsManager.joinGame(gameId);
+      
+      if (success) {
+        console.log('Successfully joined game session');
+        // Setup input handlers after successful connection
+        this.setupInputHandlers();
+      } else {
+        throw new Error('Failed to join game session');
+      }
+      
+    } catch (error) {
+      console.error('Failed to connect to game:', error);
+      throw error;
     }
   }
+
+  private showPlayerAssignment() {
+    const playerText = this.playerNumber === 1 ? 'Left Paddle (Player 1)' : 'Right Paddle (Player 2)';
+    console.log(`You are: ${playerText}`);
+    // TODO: Show this in the game UI
+  }
   
+  private showDisconnectionMessage() {
+    console.log('Opponent disconnected from the game');
+    // TODO: Show disconnection overlay in game
+  }
+  
+  getPlayerNumber(): number {
+    return this.playerNumber;
+  }
+
 private handleKeyDown = (e: KeyboardEvent) => {
   if (!this.playerNumber) return;
   

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:41:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 10:55:30 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ import { SoundManager } from '../managers/SoundManager';
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
+export interface GameConfig {
+  classicMode: boolean;
+  isOnline?: boolean;
+  gameId?: string;
+  opponent?: string;
+}
 
 export class PongGame {
 	config: GameConfig;
@@ -90,6 +96,11 @@ export class PongGame {
 	leftPlayer: any = '';
 	rightPlayer: any = '';
 
+	isOnline: boolean = false;
+	gameId?: string;
+	localPlayerNumber?: number;
+	networkManager?: any;
+
 	constructor(app: Application, config: GameConfig) {
 		this.config = config;
 		this.app = app;
@@ -105,6 +116,9 @@ export class PongGame {
 		this.paddleWidth = 10;
 		this.paddleHeight = 80;
 
+		this.isOnline = config.isOnline || false;
+		this.gameId = config.gameId;
+		
 		this.renderLayers = {
 			bounding: new Container(),
 			background: new Container(),
@@ -136,8 +150,8 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.ui);
 		
 		if (!this.config.classicMode) {
-			this.initSounds();
-			this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
+		this.initSounds();
+		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 		}
 	}
 
@@ -453,5 +467,21 @@ export class PongGame {
 		this.renderLayers.ballChange.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
 		
+	}
+
+	updateFromServer(gameState: any) {
+		// This will be called by the network manager when receiving server updates
+		console.log('Updating game state from server:', gameState);
+
+		// Update game entities based on server state
+		// This is where we'll handle ball position, paddle positions, etc.
+		// For now, just log the received state
+	}
+
+	// Add method to start the online game
+	start() {
+		console.log('Starting online Pong game');
+		// Initialize game loop and start rendering
+		// This will be called when both players are connected
 	}
 }

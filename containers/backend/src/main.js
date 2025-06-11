@@ -34,7 +34,7 @@ async function startServer() {
   
   handleUpgrade(wss, gameWss, nodeServer);
   
-  setupChatWebSocket(wss, redisService);
+  setupChatWebSocket(wss, redisService, gameManager);
   setupGameWebSocket(gameWss, redisService, gameManager);
   
   ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {

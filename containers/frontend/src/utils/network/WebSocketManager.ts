@@ -1,16 +1,17 @@
 export class WebSocketManager {
     private socket: WebSocket | null = null;
-    //private url: string;
+    private gameWebSocketUrl: string; // Add this property
     private gameId: string | null = null;
     private hostId: string;
-    private localPlayerId: string;
+    private localPlayerId: string; // Add this property
     private playerRole: 'host' | 'guest' | null = null;
     private messageHandlers: Map<string, (data: any) => void> = new Map();
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
-	//private playerNumberAssigned: boolean = false;
     private currentPlayerNumber: number | null = null;
+    private isConnecting: boolean = false;
     
+    // Remove singleton pattern for game instances, or make it optional
     private static instance: WebSocketManager | null = null;
 
     setPlayerRole(role: 'host' | 'guest') {
@@ -24,82 +25,88 @@ export class WebSocketManager {
     
     setPlayerNumber(num: number): void {
         this.currentPlayerNumber = num;
-        //this.playerNumberAssigned = true;
         sessionStorage.setItem('playerNumber', num.toString());
     }
 
+    // Modify getInstance to be optional - don't use for game connections
     public static getInstance(playerId: string): WebSocketManager {
         if (!WebSocketManager.instance) {
             WebSocketManager.instance = new WebSocketManager(playerId);
         } else {
-            WebSocketManager.instance.localPlayerId = playerId;
+            WebSocketManager.instance.hostId = playerId;
+            WebSocketManager.instance.localPlayerId = playerId; // Fix this too
         }
         return WebSocketManager.instance;
     }
 
-    private constructor(playerId: string) {
-        this.hostId = playerId;
-        this.localPlayerId = playerId;
-        //this.url = `ws://localhost:3100/ws/socket/game`;
+    constructor(hostId: string, customUrl?: string) {
+        this.hostId = hostId;
+        this.localPlayerId = hostId; // Set localPlayerId
+        this.gameWebSocketUrl = customUrl || 'ws://localhost:3100/ws/socket/game';
     }
 
-	private isConnecting: boolean = false;
-
     connect(gameId: string | null): Promise<void> {
-
-		if (this.isConnecting) {
-			console.log('Connection attempt already in progress');
-			return Promise.reject(new Error('Connection in progress'));
-		  }
-		  
-		this.isConnecting = true;
+        if (this.isConnecting) {
+            console.log('Connection attempt already in progress');
+            return Promise.reject(new Error('Connection in progress'));
+        }
+          
+        this.isConnecting = true;
 
         return new Promise((resolve, reject) => {
-			if (this.socket) {
-				console.log(`Closing existing connection before connecting with gameId: ${gameId}`);
-				this.socket.onclose = null; // Prevent reconnect attempts during intentional close
-				this.socket.close();
-				this.socket = null;
-			  }
-			  
-			// Reset reconnection counter when intentionally connecting
-			this.reconnectAttempts = 0;
+            if (this.socket) {
+                console.log(`Closing existing connection before connecting with gameId: ${gameId}`);
+                this.socket.onclose = null; // Prevent reconnect attempts during intentional close
+                this.socket.close();
+                this.socket = null;
+            }
+              
+            // Reset reconnection counter when intentionally connecting
+            this.reconnectAttempts = 0;
             this.gameId = gameId;
             
-            // Log the exact URL
-            const wsUrl = `ws://localhost:3100/ws/socket/game/`;
-			
-			this.socket = new WebSocket(wsUrl);
+            // Construct the proper WebSocket URL
+            let wsUrl: string;
+            if (gameId) {
+                // For game connections, append the gameId to the URL
+                wsUrl = `${this.gameWebSocketUrl}/${gameId}`;
+            } else {
+                // For general game server connection
+                wsUrl = this.gameWebSocketUrl;
+            }
+            
+            console.log('Connecting to WebSocket URL:', wsUrl);
+            this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = () => {
-                console.log('WebSocket connection OPENED successfully');
+                console.log('WebSocket connection OPENED successfully to:', wsUrl);
                 this.isConnecting = false;
 
-				const storedPlayerNumber = sessionStorage.getItem('playerNumber');
+                const storedPlayerNumber = sessionStorage.getItem('playerNumber');
 
-				this.send({
-					type: 'IDENTIFY',
-					playerId: this.localPlayerId,
-					gameId: this.gameId,
-					playerNumber: storedPlayerNumber ? parseInt(storedPlayerNumber) : undefined
-				  });
+                this.send({
+                    type: 'IDENTIFY',
+                    playerId: this.localPlayerId,
+                    gameId: this.gameId,
+                    playerNumber: storedPlayerNumber ? parseInt(storedPlayerNumber) : undefined
+                });
 
                 resolve();
             };
             
             this.socket.onclose = (event) => {
                 console.log('WebSocket connection CLOSED', event);
-				this.isConnecting = false;
-				// Only handle automatic reconnects for unexpected closures
-				if (event.code !== 1000) { // Normal closure
-				  this.handleDisconnect(event);
-				}
+                this.isConnecting = false;
+                // Only handle automatic reconnects for unexpected closures
+                if (event.code !== 1000) { // Normal closure
+                    this.handleDisconnect(event);
+                }
                 reject(new Error('WebSocket connection closed'));
             };
             
             this.socket.onerror = (error) => {
                 console.error('WebSocket ERROR occurred:', error);
-				this.isConnecting = false;
+                this.isConnecting = false;
                 reject(error);
             };
             
@@ -213,22 +220,43 @@ export class WebSocketManager {
 		});
 	}
     
-    joinGame(gameId: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.registerHandler('JOIN_SUCCESS', () => {
-                resolve(true);
-            });
+    async joinGame(gameId: string): Promise<boolean> {
+        try {
+            // First connect to the game WebSocket
+            await this.connect(gameId);
             
-            this.registerHandler('JOIN_FAILURE', (data) => {
-                reject(new Error(data.reason));
+            return new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    this.unregisterHandler('JOIN_SUCCESS');
+                    this.unregisterHandler('JOIN_FAILURE');
+                    reject(new Error('Join game timed out'));
+                }, 10000);
+                
+                this.registerHandler('JOIN_SUCCESS', () => {
+                    clearTimeout(timeoutId);
+                    this.unregisterHandler('JOIN_SUCCESS');
+                    this.unregisterHandler('JOIN_FAILURE');
+                    resolve(true);
+                });
+                
+                this.registerHandler('JOIN_FAILURE', (data) => {
+                    clearTimeout(timeoutId);
+                    this.unregisterHandler('JOIN_SUCCESS'); 
+                    this.unregisterHandler('JOIN_FAILURE');
+                    reject(new Error(data.reason || 'Failed to join game'));
+                });
+                
+                // Send join request after connection is established
+                this.send({
+                    type: 'JOIN_GAME',
+                    playerId: this.hostId,
+                    gameId: gameId
+                });
             });
-            
-            this.send({
-                type: 'JOIN_GAME',
-                playerId: this.hostId,
-                gameId
-            });
-        });
+        } catch (error) {
+            console.error('Failed to connect to game WebSocket:', error);
+            throw error;
+        }
     }
     
     close() {

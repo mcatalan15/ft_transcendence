@@ -28,12 +28,15 @@ class RedisService {
     }
   }
 
-  async createGame(gameId, hostId) {
-    return await this.publisher.setEx(`game:${gameId}`, 3600, JSON.stringify({
-      hostId: hostId,
-      status: 'waiting',
-      created: Date.now()
-    }));
+  async createGame(gameId, gameData) {
+    try {
+      const result = await this.publisher.setEx(`game:${gameId}`, 3600, JSON.stringify(gameData));
+      console.log(`Game ${gameId} saved to Redis:`, gameData);
+      return result;
+    } catch (error) {
+      console.error(`Failed to save game ${gameId} to Redis:`, error);
+      throw error;
+    }
   }
 
   async getGame(gameId) {

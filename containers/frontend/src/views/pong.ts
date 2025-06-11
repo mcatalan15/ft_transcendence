@@ -1,128 +1,90 @@
 import { Application, Graphics, Text } from 'pixi.js';
 import { WebSocketManager } from '../utils/network/WebSocketManager';
 import { initGame } from '../pong/pong';
+import { PongGame } from '../pong/engine/Game';
+import { PongNetworkManager } from '../pong/network/PongNetworkManager';
 
-/* async function initGame(canvas: HTMLCanvasElement, gameId: string, isHost: boolean) {
-
-  let playerNumber = 0;
-
-  const app = new Application();
-  await app.init({
-    view: canvas,
-    background: "#171717",
-    width: 1500,
-    height: 500,
-    antialias: false,
-    resolution: 2,
-    autoDensity: true,
-  });
-
-  // Create game objects (ball, paddles, etc.)
-  const ball = new Graphics();
-  ball.beginFill(0xFFFFFF);
-  ball.drawCircle(0, 0, 10);
-  ball.endFill();
-  app.stage.addChild(ball);
-
-  const paddle1 = new Graphics();
-  paddle1.beginFill(0xFFFFFF);
-  paddle1.drawRect(-10, -50, 20, 100);
-  paddle1.endFill();
-  paddle1.x = 30;
-  paddle1.y = 250;
-  app.stage.addChild(paddle1);
-
-  const paddle2 = new Graphics();
-  paddle2.beginFill(0xFFFFFF);
-  paddle2.drawRect(-10, -50, 20, 100);
-  paddle2.endFill();
-  paddle2.x = 1470;
-  paddle2.y = 250;
-  app.stage.addChild(paddle2);
-
-	ball.x = 750;
-	ball.y = 250;
-	paddle1.x = 30;
-	paddle1.y = 250;
-	paddle2.x = 1470;
-	paddle2.y = 250;
+export function showPong(container: HTMLElement): void {
+  // Clear the container
+  container.innerHTML = '';
   
-  const wsManagerPong = WebSocketManager.getInstance(sessionStorage.getItem('username') ?? 'undefined');
-
-  // IMPORTANT: Register handlers BEFORE connecting
- wsManagerPong.registerPlayerAssignmentHandler();
-
- wsManagerPong.registerHandler('GAME_START', () => {
-    console.log('Game started!');
-  });
-
-  wsManagerPong.registerHandler('PLAYER_ASSIGNED', (message) => {
-    playerNumber = message.playerNumber;
-    console.log('Server assigned player number:', playerNumber);
-  });
-
- wsManagerPong.registerHandler('PLAYER_DISCONNECTED', () => {
-    console.log('Other player disconnected');
-  });
+  // Check URL parameters to determine game mode
+  const urlParams = new URLSearchParams(window.location.search);
+  const gameId = urlParams.get('gameId');
+  const mode = urlParams.get('mode');
+  const opponent = urlParams.get('opponent');
   
- wsManagerPong.registerHandler('GAME_STATE_UPDATE', (message) => {
+  if (mode === 'online' && gameId) {
+    // Initialize online multiplayer game
+    initOnlineGame(container, gameId, opponent);
+  } else {
+    // Initialize local game (existing logic)
+    initGame(container);
+  }
+}
 
-	const gameState = message.data || message;
-
-	if (gameState && gameState.ball) {
-	ball.x = gameState.ball.x;
-	ball.y = gameState.ball.y;
-	}
-
-	if (gameState && gameState.paddle1) {
-	paddle1.y = gameState.paddle1.y;
-	}
-
-	if (gameState && gameState.paddle2) {
-	paddle2.y = gameState.paddle2.y;
-	}
-
-	});
-
+async function initOnlineGame(container: HTMLElement, gameId: string, opponent: string | null) {
+  // Create canvas for the game
+  const canvas = document.createElement('canvas');
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
+  container.appendChild(canvas);
+  
+  // Show loading message
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'text-center text-white mt-4';
+  loadingDiv.innerHTML = `
+    <div class="text-xl mb-2">Connecting to game session...</div>
+    <div class="text-lg">Game ID: ${gameId}</div>
+    ${opponent ? `<div class="text-lg">Opponent: ${opponent}</div>` : ''}
+  `;
+  container.appendChild(loadingDiv);
+  
   try {
-    await wsManagerPong.connect(gameId);
-    console.log('Connected to game session');
-
-	playerNumber = wsManagerPong.getPlayerNumber() || (isHost ? 1 : 2);
-
-    document.addEventListener('keydown', (e) => {
-
-      if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 
-          (playerNumber === 2 && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
-        
-        const isUp = e.key === 'w' || e.key === 'ArrowUp';
-        const dir = isUp ? -1 : 1;
-        
-        wsManagerPong.sendPaddleInput(playerNumber, dir);
-      }
+    // Initialize PIXI application
+    const app = new Application();
+    await app.init({
+      view: canvas,
+      background: "#171717",
+      width: 1500,
+      height: 500,
+      antialias: false,
+      resolution: 2,
+      autoDensity: true,
     });
     
-    document.addEventListener('keyup', (e) => {
-      if ((playerNumber === 1 && (e.key === 'w' || e.key === 's')) || 
-          (playerNumber === 2 && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))) {
-        
-        wsManagerPong.sendPaddleInput(playerNumber, 0);
-      }
-    });
-  } catch (err) {
-    console.error('Failed to connect to game session', err);
+    // Create game configuration for online mode
+    const gameConfig = {
+      classicMode: false,
+      isOnline: true,
+      gameId: gameId,
+      opponent: opponent
+    };
+    
+    // Initialize the PongGame with online configuration
+    const pongGame = new PongGame(app, gameConfig);
+    await pongGame.init();
+    
+    // Initialize network manager for this game
+    const networkManager = new PongNetworkManager(pongGame, gameId);
+    
+    // Store reference for cleanup
+    (window as any).currentPongGame = pongGame;
+    (window as any).currentNetworkManager = networkManager;
+    
+    // Remove loading message once connected
+    loadingDiv.remove();
+    
+    console.log('Online Pong game initialized successfully');
+    
+  } catch (error) {
+    console.error('Failed to initialize online game:', error);
+    loadingDiv.innerHTML = `
+      <div class="text-red-500 text-xl">Failed to connect to game session</div>
+      <div class="text-white mt-2">Error: ${error}</div>
+      <button onclick="window.history.back()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mt-4">
+        Go Back
+      </button>
+    `;
   }
-} */
-  
-export function showPong(container: HTMLElement): void {
-	const gameDiv = document.createElement('div');
-	gameDiv.innerHTML = `
-	  <h2>Pong</h2>
-	  <div id="game-container"></div>
-	`;
-	container.appendChild(gameDiv);
-  
-	initGame();
-
 }
-  

@@ -361,7 +361,9 @@ function displayMessage(message: ChatMessage) {
 
 function acceptGameInvite(inviteId: string, fromUser: string) {
   const username = sessionStorage.getItem('username') || 'Anonymous';
-  
+
+  console.log(`Accepting game invite: inviteId=${inviteId}, fromUser=${fromUser}, username=${username}`);
+
   // Send acceptance response
   const responseMessage = {
     type: MessageType.GAME_INVITE_RESPONSE,
@@ -373,17 +375,12 @@ function acceptGameInvite(inviteId: string, fromUser: string) {
     timestamp: new Date().toISOString()
   };
   
+  console.log('Sending response message:', responseMessage);
   socket.send(JSON.stringify(responseMessage));
   
   addSystemMessage(`Joining game with ${fromUser}...`, MessageType.GAME);
-  
-  setTimeout(() => {
-    // Option 1: Direct navigation (if you have a direct game route)
-    // navigate(`/pong?opponent=${fromUser}&invite=${inviteId}`);
-    
-    // Option 2: Use your existing PongNetworkManager
-    startPongGameFromInvite(fromUser, inviteId);
-  }, 1000);
+  addSystemMessage('Waiting for server to create game session...', MessageType.GAME);
+
 }
 
 function filterMessages() {
@@ -659,15 +656,41 @@ Tip: Right-click on usernames for quick actions!`, MessageType.SYSTEM);
     isIdentified = true;
   });
 
-  socket.addEventListener('message', (event) => {
-try {
+socket.addEventListener('message', (event) => {
+  try {
     const data = JSON.parse(event.data);
     
+    // Add detailed logging
+    console.log('Received WebSocket message:', data);
+    
     if (data.type === 'game_invite_accepted') {
-      addSystemMessage(`${data.username} accepted your game invitation! Starting game...`, MessageType.GAME);
-      setTimeout(() => {
-        startPongGameFromInvite(data.username, data.inviteId);
-      }, 2000);
+      console.log('Processing game_invite_accepted:', data);
+      addSystemMessage(`${data.username} accepted your game invitation! Creating game session...`, MessageType.GAME);
+      
+      if (data.gameId) {
+        console.log('Redirecting to pong with gameId:', data.gameId);
+        setTimeout(() => {
+          navigate(`/pong?gameId=${data.gameId}&mode=online&opponent=${data.username}`);
+        }, 1000);
+      } else {
+        console.error('No gameId received in game_invite_accepted:', data);
+        addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
+      }
+      return;
+    }
+    
+    if (data.type === 'game_session_created') {
+      console.log('Processing game_session_created:', data);
+      addSystemMessage(`Game session created! Joining...`, MessageType.GAME);
+      if (data.gameId) {
+        console.log('Redirecting to pong with gameId:', data.gameId);
+        setTimeout(() => {
+          navigate(`/pong?gameId=${data.gameId}&mode=online&opponent=${data.fromUser}`);
+        }, 1000);
+      } else {
+        console.error('No gameId received in game_session_created:', data);
+        addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
+      }
       return;
     }
     
@@ -676,6 +699,7 @@ try {
       return;
     }
     
+    // Handle regular chat messages...
     const message: ChatMessage = {
       id: data.id || Date.now().toString(),
       type: data.type as MessageType,
@@ -695,19 +719,11 @@ try {
       }
     }
       
-      addMessage(message);
-    } catch (e) {
-      console.error('Error parsing message:', e);
-      const content = event.data.toString();
-      const message: ChatMessage = {
-        id: Date.now().toString(),
-        type: MessageType.GENERAL,
-        content: content,
-        timestamp: new Date()
-      };
-      addMessage(message);
-    }
-  });
+    addMessage(message);
+  } catch (e) {
+    console.error('Error parsing message:', e, 'Raw data:', event.data);
+  }
+});
 
   socket.addEventListener('close', () => {
     console.log('WebSocket closed');
