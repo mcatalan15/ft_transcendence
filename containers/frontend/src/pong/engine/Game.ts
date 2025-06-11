@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 15:24:00 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:22:06 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,39 +214,56 @@ export class PongGame {
 
 		console.log('Online game initialized with full graphics engine');
 	}
+private initOnlineGameSystems(): void {
+  // Initialize systems in the SAME ORDER as local games for consistency
+  this.systems = [];
 
-	private initOnlineGameSystems(): void {
-		// Only initialize systems needed for rendering, not physics
-		this.systems = [];
+  // Core rendering and input systems
+  this.systems.push(new RenderSystem());
+  // Skip InputSystem - network manager handles input
+  
+  // Visual effects systems (if not classic mode)
+  if (!this.config.classicMode) {
+    this.systems.push(new CrossCutSystem(this));
+  }
+  
+  // Physics system - CRITICAL for particle effects and visual interactions
+  // Server-controlled entities (ball, paddles) will be skipped via isServerControlled flag
+  this.systems.push(new PhysicsSystem(this, this.width, this.height));
+  
+  // World and animation systems
+  if (!this.config.classicMode) {
+    this.systems.push(new WorldSystem(this));
+  }
+  this.systems.push(new AnimationSystem(this));
+  
+  // Visual effects systems
+  if (!this.config.classicMode) {
+    this.systems.push(new VFXSystem());
+    this.systems.push(new ParticleSystem(this));
+  }
+  
+  // UI system
+  this.systems.push(new UISystem(this));
+  
+  // Powerup system (for visual effects only)
+  if (!this.config.classicMode) {
+    this.systems.push(new PowerupSystem(this, this.width, this.height));
+  }
+  
+  // Post-processing system (MUST BE LAST)
+  this.systems.push(new PostProcessingSystem());
 
-		// Add render system for drawing entities - THIS IS CRITICAL
-		this.systems.push(new RenderSystem());
-
-		// Add animation system for entity animations
-		this.systems.push(new AnimationSystem(this));
-
-		// Add UI system for score and interface updates
-		this.systems.push(new UISystem(this));
-
-		// VFX and visual effects (if not classic mode)
-		if (!this.config.classicMode) {
-			this.systems.push(new VFXSystem());
-			this.systems.push(new ParticleSystem(this));
-			this.systems.push(new WorldSystem(this)); // For world effects
-			this.systems.push(new CrossCutSystem(this)); // For visual cuts
-		}
-
-		// Post-processing effects
-		this.systems.push(new PostProcessingSystem());
-
-		// PowerupSystem for visual powerup effects (but without game logic)
-		if (!this.config.classicMode) {
-			this.systems.push(new PowerupSystem(this, this.width, this.height));
-		}
-
-		console.log(`Initialized ${this.systems.length} systems for online game`);
-		console.log('Online systems:', this.systems.map(s => s.constructor.name));
-	}
+  console.log(`Initialized ${this.systems.length} systems for online game`);
+  console.log('Online systems:', this.systems.map(s => s.constructor.name));
+  
+  // Compare with local game systems
+  console.log('Local game would have:', [
+    'RenderSystem', 'InputSystem', 'CrossCutSystem', 'PhysicsSystem',
+    'WorldSystem', 'AnimationSystem', 'VFXSystem', 'ParticleSystem',
+    'UISystem', 'PowerupSystem', 'PostProcessingSystem'
+  ]);
+}
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
