@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 13:51:29 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/11 15:24:00 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
 
 // Import pertinent spawners
 import { ParticleSpawner } from '../spawners/ParticleSpawner';
@@ -164,10 +165,10 @@ export class PongGame {
 		}
 
 		if (this.isOnline) {
-			// For online games, create simple graphics objects for rendering server state
-			await this.initOnlineGameObjects();
+			// For online games, create the same entities as local games but without local game loop
+			await this.initOnlineGame();
 		} else {
-			// For local games, use the existing ECS system
+			// For local games, use the existing full system
 			await this.createEntities();
 			this.initSystems();
 			this.initDust();
@@ -185,121 +186,67 @@ export class PongGame {
 		}
 	}
 
-	
-		// Replace the existing initOnlineGameObjects method with this corrected version:
-		private async initOnlineGameObjects() {
-		  // Make sure render layers are initialized
-		  if (!this.renderLayers) {
-			this.initializeRenderLayers();
-		  }
-		
-		  // Create simple graphics objects that will be updated by server state
-		  // Ball
-		  const ballGraphics = new Graphics();
-		  ballGraphics.circle(0, 0, 10);
-		  ballGraphics.fill(0xffffff);
-		  ballGraphics.x = this.width / 2;
-		  ballGraphics.y = this.height / 2;
-		  
-		  // Use the correct render layer
-		  if (this.renderLayers?.gameLayer) {
-			this.renderLayers.gameLayer.addChild(ballGraphics);
-		  } else if (this.renderLayers?.foreground) {
-			this.renderLayers.foreground.addChild(ballGraphics);
-		  } else {
-			// Fallback to app stage
-			this.app.stage.addChild(ballGraphics);
-		  }
-		  
-		  // Store reference for server updates
-		  (this as any).ballGraphics = ballGraphics;
-		
-		  // Paddle 1 (left)
-		  const paddle1Graphics = new Graphics();
-		  paddle1Graphics.rect(0, 0, this.paddleWidth, this.paddleHeight);
-		  paddle1Graphics.fill(0xffffff);
-		  paddle1Graphics.x = this.paddleOffset;
-		  paddle1Graphics.y = this.height / 2 - this.paddleHeight / 2;
-		  
-		  if (this.renderLayers?.gameLayer) {
-			this.renderLayers.gameLayer.addChild(paddle1Graphics);
-		  } else if (this.renderLayers?.foreground) {
-			this.renderLayers.foreground.addChild(paddle1Graphics);
-		  } else {
-			this.app.stage.addChild(paddle1Graphics);
-		  }
-		  
-		  (this as any).paddle1Graphics = paddle1Graphics;
-		
-		  // Paddle 2 (right)
-		  const paddle2Graphics = new Graphics();
-		  paddle2Graphics.rect(0, 0, this.paddleWidth, this.paddleHeight);
-		  paddle2Graphics.fill(0xffffff);
-		  paddle2Graphics.x = this.width - this.paddleOffset - this.paddleWidth;
-		  paddle2Graphics.y = this.height / 2 - this.paddleHeight / 2;
-		  
-		  if (this.renderLayers?.gameLayer) {
-			this.renderLayers.gameLayer.addChild(paddle2Graphics);
-		  } else if (this.renderLayers?.foreground) {
-			this.renderLayers.foreground.addChild(paddle2Graphics);
-		  } else {
-			this.app.stage.addChild(paddle2Graphics);
-		  }
-		  
-		  (this as any).paddle2Graphics = paddle2Graphics;
-		
-		  // Create walls
-		  const wallT = new Graphics();
-		  wallT.rect(0, 0, this.width, this.wallThickness);
-		  wallT.fill(0xffffff);
-		  wallT.y = this.topWallOffset;
-		  
-		  if (this.renderLayers?.gameLayer) {
-			this.renderLayers.gameLayer.addChild(wallT);
-		  } else if (this.renderLayers?.foreground) {
-			this.renderLayers.foreground.addChild(wallT);
-		  } else {
-			this.app.stage.addChild(wallT);
-		  }
-		
-		  const wallB = new Graphics();
-		  wallB.rect(0, 0, this.width, this.wallThickness);
-		  wallB.fill(0xffffff);
-		  wallB.y = this.height - this.bottomWallOffset;
-		  
-		  if (this.renderLayers?.gameLayer) {
-			this.renderLayers.gameLayer.addChild(wallB);
-		  } else if (this.renderLayers?.foreground) {
-			this.renderLayers.foreground.addChild(wallB);
-		  } else {
-			this.app.stage.addChild(wallB);
-		  }
-		
-		  // Create score text (simplified)
-		  const scoreText = new Text({
-			text: '0 - 0',
-			style: {
-			  fontFamily: 'Arial',
-			  fontSize: 48,
-			  fill: 0xffffff,
-			  align: 'center'
-			}
-		  });
-		  scoreText.x = this.width / 2 - scoreText.width / 2;
-		  scoreText.y = 20;
-		  
-		  if (this.renderLayers?.uiLayer) {
-			this.renderLayers.uiLayer.addChild(scoreText);
-		  } else if (this.renderLayers?.ui) {
-			this.renderLayers.ui.addChild(scoreText);
-		  } else {
-			this.app.stage.addChild(scoreText);
-		  }
-		  
-		  (this as any).scoreText = scoreText;
-		
-		  console.log('Online game objects initialized');
+
+	private async initOnlineGame(): Promise<void> {
+		console.log('Initializing online game with full graphics engine...');
+
+		await this.createEntities();
+
+		// Initialize systems but don't start the full game loop
+		// We only need render and collision systems, not movement/AI systems
+		this.initOnlineGameSystems();
+
+		this.initDust();
+
+		if (!this.config.classicMode) this.soundManager.startMusic();
+
+		// Set up a ticker that runs ALL systems for online games
+		this.app.ticker.add((ticker) => {
+			const frameData: FrameData = {
+				deltaTime: ticker.deltaTime
+			};
+
+			// Run ALL systems for online games - let them handle server-controlled entities
+			this.systems.forEach(system => {
+				system.update(this.entities, frameData);
+			});
+		});
+
+		console.log('Online game initialized with full graphics engine');
+	}
+
+	private initOnlineGameSystems(): void {
+		// Only initialize systems needed for rendering, not physics
+		this.systems = [];
+
+		// Add render system for drawing entities - THIS IS CRITICAL
+		this.systems.push(new RenderSystem());
+
+		// Add animation system for entity animations
+		this.systems.push(new AnimationSystem(this));
+
+		// Add UI system for score and interface updates
+		this.systems.push(new UISystem(this));
+
+		// VFX and visual effects (if not classic mode)
+		if (!this.config.classicMode) {
+			this.systems.push(new VFXSystem());
+			this.systems.push(new ParticleSystem(this));
+			this.systems.push(new WorldSystem(this)); // For world effects
+			this.systems.push(new CrossCutSystem(this)); // For visual cuts
 		}
+
+		// Post-processing effects
+		this.systems.push(new PostProcessingSystem());
+
+		// PowerupSystem for visual powerup effects (but without game logic)
+		if (!this.config.classicMode) {
+			this.systems.push(new PowerupSystem(this, this.width, this.height));
+		}
+
+		console.log(`Initialized ${this.systems.length} systems for online game`);
+		console.log('Online systems:', this.systems.map(s => s.constructor.name));
+	}
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
@@ -440,11 +387,9 @@ export class PongGame {
 
 	async createEntities(): Promise<void> {
 
+		//TODO: Update to match online game player names
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 		this.rightPlayer = { name: "Player 2" };
-
-		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
-
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -481,14 +426,12 @@ export class PongGame {
 
 		// Create UI
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
-
 		const uiText = ui.getComponent('text') as TextComponent;
 		this.renderLayers.ui.addChild(uiText.getRenderable());
 
 		if (!this.config.classicMode) {
 			const bars = ui.getComponent('render') as RenderComponent;
 			this.renderLayers.ui.addChild(bars.graphic);
-
 			this.renderLayers.ui.addChild(uiText.getRenderable());
 		}
 
@@ -506,6 +449,14 @@ export class PongGame {
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);
+
+		// CRITICAL: Add ball to render layer after spawning
+		const ballEntity = this.entities.find(e => e.id === 'defaultBall');
+		if (ballEntity) {
+			console.log("✅ Ball added to foreground render layer");
+		} else {
+			console.error("❌ Ball entity not found after spawn!");
+		}
 	}
 
 	addEntity(entity: Entity): void {
@@ -585,37 +536,165 @@ export class PongGame {
 
 	}
 
+	// Add detailed debugging to the updateFromServer method:
 	updateFromServer(gameState: any) {
-	  if (!this.isOnline || !gameState) return;
-	  
-	  console.log('Updating from server state:', gameState);
-	  
-	  // Update ball position
-	  if ((this as any).ballGraphics && gameState.ball) {
-		(this as any).ballGraphics.x = gameState.ball.x;
-		(this as any).ballGraphics.y = gameState.ball.y;
-	  }
-	  
-	  // Update paddle positions
-	  if ((this as any).paddle1Graphics && gameState.paddle1) {
-		(this as any).paddle1Graphics.y = gameState.paddle1.y;
-	  }
-	  
-	  if ((this as any).paddle2Graphics && gameState.paddle2) {
-		(this as any).paddle2Graphics.y = gameState.paddle2.y;
-	  }
-	  
-	  // Update score
-	  if ((this as any).scoreText && gameState.score1 !== undefined && gameState.score2 !== undefined) {
-		(this as any).scoreText.text = `${gameState.score1} - ${gameState.score2}`;
-		(this as any).scoreText.x = this.width / 2 - (this as any).scoreText.width / 2;
-	  }
+		if (!this.isOnline || !gameState) return;
+
+		console.log('=== UPDATE FROM SERVER ===');
+		console.log('Game state received:', gameState);
+		console.log('Available entities:', this.entities.map(e => ({
+			id: e.id,
+			hasPhysics: !!e.getComponent('physics'),
+			hasRender: !!e.getComponent('render'),
+			physicsPos: e.getComponent('physics') ? { x: e.getComponent('physics').x, y: e.getComponent('physics').y } : null
+		})));
+
+		try {
+			// Find entities by their IDs/types
+			const ballEntity = this.entities.find(e => e.id === 'defaultBall');
+			const paddle1Entity = this.entities.find(e => e.id === 'paddleL');
+			const paddle2Entity = this.entities.find(e => e.id === 'paddleR');
+
+			console.log('Entity search results:', {
+				ballFound: !!ballEntity,
+				paddle1Found: !!paddle1Entity,
+				paddle2Found: !!paddle2Entity
+			});
+
+			// Update ball position using PhysicsComponent
+			if (ballEntity && gameState.ball) {
+				const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+				const ballRender = ballEntity.getComponent('render') as RenderComponent;
+
+				console.log('Ball components:', {
+					hasPhysics: !!ballPhysics,
+					hasRender: !!ballRender,
+					hasGraphic: !!(ballRender && ballRender.graphic),
+					currentPos: ballPhysics ? { x: ballPhysics.x, y: ballPhysics.y } : null
+				});
+
+				if (ballPhysics) {
+					console.log(`Ball server update: (${gameState.ball.x}, ${gameState.ball.y})`);
+
+					ballPhysics.x = gameState.ball.x;
+					ballPhysics.y = gameState.ball.y;
+					ballPhysics.velocityX = gameState.ball.vx || 0;
+					ballPhysics.velocityY = gameState.ball.vy || 0;
+
+					// CRITICAL: Force render component update immediately
+					if (ballRender && ballRender.graphic) {
+						ballRender.graphic.x = gameState.ball.x;
+						ballRender.graphic.y = gameState.ball.y;
+						console.log(`✅ Ball render updated: (${ballRender.graphic.x}, ${ballRender.graphic.y})`);
+						console.log(`Ball graphic visible: ${ballRender.graphic.visible}, alpha: ${ballRender.graphic.alpha}`);
+					} else {
+						console.error('❌ Ball render component or graphic missing!');
+					}
+				}
+			} else {
+				console.warn('❌ Ball entity or gameState.ball missing');
+				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
+				if (!gameState.ball) console.warn('  - gameState.ball is missing from server data');
+			}
+
+			// Update paddle positions with similar detailed logging
+			if (paddle1Entity && gameState.paddle1) {
+				const paddle1Physics = paddle1Entity.getComponent('physics') as PhysicsComponent;
+				if (paddle1Physics) {
+					paddle1Physics.x = gameState.paddle1.x;
+					paddle1Physics.y = gameState.paddle1.y;
+
+					const paddle1Render = paddle1Entity.getComponent('render') as RenderComponent;
+					if (paddle1Render && paddle1Render.graphic) {
+						paddle1Render.graphic.x = gameState.paddle1.x;
+						paddle1Render.graphic.y = gameState.paddle1.y;
+					}
+
+					console.log(`✅ Paddle1 updated: (${paddle1Physics.x}, ${paddle1Physics.y})`);
+				}
+			}
+
+			if (paddle2Entity && gameState.paddle2) {
+				const paddle2Physics = paddle2Entity.getComponent('physics') as PhysicsComponent;
+				if (paddle2Physics) {
+					paddle2Physics.x = gameState.paddle2.x;
+					paddle2Physics.y = gameState.paddle2.y;
+
+					const paddle2Render = paddle2Entity.getComponent('render') as RenderComponent;
+					if (paddle2Render && paddle2Render.graphic) {
+						paddle2Render.graphic.x = gameState.paddle2.x;
+						paddle2Render.graphic.y = gameState.paddle2.y;
+					}
+
+					console.log(`✅ Paddle2 updated: (${paddle2Physics.x}, ${paddle2Physics.y})`);
+				}
+			}
+
+			// Update score
+			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
+				this.updateScoreDisplay(gameState.score1 || 0, gameState.score2 || 0);
+			}
+
+		} catch (error) {
+			console.error('❌ Error updating from server state:', error);
+			console.error('Error stack:', error.stack);
+		}
 	}
 
-	private updateScoreDisplay(score1: number, score2: number) {
-		//TODO Find and update score entities
-		//TODO This depends on your score display implementation
-		console.log(`Score update: ${score1} - ${score2}`);
+	private updateScoreDisplay(score1: number, score2: number): void {
+		// Find the UI entity which contains the score
+		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+
+		if (uiEntity) {
+			// Access UI properties directly
+			if (uiEntity.leftScore !== undefined && uiEntity.rightScore !== undefined) {
+				uiEntity.leftScore = score1;
+				uiEntity.rightScore = score2;
+			}
+
+			// Update the text component
+			const textComponent = uiEntity.getComponent('text') as TextComponent;
+			if (textComponent) {
+				textComponent.setText(`${score1} - ${score2}`);
+			}
+
+			// Force UI system to update
+			const uiSystem = this.systems.find(s => s.constructor.name === 'UISystem');
+			if (uiSystem) {
+				// The UI system will pick up the score changes on next update
+				console.log(`Score updated to ${score1} - ${score2}`);
+			}
+		}
+
+		console.log(`Score display updated: ${score1} - ${score2}`);
+	}
+
+	private disableLocalGameplayForOnline(): void {
+		console.log('Disabling local gameplay for online mode...');
+
+		let disabledCount = 0;
+
+		this.entities.forEach(entity => {
+			const physics = entity.getComponent('physics') as PhysicsComponent;
+
+			// Mark ball and paddles as server-controlled
+			if (physics && (entity.id === 'defaultBall' || entity.id === 'paddleL' || entity.id === 'paddleR')) {
+				(physics as any).isServerControlled = true;
+				console.log(`Marked entity ${entity.id} as server-controlled`);
+				disabledCount++;
+			}
+
+			// Remove input components from paddles (network manager handles input)
+			if (entity.id === 'paddleL' || entity.id === 'paddleR') {
+				const input = entity.getComponent('input');
+				if (input) {
+					entity.removeComponent('input');
+					console.log(`Removed input component from ${entity.id}`);
+				}
+			}
+		});
+
+		console.log(`Local gameplay disabled for online mode. ${disabledCount} entities marked as server-controlled.`);
 	}
 
 	// Start the online game
@@ -623,7 +702,7 @@ export class PongGame {
 		if (!this.isOnline) return;
 
 		console.log('Starting online Pong game');
-		//TODO Initialize game loop and start rendering
-		//TODO The server will handle physics, client just renders
+
+		this.disableLocalGameplayForOnline();
 	}
 }

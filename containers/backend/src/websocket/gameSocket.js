@@ -130,28 +130,28 @@ function setupGameWebSocket(wss, redisService, gameManager) {
           // Create a simple fallback GameCore
           GameCore = class {
             constructor(width, height) {
-              this.width = width;
-              this.height = height;
+              this.width = width || 1800;
+              this.height = height || 800;
               this.reset();
             }
 
             reset() {
               this.state = {
                 ball: {
-                  x: this.width / 2,
-                  y: this.height / 2,
+                  x: this.width / 2,     // 900
+                  y: this.height / 2,    // 400
                   vx: Math.random() > 0.5 ? 5 : -5,
                   vy: (Math.random() - 0.5) * 6
                 },
                 paddle1: {
-                  x: 50,
-                  y: this.height / 2 - 40,
+                  x: 60,                 // Left paddle x position (matching frontend paddleOffset)
+                  y: this.height / 2 - 40, // Center vertically
                   width: 10,
                   height: 80
                 },
                 paddle2: {
-                  x: this.width - 60,
-                  y: this.height / 2 - 40,
+                  x: this.width - 70,    // Right paddle x position (1800 - 60 - 10)
+                  y: this.height / 2 - 40, // Center vertically  
                   width: 10,
                   height: 80
                 },
@@ -165,35 +165,35 @@ function setupGameWebSocket(wss, redisService, gameManager) {
             update(p1Input, p2Input) {
               const PADDLE_SPEED = 8;
 
-              // Update paddle 1 position (left)
+              // Update paddle 1 position (left) - updated constraints
               if (p1Input !== 0) {
                 this.state.paddle1.y += p1Input * PADDLE_SPEED;
-                this.state.paddle1.y = Math.max(80, Math.min(this.height - 160, this.state.paddle1.y));
+                this.state.paddle1.y = Math.max(60 + 40, Math.min(this.height - 80 - 40, this.state.paddle1.y));
               }
 
-              // Update paddle 2 position (right)
+              // Update paddle 2 position (right) - updated constraints  
               if (p2Input !== 0) {
                 this.state.paddle2.y += p2Input * PADDLE_SPEED;
-                this.state.paddle2.y = Math.max(80, Math.min(this.height - 160, this.state.paddle2.y));
+                this.state.paddle2.y = Math.max(60 + 40, Math.min(this.height - 80 - 40, this.state.paddle2.y));
               }
 
               // Update ball position
               this.state.ball.x += this.state.ball.vx;
               this.state.ball.y += this.state.ball.vy;
 
-              // Ball collision with top/bottom walls
-              if (this.state.ball.y <= 80 || this.state.ball.y >= this.height - 90) {
+              // Ball collision with top/bottom walls - updated constraints
+              if (this.state.ball.y <= 60 + 10 || this.state.ball.y >= this.height - 80 - 10) {
                 this.state.ball.vy = -this.state.ball.vy;
               }
 
               // Ball collision with paddles
               const ballRadius = 10;
 
-              // Left paddle collision
+              // Left paddle collision - updated positions
               if (this.state.ball.x - ballRadius <= this.state.paddle1.x + this.state.paddle1.width &&
-                this.state.ball.x + ballRadius >= this.state.paddle1.x &&
-                this.state.ball.y >= this.state.paddle1.y &&
-                this.state.ball.y <= this.state.paddle1.y + this.state.paddle1.height) {
+                  this.state.ball.x + ballRadius >= this.state.paddle1.x &&
+                  this.state.ball.y >= this.state.paddle1.y &&
+                  this.state.ball.y <= this.state.paddle1.y + this.state.paddle1.height) {
                 this.state.ball.vx = Math.abs(this.state.ball.vx); // Ensure ball goes right
 
                 // Add some angle based on where it hits the paddle
@@ -201,11 +201,11 @@ function setupGameWebSocket(wss, redisService, gameManager) {
                 this.state.ball.vy = (hitPos - 0.5) * 8;
               }
 
-              // Right paddle collision
+              // Right paddle collision - updated positions
               if (this.state.ball.x + ballRadius >= this.state.paddle2.x &&
-                this.state.ball.x - ballRadius <= this.state.paddle2.x + this.state.paddle2.width &&
-                this.state.ball.y >= this.state.paddle2.y &&
-                this.state.ball.y <= this.state.paddle2.y + this.state.paddle2.height) {
+                  this.state.ball.x - ballRadius <= this.state.paddle2.x + this.state.paddle2.width &&
+                  this.state.ball.y >= this.state.paddle2.y &&
+                  this.state.ball.y <= this.state.paddle2.y + this.state.paddle2.height) {
                 this.state.ball.vx = -Math.abs(this.state.ball.vx); // Ensure ball goes left
 
                 // Add some angle based on where it hits the paddle
@@ -232,7 +232,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
           };
         }
 
-        const gameCore = new GameCore(1500, 500);
+        const gameCore = new GameCore(1800, 800);
 
         activeGames.set(gameId, {
           players: new Map(),
@@ -428,7 +428,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
     // Check for game end conditions
     const state = game.gameCore.getState();
-    if (state.score1 >= 5 || state.score2 >= 5) {
+    if ((state.score1 >= 11 || state.score2 >= 11) && Math.abs(state.score1 - state.score2) >= 2) {
       endGame(gameId, activeGames);
     }
   }

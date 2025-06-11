@@ -32,14 +32,9 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
         <div id="player-names" class="mb-4">
           <!-- Player names will be populated by NetworkManager -->
         </div>
-        <div id="player-assignment" class="mb-2">
-          <!-- Player role assignment will be shown here -->
-        </div>
         <div id="connection-status" class="text-xl text-blue-400 mb-4">
           Connecting to game session...
         </div>
-        <div class="text-lg text-gray-400 mb-2">Game ID: ${gameId}</div>
-        ${opponent ? `<div class="text-lg text-gray-400 mb-4">Opponent: ${opponent}</div>` : ''}
       </div>
       
       <div id="game-canvas-container" class="mb-4">
@@ -93,8 +88,8 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
     await app.init({
       view: canvas,
       background: "#171717",
-      width: 1500,
-      height: 500,
+      width: 1800,
+      height: 800,
       antialias: false,
       resolution: 2,
       autoDensity: true,
