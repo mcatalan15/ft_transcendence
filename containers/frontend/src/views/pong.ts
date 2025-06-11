@@ -24,23 +24,70 @@ export function showPong(container: HTMLElement): void {
 }
 
 async function initOnlineGame(container: HTMLElement, gameId: string, opponent: string | null) {
-  // Create canvas for the game
-  const canvas = document.createElement('canvas');
-  canvas.style.display = 'block';
-  canvas.style.margin = '0 auto';
-  container.appendChild(canvas);
-  
-  // Show loading message
-  const loadingDiv = document.createElement('div');
-  loadingDiv.className = 'text-center text-white mt-4';
-  loadingDiv.innerHTML = `
-    <div class="text-xl mb-2">Connecting to game session...</div>
-    <div class="text-lg">Game ID: ${gameId}</div>
-    ${opponent ? `<div class="text-lg">Opponent: ${opponent}</div>` : ''}
+  // Create a more comprehensive UI for online game
+  container.innerHTML = `
+    <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
+      <div class="text-center mb-4">
+        <h1 class="text-4xl font-bold text-white mb-4">Pong - Online Match</h1>
+        <div id="player-names" class="mb-4">
+          <!-- Player names will be populated by NetworkManager -->
+        </div>
+        <div id="player-assignment" class="mb-2">
+          <!-- Player role assignment will be shown here -->
+        </div>
+        <div id="connection-status" class="text-xl text-blue-400 mb-4">
+          Connecting to game session...
+        </div>
+        <div class="text-lg text-gray-400 mb-2">Game ID: ${gameId}</div>
+        ${opponent ? `<div class="text-lg text-gray-400 mb-4">Opponent: ${opponent}</div>` : ''}
+      </div>
+      
+      <div id="game-canvas-container" class="mb-4">
+        <!-- Canvas will be inserted here -->
+      </div>
+      
+      <div class="text-center text-gray-400 mb-4">
+        <div class="text-sm">Controls:</div>
+        <div class="text-sm">Host (Left): W/S keys | Guest (Right): ↑/↓ arrow keys</div>
+      </div>
+      
+      <div class="flex space-x-4">
+        <button id="back-to-chat" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+          Back to Chat
+        </button>
+      </div>
+    </div>
   `;
-  container.appendChild(loadingDiv);
   
+  // Add back button functionality
+  const backButton = document.getElementById('back-to-chat');
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      // Clean up any existing game connections before leaving
+      if ((window as any).currentPongGame) {
+        (window as any).currentPongGame.destroy?.();
+      }
+      if ((window as any).currentNetworkManager) {
+        (window as any).currentNetworkManager.disconnect?.();
+      }
+      navigate('/chat');
+    });
+  }
+
   try {
+    // Get the canvas container
+    const canvasContainer = document.getElementById('game-canvas-container');
+    if (!canvasContainer) {
+      throw new Error('Canvas container not found');
+    }
+
+    // Create canvas for the game
+    const canvas = document.createElement('canvas');
+    canvas.style.display = 'block';
+    canvas.style.margin = '0 auto';
+    canvas.style.border = '2px solid #374151';
+    canvasContainer.appendChild(canvas);
+    
     // Initialize PIXI application
     const app = new Application();
     await app.init({
@@ -61,30 +108,42 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
       opponent: opponent
     };
     
+    console.log('Creating PongGame with config:', gameConfig);
+    
     // Initialize the PongGame with online configuration
     const pongGame = new PongGame(app, gameConfig);
     await pongGame.init();
     
     // Initialize network manager for this game
+    console.log('Creating PongNetworkManager...');
     const networkManager = new PongNetworkManager(pongGame, gameId);
     
-    // Store reference for cleanup
+    // Store references for cleanup
     (window as any).currentPongGame = pongGame;
     (window as any).currentNetworkManager = networkManager;
-    
-    // Remove loading message once connected
-    loadingDiv.remove();
     
     console.log('Online Pong game initialized successfully');
     
   } catch (error) {
     console.error('Failed to initialize online game:', error);
-    loadingDiv.innerHTML = `
-      <div class="text-red-500 text-xl">Failed to connect to game session</div>
-      <div class="text-white mt-2">Error: ${error}</div>
-      <button onclick="window.history.back()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mt-4">
-        Go Back
-      </button>
+    
+    // Show error message
+    container.innerHTML = `
+      <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-red-500 mb-4">Connection Failed</h1>
+          <p class="text-xl text-white mb-4">Failed to connect to game session</p>
+          <p class="text-lg text-gray-400 mb-8">Error: ${error.message}</p>
+          <div class="space-x-4">
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded">
+              Retry
+            </button>
+            <button onclick="navigate('/chat')" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded">
+              Back to Chat
+            </button>
+          </div>
+        </div>
+      </div>
     `;
   }
 }
