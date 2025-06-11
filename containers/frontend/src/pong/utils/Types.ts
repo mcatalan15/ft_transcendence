@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/05 14:33:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:06:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowF
 import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 import { CrossCut } from '../entities/crossCuts/CrossCut';
-import { MenuButton } from '../menu/MenuButton';
+import { MenuButton } from '../menu/buttons/MenuButton';
 
 export interface DepthLineBehavior {
     movement?: 'vertical' | 'horizontal' | string;
@@ -97,6 +97,7 @@ export type BoundingBox = {
 export interface PostProcessingOptions {
     advancedBloom?: AdvancedBloomFilter | null;
 	crtFilter?: CRTFilter | null;
+	crtOverlay?: CRTFilter | null;
 	depthLineCRTFilter?: CRTFilter | null;
     bulgePinch?: BulgePinchFilter | null;
 	rgbSpilt?: RGBSplitFilter | null;

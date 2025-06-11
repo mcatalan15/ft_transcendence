@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 17:46:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:17:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@ import { Application, Container, Graphics, FederatedPointerEvent } from 'pixi.js
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { PongGame } from '../engine/Game';
 import { GameConfig } from './GameConfig';
 
 // Import Engine elements (ECS)
@@ -30,6 +29,7 @@ import { MenuButton } from './buttons/MenuButton';
 import { MenuHalfButton } from './buttons/MenuHalfButton';
 import { MenuXButton } from './buttons/MenuXButton';
 import { BallButton } from './buttons/BallButton';
+import { Powerup } from '../entities/powerups/Powerup';
 
 import { MenuOrnament } from './MenuOrnaments';
 import { OverlayBackground } from './OverlayBackground';
@@ -41,8 +41,8 @@ import { TextComponent } from '../components/TextComponent';
 
 // Import spawners and Managers
 import { MenuParticleSpawner } from './MenuParticleSpawner';
-import { MenuBallSpawner } from './MenuBallSpawner';
 import { ButtonManager } from './ButtonManager';
+import { MenuPowerupManager } from './MenuPowerupManager';
 
 // Import Implemented Systems
 import { MenuRenderSystem } from './MenuRenderSystem';
@@ -54,14 +54,13 @@ import { SecretCodeSystem } from './MenuSecretCodeSystem';
 import { MenuPhysicsSystem } from './MenuPhysicsSystem';
 import { MenuVFXSystem } from './MenuVFXSystem';
 import { MenuLineSystem } from './MenuLineSystem';
-import { VFXComponent } from '../components/VFXComponent';
 import { ButtonSystem } from './MenuButtonSystem';
 
 
-import { GAME_COLORS , FrameData, MenuSounds, GameEvent } from '../utils/Types';
+import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
-import { isMenuOrnament, isRenderComponent } from '../utils/Guards';
+import { isRenderComponent } from '../utils/Guards';
 
 export class Menu{
 	config: GameConfig;
@@ -86,13 +85,19 @@ export class Menu{
 		subtitle: Container;
 		background: Container;
 		foreground: Container;
-		overlays: Container;
 		dust: Container;
+		overlays: Container;
 		pp: Container;
+		powerups: Container;
+		powerdowns: Container;
+		ballchanges: Container;
 	};
 	visualRoot: Container;
-	visualRootFilters: any[] = [];
-	menuContainerFilters: any[] = [];
+	baseFilters: any[] = [];
+	overlayFilters: any[] = [];
+	powerupFilters: any[] = [];
+	powerdownFilters: any[] = [];
+	ballchangeFilters: any[] = [];
 
 	// Sound stuff
 	sounds!: MenuSounds;
@@ -145,6 +150,10 @@ export class Menu{
 	// Overlay items
 	overlayBackground!: OverlayBackground;
 	glossaryES!: Glossary;
+	enlargePowerup!: Powerup;
+	magnetizePowerup!: Powerup;
+	shieldPowerup!: Powerup;
+	shootPowerup!: Powerup;
 
 	constructor(app: Application) {
 		this.app = app;
@@ -162,6 +171,9 @@ export class Menu{
 			midground: new Container(),
 			foreground: new Container(),
 			dust: new Container(),
+			powerups: new Container(),
+			powerdowns: new Container(),
+			ballchanges: new Container(),
 			pp: new Container(),
 		};
 		this.visualRoot = new Container();
@@ -173,13 +185,17 @@ export class Menu{
 		this.app.stage.addChild(this.renderLayers.background);
 		this.app.stage.addChild(this.visualRoot);
 		this.app.stage.addChild(this.menuContainer);
+		this.app.stage.addChild(this.renderLayers.overlays);
+		this.app.stage.addChild(this.renderLayers.powerups);
+		this.app.stage.addChild(this.renderLayers.powerdowns);
+		this.app.stage.addChild(this.renderLayers.ballchanges);
+		this.app.stage.addChild(this.renderLayers.pp);
 	
 		this.visualRoot.addChild(this.renderLayers.background);
 		this.visualRoot.addChild(this.renderLayers.logo);
 		this.visualRoot.addChild(this.renderLayers.midground);
 		this.visualRoot.addChild(this.renderLayers.subtitle);
 		this.visualRoot.addChild(this.renderLayers.foreground);
-		this.visualRoot.addChild(this.renderLayers.overlays);
 		this.visualRoot.addChild(this.renderLayers.dust);
 		this.visualRoot.addChild(this.renderLayers.pp);
 
@@ -209,6 +225,7 @@ export class Menu{
 		await this.createEntities();
 		await this.createTitle();
 		await this.createGlossaries();
+		await this.createPowerups();
 		await this.initSystems();
 		await this.initDust();
 
@@ -451,12 +468,32 @@ export class Menu{
 		boundingBoxF.rect(0, 0, this.width, this.height);
 		boundingBoxF.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
+		const boundingBoxG = new Graphics();
+		boundingBoxG.rect(0, 0, this.width, this.height);
+		boundingBoxG.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
+		const boundingBoxH = new Graphics();
+		boundingBoxH.rect(0, 0, this.width, this.height);
+		boundingBoxH.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
+		const boundingBoxI = new Graphics();
+		boundingBoxI.rect(0, 0, this.width, this.height);
+		boundingBoxI.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
+		const boundingBoxJ = new Graphics();
+		boundingBoxJ.rect(0, 0, this.width, this.height);
+		boundingBoxJ.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
 		this.renderLayers.logo.addChild(boundingBoxA);
 		this.renderLayers.background.addChild(boundingBoxB);
 		this.renderLayers.midground.addChild(boundingBoxC);
 		this.renderLayers.foreground.addChild(boundingBoxD);
 		this.menuContainer.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
+		this.renderLayers.overlays.addChild(boundingBoxG);
+		this.renderLayers.powerups.addChild(boundingBoxH);
+		this.renderLayers.powerdowns.addChild(boundingBoxI);
+		this.renderLayers.ballchanges.addChild(boundingBoxJ);
 		
 	}
 
@@ -477,7 +514,7 @@ export class Menu{
 	}
 	
 	createOverlays() {
-		const overlayBackground = new OverlayBackground('overlay_background', 'overlays', this.width, this.height);
+		const overlayBackground = new OverlayBackground('overlay_background', 'overlays');
 		this.entities.push(overlayBackground);
 		const overlayRender = overlayBackground.getComponent('render') as RenderComponent;
 		this.menuHidden.addChild(overlayRender.graphic);
@@ -486,10 +523,21 @@ export class Menu{
 
 	createGlossaries() {
 		const glossary = new Glossary('glossary', 'overlays');
-		const glossaryText = glossary.getComponent('text') as TextComponent;
-		this.menuHidden.addChild(glossaryText.getRenderable());
+		
+		// Add all text renderables to the hidden container
+		const renderables = glossary.getAllRenderables();
+		renderables.forEach(renderable => {
+			this.menuHidden.addChild(renderable);
+		});
+		
 		this.entities.push(glossary);
 		this.glossaryES = glossary;
+	}
+
+	createPowerups() {
+		MenuPowerupManager.createPowerups(this);
+		MenuPowerupManager.createPowerdowns(this);
+		MenuPowerupManager.createBallchanges(this);
 	}
 
 	cleanup(): void {
@@ -556,6 +604,9 @@ export class Menu{
 				container.destroy({ children: true });
 			}
 		});
+
+		// Cleanup managers
+		MenuPowerupManager.cleanup();
 		
 		// Clear stage completely
 		this.app.stage.removeChildren();

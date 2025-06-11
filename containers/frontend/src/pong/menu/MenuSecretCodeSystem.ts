@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 10:08:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:03:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { FrameData, GAME_COLORS } from '../utils/Types';
 import { Menu } from './Menu';
 import { MenuParticleSpawner } from './MenuParticleSpawner';
 import { SecretCode, getRandomGameColor } from '../utils/MenuUtils';
+import { MenuBallSpawner } from './MenuBallSpawner';
 
 
 export class SecretCodeSystem implements System {
@@ -102,6 +103,26 @@ export class SecretCodeSystem implements System {
 
     private registerDefaultCodes(): void {
         this.registerCode({
+            name: "escape",
+            sequence: ["Escape"],
+            timeout: 2000,
+            effect: () => {
+                if (this.menu.glossaryButton.getIsClicked()) {
+                    this.menu.eventQueue.push({
+                        type: 'GLOSSARY_BACK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'GLOSSARY'
+                    });
+                } else if (this.menu.aboutButton.getIsClicked()) {
+                    this.menu.eventQueue.push({
+                        type: 'ABOUT_BACK',
+                        target: this.menu.aboutButton,
+                        buttonName: 'ABOUT'
+                    });
+                }
+            },
+        });
+        this.registerCode({
             name: "konami",
             sequence: ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", 
                       "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", 
@@ -153,6 +174,58 @@ export class SecretCodeSystem implements System {
                     target: this.menu.startButton,
                     buttonName: 'START'
                 });
+            },
+        });
+        this.registerCode({
+            name: "ballfest",
+            sequence: ["KeyB", "KeyA", "KeyL", "KeyL", "KeyF", "KeyE", "KeyS", "KeyT"],
+            timeout: 2000,
+            effect: () => {
+                if (!this.menu.config.classicMode) {
+                    for(let i = 0; i <= 20; i++) {
+                        MenuBallSpawner.spawnDefaultBallInMenu(this.menu);
+                    }
+                }
+            },
+        });
+        this.registerCode({
+            name: "glossary",
+            sequence: ["KeyG", "KeyL", "KeyO", "KeyS", "KeyS", "KeyA", "KeyR", "KeyY"],
+            timeout: 2000,
+            effect: () => {
+                if (!this.menu.glossaryButton.getIsClicked()) {
+                    this.menu.eventQueue.push({
+                        type: 'GLOSSARY_CLICK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'GLOSSARY'
+                    });
+                } else {
+                    this.menu.eventQueue.push({
+                        type: 'GLOSSARY_BACK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'GLOSSARY'
+                    });
+                }
+            },
+        });
+        this.registerCode({
+            name: "about",
+            sequence: ["KeyA", "KeyB", "KeyO", "KeyU", "KeyT"],
+            timeout: 2000,
+            effect: () => {
+                if (!this.menu.aboutButton.getIsClicked()) {
+                    this.menu.eventQueue.push({
+                        type: 'ABOUT_CLICK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'ABOUT'
+                    });
+                } else {
+                    this.menu.eventQueue.push({
+                        type: 'ABOUT_BACK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'ABOUT'
+                    });
+                }
             },
         });
     }

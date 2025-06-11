@@ -6,13 +6,10 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 11:41:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:04:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Point, Graphics } from 'pixi.js'
-
-import { PongGame } from '../engine/Game';
 import { Entity } from '../engine/Entity';
 import type { System } from '../engine/System'
 
@@ -20,32 +17,19 @@ import { Menu } from './Menu';
 import { Title } from './Title';
 import { BallButton } from './buttons/BallButton';
 
-import { Paddle } from '../entities/Paddle'
-import { Powerup } from '../entities/powerups/Powerup';
-import { DepthLine } from '../entities/background/DepthLine';
-import { CrossCut } from '../entities/crossCuts/CrossCut';
-import { Obstacle } from '../entities/obstacles/Obstacle';
-import { UI } from '../entities/UI';
-
 import { RenderComponent } from '../components/RenderComponent';
-import { PhysicsComponent } from '../components/PhysicsComponent';
 import { AnimationComponent } from '../components/AnimationComponent';
-import { LifetimeComponent } from '../components/LifetimeComponent';
 
-import { GAME_COLORS } from '../utils/Types';
-
-import { CrossCutFactory, CrossCutPosition, CrossCutAction, CrossCutType } from '../factories/CrossCutFactory';
-import { FrameData, GameEvent } from '../utils/Types';
-import { lerp } from '../utils/Utils';
-import { isRenderComponent, isMenuLine, isOverlayBackground } from '../utils/Guards'
+import { FrameData } from '../utils/Types';
+import { isRenderComponent, isMenuLine, isOverlayBackground, isGlossary, isPowerup } from '../utils/Guards'
 import { MenuLine } from './MenuLine';
 import { OverlayBackground } from './OverlayBackground';
+import { Glossary } from './Glossary';
+import { Powerup } from '../entities/powerups/Powerup';
+import { PhysicsComponent } from '../components/PhysicsComponent';
 
 export class MenuAnimationSystem implements System {
 	private menu: Menu;
-	private UI!: UI;
-	private frameCounter: number = 0;
-	private depthLineUpdateRate: number = 1;
 	lastCutId: string | null = null;
 	isDespawningCrossCut: boolean = false;
 
@@ -66,6 +50,10 @@ update(entities: Entity[], delta: FrameData): void {
 			this.animateMenuLine(delta, entitiesToRemove, entity);
 		} else if (isOverlayBackground(entity)) {
 			this.animateOverlayBackground(delta, entity as OverlayBackground);
+		} else if (isGlossary(entity)) {
+			this.animateGlossary(delta, entity as Glossary);
+		} else if (isPowerup(entity)) {
+			this.animatePowerup(entity)
 		}
 	}
 	
@@ -187,13 +175,36 @@ update(entities: Entity[], delta: FrameData): void {
         }
     }
 
+	animateGlossary(delta: FrameData, entity: Glossary) {
+		if (entity.getIsAnimating()) {
+			entity.updateAnimation(delta.deltaTime);
+		}
+	}
+
+	animatePowerup(entity: Powerup) {	
+		const render = entity.getComponent('render') as RenderComponent;
+		const animation = entity.getComponent('animation') as AnimationComponent;
+		const physics = entity.getComponent('physics') as PhysicsComponent;
+		
+		if (!render || !animation || !physics) return;
+		
+		if (animation.options) {
+			const animationOptions = animation.options;
+			
+			// Remove the floatOffset to sync all powerups
+			const floatY = animationOptions.initialY as number + 
+			Math.sin(Date.now() / 800 * (animationOptions.floatSpeed as number)) * 
+			(animationOptions.floatAmplitude as number);
+		
+			physics.y = floatY;
+			render.graphic.position.set(physics.x, floatY);
+		}	
+	}
+
 	cleanup(): void {
-        // Reset frame counter and timers
-        this.frameCounter = 0;
         this.lastCutId = null;
         this.isDespawningCrossCut = false;
         
-        // Clean up any remaining animated entities
         const entitiesToRemove: string[] = [];
         for (const entity of this.menu.entities) {
             if (isMenuLine(entity)) {

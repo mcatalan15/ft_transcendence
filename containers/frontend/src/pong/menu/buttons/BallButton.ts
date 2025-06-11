@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:21:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 21:10:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 11:32:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,11 @@ export class BallButton extends BaseButton {
         };
     }
 
-    protected onButtonClick(): void {
-        // Ball button specific click logic
-    }
+    protected onButtonClick(): void {}
 
-    protected highlightOrnament(): void {
-        // Ball button doesn't interact with ornaments
-    }
+    protected highlightOrnament(): void {}
 
-    protected resetOrnamentColor(): void {
-        // Ball button doesn't interact with ornaments
-    }
+    protected resetOrnamentColor(): void {}
 
     protected shouldAddVFXComponent(): boolean {
         return true;

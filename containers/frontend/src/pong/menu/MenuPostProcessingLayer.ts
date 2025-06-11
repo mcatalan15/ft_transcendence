@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/08 18:47:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:45:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,26 +35,41 @@ export class MenuPostProcessingLayer extends Entity {
             pixelSize: 0.5,         // Standard pixel size
         });
 
-        // CRT overlay
+        // CRT base
         const crtFilter = new CRTFilter({
             curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,    // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
-            lineWidth: 0.05,         // Thickness of scanlines (default: 1.0)
-            lineContrast: 0.15,      // Contrast between scanlines and base image (default: 0.25)
-            verticalLine: false,    // false = horizontal lines, true = vertical scanlines
-            noise: 0.1,             // Noise overlay intensity (default: 0.3)
-            noiseSize: 0.2,         // Size of noise grain (default: 1.0)
-            seed: Math.random(),    // Seed for the noise randomness
-            vignetting: 0.45,        // Vignette size (smaller = tighter vignette, default: 0.3)
-            vignettingAlpha: 0.6,   // Opacity of vignette (default: 1.0)
-            vignettingBlur: 0.1,    // Blur intensity of the vignette (default: 0.3)
-            time: 0                 // For animating scanlines; increase over time in your game loop
+            lineWidth: 0.05,
+            lineContrast: 0.15,
+            verticalLine: false,
+            noise: 0.05,
+            noiseSize: 0.2,
+            seed: Math.random(),
+            vignetting: 0.45,
+            vignettingAlpha: 0.6,
+            vignettingBlur: 0.1,
+            time: 0
+        });
+
+         // Overlay CRT
+         const crtOverlay = new CRTFilter({
+            curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
+            lineWidth: 0.05,
+            lineContrast: 0.15,
+            verticalLine: false,
+            noise: 0.05,
+            noiseSize: 0.2,
+            seed: Math.random(),
+            vignetting: 0.45,
+            vignettingAlpha: 0.6,
+            vignettingBlur: 0.1,
+            time: 0
         });
 
         // Lens distortion
         const bulgePinch = new BulgePinchFilter({
-            center: new Point(0.5, 0.5), // Normalized coordinates (0 to 1) if using relative center
-            radius: Math.min(menu.width, menu.height) * 1.6,                      // Radius of effect in pixels
-            strength: (1 / menu.width / menu.height) * 70000,                     // Range: -1 (pinch) to 1 (bulge)
+            center: new Point(0.5, 0.5),
+            radius: Math.min(menu.width, menu.height) * 1.6,
+            strength: (1 / menu.width / menu.height) * 70000,
         });
 
         // Chromatic aberration
@@ -74,16 +89,113 @@ export class MenuPostProcessingLayer extends Entity {
             quality: 0.1,
         });
 
+        // Power-up effects
+        const powerupCRT = new CRTFilter({
+            curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
+            lineWidth: 0.1,
+            lineContrast: 0.2,
+            verticalLine: false,
+            noise: 0.,
+            noiseSize: 0.5,
+            seed: Math.random(),
+            vignetting: 0,
+            vignettingAlpha: 0,
+            vignettingBlur: 0,
+            time: 0
+        });
+
+        const powerupGlow = new GlowFilter({
+            alpha: 0.2,
+            color: GAME_COLORS.marine,
+            distance: 10,
+            innerStrength: 3,
+            knockout: false,
+            outerStrength: 2,
+            quality: 0.1,
+        });
+
+        const powerdownGlow = new GlowFilter({
+            alpha: 0.2,
+            color: GAME_COLORS.marine,
+            distance: 10,
+            innerStrength: 3,
+            knockout: false,
+            outerStrength: 2,
+            quality: 0.1,
+        });
+
+        const ballChangeGlow = new GlowFilter({
+            alpha: 0.2,
+            color: GAME_COLORS.marine,
+            distance: 10,
+            innerStrength: 3,
+            knockout: false,
+            outerStrength: 2,
+            quality: 0.1,
+        });
+
+        const powerupDropShadow = new DropShadowFilter({
+            alpha: 0.75,
+            blur: 1,
+            color: GAME_COLORS.green,
+            offset: {x: 4,y: 4},
+            pixelSize: {x:1,y:1},
+            quality: 4,
+            resolution: 1,
+        });
+        
+        const powerdownDropShadow = new DropShadowFilter({
+            alpha: 0.75,
+            blur: 1,
+            color: GAME_COLORS.red,
+            offset: {x: 4,y: 4},
+            pixelSize: {x:1,y:1},
+            quality: 4,
+            resolution: 1,
+        });
+
+        const ballChangeDropShadow = new DropShadowFilter({
+            alpha: 0.75,
+            blur: 1,
+            color: GAME_COLORS.brown,
+            offset: {x: 4,y: 4},
+            pixelSize: {x:1,y:1},
+            quality: 4,
+            resolution: 1,
+        });
+
+        const powerdownGlitch = new GlitchFilter({
+            average: false,
+            blue: {x: 0.5, y: 0.5},
+            green: {x: 0.5, y: 0.5},
+            red: {x: 0.5, y: 0.5},
+            direction: 0,
+            fillMode: 1,
+            offset : 2,
+            sampleSize: 512,
+            seed: 0,
+            slices: 200,
+        });
+
         this.addComponent(new PostProcessingComponent({
             advancedBloom: advancedBloom,
 			crtFilter: crtFilter,
+            crtOverlay: crtOverlay,
+            powerupCRT: powerupCRT,
             bulgePinch: bulgePinch,
             rgbSpilt: rgbSplit,
+            powerdownGlitch: powerdownGlitch,
         }));
-        menu.visualRootFilters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
-        menu.menuContainerFilters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
+        menu.baseFilters = [glow, advancedBloom, bulgePinch, crtFilter, rgbSplit];
+        menu.powerupFilters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow];
+        menu.powerdownFilters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerdownGlitch];
+        menu.ballchangeFilters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow];
 
-        menu.visualRoot.filters = menu.visualRootFilters;
-        menu.menuContainer.filters = menu.menuContainerFilters;
+        menu.visualRoot.filters = menu.baseFilters;
+        menu.menuContainer.filters = menu.baseFilters;
+        menu.renderLayers.overlays.filters = menu.baseFilters;
+        menu.renderLayers.powerups.filters = menu.powerupFilters;
+        menu.renderLayers.powerdowns.filters = menu.powerdownFilters;
+        menu.renderLayers.ballchanges.filters = menu.ballchangeFilters;
     }
 }

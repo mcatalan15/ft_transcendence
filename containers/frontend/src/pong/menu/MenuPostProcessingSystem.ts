@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:43:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 15:45:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,11 @@ export class MenuPostProcessingSystem implements System {
             if (options.crtFilter) {
                 options.crtFilter.time = this.time;
                 options.crtFilter.seed = Math.sin(this.time) * 10000 % 1;
+            }
+
+            if (options.crtOverlay) {
+                options.crtOverlay.time = this.time;
+                options.crtOverlay.seed = Math.sin(this.time) * 10000 % 1;
             }
 
             if (options.powerupCRT) {

@@ -1,25 +1,32 @@
 // Update OverlayBackground.ts to support animation
 import { Graphics } from "pixi.js";
+import { Menu } from "./Menu";
 import { Entity } from "../engine/Entity";
 import { RenderComponent } from "../components/RenderComponent";
 import { AnimationComponent } from "../components/AnimationComponent";
+import { GAME_COLORS } from "../utils/Types";
 
 export class OverlayBackground extends Entity {
+    private background!: Graphics;
     private targetAlpha: number = 0;
     private currentAlpha: number = 0;
     private animationProgress: number = 0;
-    private animationSpeed: number = 0.08; // Adjust for faster/slower fade
+    private animationSpeed: number = 0.08;
     private isAnimating: boolean = false;
     private isDisplayed: boolean = false;
 
-    constructor(id: string, layer: string, width: number, height: number) {
+    constructor(id: string, layer: string) {
         super(id, layer);
-        
+
         const overlayBackground = new Graphics();
-        overlayBackground.rect(0, 0, width / 2 - 200, height);
-        overlayBackground.x = width / 2 + 200;
+        overlayBackground.rect(0, 0, 1635, 600);
+        overlayBackground.x = 75;
+        overlayBackground.y = 75;
         overlayBackground.fill({color: 0x151515, alpha: 1});
+        overlayBackground.stroke({color: GAME_COLORS.menuOrange, width: 3});
 		overlayBackground.alpha = 0;
+
+        this.background = overlayBackground;
         
         const renderComponent = new RenderComponent(overlayBackground);
         this.addComponent(renderComponent, 'render');
@@ -94,5 +101,15 @@ export class OverlayBackground extends Entity {
 
     public setIsDisplayed(displayed: boolean): void {
         this.isDisplayed = displayed;
+    }
+
+    public changeStrokeColor(color: number) {
+        this.background.clear();
+        this.background.rect(0, 0, 1635, 600);
+        this.background.x = 75;
+        this.background.y = 75;
+        this.background.fill({color: 0x151515, alpha: 1});
+        this.background.stroke({color: color, width: 3});
+		this.background.alpha = 1;
     }
 }

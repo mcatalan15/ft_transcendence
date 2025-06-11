@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 11:19:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:39:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,9 @@ export class Title extends Entity {
         const block = new Graphics();
         
         if (!this.menu.config.classicMode) {
-            block.rect(0, 0, this.width, 80);
-            block.x = 0;
-            block.y = this.height / 3 - 30;
+            block.rect(0, 0, 560, 50);
+            block.x = 1120;
+            block.y = this.height / 3;
             block.fill(0x151515);
         }
         

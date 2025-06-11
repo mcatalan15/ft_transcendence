@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 16:58:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:31:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@ import { Menu } from "./Menu";
 
 import { System } from "../engine/System";
 
-import { GameEvent } from "../utils/Types";
+import { GAME_COLORS, GameEvent } from "../utils/Types";
 import { PongGame } from "../engine/Game";
 import { RenderComponent } from "../components/RenderComponent";
 import { isBall } from "../utils/Guards";
-import { TextComponent } from "../components/TextComponent";
+import { MenuPowerupManager } from './MenuPowerupManager';
 
 export class ButtonSystem implements System {
     private menu: Menu;
@@ -125,26 +125,40 @@ export class ButtonSystem implements System {
         this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
         this.menu.glossaryButton.setClickable(!this.menu.glossaryButton.getIsClicked());
         this.menu.glossaryButton.resetButton();
-
+    
         this.menu.menuHidden.addChild(this.menu.glossaryOrnament.getGraphic());
         this.menu.menuContainer.addChild(this.menu.glossaryClickedOrnament.getGraphic());
         this.menu.redrawFrame();
+
+
+        if (this.menu.config.classicMode) {
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+        } else {
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuOrange);
+        }
         
         if (this.menu.glossaryButton.getIsClicked()) {
             if (!this.menu.overlayBackground.getIsDisplayed()) {
+                // Step 1: Show overlay background and start its fade-in
                 this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
                 this.menu.overlayBackground.fadeIn();
                 this.menu.overlayBackground.setIsDisplayed(true);
                 
-                const glossaryText = this.menu.glossaryES.getComponent('text') as TextComponent;
-		        this.menu.renderLayers.overlays.addChild(glossaryText.getRenderable());
+                // Step 2: Add glossary texts to overlays but keep them invisible initially
+                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
+                glossaryRenderables.forEach(renderable => {
+                    this.menu.renderLayers.overlays.addChild(renderable);
+                });
+                
+                // Step 3: Wait for overlay background to finish, then fade in glossary AND powerups
+                this.waitForOverlay();
             }
-
+    
             if (this.menu.aboutButton.getIsClicked()) {
                 this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
                 this.menu.aboutButton.resetButton();
             }
-
+    
             this.menu.menuContainer.addChild(this.menu.glossaryXButton.getContainer());
         }
     }
@@ -157,6 +171,12 @@ export class ButtonSystem implements System {
         this.menu.menuHidden.addChild(this.menu.aboutOrnament.getGraphic());
         this.menu.menuContainer.addChild(this.menu.aboutClickedOrnament.getGraphic());
         this.menu.redrawFrame();
+
+        if (this.menu.config.classicMode) {
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+        } else {
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuPink);
+        }
 
         if (this.menu.aboutButton.getIsClicked()) {
             if (!this.menu.overlayBackground.getIsDisplayed()) {
@@ -226,27 +246,21 @@ export class ButtonSystem implements System {
         } else if (event.type.includes('GLOSSARY')) {
             this.menu.glossaryXButton.setHidden(!this.menu.glossaryButton.getIsHidden());
             this.menu.menuHidden.addChild(this.menu.glossaryXButton.getContainer());
-
+        
             this.menu.glossaryButton.setClicked(false);
             this.menu.glossaryButton.setClickable(true);
             this.menu.glossaryButton.setHidden(false);
-
+        
             this.menu.menuContainer.addChild(this.menu.glossaryOrnament.getGraphic());
             this.menu.menuHidden.addChild(this.menu.glossaryClickedOrnament.getGraphic());
-
-            this.menu.overlayBackground.fadeOut();
-            this.menu.overlayBackground.setIsDisplayed(false);
-
-            const glossaryText = this.menu.glossaryES.getComponent('text') as TextComponent;
-		    this.menu.menuHidden.addChild(glossaryText.getRenderable());
+        
+            // Step 1: Start glossary AND powerups fade-out simultaneously
+            this.menu.glossaryES.fadeOut();
+            MenuPowerupManager.fadeOutAllPowerups(this.menu);
             
-            setTimeout(() => {
-                if (this.menu.overlayBackground.isAnimationComplete() && 
-                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
-                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                }
-            }, 500);
-
+            // Step 2: Wait for both to finish, then fade out overlay
+            this.waitForGlossaryAndPowerupsThenFadeOverlay();
+        
             this.menu.redrawFrame();
             this.menu.glossaryButton.resetButton();
             this.menu.glossaryXButton.resetButton();
@@ -378,11 +392,19 @@ export class ButtonSystem implements System {
             this.menu.filtersButton.updateText(text.substring(0, text.indexOf('ON')) + 'OFF');
             this.menu.visualRoot.filters = [];
             this.menu.menuContainer.filters = [];
+            this.menu.renderLayers.overlays.filters = [];
+            this.menu.renderLayers.powerups.filters = [];
+            this.menu.renderLayers.powerdowns.filters = [];
+            this.menu.renderLayers.ballchanges.filters = [];
             this.menu.config.filters = false;
         } else {
             this.menu.filtersButton.updateText(text.substring(0, text.indexOf('OFF')) + 'ON');
-            this.menu.visualRoot.filters = this.menu.visualRootFilters;
-            this.menu.menuContainer.filters = this.menu.menuContainerFilters;
+            this.menu.visualRoot.filters = this.menu.baseFilters;
+            this.menu.menuContainer.filters = this.menu.baseFilters;
+            this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
+            this.menu.renderLayers.powerups.filters = this.menu.powerupFilters;
+            this.menu.renderLayers.powerdowns.filters = this.menu.powerdownFilters;
+            this.menu.renderLayers.ballchanges.filters = this.menu.ballchangeFilters;
             this.menu.config.filters = true;
         }
     
@@ -414,6 +436,7 @@ export class ButtonSystem implements System {
 
     handleClassicClicked() {
         this.menu.config.classicMode = !this.menu.config.classicMode;
+        this.menu.ballAmount = 0;
     
         const text = this.menu.classicButton.getText();
         const isClicked = this.menu.classicButton.getIsClicked();
@@ -475,6 +498,17 @@ export class ButtonSystem implements System {
             this.menu.renderLayers.foreground.addChild(this.menu.ballButton.getContainer());
             this.menu.menuHidden.addChild(titleORender.graphic);
         }
+
+        if (this.menu.config.classicMode) {
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+        } else {
+            if (this.menu.glossaryButton.getIsClicked()) {
+                this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuOrange);
+            } else if (this.menu.aboutButton.getIsClicked()) {
+                this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuPink);
+            
+            }
+        }
     }
 
     public updatePlayButtonState(): void {
@@ -509,6 +543,59 @@ export class ButtonSystem implements System {
             
             playButton.resetButton();
         }
+    }
+
+    private waitForOverlay(): void {
+        const checkOverlayComplete = () => {
+            if (this.menu.overlayBackground.isAnimationComplete() && 
+                this.menu.overlayBackground.getCurrentAlpha() === 1) {
+                // Overlay is fully visible, now fade in glossary AND powerups simultaneously
+                this.menu.glossaryES.fadeIn();
+                MenuPowerupManager.fadeInAllPowerups(this.menu);
+            } else {
+                // Check again in next frame
+                setTimeout(checkOverlayComplete, 16); // ~60fps
+            }
+        };
+        checkOverlayComplete();
+    }
+
+    private waitForGlossaryAndPowerupsThenFadeOverlay(): void {
+        const checkBothComplete = () => {
+            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
+                                   this.menu.glossaryES.getCurrentAlpha() === 0;
+            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
+            
+            if (glossaryComplete && powerupsComplete) {
+                // Both glossary and powerups are fully hidden, now fade out overlay
+                this.menu.overlayBackground.fadeOut();
+                this.menu.overlayBackground.setIsDisplayed(false);
+                
+                // Move glossary renderables back to hidden after fade out
+                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
+                glossaryRenderables.forEach(renderable => {
+                    this.menu.menuHidden.addChild(renderable);
+                });
+                
+                // Wait for overlay to finish, then move it to hidden
+                this.finalizeOverlayHiding();
+            } else {
+                setTimeout(checkBothComplete, 16);
+            }
+        };
+        checkBothComplete();
+    }
+    
+    private finalizeOverlayHiding(): void {
+        const checkOverlayComplete = () => {
+            if (this.menu.overlayBackground.isAnimationComplete() && 
+                this.menu.overlayBackground.getCurrentAlpha() === 0) {
+                this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+            } else {
+                setTimeout(checkOverlayComplete, 16);
+            }
+        };
+        checkOverlayComplete();
     }
 
     cleanup(): void {
