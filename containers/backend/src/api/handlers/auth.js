@@ -59,21 +59,24 @@ async function signupHandler(request, reply) {
     console.log('[BACKEND - signupHandler] Preparing response with:', {
         userId: newUserId,
         username: username,
-		email: email
+		email: email,
+		twoFAEnabled: false
     })
     console.log('[BACKEND - signupHandler] Final response object before sending:', {
             success: true,
             message: 'User registered successfully',
             userId: newUserId,
             username: username,
-			email: email
+			email: email,
+			twoFAEnabled: false
         });
     return reply.status(201).send({
       success: true,
       message: 'User registered successfully',
       userId: newUserId, // <--- Add the new user ID
       username: username, // <--- Add the username (or email, if that's what you use for 2FA display)
-	  email: email
+	  email: email,
+	  twoFAEnabled: false
     });
 
   } catch (error) {
@@ -118,6 +121,7 @@ async function signinHandler(request, reply) {
 		  userId: user.id_user,
           username: user.username,
           email: user.email,
+		  twoFAEnabled: user.twoFAEnabled
           //! Never store sensitive data like passwords !
 		});
 
@@ -196,6 +200,9 @@ async function googleHandler(request, reply, fastify) {
 		if (userExists?.exists) {
 		  // user exists? sign them in instead of registering
 		  const user = await getUserByEmail(email);
+
+		  //twoFA for existing users
+		  const twoFAEnabled = user.twoFAEnabled === 1 || user.twoFAEnabled === true;
 		  const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES_IN
 		  });
@@ -204,8 +211,11 @@ async function googleHandler(request, reply, fastify) {
 		  request.session.set('user', {
 			userId: user.id_user,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			twoFAEnabled: twoFAEnabled
 		  });
+
+			console.log(`[Google Auth - Existing User] User ID: ${user.id_user}, Email: ${user.email}, 2FA Enabled: ${twoFAEnabled}`);
 
 		  return reply.status(200).send({
 			success: true,
@@ -213,7 +223,8 @@ async function googleHandler(request, reply, fastify) {
 			token: authToken,
 			userId: user.id_user,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			twoFAEnabled: twoFAEnabled
 		  });
 		}
   
@@ -230,7 +241,10 @@ async function googleHandler(request, reply, fastify) {
 		await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
 		const newUser = await getUserByEmail(email);
 
-		const authToken = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+		// TwoFA for new users
+		const twoFAEnabled = newUser.twoFAEnabled === 1 || newUser.twoFAEnabled === true;
+
+		const authToken = jwt.sign({ id: newUser.id, twoFAEnabled: twoFAEnabled }, process.env.JWT_SECRET, {
 		  expiresIn: process.env.JWT_EXPIRES_IN
 		});
 
@@ -238,8 +252,11 @@ async function googleHandler(request, reply, fastify) {
 		  request.session.set('user', {
 			userId: newUser.id_user,
 			username: newUser.username,
-			email: newUser.email
+			email: newUser.email,
+			twoFAEnabled: newUser.twoFAEnabled
 		  });
+
+		  console.log(`[Google Auth - New User Registered] User ID: ${newUser.id_user}, Email: ${newUser.email}, 2FA Enabled: ${twoFAEnabled}`);
 
 		//fastify.metrics.authAttempts.labels('local', 'success').inc();
 		return reply.status(201).send({
@@ -248,7 +265,8 @@ async function googleHandler(request, reply, fastify) {
 		  token: authToken,
 		  userId: newUser.id_user,
 		  username: newUser.username,
-		  email: newUser.email
+		  email: newUser.email,
+		  twoFAEnabled: twoFAEnabled
 		});
   
 	  } catch (error) {

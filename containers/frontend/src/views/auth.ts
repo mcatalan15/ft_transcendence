@@ -22,9 +22,13 @@ export function showAuth(container: HTMLElement): void {
     console.log('Current URL:', window.location.href);
     console.log('URL params:', urlParams.toString());
     console.log('fromPage value:', fromPage);
-		console.log('UserId: ',sessionStorage.getItem('userId'));
+	console.log('UserId: ',sessionStorage.getItem('userId'));
     console.log('Username: ',sessionStorage.getItem('username'));
     console.log('Email: ', sessionStorage.getItem('email'));
+	console.log('2FA status: ', sessionStorage.getItem('twoFAEnabled'.toString()));
+	const authToken = sessionStorage.getItem('token');
+	console.log('Auth Token:', authToken ? 'Present' : 'Missing');
+
     // Create the main container
     const authDiv = document.createElement('div');
     authDiv.className = "auth-container";
@@ -35,7 +39,7 @@ export function showAuth(container: HTMLElement): void {
     let actualEmail = sessionStorage.getItem('email');
 
     // Different content based on where the user came from
-    if (fromPage === 'signup') {
+    if (fromPage === 'signup' && sessionStorage.getItem('twoFAEnabled') === 'false') {
         console.log('Showing signup success and initiating 2FA setup');
 
         const message = document.createElement('p');
@@ -202,7 +206,7 @@ export function showAuth(container: HTMLElement): void {
                 verificationStatus.style.color = 'red';
             }
         });
-    } else if (fromPage === 'signin') {
+	} else if (fromPage === 'signin' && sessionStorage.getItem('twoFAEnabled') === 'true') {
 		console.log('Showing signin with 2FA verification');
 
 		// Retrieve user data from sessionStorage
