@@ -8,7 +8,7 @@ import { localSignIn } from '../utils/auth/localSignIn';
 
 export function showSignIn(container: HTMLElement): void {
 	loadGoogleScript();
-	setupGoogleSignUp()
+	setupGoogleSignUp();
 
 	const SignInDiv = document.createElement('div');
 	SignInDiv.innerHTML = `

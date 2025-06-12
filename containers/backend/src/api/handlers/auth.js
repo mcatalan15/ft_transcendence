@@ -17,7 +17,8 @@ const { saveUserToDatabase,
   getUserByEmail,
   saveTwoFactorSecret,
   getTwoFactorSecret,
-  enableTwoFactor
+  enableTwoFactor,
+  getUserById
 } = require('../db/database');
 
 async function signupHandler(request, reply) {
@@ -266,7 +267,7 @@ async function googleHandler(request, reply, fastify) {
 		  userId: newUser.id_user,
 		  username: newUser.username,
 		  email: newUser.email,
-		  twoFAEnabled: twoFAEnabled
+		  twoFAEnabled: newUser.twoFAEnabled
 		});
   
 	  } catch (error) {
@@ -384,17 +385,65 @@ async function verifyTwoFa(request, reply) {
     try {
       const verified = await verifyTwoFaToken(userId, token);
       if (verified) {
-        reply.code(200).send({
-			message: '2FA token verified successfully!',
-			verified: true
+		console.log("Entra verified 2FA token for user:", userId);
+        // reply.code(200).send({
+		// 	message: '2FA token verified successfully!',
+		// 	verified: true
+		// });
+		const user = await getUserById(userId); // Assuming you have a function to get user by ID
+
+		if (!user) {
+			// This shouldn't happen if userId is valid from `verifyTwoFaToken`
+			reply.code(404).send({ message: 'User not found.' });
+			// return;
+		// }
+
+		// 2. Create a new JWT with an updated payload
+		//    Add a claim like 'twoFAVerified: true' or 'fullyAuthenticated: true'
+		const newAuthToken = jwt.sign(
+			{
+				id: user.id_user, // Use user.id_user as consistently used
+				username: user.username,
+				email: user.email,
+				twoFAEnabled: true, // Confirm 2FA is now enabled
+				twoFAVerified: true // Crucial new claim indicating successful verification
+			},
+			process.env.JWT_SECRET, // Your secret key
+			{
+				expiresIn: process.env.JWT_EXPIRES_IN // Your token expiration time
+			}
+		);
+
+		// 3. Update the session (if you're using server-side sessions)
+		//    This ensures the server-side session also reflects the updated 2FA status.
+		request.session.set('token', newAuthToken); // Update the token in session
+		request.session.set('user', { // Update user info in session
+			userId: user.id_user,
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: true,
+			twoFAVerified: true // Update this as well
 		});
-      } else {
+
+		// 4. Send the new token back to the frontend
+		reply.code(200).send({
+			message: '2FA token verified successfully!',
+			verified: true,
+			token: newAuthToken, // Send the new token to the frontend
+			userId: user.id_user, // Re-send relevant user data
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: true // Explicitly confirm
+		});
+		// --- END: JWT Re-issuance Logic ---
+      	} else {
         reply.code(400).send({
 			message: 'Invalid 2FA token.'
 		});
-      }
-    } catch (error) {
-      fastify.log.error('Error verifying 2FA token for user:', userId, error);
+      	}
+    	}
+	} catch (error) {
+      console.error('Error verifying 2FA token for user:', userId, error);
       reply.code(500).send({
 		message: 'Failed to verify 2FA token.'
 	  });

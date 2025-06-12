@@ -5,7 +5,7 @@ import { LanguageSelector } from '../components/languageSelector';
 
 export function showSignUp(container: HTMLElement): void {
 	loadGoogleScript();
-	setupGoogleSignUp()
+	setupGoogleSignUp();
 
 	const SignUpDiv = document.createElement('div');
 	SignUpDiv.innerHTML = `
