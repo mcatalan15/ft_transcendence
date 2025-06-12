@@ -165,10 +165,8 @@ export class PongGame {
 		}
 
 		if (this.isOnline) {
-			// For online games, create the same entities as local games but without local game loop
 			await this.initOnlineGame();
 		} else {
-			// For local games, use the existing full system
 			await this.createEntities();
 			this.initSystems();
 			this.initDust();
@@ -188,7 +186,7 @@ export class PongGame {
 
 
 	private async initOnlineGame(): Promise<void> {
-		console.log('Initializing online game with full graphics engine...');
+		console.log('Initializing online game...');
 
 		await this.createEntities();
 
@@ -214,56 +212,52 @@ export class PongGame {
 
 		console.log('Online game initialized with full graphics engine');
 	}
-private initOnlineGameSystems(): void {
-  // Initialize systems in the SAME ORDER as local games for consistency
-  this.systems = [];
 
-  // Core rendering and input systems
-  this.systems.push(new RenderSystem());
-  // Skip InputSystem - network manager handles input
-  
-  // Visual effects systems (if not classic mode)
-  if (!this.config.classicMode) {
-    this.systems.push(new CrossCutSystem(this));
-  }
-  
-  // Physics system - CRITICAL for particle effects and visual interactions
-  // Server-controlled entities (ball, paddles) will be skipped via isServerControlled flag
-  this.systems.push(new PhysicsSystem(this, this.width, this.height));
-  
-  // World and animation systems
-  if (!this.config.classicMode) {
-    this.systems.push(new WorldSystem(this));
-  }
-  this.systems.push(new AnimationSystem(this));
-  
-  // Visual effects systems
-  if (!this.config.classicMode) {
-    this.systems.push(new VFXSystem());
-    this.systems.push(new ParticleSystem(this));
-  }
-  
-  // UI system
-  this.systems.push(new UISystem(this));
-  
-  // Powerup system (for visual effects only)
-  if (!this.config.classicMode) {
-    this.systems.push(new PowerupSystem(this, this.width, this.height));
-  }
-  
-  // Post-processing system (MUST BE LAST)
-  this.systems.push(new PostProcessingSystem());
+	private initOnlineGameSystems(): void {
+		// Initialize systems in the SAME ORDER as local games for consistency
+		this.systems.push(new RenderSystem());
+		// Skip InputSystem - network manager handles input
 
-  console.log(`Initialized ${this.systems.length} systems for online game`);
-  console.log('Online systems:', this.systems.map(s => s.constructor.name));
-  
-  // Compare with local game systems
-  console.log('Local game would have:', [
-    'RenderSystem', 'InputSystem', 'CrossCutSystem', 'PhysicsSystem',
-    'WorldSystem', 'AnimationSystem', 'VFXSystem', 'ParticleSystem',
-    'UISystem', 'PowerupSystem', 'PostProcessingSystem'
-  ]);
-}
+		// Visual effects systems (if not classic mode)
+		if (!this.config.classicMode) {
+			this.systems.push(new CrossCutSystem(this));
+		}
+
+		// Physics system - CRITICAL for particle effects and visual interactions
+		// Server-controlled entities (ball, paddles) will be skipped via isServerControlled flag
+		this.systems.push(new PhysicsSystem(this, this.width, this.height));
+
+		// World and animation systems
+		if (!this.config.classicMode) {
+			this.systems.push(new WorldSystem(this));
+		}
+		this.systems.push(new AnimationSystem(this));
+
+		// Visual effects systems
+		if (!this.config.classicMode) {
+			this.systems.push(new VFXSystem());
+			this.systems.push(new ParticleSystem(this));
+		}
+		this.systems.push(new UISystem(this));
+
+		// Powerup system (for visual effects only)
+		if (!this.config.classicMode) {
+			this.systems.push(new PowerupSystem(this, this.width, this.height));
+		}
+
+		// Post-processing system (MUST BE LAST)
+		this.systems.push(new PostProcessingSystem());
+
+		console.log(`Initialized ${this.systems.length} systems for online game`);
+		console.log('Online systems:', this.systems.map(s => s.constructor.name));
+
+		// Compare with local game systems
+		console.log('Local game would have:', [
+			'RenderSystem', 'InputSystem', 'CrossCutSystem', 'PhysicsSystem',
+			'WorldSystem', 'AnimationSystem', 'VFXSystem', 'ParticleSystem',
+			'UISystem', 'PowerupSystem', 'PostProcessingSystem'
+		]);
+	}
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
@@ -406,7 +400,7 @@ private initOnlineGameSystems(): void {
 
 		//TODO: Update to match online game player names
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		this.rightPlayer = { name: "Player 2" };
+		this.rightPlayer = { name: this.config.opponent || "Player 2" };
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -466,14 +460,6 @@ private initOnlineGameSystems(): void {
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);
-
-		// CRITICAL: Add ball to render layer after spawning
-		const ballEntity = this.entities.find(e => e.id === 'defaultBall');
-		if (ballEntity) {
-			console.log("✅ Ball added to foreground render layer");
-		} else {
-			console.error("❌ Ball entity not found after spawn!");
-		}
 	}
 
 	addEntity(entity: Entity): void {
@@ -583,31 +569,13 @@ private initOnlineGameSystems(): void {
 				const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
 				const ballRender = ballEntity.getComponent('render') as RenderComponent;
 
-				console.log('Ball components:', {
-					hasPhysics: !!ballPhysics,
-					hasRender: !!ballRender,
-					hasGraphic: !!(ballRender && ballRender.graphic),
-					currentPos: ballPhysics ? { x: ballPhysics.x, y: ballPhysics.y } : null
-				});
+				ballPhysics.x = gameState.ball.x;
+				ballPhysics.y = gameState.ball.y;
+				ballPhysics.velocityX = gameState.ball.vx || 0;
+				ballPhysics.velocityY = gameState.ball.vy || 0;
+				ballRender.graphic.x = gameState.ball.x;
+				ballRender.graphic.y = gameState.ball.y;
 
-				if (ballPhysics) {
-					console.log(`Ball server update: (${gameState.ball.x}, ${gameState.ball.y})`);
-
-					ballPhysics.x = gameState.ball.x;
-					ballPhysics.y = gameState.ball.y;
-					ballPhysics.velocityX = gameState.ball.vx || 0;
-					ballPhysics.velocityY = gameState.ball.vy || 0;
-
-					// CRITICAL: Force render component update immediately
-					if (ballRender && ballRender.graphic) {
-						ballRender.graphic.x = gameState.ball.x;
-						ballRender.graphic.y = gameState.ball.y;
-						console.log(`✅ Ball render updated: (${ballRender.graphic.x}, ${ballRender.graphic.y})`);
-						console.log(`Ball graphic visible: ${ballRender.graphic.visible}, alpha: ${ballRender.graphic.alpha}`);
-					} else {
-						console.error('❌ Ball render component or graphic missing!');
-					}
-				}
 			} else {
 				console.warn('❌ Ball entity or gameState.ball missing');
 				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
@@ -626,8 +594,6 @@ private initOnlineGameSystems(): void {
 						paddle1Render.graphic.x = gameState.paddle1.x;
 						paddle1Render.graphic.y = gameState.paddle1.y;
 					}
-
-					console.log(`✅ Paddle1 updated: (${paddle1Physics.x}, ${paddle1Physics.y})`);
 				}
 			}
 
@@ -642,19 +608,14 @@ private initOnlineGameSystems(): void {
 						paddle2Render.graphic.x = gameState.paddle2.x;
 						paddle2Render.graphic.y = gameState.paddle2.y;
 					}
-
-					console.log(`✅ Paddle2 updated: (${paddle2Physics.x}, ${paddle2Physics.y})`);
 				}
 			}
 
-			// Update score
 			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
 				this.updateScoreDisplay(gameState.score1 || 0, gameState.score2 || 0);
 			}
-
 		} catch (error) {
-			console.error('❌ Error updating from server state:', error);
-			console.error('Error stack:', error.stack);
+			console.error('Error updating from server state:', error);
 		}
 	}
 
@@ -663,26 +624,16 @@ private initOnlineGameSystems(): void {
 		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
 
 		if (uiEntity) {
-			// Access UI properties directly
 			if (uiEntity.leftScore !== undefined && uiEntity.rightScore !== undefined) {
 				uiEntity.leftScore = score1;
 				uiEntity.rightScore = score2;
 			}
 
-			// Update the text component
 			const textComponent = uiEntity.getComponent('text') as TextComponent;
 			if (textComponent) {
 				textComponent.setText(`${score1} - ${score2}`);
 			}
-
-			// Force UI system to update
-			const uiSystem = this.systems.find(s => s.constructor.name === 'UISystem');
-			if (uiSystem) {
-				// The UI system will pick up the score changes on next update
-				console.log(`Score updated to ${score1} - ${score2}`);
-			}
 		}
-
 		console.log(`Score display updated: ${score1} - ${score2}`);
 	}
 
@@ -714,12 +665,9 @@ private initOnlineGameSystems(): void {
 		console.log(`Local gameplay disabled for online mode. ${disabledCount} entities marked as server-controlled.`);
 	}
 
-	// Start the online game
 	start() {
 		if (!this.isOnline) return;
-
 		console.log('Starting online Pong game');
-
 		this.disableLocalGameplayForOnline();
 	}
 }

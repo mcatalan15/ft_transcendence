@@ -6,7 +6,6 @@ export class PongNetworkManager {
   private game: PongGame;
   private playerNumber: number = 0;
   private isHost: boolean = false;
-  private opponentName: string = '';
   private hostName: string = '';
   private guestName: string = '';
   private gameId: string = '';
@@ -21,13 +20,8 @@ export class PongNetworkManager {
       `ws://localhost:3100/ws/socket/game` // Base URL, gameId will be appended
     );
 
-    // Set reference in game for bidirectional communication
     this.game.networkManager = this;
-
-    // Register handlers
     this.setupHandlers();
-    
-    // Connect to game
     this.connect(gameId);
   }
   
@@ -64,8 +58,6 @@ export class PongNetworkManager {
       
       // Update game UI with player names
       this.updatePlayerNames();
-      
-      // Setup input handlers now that we've successfully joined
       this.setupInputHandlers();
       
       // Send ready signal
