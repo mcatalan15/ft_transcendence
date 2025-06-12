@@ -319,7 +319,7 @@ export class PongGame {
 
 	async createEntities(): Promise<void> {
 
-		//TODO: Update to match online game player names
+		//TODO: Update to match online game player names consistently
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 		this.rightPlayer = { name: this.config.opponent || "Player 2" };
 
