@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 16:22:06 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/12 09:49:41 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,99 +164,20 @@ export class PongGame {
 			this.app.ticker.start();
 		}
 
-		if (this.isOnline) {
-			await this.initOnlineGame();
-		} else {
-			await this.createEntities();
-			this.initSystems();
-			this.initDust();
-			if (!this.config.classicMode) this.soundManager.startMusic();
-
-			this.app.ticker.add((ticker) => {
-				const frameData: FrameData = {
-					deltaTime: ticker.deltaTime
-				};
-
-				this.systems.forEach(system => {
-					system.update(this.entities, frameData);
-				});
-			});
-		}
-	}
-
-
-	private async initOnlineGame(): Promise<void> {
-		console.log('Initializing online game...');
-
 		await this.createEntities();
-
-		// Initialize systems but don't start the full game loop
-		// We only need render and collision systems, not movement/AI systems
-		this.initOnlineGameSystems();
-
+		this.initSystems();
 		this.initDust();
-
 		if (!this.config.classicMode) this.soundManager.startMusic();
 
-		// Set up a ticker that runs ALL systems for online games
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};
 
-			// Run ALL systems for online games - let them handle server-controlled entities
 			this.systems.forEach(system => {
 				system.update(this.entities, frameData);
 			});
 		});
-
-		console.log('Online game initialized with full graphics engine');
-	}
-
-	private initOnlineGameSystems(): void {
-		// Initialize systems in the SAME ORDER as local games for consistency
-		this.systems.push(new RenderSystem());
-		// Skip InputSystem - network manager handles input
-
-		// Visual effects systems (if not classic mode)
-		if (!this.config.classicMode) {
-			this.systems.push(new CrossCutSystem(this));
-		}
-
-		// Physics system - CRITICAL for particle effects and visual interactions
-		// Server-controlled entities (ball, paddles) will be skipped via isServerControlled flag
-		this.systems.push(new PhysicsSystem(this, this.width, this.height));
-
-		// World and animation systems
-		if (!this.config.classicMode) {
-			this.systems.push(new WorldSystem(this));
-		}
-		this.systems.push(new AnimationSystem(this));
-
-		// Visual effects systems
-		if (!this.config.classicMode) {
-			this.systems.push(new VFXSystem());
-			this.systems.push(new ParticleSystem(this));
-		}
-		this.systems.push(new UISystem(this));
-
-		// Powerup system (for visual effects only)
-		if (!this.config.classicMode) {
-			this.systems.push(new PowerupSystem(this, this.width, this.height));
-		}
-
-		// Post-processing system (MUST BE LAST)
-		this.systems.push(new PostProcessingSystem());
-
-		console.log(`Initialized ${this.systems.length} systems for online game`);
-		console.log('Online systems:', this.systems.map(s => s.constructor.name));
-
-		// Compare with local game systems
-		console.log('Local game would have:', [
-			'RenderSystem', 'InputSystem', 'CrossCutSystem', 'PhysicsSystem',
-			'WorldSystem', 'AnimationSystem', 'VFXSystem', 'ParticleSystem',
-			'UISystem', 'PowerupSystem', 'PostProcessingSystem'
-		]);
 	}
 
 	initSystems(): void {
@@ -273,7 +194,7 @@ export class PongGame {
 		const crossCutSystem = new CrossCutSystem(this);
 
 		this.systems.push(renderSystem);
-		this.systems.push(inputSystem);
+		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
 		if (!this.config.classicMode) this.systems.push(worldSystem);

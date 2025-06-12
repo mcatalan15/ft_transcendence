@@ -250,19 +250,12 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
       // Determine player number (1 = host/left, 2 = guest/right)
       let playerNumber;
-      console.log(`Checking authorization:`);
-      console.log(`  PlayerId: ${playerId}`);
-      console.log(`  HostId: ${gameData.hostId}`);
-      console.log(`  GuestId: ${gameData.guestId}`);
 
       if (playerId === gameData.hostId) {
-        playerNumber = 1; // Left paddle
-        console.log(`✅ Player ${playerId} authorized as HOST (player 1 - left paddle)`);
+        playerNumber = 1;
       } else if (playerId === gameData.guestId) {
         playerNumber = 2; // Right paddle
-        console.log(`✅ Player ${playerId} authorized as GUEST (player 2 - right paddle)`);
       } else {
-        console.error(`❌ Player ${playerId} NOT AUTHORIZED for game ${gameId}`);
         ws.send(JSON.stringify({
           type: 'JOIN_FAILURE',
           reason: `Not authorized for this game. Expected: ${gameData.hostId} or ${gameData.guestId}, got: ${playerId}`
