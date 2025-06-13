@@ -178,16 +178,16 @@ async function logoutHandler(request, reply) {
 }
 
 async function googleHandler(request, reply, fastify) {
-	  const { credential } = request.body;
-  
-	  if (!credential) {
+	const { credential } = request.body;
+
+	if (!credential) {
 		return reply.status(400).send({ success: false, message: 'Missing credential' });
-	  }
-  
-	  try {
+	}
+
+	try {
 		const ticket = await client.verifyIdToken({
-		  idToken: credential,
-		  audience: process.env.GOOGLE_CLIENT_ID,
+			idToken: credential,
+			audience: process.env.GOOGLE_CLIENT_ID,
 		});
   
 		const payload = ticket.getPayload();
@@ -209,7 +209,7 @@ async function googleHandler(request, reply, fastify) {
 				twoFAEnabled: twoFAEnabled
 			}, process.env.JWT_SECRET, {
 				expiresIn: process.env.JWT_EXPIRES_IN
-		  	});
+			});
 
 			request.session.set('token', authToken);
 			request.session.set('user', {
@@ -217,44 +217,43 @@ async function googleHandler(request, reply, fastify) {
 			username: user.username,
 			email: user.email,
 			twoFAEnabled: twoFAEnabled
-		  });
+			});
 
 			console.log(`[Google Auth - Existing User] User ID: ${user.id_user}, Email: ${user.email}, 2FA Enabled: ${twoFAEnabled}`);
 
-		  return reply.status(200).send({
-			success: true,
-			message: 'Google authentication successful',
-			token: authToken,
-			userId: user.id_user,
-			username: user.username,
-			email: user.email,
-			twoFAEnabled: twoFAEnabled
-		  });
-		}
-		else {
+			return reply.status(200).send({
+				success: true,
+				message: 'Google authentication successful',
+				token: authToken,
+				userId: user.id_user,
+				username: user.username,
+				email: user.email,
+				twoFAEnabled: twoFAEnabled
+			});
+		} else {
 			// user doesn't exist? register them with default generated nickname
 			console.log(`User with email ${email} does not exist. Registering new user.`);
-		const parts = name.toLowerCase().split(' ');
-		
-		const firstInitial = parts[0].charAt(0);
-		const lastName = parts[parts.length - 1];
-		const nickname = `${firstInitial}${lastName}`;
-  
-		const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
-		const avatarFilename = `default_${defaultAvatarId}.png`;
-  
-		await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
-		const newUser = await getUserByEmail(email);
+			const parts = name.toLowerCase().split(' ');
 
-		// TwoFA for new users
-		const twoFAEnabled = newUser.twoFAEnabled === 1 || newUser.twoFAEnabled === true;
+			const firstInitial = parts[0].charAt(0);
+			const lastName = parts[parts.length - 1];
+			const nickname = `${firstInitial}${lastName}`;
+  
+			const defaultAvatarId = Math.floor(Math.random() * 4) + 1; //Assuming 4 default avatars
+			const avatarFilename = `default_${defaultAvatarId}.png`;
+  
+			await saveUserToDatabase(nickname, email, null, 'google',avatarFilename);
+			const newUser = await getUserByEmail(email);
 
-		const authToken = jwt.sign({
-			id: newUser.id,
-			twoFAEnabled: twoFAEnabled
-		}, process.env.JWT_SECRET, {
-		  expiresIn: process.env.JWT_EXPIRES_IN
-		});
+			// TwoFA for new users
+			const twoFAEnabled = newUser.twoFactorEnabled === 1 || newUsertwoFAEnabled === true;
+
+			const authToken = jwt.sign({
+				id: newUser.id,
+				twoFAEnabled: twoFAEnabled
+			}, process.env.JWT_SECRET, {
+				expiresIn: process.env.JWT_EXPIRES_IN
+			});
 
 		  request.session.set('token', authToken);
 		  request.session.set('user', {

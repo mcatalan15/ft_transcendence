@@ -37,9 +37,10 @@ export function showAuth(container: HTMLElement): void {
     let actualUserId = sessionStorage.getItem('userId');
     let actualUsername = sessionStorage.getItem('username');
     let actualEmail = sessionStorage.getItem('email');
+	let actual2FA = sessionStorage.getItem(('twoFAEnabled'));
 
     // Different content based on where the user came from
-    if (fromPage === 'signup' && sessionStorage.getItem('twoFAEnabled') === 'false') {
+    if (fromPage === 'signup' || actual2FA === 'false') {
         console.log('Showing signup success and initiating 2FA setup');
 
         const message = document.createElement('p');
@@ -187,15 +188,27 @@ export function showAuth(container: HTMLElement): void {
                     body: JSON.stringify({ userId: actualUserId, token })
                 });
 
-                const data: TwoFaVerifyResponse = await response.json();
+                const data: TwoFaVerifyResponse & { token?: string, twoFAEnabled?: boolean } = await response.json(); // Extend interface for token & twoFAEnabled
+
+                console.log("Frontend (Setup) received from /api/auth/verify:", data); // Add this for debugging
 
                 if (response.ok && data.verified) {
                     verificationStatus.textContent = i18n.t('2FA successfully verified! You can now proceed.');
                     verificationStatus.style.color = 'green';
-                    // Optional: Disable input/button after successful verification
+
+                    // --- ADD THESE LINES HERE ---
+                    if (data.token) {
+                        sessionStorage.setItem('token', data.token);
+                        console.log("Updated authToken in sessionStorage (Setup):", data.token ? 'Present' : 'Missing');
+                    }
+                    // This is crucial: after successful setup, 2FA IS ENABLED.
+                    sessionStorage.setItem('twoFAEnabled', 'true'); // Explicitly set to 'true' as it's now enabled
+                    console.log("Updated twoFAEnabled in sessionStorage to 'true' (Setup).");
+                    // --- END ADDITIONS ---
+
                     tokenInput.disabled = true;
                     // verifyBtn.disabled = true;
-					window.location.href = '/home'; // Redirect to sign-in after 2FA setup
+                    window.location.href = '/home'; // Redirect to sign-in after 2FA setup
                 } else {
                     verificationStatus.textContent = i18n.t(data.message || 'Verification failed. Please try again.');
                     verificationStatus.style.color = 'red';
@@ -206,7 +219,7 @@ export function showAuth(container: HTMLElement): void {
                 verificationStatus.style.color = 'red';
             }
         });
-	} else if (fromPage === 'signin' && sessionStorage.getItem('twoFAEnabled') === 'true') {
+	} else if (fromPage === 'signin' || actual2FA === 'true') {
 		console.log('Showing signin with 2FA verification');
 
 		// Retrieve user data from sessionStorage

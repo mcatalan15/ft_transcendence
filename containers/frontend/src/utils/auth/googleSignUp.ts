@@ -28,7 +28,9 @@ export function setupGoogleSignUp(): void {
 		  sessionStorage.setItem('userId', data.userId);
 		  sessionStorage.setItem('email', data.email);
 		  sessionStorage.setItem('token', data.token);
-		  console.log("Setting twoFAEnabled in sessionStorage:", data.twoFAEnabled ? 'true' : 'false');sessionStorage.setItem('twoFAEnabled', data.twoFAEnabled ? 'true' : 'false');
+		  sessionStorage.setItem('twoFAEnable', data.twoFAEnable)
+		  console.log("Setting twoFAEnabled in sessionStorage:", data.twoFAEnabled ? 'true' : 'false');
+		//   sessionStorage.setItem('twoFAEnabled', data.twoFAEnabled ? 'true' : 'false');
 		  console.log("Value after setting:", sessionStorage.getItem('twoFAEnabled'));
 		  //! Change for prod!
 		  window.location.href = '/auth?from=signup';
