@@ -63,6 +63,7 @@ async function updateUserAvatar(userId, filename, type) {
 async function checkUserExists(username, email) {
 	return new Promise((resolve, reject) => {
 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+	        console.log(`[DB checkUserExists] Query: "${query}" with params: [${username}, ${email}]`);
 		db.get(query, [username, email], (err, row) => {
 			if (err) {
 				console.error('[DB ERROR]', err);
@@ -70,12 +71,14 @@ async function checkUserExists(username, email) {
 				return;
 			}
 			if (row) {
+				console.log('[DB checkUserExists] User found:', row);
 				resolve({
 					exists: true,
 					usernameExists: row.username === username,
 					emailExists: row.email === email
 				});
 			} else {
+				console.log('[DB checkUserExists] User NOT found.');
 				resolve({ exists: false });
 			}
 		});

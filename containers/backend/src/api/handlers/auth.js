@@ -4,7 +4,7 @@ const otplib = require('otplib');
 otplib.authenticator.options = {
 	step: 30, // Default is 30 seconds
 	digits: 6 // Default is 6 digits
-  };
+};
 
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -12,81 +12,80 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const qrcode = require('qrcode');
 
 const { saveUserToDatabase, 
-  checkUserExists,
-  getHashedPassword,
-  getUserByEmail,
-  saveTwoFactorSecret,
-  getTwoFactorSecret,
-  enableTwoFactor,
-  getUserById
+	checkUserExists,
+	getHashedPassword,
+	getUserByEmail,
+	saveTwoFactorSecret,
+	getTwoFactorSecret,
+	enableTwoFactor,
+	getUserById
 } = require('../db/database');
 
 async function signupHandler(request, reply) {
-  const { username, email, password } = request.body;
+	const { username, email, password } = request.body;
 
-  if (!username || !email || !password) {
-    return reply.status(400).send({ success: false, message: 'All fields are required' });
-  }
+  	if (!username || !email || !password) {
+		return reply.status(400).send({ success: false, message: 'All fields are required' });
+	}
 
-  try {
-    const userExists = await checkUserExists(username, email);
-    if (userExists?.exists) {
-      if (userExists.usernameExists && userExists.emailExists) {
-        return reply.status(400).send({
-          success: false,
-          message: 'Username and email are already taken'
-        });
-      } else if (userExists.usernameExists) {
-        return reply.status(400).send({
-          success: false,
-          message: 'Username is already taken'
-        });
-      } else if (userExists.emailExists) {
-        return reply.status(400).send({
-          success: false,
-          message: 'Email is already taken'
-        });
-      }
-    }
+	try {
+		const userExists = await checkUserExists(username, email);
+    	if (userExists?.exists) {
+			if (userExists.usernameExists && userExists.emailExists) {
+				return reply.status(400).send({
+					success: false,
+					message: 'Username and email are already taken'
+				});
+			} else if (userExists.usernameExists) {
+				return reply.status(400).send({
+					success: false,
+					message: 'Username is already taken'
+				});
+			} else if (userExists.emailExists) {
+				return reply.status(400).send({
+					success: false,
+					message: 'Email is already taken'
+				});
+			}
+		}
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    // !!! IMPORTANT CHANGE HERE !!!
-    // Make sure saveUserToDatabase returns the newly created user's ID
-	const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
-	const avatarFilename = `default_${defaultAvatarId}.png`;
-	
-	const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
-    // MORE DEBUGGIng
-    console.log('[BACKEND - signupHandler] Preparing response with:', {
-        userId: newUserId,
-        username: username,
-		email: email,
-		twoFAEnabled: false
-    })
-    console.log('[BACKEND - signupHandler] Final response object before sending:', {
-            success: true,
-            message: 'User registered successfully',
-            userId: newUserId,
-            username: username,
+		const hashedPassword = await bcrypt.hash(password, 12);
+		// !!! IMPORTANT CHANGE HERE !!!
+		// Make sure saveUserToDatabase returns the newly created user's ID
+		const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
+		const avatarFilename = `default_${defaultAvatarId}.png`;
+
+		const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
+		// MORE DEBUGGIng
+		console.log('[BACKEND - signupHandler] Preparing response with:', {
+			userId: newUserId,
+			username: username,
 			email: email,
 			twoFAEnabled: false
-        });
-    return reply.status(201).send({
-      success: true,
-      message: 'User registered successfully',
-      userId: newUserId, // <--- Add the new user ID
-      username: username, // <--- Add the username (or email, if that's what you use for 2FA display)
-	  email: email,
-	  twoFAEnabled: false
-    });
-
-  } catch (error) {
-    console.error('Registration error:', error);
-    return reply.status(500).send({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
+		});
+		console.log('[BACKEND - signupHandler] Final response object before sending:', {
+			success: true,
+			message: 'User registered successfully',
+			userId: newUserId,
+			username: username,
+			email: email,
+			twoFAEnabled: false
+		});
+		return reply.status(201).send({
+			success: true,
+			message: 'User registered successfully',
+			userId: newUserId, // <--- Add the new user ID
+			username: username, // <--- Add the username (or email, if that's what you use for 2FA display)
+			email: email,
+			twoFAEnabled: false
+		});
+	} catch (error) {
+		console.error('Registration error:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Internal server error'
+		});
+	}
 }
 
 async function signinHandler(request, reply) {
@@ -197,19 +196,23 @@ async function googleHandler(request, reply, fastify) {
   
 		// check only by email
 		const userExists = await checkUserExists(null, email);
-  
-		if (userExists?.exists) {
-		  // user exists? sign them in instead of registering
-		  const user = await getUserByEmail(email);
 
-		  //twoFA for existing users
-		  const twoFAEnabled = user.twoFAEnabled === 1 || user.twoFAEnabled === true;
-		  const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-			expiresIn: process.env.JWT_EXPIRES_IN
-		  });
-  
-		  request.session.set('token', authToken);
-		  request.session.set('user', {
+		if (userExists?.exists) {
+			console.log(`User with email ${email} already exists.`);
+			// user exists? sign them in instead of registering
+			const user = await getUserByEmail(email);
+
+			//twoFA for existing users
+			const twoFAEnabled = user.twoFactorEnabled === 1 || user.twoFAEnabled === true;
+			const authToken = jwt.sign({
+				id: user.id,
+				twoFAEnabled: twoFAEnabled
+			}, process.env.JWT_SECRET, {
+				expiresIn: process.env.JWT_EXPIRES_IN
+		  	});
+
+			request.session.set('token', authToken);
+			request.session.set('user', {
 			userId: user.id_user,
 			username: user.username,
 			email: user.email,
@@ -228,8 +231,9 @@ async function googleHandler(request, reply, fastify) {
 			twoFAEnabled: twoFAEnabled
 		  });
 		}
-  
-		// user doesn't exist? register them with default generated nickname
+		else {
+			// user doesn't exist? register them with default generated nickname
+			console.log(`User with email ${email} does not exist. Registering new user.`);
 		const parts = name.toLowerCase().split(' ');
 		
 		const firstInitial = parts[0].charAt(0);
@@ -245,7 +249,10 @@ async function googleHandler(request, reply, fastify) {
 		// TwoFA for new users
 		const twoFAEnabled = newUser.twoFAEnabled === 1 || newUser.twoFAEnabled === true;
 
-		const authToken = jwt.sign({ id: newUser.id, twoFAEnabled: twoFAEnabled }, process.env.JWT_SECRET, {
+		const authToken = jwt.sign({
+			id: newUser.id,
+			twoFAEnabled: twoFAEnabled
+		}, process.env.JWT_SECRET, {
 		  expiresIn: process.env.JWT_EXPIRES_IN
 		});
 
@@ -269,6 +276,7 @@ async function googleHandler(request, reply, fastify) {
 		  email: newUser.email,
 		  twoFAEnabled: newUser.twoFAEnabled
 		});
+		}
   
 	  } catch (error) {
 		console.error(error);
@@ -395,8 +403,8 @@ async function verifyTwoFa(request, reply) {
 		if (!user) {
 			// This shouldn't happen if userId is valid from `verifyTwoFaToken`
 			reply.code(404).send({ message: 'User not found.' });
-			// return;
-		// }
+			return;
+		}
 
 		// 2. Create a new JWT with an updated payload
 		//    Add a claim like 'twoFAVerified: true' or 'fullyAuthenticated: true'
@@ -441,8 +449,7 @@ async function verifyTwoFa(request, reply) {
 			message: 'Invalid 2FA token.'
 		});
       	}
-    	}
-	} catch (error) {
+    } catch (error) {
       console.error('Error verifying 2FA token for user:', userId, error);
       reply.code(500).send({
 		message: 'Failed to verify 2FA token.'

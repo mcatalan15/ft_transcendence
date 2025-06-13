@@ -25,7 +25,7 @@ export function showAuth(container: HTMLElement): void {
 	console.log('UserId: ',sessionStorage.getItem('userId'));
     console.log('Username: ',sessionStorage.getItem('username'));
     console.log('Email: ', sessionStorage.getItem('email'));
-	console.log('2FA status: ', sessionStorage.getItem('twoFAEnabled'.toString()));
+	console.log('2FA status: ', sessionStorage.getItem('twoFAEnabled'));
 	const authToken = sessionStorage.getItem('token');
 	console.log('Auth Token:', authToken ? 'Present' : 'Missing');
 
