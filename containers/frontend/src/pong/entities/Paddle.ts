@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 12:07:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 17:13:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,10 @@ import { InputComponent } from '../components/InputComponent';
 import { TextComponent } from '../components/TextComponent';
 
 import { GAME_COLORS } from '../utils/Types.js';
+import { Menu } from '../menu/Menu';
 
 export class Paddle extends Entity {
-    game: PongGame;
+    game: PongGame | Menu;  
     name: string;
     isEnlarged: boolean = false;
     wasEnlarged: boolean = false;
@@ -46,7 +47,7 @@ export class Paddle extends Entity {
     targetHeight: number = 0;
     currentLayer: string = 'foreground';
 
-    constructor(id: string, layer: string, game: PongGame, x: number, y: number, isLeftPaddle: boolean, name: string) {
+    constructor(id: string, layer: string, game: PongGame | Menu, x: number, y: number, isLeftPaddle: boolean, name: string) {
         super(id, layer);
 
         this.game = game;
@@ -140,5 +141,80 @@ export class Paddle extends Entity {
             type: 'RESET_PADDLE',
             target: paddle,
         });
+    }
+
+    public redrawPaddle(): void {
+        const renderComponent = this.getComponent('render') as RenderComponent;
+        if (!renderComponent || !renderComponent.graphic) return;
+
+        const paddleGraphic = renderComponent.graphic as Graphics;
+        
+        paddleGraphic.clear();
+        
+        const physics = this.getComponent('physics') as PhysicsComponent;
+        const currentWidth = physics ? physics.width : this.game.paddleWidth;
+        const currentHeight = physics ? physics.height : this.game.paddleHeight;
+        
+        let paddleColor: number;
+        if (this.game.config.classicMode) {
+            paddleColor = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                paddleColor = GAME_COLORS.white;
+            } else {
+                if (this.id === 'paddleL') {
+                    paddleColor = GAME_COLORS.green;
+                } else {
+                    paddleColor = GAME_COLORS.red;
+                }
+            }
+        }
+        
+        paddleGraphic.rect(0, 0, currentWidth, currentHeight);
+        paddleGraphic.fill(paddleColor);
+        paddleGraphic.pivot.set(currentWidth / 2, currentHeight / 2);
+    }
+
+    public redrawPaddleText(): void {
+        const textComponent = this.getComponent('text') as TextComponent;
+        if (!textComponent) return;
+        
+        const inputComponent = this.getComponent('input') as InputComponent;
+        const isLeftPaddle = inputComponent ? inputComponent.side === 'left' : false;
+        
+        const newTextData = this.setPaddleName(isLeftPaddle, this.name);
+        
+        if (typeof (textComponent as any).setText === 'function') {
+            (textComponent as any).setText(newTextData.text);
+        }
+
+        let textColor: number;
+        if (this.game.config.classicMode) {
+            textColor = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                textColor = GAME_COLORS.white;
+            } else {
+                if (this.id === 'paddleL') {
+                    textColor = GAME_COLORS.green;
+                } else {
+                    textColor = GAME_COLORS.red;
+                }
+            }
+        }
+        
+        const textRenderable = textComponent.getRenderable();
+        if (textRenderable && textRenderable.style) {
+            if (this.game.config.classicMode) {
+                textRenderable.style.fill = textColor;
+            } else {
+                textRenderable.style.fill = textColor;
+            }
+        }
+    }
+
+    public redrawFullPaddle(): void {
+        this.redrawPaddle();
+        this.redrawPaddleText();
     }
 }

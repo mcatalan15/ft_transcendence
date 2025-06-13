@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:18:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 12:35:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@ import { Graphics, Container } from 'pixi.js';
 import { PongGame } from '../../engine/Game';
 import { Entity } from '../../engine/Entity';
 import { Powerup } from './Powerup';
+
+import { RenderComponent } from '../../components/RenderComponent';
 
 import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
@@ -45,7 +47,7 @@ export class SlowPowerDown extends Powerup {
 		// Base diamond (rotated square)
 		const base = new Graphics();
 		base.rect(-10, -10, 20, 20);
-		base.fill(GAME_COLORS.white);
+		base.fill(this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red);
 		base.pivot.set(-5, -5);
 		base.angle = 45;
 		container.addChild(base);
@@ -53,7 +55,7 @@ export class SlowPowerDown extends Powerup {
 		// Ornament stroke, matching the base rotation
 		const ornament = new Graphics();
 		ornament.rect(-15, -15, 30, 30);
-		ornament.stroke({ color: GAME_COLORS.white, width: 3 });
+		ornament.stroke({ color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red, width: 3 });
 		ornament.pivot.set(-5, -5);
 		ornament.angle = 45;
 		container.addChild(ornament);
@@ -123,5 +125,81 @@ export class SlowPowerDown extends Powerup {
             this.event.side = side;
         }
 		this.game.eventQueue.push(this.event);
+	}
+
+	public redrawPowerup(): void {
+		const renderComponent = this.getComponent('render') as RenderComponent;
+		if (!renderComponent || !renderComponent.graphic) return;
+
+		let color;
+
+        if (this.game.config.classicMode) {
+            color = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                color = GAME_COLORS.white;
+            } else {
+                color = GAME_COLORS.red;
+            }
+        }
+	
+		const container = renderComponent.graphic as Container;
+		container.removeChildren();
+		
+		const outline = new Graphics();
+		outline.rect(-15, -15, 30, 30);
+		outline.fill(GAME_COLORS.black);
+		outline.pivot.set(-5, -5);
+		outline.angle = 45;
+		container.addChild(outline);
+	
+		const base = new Graphics();
+		base.rect(-10, -10, 20, 20);
+		base.fill(color);
+		base.pivot.set(-5, -5);
+		base.angle = 45;
+		container.addChild(base);
+	
+		const ornament = new Graphics();
+		ornament.rect(-15, -15, 30, 30);
+		ornament.stroke({ color: color, width: 3 });
+		ornament.pivot.set(-5, -5);
+		ornament.angle = 45;
+		container.addChild(ornament);
+	
+		const innerSign = new Container;
+		innerSign.y = 6.5;
+		
+		const rightTri = new Graphics();
+		const rightRadius = 7.5;
+		const rightPoints = [
+			{ x: 0, y: -rightRadius },
+			{ x: rightRadius * Math.sin(Math.PI / 3), y: rightRadius * Math.cos(Math.PI / 3) },
+			{ x: -rightRadius * Math.sin(Math.PI / 3), y: rightRadius * Math.cos(Math.PI / 3) },
+		];
+		
+		rightTri.poly(rightPoints, true);
+		rightTri.x = -3;
+		rightTri.fill(GAME_COLORS.black);
+		rightTri.pivot.set(0, 0);
+		rightTri.angle = 30;
+		innerSign.addChild(rightTri);
+	
+		const leftTri = new Graphics();
+		const leftRadius = 6;
+		const leftPoints = [
+			{ x: 0, y: -leftRadius },
+			{ x: leftRadius * Math.sin(Math.PI / 3), y: leftRadius * Math.cos(Math.PI / 3) },
+			{ x: -leftRadius * Math.sin(Math.PI / 3), y: leftRadius * Math.cos(Math.PI / 3) },
+		];
+	
+		leftTri.poly(leftPoints, true);
+		leftTri.x = 4;
+		leftTri.fill(GAME_COLORS.black);
+		leftTri.pivot.set(0, 0);
+		leftTri.angle = 30;
+		innerSign.addChild(leftTri);
+	
+		container.addChild(innerSign);
 	}
 }

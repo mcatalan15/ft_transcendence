@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 18:17:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:30:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Container, Graphics, FederatedPointerEvent } from 'pixi.js';
+import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
@@ -20,6 +20,7 @@ import { GameConfig } from './GameConfig';
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
+import { Paddle } from '../entities/Paddle';
 import { Title } from './Title';
 import { Subtitle } from './Subtitle';
 import { ClassicO } from './ClassicO';
@@ -30,10 +31,12 @@ import { MenuHalfButton } from './buttons/MenuHalfButton';
 import { MenuXButton } from './buttons/MenuXButton';
 import { BallButton } from './buttons/BallButton';
 import { Powerup } from '../entities/powerups/Powerup';
+import { MenuImageManager } from './MenuImageManager';
 
 import { MenuOrnament } from './MenuOrnaments';
 import { OverlayBackground } from './OverlayBackground';
-import { Glossary } from './Glossary';
+import { GlossaryTexts } from './GlossaryTexts';
+import { AboutTexts } from './AboutTexts';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -61,6 +64,7 @@ import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
 import { isRenderComponent } from '../utils/Guards';
+import { InvertPowerDown } from '../entities/powerups/InvertPowerDown';
 
 export class Menu{
 	config: GameConfig;
@@ -68,7 +72,7 @@ export class Menu{
 	width: number;
 	height: number;
 	ballAmount: number = 0;
-	maxBalls: number = 20;
+	maxBalls: number = 40;
 	entities: Entity[] = [];
     systems: System[] = [];
 	eventQueue: GameEvent[] = [];
@@ -87,6 +91,7 @@ export class Menu{
 		foreground: Container;
 		dust: Container;
 		overlays: Container;
+		overlayQuits: Container;
 		pp: Container;
 		powerups: Container;
 		powerdowns: Container;
@@ -98,6 +103,8 @@ export class Menu{
 	powerupFilters: any[] = [];
 	powerdownFilters: any[] = [];
 	ballchangeFilters: any[] = [];
+	powerupClassicFilters: any[] = [];
+	overlayQuitsFilters: any[] = [];
 
 	// Sound stuff
 	sounds!: MenuSounds;
@@ -132,9 +139,9 @@ export class Menu{
 	classicButton!: MenuHalfButton;
 	startXButton!: MenuXButton;
 	optionsXButton!: MenuXButton;
-	glossaryXButton!: MenuXButton;
-	aboutXButton!: MenuXButton;
 	ballButton!: BallButton;
+	glossaryQuitButton!: MenuButton;
+	aboutQuitButton!: MenuButton;
 
 	// Ornaments
 	frame!: Graphics;
@@ -149,11 +156,41 @@ export class Menu{
 
 	// Overlay items
 	overlayBackground!: OverlayBackground;
-	glossaryES!: Glossary;
+	glossaryES!: GlossaryTexts;
+	aboutES!: AboutTexts;
 	enlargePowerup!: Powerup;
 	magnetizePowerup!: Powerup;
 	shieldPowerup!: Powerup;
 	shootPowerup!: Powerup;
+	shrinkPowerdown!: Powerup;
+	invertPowerdown!: InvertPowerDown;
+	flattenPowerdown!: Powerup;
+	slowPowerdown!: Powerup;
+	curveBallChange!: Powerup;
+	spinBallChange!: Powerup;
+	burstBallChange!: Powerup;
+	multiplyBallChange!: Powerup;
+	paddleL!: Paddle;
+	paddleR!: Paddle;
+	paddleOffset: number = 50;
+	paddleWidth: number = 10;
+	paddleHeight: number = 80;
+
+	// Images
+	wallPyramids!: Sprite;
+	wallSteps!: Sprite;
+	wallTrenches!: Sprite;
+	wallHourglass!: Sprite;
+	wallLightning!: Sprite;
+	wallFangs!: Sprite;
+	wallWaystones!: Sprite;
+	wallSnakes!: Sprite;
+	wallVipers!: Sprite;
+	wallKite!: Sprite;
+	wallBowtie!: Sprite;
+	wallHoneycomb!: Sprite;
+
+	hugoAvatar!: Sprite;
 
 	constructor(app: Application) {
 		this.app = app;
@@ -168,6 +205,7 @@ export class Menu{
 			logo: new Container(),
 			subtitle: new Container(),
 			overlays: new Container(),
+			overlayQuits: new Container(),
 			midground: new Container(),
 			foreground: new Container(),
 			dust: new Container(),
@@ -186,6 +224,7 @@ export class Menu{
 		this.app.stage.addChild(this.visualRoot);
 		this.app.stage.addChild(this.menuContainer);
 		this.app.stage.addChild(this.renderLayers.overlays);
+		this.app.stage.addChild(this.renderLayers.overlayQuits);
 		this.app.stage.addChild(this.renderLayers.powerups);
 		this.app.stage.addChild(this.renderLayers.powerdowns);
 		this.app.stage.addChild(this.renderLayers.ballchanges);
@@ -217,15 +256,20 @@ export class Menu{
 	}
 
 	async init(): Promise<void> {
+		await this.loadImages();
+
 		await ButtonManager.createMainButtons(this);
 		await ButtonManager.createHalfButtons(this);
 		await ButtonManager.createXButtons(this);
 		await ButtonManager.createBallButton(this);
+		await ButtonManager.createOverlayQuitButtons(this);
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
 		await this.createGlossaries();
+		await this.createAbouts();
 		await this.createPowerups();
+		await this.createGlossaryPaddles();
 		await this.initSystems();
 		await this.initDust();
 
@@ -484,6 +528,10 @@ export class Menu{
 		boundingBoxJ.rect(0, 0, this.width, this.height);
 		boundingBoxJ.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
+		const boundingBoxK = new Graphics();
+		boundingBoxK.rect(0, 0, this.width, this.height);
+		boundingBoxK.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
 		this.renderLayers.logo.addChild(boundingBoxA);
 		this.renderLayers.background.addChild(boundingBoxB);
 		this.renderLayers.midground.addChild(boundingBoxC);
@@ -494,7 +542,7 @@ export class Menu{
 		this.renderLayers.powerups.addChild(boundingBoxH);
 		this.renderLayers.powerdowns.addChild(boundingBoxI);
 		this.renderLayers.ballchanges.addChild(boundingBoxJ);
-		
+		this.renderLayers.overlayQuits.addChild(boundingBoxK);
 	}
 
 	createFrame() {
@@ -522,22 +570,60 @@ export class Menu{
 	}
 
 	createGlossaries() {
-		const glossary = new Glossary('glossary', 'overlays');
+		const glossaryES = new GlossaryTexts('glossary', 'overlays');
 		
-		// Add all text renderables to the hidden container
-		const renderables = glossary.getAllRenderables();
+		const renderables = glossaryES.getAllRenderables();
 		renderables.forEach(renderable => {
 			this.menuHidden.addChild(renderable);
 		});
 		
-		this.entities.push(glossary);
-		this.glossaryES = glossary;
+		this.entities.push(glossaryES);
+		this.glossaryES = glossaryES;
+	}
+
+	createAbouts() {
+		const aboutES = new AboutTexts('about', 'overlays');
+		
+		const renderables = aboutES.getAllRenderables();
+		renderables.forEach(renderable => {
+			this.renderLayers.pp.addChild(renderable);
+		});
+		
+		this.entities.push(aboutES);
+		this.aboutES = aboutES;
 	}
 
 	createPowerups() {
 		MenuPowerupManager.createPowerups(this);
 		MenuPowerupManager.createPowerdowns(this);
 		MenuPowerupManager.createBallchanges(this);
+	}
+
+	createGlossaryPaddles() {
+		MenuPowerupManager.createGlossaryPaddles(this);
+	}
+
+	async loadImages() {
+		await MenuImageManager.loadAssets([
+            { name: 'wallPyramids', url: '/wallFigures/wallPyramids.png' },
+			{ name: 'wallSteps', url: '/wallFigures/wallSteps.png' },
+			{ name: 'wallTrenches', url: '/wallFigures/wallTrenches.png' },
+			{ name: 'wallHourglass', url: '/wallFigures/wallHourglass.png' },
+			{ name: 'wallLightning', url: '/wallFigures/wallLightning.png' },
+			{ name: 'wallFangs', url: '/wallFigures/wallFangs.png' },
+			{ name: 'wallWaystones', url: '/wallFigures/wallWaystones.png' },
+			{ name: 'wallSnakes', url: '/wallFigures/wallSnakes.png' },
+			{ name: 'wallVipers', url: '/wallFigures/wallVipers.png' },
+			{ name: 'wallKite', url: '/wallFigures/wallKite.png' },
+			{ name: 'wallBowtie', url: '/wallFigures/wallBowtie.png' },
+			{ name: 'wallHoneycomb', url: '/wallFigures/wallHoneycomb.png' },
+
+
+		    /* { name: 'avatarNico', url: '/avatars/defaults/default_2.png' },
+    		{ name: 'avatarMarc', url: '/avatars/defaults/default_3.png' },
+		    { name: 'avatarEva', url: '/avatars/defaults/default_4.png' }, */
+        ]);
+		MenuImageManager.createImages(this);
 	}
 
 	cleanup(): void {
@@ -686,10 +772,6 @@ export class Menu{
 	
 	// Helper method for playing sounds
 	public playSound(soundKey: keyof MenuSounds): void {
-		console.log(`Attempting to play sound: ${soundKey}`);
-		console.log(`Audio initialized: ${this.audioInitialized}`);
-		console.log(`Sounds object exists: ${!!this.sounds}`);
-		
 		if (this.audioInitialized && this.sounds && this.sounds[soundKey]) {
 			console.log(`Playing ${soundKey}...`);
 			const soundId = this.sounds[soundKey].play();

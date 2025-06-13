@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Glossary.ts                                        :+:      :+:    :+:   */
+/*   GlossaryTexts.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 16:31:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 13:05:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { TextComponent } from "../components/TextComponent";
 import { AnimationComponent } from "../components/AnimationComponent";
 import { GAME_COLORS } from "../utils/Types";
 
-export class Glossary extends Entity {
+export class GlossaryTexts extends Entity {
     private targetAlpha: number = 0;
     private currentAlpha: number = 0;
     private animationProgress: number = 0;
@@ -58,7 +58,7 @@ export class Glossary extends Entity {
                 x: 120,
                 y: 120,
                 style: {
-                    fill: GAME_COLORS.white,
+                    fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -106,7 +106,7 @@ export class Glossary extends Entity {
                 x: 650,
                 y: 120,
                 style: {
-                    fill: GAME_COLORS.white,
+                    fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -149,12 +149,12 @@ export class Glossary extends Entity {
 
             // Column 3A: Ball Changes Title (Right)
             {
-                tag: 'ballchanges',
+                tag: 'ballchangesTitle',
                 text: "--------------------[ BALL CHANGES ]--------------------",
                 x: 1200,
                 y: 120,
                 style: {
-                    fill: GAME_COLORS.white,
+                    fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -193,7 +193,99 @@ export class Glossary extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            }
+            },
+
+            // Column 4A: Affectations title (Down - Left)
+            {
+                tag: 'affectationsTitle',
+                text: "--------------------[ AFFECTATIONS ]--------------------",
+                x: 120,
+                y: 475,
+                style: {
+                    fill: GAME_COLORS.menuOrange,
+                    fontSize: 13,
+                    fontWeight: 'bolder' as const,
+                    align: 'left' as const,
+                    wordWrap: true,
+                    wordWrapWidth: 480,
+                    breakWords: true,
+                    lineHeight: 10,
+                    fontFamily: '"Roboto Mono", monospace',
+                    letterSpacing: 0.5,
+                },
+                anchor: { x: 0, y: 0 },
+                rotation: 0,
+            },
+
+            // Column 4B: Affectations content (Down - Left)
+            {
+                tag: 'affectationsContent',
+                text: 
+                      "Affected paddles change visually when they collect a powerup or a powerdown.\n\n" + 
+                      "Their affectation timer is tracked by the bar at the bottom of their screen side.",
+                x: 240,
+                y: 520,
+                style: {
+                    fill: GAME_COLORS.white,
+                    fontSize: 12,
+                    fontWeight: 'lighter' as const,
+                    align: 'left' as const,
+                    wordWrap: true,
+                    wordWrapWidth: 335,
+                    breakWords: true,
+                    lineHeight: 20,
+                    fontFamily: '"Roboto Mono", monospace',
+                    letterSpacing: 0.5,
+                },
+                anchor: { x: 0, y: 0 },
+                rotation: 0,
+            },
+
+            // Column 5A: Wall shapes (Down - center/right)
+            {
+                tag: 'wallShapesTitle',
+                text: "----------------------------------------------------[ WALL FIGURES ]----------------------------------------------------",
+                x: 650,
+                y: 475,
+                style: {
+                    fill: GAME_COLORS.menuOrange,
+                    fontSize: 13,
+                    fontWeight: 'bolder' as const,
+                    align: 'left' as const,
+                    wordWrap: true,
+                    wordWrapWidth: 1000,
+                    breakWords: true,
+                    lineHeight: 10,
+                    fontFamily: '"Roboto Mono", monospace',
+                    letterSpacing: 0.5,
+                },
+                anchor: { x: 0, y: 0 },
+                rotation: 0,
+            },
+
+            // Column 5B: Wall shapes (Down - center/right)
+            {
+                tag: 'wallShapesContent',
+                text: 
+                      "Walls change, warp and move over time, affecting the balls' trayectories.\n\n" + 
+                      "Sometimes, blocking figures spawn in the middle of the arena as solid obstacles.",
+                x: 670,
+                y: 520,
+                style: {
+                    fill: GAME_COLORS.white,
+                    fontSize: 12,
+                    fontWeight: 'lighter' as const,
+                    align: 'left' as const,
+                    wordWrap: true,
+                    wordWrapWidth: 335,
+                    breakWords: true,
+                    lineHeight: 20,
+                    fontFamily: '"Roboto Mono", monospace',
+                    letterSpacing: 0.5,
+                },
+                anchor: { x: 0, y: 0 },
+                rotation: 0,
+            },
         ];
     }
 
@@ -243,6 +335,24 @@ export class Glossary extends Entity {
         }
     }
 
+    public redrawGlossaryTitles(classicMode: boolean): void {
+        const titleColor = classicMode ? GAME_COLORS.white : GAME_COLORS.menuOrange;
+        
+        this.textComponents.forEach((textComponent, index) => {
+            const columnData = this.getColumnData();
+            const correspondingData = columnData[index];
+            
+            if (correspondingData && correspondingData.tag.includes('Title')) {
+                const renderable = textComponent.getRenderable();
+                if (renderable && renderable.style) {
+                    renderable.style.fill = titleColor;
+                }
+            }
+        });
+    }
+
+    
+
     private easeInOutCubic(t: number): number {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
@@ -264,3 +374,4 @@ export class Glossary extends Entity {
         return this.textComponents.map(comp => comp.getRenderable());
     }
 }
+

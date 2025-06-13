@@ -6,9 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 11:10:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 13:05:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Menu } from '../menu/Menu';
+import { PongGame } from '../engine/Game';
 
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
@@ -60,7 +63,15 @@ import { MenuXButton } from '../menu/buttons/MenuXButton';
 import { BallButton } from '../menu/buttons/BallButton';
 import { MenuOrnament } from '../menu/MenuOrnaments';
 import { OverlayBackground } from '../menu/OverlayBackground';
-import { Glossary } from '../menu/Glossary';
+import { GlossaryTexts } from '../menu/GlossaryTexts';
+
+export function isMenu(entity: any): entity is Menu {
+	return entity instanceof Menu;
+}
+
+export function isGame(entity: any): entity is PongGame {
+	return entity instanceof PongGame;
+}
 
 export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
 	return entity instanceof MenuPostProcessingLayer
@@ -114,7 +125,7 @@ export function isOverlayBackground(entity: Entity): entity is OverlayBackground
     return entity.id === 'overlay_background';
 }
 
-export function isGlossary(entity: Entity): entity is Glossary {
+export function isGlossary(entity: Entity): entity is GlossaryTexts {
     return entity.id === 'glossary';
 }
 

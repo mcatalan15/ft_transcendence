@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 15:36:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 11:45:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,8 +165,8 @@ export class MenuOrnament extends Entity {
 			case 'GLOSSARY_CLICKED':
 				return [
 					0, 0,
-					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant - this.menu.ornamentOffset - 40, 0,
-					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap - this.menu.ornamentOffset - 40, this.menu.buttonHeight,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + (this.menu.ornamentOffset) + this.menu.ornamentGap, this.menu.buttonHeight,
 					0, this.menu.buttonHeight
 				];
 			case 'ABOUT':
@@ -179,8 +179,8 @@ export class MenuOrnament extends Entity {
 			case 'ABOUT_CLICKED':
 				return [
 					0, 0,
-					(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant - this.menu.ornamentOffset - 40, 0,
-					(this.menu.buttonWidth * 3) + this.menu.ornamentGap - this.menu.ornamentOffset - 40, this.menu.buttonHeight,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap + this.menu.buttonSlant, 0,
+					(this.menu.buttonWidth * 3) + this.menu.ornamentGap, this.menu.buttonHeight,
 					0, this.menu.buttonHeight
 				];
 		}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 18:31:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:22:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,31 @@ import { Menu } from "./Menu";
 
 import { System } from "../engine/System";
 
+import { Paddle } from "../entities/Paddle";
+
 import { GAME_COLORS, GameEvent } from "../utils/Types";
 import { PongGame } from "../engine/Game";
 import { RenderComponent } from "../components/RenderComponent";
 import { isBall } from "../utils/Guards";
 import { MenuPowerupManager } from './MenuPowerupManager';
+import { MenuImageManager } from './MenuImageManager';
+
+import { ShootPowerup } from "../entities/powerups/ShootPowerup";
+import { EnlargePowerup } from "../entities/powerups/EnlargePowerup";
+import { MagnetizePowerup } from "../entities/powerups/MagnetizePowerup";
+import { ShieldPowerup } from "../entities/powerups/ShieldPowerUp";
+import { ShrinkPowerDown } from "../entities/powerups/ShrinkPowerDown";
+import { InvertPowerDown } from "../entities/powerups/InvertPowerDown";
+import { FlatPowerDown } from "../entities/powerups/FlatPowerDown";
+import { SlowPowerDown } from "../entities/powerups/SlowPowerDown";
+import { CurveBallPowerup } from "../entities/powerups/CurveBallPowerup";
+import { SpinBallPowerup } from "../entities/powerups/SpinBallPowerup";
+import { BurstBallPowerup } from "../entities/powerups/BurstBallPowerup";
+import { MultiplyBallPowerup } from "../entities/powerups/MultiplyBallPowerup";
 
 export class ButtonSystem implements System {
     private menu: Menu;
+    private escapeActive: boolean = false;
 
     constructor(menu: Menu) {
         this.menu = menu;
@@ -57,6 +74,13 @@ export class ButtonSystem implements System {
                 this.handleFiltersClicked();
             } else if (event.type === 'CLASSIC_CLICK') {
                 this.handleClassicClicked();
+            } else if (event.type === 'GLOSSARY_ESC' || event.type === 'ABOUT_ESC') {
+                if (this.escapeActive) {
+                    this.resetLayer(event);
+                    this.escapeActive = false;
+                } else {
+                    unhandledEvents.push(event);
+                }
             } else if (event.type.endsWith('BACK')) {
                 this.resetLayer(event);
             } else {
@@ -77,7 +101,6 @@ export class ButtonSystem implements System {
         this.menu.playButton.setHidden(false);
         this.menu.menuContainer.addChild(this.menu.playButton.getContainer());
 
-        // Show Start HalfButtons
         this.menu.onlineButton.setHidden(!this.menu.onlineButton.getIsHidden());
         this.menu.localButton.setHidden(!this.menu.localButton.getIsHidden());
         this.menu.IAButton.setHidden(!this.menu.IAButton.getIsHidden());
@@ -122,44 +145,66 @@ export class ButtonSystem implements System {
     }
 
     handleGlossaryClick() {
-        this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
-        this.menu.glossaryButton.setClickable(!this.menu.glossaryButton.getIsClicked());
+        console.log("Glossary click - current state:", this.menu.glossaryButton.getIsClicked());
+        
+        const newClickedState = !this.menu.glossaryButton.getIsClicked();
+        this.menu.glossaryButton.setClicked(newClickedState);
+        this.menu.glossaryButton.setClickable(!newClickedState);
         this.menu.glossaryButton.resetButton();
+    
+        console.log("Glossary click - new state:", newClickedState);
+    
+        this.setButtonsClickability(false);
     
         this.menu.menuHidden.addChild(this.menu.glossaryOrnament.getGraphic());
         this.menu.menuContainer.addChild(this.menu.glossaryClickedOrnament.getGraphic());
         this.menu.redrawFrame();
-
-
+    
         if (this.menu.config.classicMode) {
             this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
         } else {
             this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuOrange);
         }
         
-        if (this.menu.glossaryButton.getIsClicked()) {
+        if (newClickedState) { // Opening glossary
+            console.log("Opening glossary");
+            this.escapeActive = false;
+            
+            // Disable quit button initially
+            this.menu.glossaryQuitButton.setClickable(false);
+            
+            // CRITICAL: Reset overlay background to ensure consistent animation
+            this.resetOverlayBackgroundForAnimation();
+            
             if (!this.menu.overlayBackground.getIsDisplayed()) {
-                // Step 1: Show overlay background and start its fade-in
+                // Add overlay background to layer
                 this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                this.menu.overlayBackground.fadeIn();
                 this.menu.overlayBackground.setIsDisplayed(true);
                 
-                // Step 2: Add glossary texts to overlays but keep them invisible initially
+                // Add glossary content to layers but keep hidden
                 const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
                 glossaryRenderables.forEach(renderable => {
                     this.menu.renderLayers.overlays.addChild(renderable);
                 });
                 
-                // Step 3: Wait for overlay background to finish, then fade in glossary AND powerups
-                this.waitForOverlay();
+                // Start overlay background AND quit button fade-in simultaneously
+                this.menu.overlayBackground.fadeIn();
+                MenuImageManager.fadeInGlossaryQuitButton(this.menu);
+                
+                this.waitForOverlayAndQuitButton();
             }
     
             if (this.menu.aboutButton.getIsClicked()) {
-                this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
+                this.menu.aboutButton.setClicked(false);
                 this.menu.aboutButton.resetButton();
             }
-    
-            this.menu.menuContainer.addChild(this.menu.glossaryXButton.getContainer());
+        } else { // Closing glossary
+            console.log("Closing glossary via button click");
+            this.menu.eventQueue.push({
+                type: 'GLOSSARY_BACK',
+                target: this.menu.glossaryButton,
+                buttonName: 'GLOSSARY'
+            });
         }
     }
 
@@ -167,6 +212,8 @@ export class ButtonSystem implements System {
         this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
         this.menu.aboutButton.setClickable(!this.menu.aboutButton.getIsClicked());
         this.menu.aboutButton.resetButton();
+
+        this.setButtonsClickability(false);
 
         this.menu.menuHidden.addChild(this.menu.aboutOrnament.getGraphic());
         this.menu.menuContainer.addChild(this.menu.aboutClickedOrnament.getGraphic());
@@ -179,18 +226,20 @@ export class ButtonSystem implements System {
         }
 
         if (this.menu.aboutButton.getIsClicked()) {
+            this.escapeActive = false;
+            
             if (!this.menu.overlayBackground.getIsDisplayed()) {
                 this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
                 this.menu.overlayBackground.fadeIn();
                 this.menu.overlayBackground.setIsDisplayed(true);
+                
+                this.waitForAboutOverlay();
             }
 
             if (this.menu.glossaryButton.getIsClicked()) {
                 this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
                 this.menu.glossaryButton.resetButton();
             }
-
-            this.menu.menuContainer.addChild(this.menu.aboutXButton.getContainer());
         } 
     }
 
@@ -243,31 +292,32 @@ export class ButtonSystem implements System {
 
             this.menu.optionsButton.resetButton();
             this.menu.optionsXButton.resetButton();
-        } else if (event.type.includes('GLOSSARY')) {
-            this.menu.glossaryXButton.setHidden(!this.menu.glossaryButton.getIsHidden());
-            this.menu.menuHidden.addChild(this.menu.glossaryXButton.getContainer());
-        
+        } else if (event.type.includes('GLOSSARY')) {     
+            this.escapeActive = false;
+            
             this.menu.glossaryButton.setClicked(false);
             this.menu.glossaryButton.setClickable(true);
             this.menu.glossaryButton.setHidden(false);
-        
+            
+            this.menu.glossaryQuitButton.setClickable(false);
+
             this.menu.menuContainer.addChild(this.menu.glossaryOrnament.getGraphic());
             this.menu.menuHidden.addChild(this.menu.glossaryClickedOrnament.getGraphic());
-        
-            // Step 1: Start glossary AND powerups fade-out simultaneously
+    
             this.menu.glossaryES.fadeOut();
             MenuPowerupManager.fadeOutAllPowerups(this.menu);
-            
-            // Step 2: Wait for both to finish, then fade out overlay
-            this.waitForGlossaryAndPowerupsThenFadeOverlay();
-        
+            MenuImageManager.fadeOutAllWallImages(this.menu);
+            MenuImageManager.fadeOutGlossaryQuitButton(this.menu);
+    
+            this.waitForContentThenFadeOverlayAndQuitButton();
+    
             this.menu.redrawFrame();
-            this.menu.glossaryButton.resetButton();
-            this.menu.glossaryXButton.resetButton();
-        } else if (event.type.includes('ABOUT')) {
-            this.menu.aboutXButton.setHidden(!this.menu.aboutButton.getIsHidden());
-            this.menu.menuHidden.addChild(this.menu.aboutXButton.getContainer());
 
+            this.setButtonsClickability(true);
+            this.resetButtons(false);
+        } else if (event.type.includes('ABOUT')) {
+            this.escapeActive = false;
+            
             this.menu.aboutButton.setClicked(false);
             this.menu.aboutButton.setClickable(true);
             this.menu.aboutButton.setHidden(false);
@@ -282,12 +332,15 @@ export class ButtonSystem implements System {
                 if (this.menu.overlayBackground.isAnimationComplete() && 
                     this.menu.overlayBackground.getCurrentAlpha() === 0) {
                     this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                    // Re-enable escape after closing complete
+                    this.escapeActive = false; // Keep false since we're back to main menu
                 }
             }, 500);
 
             this.menu.redrawFrame();
             this.menu.aboutButton.resetButton();
-            this.menu.aboutXButton.resetButton();
+
+            this.setButtonsClickability(true);
         }
     }
 
@@ -396,20 +449,33 @@ export class ButtonSystem implements System {
             this.menu.renderLayers.powerups.filters = [];
             this.menu.renderLayers.powerdowns.filters = [];
             this.menu.renderLayers.ballchanges.filters = [];
+            this.menu.renderLayers.overlayQuits.filters = [];
             this.menu.config.filters = false;
         } else {
             this.menu.filtersButton.updateText(text.substring(0, text.indexOf('OFF')) + 'ON');
             this.menu.visualRoot.filters = this.menu.baseFilters;
             this.menu.menuContainer.filters = this.menu.baseFilters;
             this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
-            this.menu.renderLayers.powerups.filters = this.menu.powerupFilters;
-            this.menu.renderLayers.powerdowns.filters = this.menu.powerdownFilters;
-            this.menu.renderLayers.ballchanges.filters = this.menu.ballchangeFilters;
+            this.menu.renderLayers.overlayQuits.filters = this.menu.baseFilters;
+            
+            if (this.menu.config.classicMode) {
+                this.menu.renderLayers.powerups.filters = this.menu.powerupClassicFilters;
+                this.menu.renderLayers.powerdowns.filters = this.menu.powerupClassicFilters;
+                this.menu.renderLayers.ballchanges.filters = this.menu.powerupClassicFilters;
+            } else {
+                this.menu.renderLayers.powerups.filters = this.menu.powerupFilters;
+                this.menu.renderLayers.powerdowns.filters = this.menu.powerdownFilters;
+                this.menu.renderLayers.ballchanges.filters = this.menu.ballchangeFilters;
+            }
+
             this.menu.config.filters = true;
         }
     
         this.menu.filtersButton.setClicked(!this.menu.filtersButton.getIsClicked());
         this.menu.filtersButton.resetButton();
+
+        this.updatePowerups();
+        this.updatePaddles();
     }
 
     resetStartOptions() {
@@ -462,28 +528,9 @@ export class ButtonSystem implements System {
         for (const id of entitiesToRemove) {
             this.menu.removeEntity(id);
         }
-    
-        menu.startButton.resetButton();
-        menu.playButton.resetButton();
-        menu.optionsButton.resetButton();
-        menu.glossaryButton.resetButton();
-        menu.aboutButton.resetButton();
-        menu.filtersButton.resetButton();
-        menu.classicButton.resetButton();
-        menu.onlineButton.resetButton();
-        menu.localButton.resetButton();
-        menu.IAButton.resetButton();
-        menu.duelButton.resetButton();
-        menu.tournamentButton.resetButton();
-        menu.startXButton.resetButton();
-        menu.optionsXButton.resetButton();
-        menu.glossaryXButton.resetButton();
-        menu.aboutXButton.resetButton();
-        
-        menu.playOrnament.resetOrnament();
-        menu.startOrnament.resetOrnament();
-        menu.optionsOrnament.resetOrnament();
-        menu.optionsClickedOrnament.resetOrnament();
+
+        this.resetButtons();
+
     
         if (menu.title) {
             menu.title.updateBlockingVisibility();
@@ -494,21 +541,32 @@ export class ButtonSystem implements System {
         if (this.menu.config.classicMode) {
             this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());       
             this.menu.renderLayers.logo.addChild(titleORender.graphic);
+            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+
+            if (this.menu.config.filters) {
+                this.menu.renderLayers.powerups.filters = this.menu.powerupClassicFilters;
+                this.menu.renderLayers.powerdowns.filters = this.menu.powerupClassicFilters;
+                this.menu.renderLayers.ballchanges.filters = this.menu.powerupClassicFilters;
+            }
         } else {
             this.menu.renderLayers.foreground.addChild(this.menu.ballButton.getContainer());
             this.menu.menuHidden.addChild(titleORender.graphic);
-        }
-
-        if (this.menu.config.classicMode) {
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
-        } else {
             if (this.menu.glossaryButton.getIsClicked()) {
                 this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuOrange);
             } else if (this.menu.aboutButton.getIsClicked()) {
                 this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuPink);
-            
+            }
+
+            if (this.menu.config.filters) {
+                this.menu.renderLayers.powerups.filters = this.menu.powerupFilters;
+                this.menu.renderLayers.powerdowns.filters = this.menu.powerdownFilters;
+                this.menu.renderLayers.ballchanges.filters = this.menu.ballchangeFilters;
             }
         }
+
+        this.updatePowerups();
+        this.updatePaddles();
+        this.menu.glossaryES.redrawGlossaryTitles(this.menu.config.classicMode);
     }
 
     public updatePlayButtonState(): void {
@@ -549,36 +607,161 @@ export class ButtonSystem implements System {
         const checkOverlayComplete = () => {
             if (this.menu.overlayBackground.isAnimationComplete() && 
                 this.menu.overlayBackground.getCurrentAlpha() === 1) {
-                // Overlay is fully visible, now fade in glossary AND powerups simultaneously
+                
+                // Start glossary, powerups, wall images AND quit button fade-in
                 this.menu.glossaryES.fadeIn();
                 MenuPowerupManager.fadeInAllPowerups(this.menu);
+                MenuImageManager.fadeInAllWallImages(this.menu);
+                MenuImageManager.fadeInGlossaryQuitButton(this.menu);
+                
+                // Wait for all elements to complete
+                this.waitForAllGlossaryElementsComplete();
             } else {
-                // Check again in next frame
-                setTimeout(checkOverlayComplete, 16); // ~60fps
+                setTimeout(checkOverlayComplete, 16);
             }
         };
         checkOverlayComplete();
     }
 
-    private waitForGlossaryAndPowerupsThenFadeOverlay(): void {
-        const checkBothComplete = () => {
+    private waitForAllGlossaryElementsComplete(): void {
+        const checkAllComplete = () => {
+            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
+                                   this.menu.glossaryES.getCurrentAlpha() === 1;
+            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
+            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
+            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
+            
+            if (glossaryComplete && powerupsComplete && wallImagesComplete && quitButtonComplete) {
+                this.escapeActive = true;
+                this.menu.glossaryQuitButton.setClickable(true);
+                console.log("Glossary fully loaded - Escape and quit button now available");
+            } else {
+                setTimeout(checkAllComplete, 16);
+            }
+        };
+        checkAllComplete();
+    }
+
+    private waitForAllGlossaryElementsThenFadeOverlay(): void {
+        const checkAllComplete = () => {
             const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
                                    this.menu.glossaryES.getCurrentAlpha() === 0;
             const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
+            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
+            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
             
-            if (glossaryComplete && powerupsComplete) {
-                // Both glossary and powerups are fully hidden, now fade out overlay
+            if (glossaryComplete && powerupsComplete && wallImagesComplete && quitButtonComplete) {
                 this.menu.overlayBackground.fadeOut();
                 this.menu.overlayBackground.setIsDisplayed(false);
                 
-                // Move glossary renderables back to hidden after fade out
                 const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
                 glossaryRenderables.forEach(renderable => {
                     this.menu.menuHidden.addChild(renderable);
                 });
                 
-                // Wait for overlay to finish, then move it to hidden
                 this.finalizeOverlayHiding();
+            } else {
+                setTimeout(checkAllComplete, 16);
+            }
+        };
+        checkAllComplete();
+    }
+
+    private waitForAboutOverlay(): void {
+        const checkOverlayComplete = () => {
+            if (this.menu.overlayBackground.isAnimationComplete() && 
+                this.menu.overlayBackground.getCurrentAlpha() === 1) {
+                // About overlay is complete - enable escape
+                this.escapeActive = true;
+                console.log("About overlay fully loaded - Escape now available");
+            } else {
+                setTimeout(checkOverlayComplete, 16);
+            }
+        };
+        checkOverlayComplete();
+    }
+
+    private waitForOverlayAndQuitButton(): void {
+        const checkBothComplete = () => {
+            const overlayComplete = this.menu.overlayBackground.isAnimationComplete() && 
+                                   this.menu.overlayBackground.getCurrentAlpha() === 1;
+            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
+            
+            if (overlayComplete && quitButtonComplete) {
+                // Both overlay and quit button are visible, now fade in content
+                this.menu.glossaryES.fadeIn();
+                MenuPowerupManager.fadeInAllPowerups(this.menu);
+                MenuImageManager.fadeInAllWallImages(this.menu);
+                
+                // Wait for content to complete
+                this.waitForContentComplete();
+            } else {
+                setTimeout(checkBothComplete, 16);
+            }
+        };
+        checkBothComplete();
+    }
+
+    private waitForContentComplete(): void {
+        const checkContentComplete = () => {
+            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
+                                   this.menu.glossaryES.getCurrentAlpha() === 1;
+            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
+            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
+            
+            if (glossaryComplete && powerupsComplete && wallImagesComplete) {
+                // All content complete - enable escape AND quit button
+                this.escapeActive = true;
+                this.menu.glossaryQuitButton.setClickable(true);
+                console.log("Glossary content loaded - Escape and quit button now available");
+            } else {
+                setTimeout(checkContentComplete, 16);
+            }
+        };
+        checkContentComplete();
+    }
+
+    private waitForContentThenFadeOverlayAndQuitButton(): void {
+        const checkContentComplete = () => {
+            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
+                                   this.menu.glossaryES.getCurrentAlpha() === 0;
+            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
+            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
+            
+            if (glossaryComplete && powerupsComplete && wallImagesComplete) {
+                // Content is hidden, now fade out overlay and quit button together
+                this.menu.overlayBackground.fadeOut();
+                this.menu.overlayBackground.setIsDisplayed(false);
+                MenuImageManager.fadeOutGlossaryQuitButton(this.menu);
+                
+                // Move glossary content back to hidden
+                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
+                glossaryRenderables.forEach(renderable => {
+                    this.menu.menuHidden.addChild(renderable);
+                });
+                
+                this.finalizeOverlayAndQuitButtonHiding();
+            } else {
+                setTimeout(checkContentComplete, 16);
+            }
+        };
+        checkContentComplete();
+    }
+
+    private finalizeOverlayAndQuitButtonHiding(): void {
+        const checkBothComplete = () => {
+            const overlayComplete = this.menu.overlayBackground.isAnimationComplete() && 
+                                   this.menu.overlayBackground.getCurrentAlpha() === 0;
+            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
+            
+            if (overlayComplete && quitButtonComplete) {
+                this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                
+                this.menu.overlayBackground.setIsDisplayed(false);
+
+                this.escapeActive = false;
+                
+                console.log("Overlay and quit button fully closed - ready for next use");
             } else {
                 setTimeout(checkBothComplete, 16);
             }
@@ -591,6 +774,9 @@ export class ButtonSystem implements System {
             if (this.menu.overlayBackground.isAnimationComplete() && 
                 this.menu.overlayBackground.getCurrentAlpha() === 0) {
                 this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
+                // Reset escape state - back to main menu
+                this.escapeActive = false;
+                console.log("Overlay fully closed - Escape disabled");
             } else {
                 setTimeout(checkOverlayComplete, 16);
             }
@@ -598,11 +784,108 @@ export class ButtonSystem implements System {
         checkOverlayComplete();
     }
 
+    private resetOverlayBackgroundForAnimation(): void {
+        // Force reset the overlay background animation state
+        const overlayRender = this.menu.overlayBackground.getComponent('render') as RenderComponent;
+        if (overlayRender && overlayRender.graphic) {
+            // Reset alpha to 0 for consistent animation start
+            overlayRender.graphic.alpha = 0;
+        }
+        
+        // Reset the internal animation state of OverlayBackground
+        this.menu.overlayBackground.resetAnimationState();
+        
+        // Also reset quit button alpha
+        const quitButton = this.menu.glossaryQuitButton;
+        if (quitButton) {
+            const container = quitButton.getContainer();
+            container.alpha = 0;
+        }
+    }
+
+    resetButtons(resetPlay: boolean = true): void {
+        this.menu.startButton.resetButton();
+        this.menu.optionsButton.resetButton();
+        this.menu.glossaryButton.resetButton();
+        this.menu.aboutButton.resetButton();
+        this.menu.filtersButton.resetButton();
+        this.menu.classicButton.resetButton();
+        this.menu.onlineButton.resetButton();
+        this.menu.localButton.resetButton();
+        this.menu.IAButton.resetButton();
+        this.menu.duelButton.resetButton();
+        this.menu.tournamentButton.resetButton();
+        this.menu.startXButton.resetButton();
+        this.menu.optionsXButton.resetButton();
+        this.menu.glossaryQuitButton.resetButton();
+        this.menu.aboutQuitButton.resetButton();
+        
+        this.menu.playOrnament.resetOrnament();
+        this.menu.startOrnament.resetOrnament();
+        this.menu.optionsOrnament.resetOrnament();
+        this.menu.optionsClickedOrnament.resetOrnament();
+
+        if (resetPlay) {
+            this.menu.playButton.resetButton();
+        }
+    }
+
+    updatePowerups() {
+        (this.menu.enlargePowerup as EnlargePowerup).redrawPowerup();
+        (this.menu.magnetizePowerup as MagnetizePowerup).redrawPowerup();
+        (this.menu.shieldPowerup as ShieldPowerup).redrawPowerup();
+        (this.menu.shootPowerup as ShootPowerup).redrawPowerup();
+
+        (this.menu.shrinkPowerdown as ShrinkPowerDown).redrawPowerup();
+        (this.menu.invertPowerdown as InvertPowerDown).redrawPowerup();
+        (this.menu.flattenPowerdown as FlatPowerDown).redrawPowerup();
+        (this.menu.slowPowerdown as SlowPowerDown).redrawPowerup();
+
+        (this.menu.curveBallChange as CurveBallPowerup).redrawPowerup();
+        (this.menu.spinBallChange as SpinBallPowerup).redrawPowerup();
+        (this.menu.burstBallChange as BurstBallPowerup).redrawPowerup();
+        (this.menu.multiplyBallChange as MultiplyBallPowerup).redrawPowerup();
+    }
+
+    updatePaddles() {
+        (this.menu.paddleL as Paddle).redrawFullPaddle();
+        (this.menu.paddleR as Paddle).redrawFullPaddle();
+    }
+
+    public getEscapeActive(): boolean {
+        return this.escapeActive;
+    }
+
+    public setEscapeActive(active: boolean): void {
+        this.escapeActive = active;
+    }
+
+    setButtonsClickability(clickable: boolean): void {       
+        this.menu.startButton.setClickable(clickable);
+        this.menu.optionsButton.setClickable(clickable);
+        this.menu.glossaryButton.setClickable(clickable);
+        this.menu.aboutButton.setClickable(clickable);
+        this.menu.localButton.setClickable(clickable);
+        this.menu.onlineButton.setClickable(clickable);
+        this.menu.IAButton.setClickable(clickable);
+        this.menu.duelButton.setClickable(clickable);
+        this.menu.tournamentButton.setClickable(clickable);
+        this.menu.filtersButton.setClickable(clickable);
+        this.menu.classicButton.setClickable(clickable);
+        this.menu.startXButton.setClickable(clickable);
+        this.menu.optionsXButton.setClickable(clickable);
+        this.menu.ballButton.setClickable(clickable);
+        
+        if (clickable) {
+            this.updatePlayButtonState();
+        } else {
+            this.menu.playButton.setClickable(false);
+        }
+    }
+
     cleanup(): void {
-        // Clear event queue
         this.menu.eventQueue = [];
         
-        // Reset all button states to default
         if (this.menu.startButton) this.menu.startButton.resetButton();
         if (this.menu.playButton) this.menu.playButton.resetButton();
         if (this.menu.optionsButton) this.menu.optionsButton.resetButton();

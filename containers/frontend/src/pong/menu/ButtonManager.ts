@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 17:31:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:36:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import { MenuBallSpawner } from "./MenuBallSpawner";
 
 import { getThemeColors } from "../utils/Utils";
 import * as menuUtils from "../utils/MenuUtils"
+import { MenuOverlayQuitButton } from "./buttons/MenuOverlayQuitButton";
 
 
 
@@ -320,26 +321,6 @@ export class ButtonManager {
 				color: getThemeColors(menu.config.classicMode).menuGreen,
 				index: 1
 			},
-			{
-				isClicked: false,
-				text: 'X',
-				onClick: () => {
-					console.log(`return at options clicked`);
-					menu.playSound("menuSelect");
-				},
-				color: getThemeColors(menu.config.classicMode).menuOrange,
-				index: 2
-			},
-			{
-				isClicked: false,
-				text: 'X',
-				onClick: () => {
-					console.log(`return at options clicked`);
-					menu.playSound("menuSelect");
-				},
-				color: getThemeColors(menu.config.classicMode).menuPink	,
-				index: 3
-			},
 		];
 
 		xButtonConfigs.forEach((config, index) => {
@@ -352,14 +333,6 @@ export class ButtonManager {
 				}
 				case (1): {
 					tag = `xButton_options_${config.text.toLowerCase()}`
-					break;
-				}
-				case (2): {
-					tag = `xButton_glossary_${config.text.toLowerCase()}`
-					break;
-				}
-				case (3): {
-					tag = `xButton_about_${config.text.toLowerCase()}`
 					break;
 				}
 			}
@@ -387,18 +360,6 @@ export class ButtonManager {
 					y = (menu.app.screen.height / 3) + ((menu.buttonHeight + menu.buttonVerticalOffset));
 					break;
 				}
-				case (2): {
-					menu.glossaryXButton = xButton;
-					x = (menu.app.screen.width - menu.buttonWidth) / 2 - 115;
-					y = (menu.app.screen.height / 3) + (2 * (menu.buttonHeight + menu.buttonVerticalOffset));
-					break;
-				}
-				case (3): {
-					menu.aboutXButton = xButton;
-					x = (menu.app.screen.width - menu.buttonWidth) / 2  - 140;
-					y = (menu.app.screen.height / 3) + (3 * (menu.buttonHeight + menu.buttonVerticalOffset));
-					break;
-				}
 			}
 
 			xButton.setPosition(x!, y!);
@@ -406,6 +367,77 @@ export class ButtonManager {
 			menu.menuHidden.addChild(xButton.getContainer());
 		});
 	}
+
+	static createOverlayQuitButtons(menu: Menu) {
+		const quitButtonConfigs: menuUtils.MenuButtonConfig[] = [
+			{
+				isClicked: false,
+				text: 'X',
+				onClick: () => {
+					console.log(`return at glossary window clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuOrange,
+				index: 0
+			},
+			{
+				isClicked: false,
+				text: 'X',
+				onClick: () => {
+					console.log(`return at about window clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuPink,
+				index: 1
+			},
+		];
+
+		quitButtonConfigs.forEach((config, index) => {
+			let tag;
+			
+			switch (index) {
+				case (0): {
+					tag = `quit_glossary_${config.text.toLowerCase()}`;
+					break;
+				}
+				case (1): {
+					tag = `quit_about_${config.text.toLowerCase()}`
+					break;
+				}
+			}
+			
+			const quitButton = new MenuOverlayQuitButton(
+				tag!, 
+				'menuContainer', 
+				menu, 
+				config,
+			);
+	
+			let x;
+			let y;
+	
+			switch (index) {
+				case (0): {
+					menu.glossaryQuitButton = quitButton;
+					x = menu.width / 2 - 55;
+					y = 660;
+					break;
+				}
+				case (1): {
+					menu.aboutQuitButton = quitButton;
+					x = menu.width / 2 - 55;
+					y = 660;
+					break;
+				}
+			}
+
+			quitButton.setPosition(x!, y!);
+			quitButton.setHidden(true);
+			menu.menuHidden.addChild(quitButton.getContainer());
+		});
+	}
+
+	
 
 	static createBallButton(menu: Menu) {
 		const ballButton = new BallButton('ballButton', 'foreground', menu, () => {

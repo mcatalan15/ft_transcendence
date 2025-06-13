@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 16:03:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:25:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,19 +107,23 @@ export class SecretCodeSystem implements System {
             sequence: ["Escape"],
             timeout: 2000,
             effect: () => {
-                if (this.menu.glossaryButton.getIsClicked()) {
-                    this.menu.eventQueue.push({
-                        type: 'GLOSSARY_BACK',
-                        target: this.menu.glossaryButton,
-                        buttonName: 'GLOSSARY'
-                    });
-                } else if (this.menu.aboutButton.getIsClicked()) {
-                    this.menu.eventQueue.push({
-                        type: 'ABOUT_BACK',
-                        target: this.menu.aboutButton,
-                        buttonName: 'ABOUT'
-                    });
-                }
+                setTimeout(() => {
+                    if (this.menu.glossaryButton.getIsClicked()) {
+                        console.log("ESC: Closing glossary");
+                        this.menu.eventQueue.push({
+                            type: 'GLOSSARY_BACK',
+                            target: this.menu.glossaryButton,
+                            buttonName: 'GLOSSARY'
+                        });
+                    } else if (this.menu.aboutButton.getIsClicked()) {
+                        console.log("ESC: Closing about");
+                        this.menu.eventQueue.push({
+                            type: 'ABOUT_BACK',
+                            target: this.menu.aboutButton,
+                            buttonName: 'ABOUT'
+                        });
+                    }
+                }, 500);
             },
         });
         this.registerCode({
@@ -182,13 +186,13 @@ export class SecretCodeSystem implements System {
             timeout: 2000,
             effect: () => {
                 if (!this.menu.config.classicMode) {
-                    for(let i = 0; i <= 20; i++) {
+                    for(let i = 0; i <= 50; i++) {
                         MenuBallSpawner.spawnDefaultBallInMenu(this.menu);
                     }
                 }
             },
         });
-        this.registerCode({
+        /* this.registerCode({
             name: "glossary",
             sequence: ["KeyG", "KeyL", "KeyO", "KeyS", "KeyS", "KeyA", "KeyR", "KeyY"],
             timeout: 2000,
@@ -213,6 +217,16 @@ export class SecretCodeSystem implements System {
             sequence: ["KeyA", "KeyB", "KeyO", "KeyU", "KeyT"],
             timeout: 2000,
             effect: () => {
+                if (this.menu.glossaryButton.getIsClicked()) {
+                    if (this.menu.glossaryButton.getIsClicked()) {
+                        this.menu.eventQueue.push({
+                            type: 'GLOSSARY_BACK',
+                            target: this.menu.glossaryButton.getContainer(),
+                            buttonName: 'glossaryXButton'
+                        });
+                    }
+                }
+                
                 if (!this.menu.aboutButton.getIsClicked()) {
                     this.menu.eventQueue.push({
                         type: 'ABOUT_CLICK',
@@ -227,7 +241,29 @@ export class SecretCodeSystem implements System {
                     });
                 }
             },
-        });
+        }); */
+    }
+
+    private shouldEscapeBeActive(): boolean {
+        const buttonSystem = this.menu.systems.find(system => 
+            system.constructor.name === 'ButtonSystem'
+        ) as any;
+        
+        if (buttonSystem && typeof buttonSystem.getEscapeActive === 'function') {
+            return buttonSystem.getEscapeActive();
+        }
+        
+        if (this.menu.glossaryButton.getIsClicked()) {
+            return this.menu.overlayBackground.isAnimationComplete() && 
+                   this.menu.overlayBackground.getCurrentAlpha() === 1 &&
+                   this.menu.glossaryES.isAnimationComplete() &&
+                   this.menu.glossaryES.getCurrentAlpha() === 1;
+        } else if (this.menu.aboutButton.getIsClicked()) {
+            return this.menu.overlayBackground.isAnimationComplete() && 
+                   this.menu.overlayBackground.getCurrentAlpha() === 1;
+        }
+        
+        return false;
     }
 
     private konamiEffect(): void {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 09:22:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:03:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ import { GAME_COLORS } from './Types';
 import { MenuButton } from '../menu/buttons/MenuButton';
 import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
 import { MenuXButton } from '../menu/buttons/MenuXButton';
+import { MenuOverlayQuitButton } from '../menu/buttons/MenuOverlayQuitButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -39,9 +40,7 @@ export function createBallButton(width: number, height: number, color: number): 
 	button.addChild(ball);
 
 	// Add the onClick method to the button
-	button.onClick = () => {
-		console.log('SPAWNING BALLZZZ');
-	};
+	button.onClick = () => {};
 
 	// Hover effects
 	button.on('pointerenter', () => {
@@ -145,6 +144,17 @@ export function getXButtonPoints(menu: Menu, button: MenuXButton): number[] | un
 			menu.buttonXWidth + menu.buttonSlant, 0,
 			menu.buttonXWidth , menu.buttonHeight,
 			0 - menu.buttonSlant, menu.buttonHeight 
+		];
+	}
+}
+
+export function getOverlayQuitButtonPoints(menu: Menu, button: MenuOverlayQuitButton): number[] | undefined {
+	if (!button.getIsClicked()) {
+		return [
+			0, 0,
+			90, 0,
+			90, 30,
+			0, 30,
 		];
 	}
 }

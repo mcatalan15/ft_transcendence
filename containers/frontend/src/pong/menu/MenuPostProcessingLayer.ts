@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 17:45:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:38:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,17 @@ export class MenuPostProcessingLayer extends Entity {
 
         // Bloom effect
         const advancedBloom = new AdvancedBloomFilter({
-            threshold: 0.7,       // Higher threshold means fewer colors will bloom (more subtle)
-            bloomScale: 0.2,      // Lower bloomScale makes the bloom effect less intense
-            brightness: 1,      // Standard brightness (1.0 for neutral)
-            blur: 1,              // Medium blur strength (not too strong)
-            quality: 10,           // Standard quality
-            pixelSize: 0.5,         // Standard pixel size
+            threshold: 0.7,
+            bloomScale: 0.2,
+            brightness: 1,
+            blur: 1,
+            quality: 10,
+            pixelSize: 0.5,
         });
 
         // CRT base
         const crtFilter = new CRTFilter({
-            curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,    // Amount of screen bend (default: 1.0). Try 2.0+ for a classic CRT curve.
+            curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
             lineWidth: 0.05,
             lineContrast: 0.15,
             verticalLine: false,
@@ -190,6 +190,7 @@ export class MenuPostProcessingLayer extends Entity {
         menu.powerupFilters = [powerupGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerupDropShadow];
         menu.powerdownFilters = [powerdownGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, powerdownDropShadow, powerdownGlitch];
         menu.ballchangeFilters = [ballChangeGlow, advancedBloom, bulgePinch, powerupCRT, rgbSplit, ballChangeDropShadow];
+        menu.powerupClassicFilters = [advancedBloom, bulgePinch, powerupCRT, rgbSplit];
 
         menu.visualRoot.filters = menu.baseFilters;
         menu.menuContainer.filters = menu.baseFilters;
@@ -197,5 +198,6 @@ export class MenuPostProcessingLayer extends Entity {
         menu.renderLayers.powerups.filters = menu.powerupFilters;
         menu.renderLayers.powerdowns.filters = menu.powerdownFilters;
         menu.renderLayers.ballchanges.filters = menu.ballchangeFilters;
+        menu.renderLayers.overlayQuits.filters = menu.baseFilters;
     }
 }

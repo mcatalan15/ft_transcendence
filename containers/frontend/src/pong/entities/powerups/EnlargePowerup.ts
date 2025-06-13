@@ -6,22 +6,26 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:13:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 17:09:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Container } from 'pixi.js';
 
 import { PongGame } from '../../engine/Game';
+import { Menu } from '../../menu/Menu';
 import { Entity } from '../../engine/Entity';
 import { Powerup } from './Powerup';
 
+import { isGame, isMenu } from '../../utils/Guards';
+
 import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
+import { RenderComponent } from '../../components/RenderComponent';
 
 export class EnlargePowerup extends Powerup {
-    game: PongGame;
+    game: PongGame | Menu;
 
-    constructor(id: string, layer: string, game: any, x: number, y: number) {
+    constructor(id: string, layer: string, game: PongGame | Menu, x: number, y: number) {
         super(id, layer, game, x, y, {
             despawn: 'time',
             effect: 'enlargePowerup',
@@ -29,7 +33,11 @@ export class EnlargePowerup extends Powerup {
             event: { type: 'enlargePowerup' },
         });
 
-        this.game = game;
+        if (isGame(game)) {
+            this.game = game as PongGame;
+        } else {
+            this.game = game as Menu;
+        }
     }
 
     createPowerupGraphic(): Container {
@@ -42,12 +50,12 @@ export class EnlargePowerup extends Powerup {
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(GAME_COLORS.white);
+        base.fill(this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.green);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
+        ornament.stroke({ color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.green, width: 3 });
         container.addChild(ornament);
     
         const createArrow = (): Graphics => {
@@ -107,5 +115,73 @@ export class EnlargePowerup extends Powerup {
             this.event.side = side;
         }
         this.game.eventQueue.push(this.event);
+    }
+
+    public redrawPowerup(): void {
+        const renderComponent = this.getComponent('render') as RenderComponent;
+        if (!renderComponent || !renderComponent.graphic) return;
+
+        const container = renderComponent.graphic as Container;
+
+        let color;
+
+        if (this.game.config.classicMode) {
+            color = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                color = GAME_COLORS.white;
+            } else {
+                color = GAME_COLORS.green;
+            }
+        }
+        
+        // Clear all children from the existing container
+        container.removeChildren();
+        
+        // Recreate the graphics using the same logic as createPowerupGraphic
+        const outline = new Graphics();
+        outline.rect(-15, -15, 30, 30);
+        outline.fill(GAME_COLORS.black);
+        container.addChild(outline);
+
+        const base = new Graphics();
+        base.rect(-10, -10, 20, 20);
+        base.fill(color);
+        container.addChild(base);
+    
+        const ornament = new Graphics();
+        ornament.rect(-15, -15, 30, 30);
+        ornament.stroke({ color: color, width: 3 });
+        container.addChild(ornament);
+    
+        const createArrow = (): Graphics => {
+            const arrow = new Graphics();
+            const points = [
+                { x: 0, y: -4 },
+                { x: -3, y: 0 },
+                { x: -1, y: 0 },
+                { x: -1, y: 4 },
+                { x: 1, y: 4 },
+                { x: 1, y: 0 },
+                { x: 3, y: 0 },
+            ];
+            arrow.poly(points, true);
+            arrow.fill(GAME_COLORS.black);
+            return arrow;
+        };
+    
+        const diagonals = [
+            { x: -5, y: -5, rotation: -Math.PI / 4 },
+            { x: 5, y: -5, rotation: Math.PI / 4 },
+            { x: 5, y: 5, rotation: (3 * Math.PI) / 4 },
+            { x: -5, y: 5, rotation: -(3 * Math.PI) / 4 }
+        ];
+    
+        for (const diag of diagonals) {
+            const arrow = createArrow();
+            arrow.position.set(diag.x, diag.y);
+            arrow.rotation = diag.rotation;
+            container.addChild(arrow);
+        }
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 18:04:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 13:05:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ import { FrameData } from '../utils/Types';
 import { isRenderComponent, isMenuLine, isOverlayBackground, isGlossary, isPowerup } from '../utils/Guards'
 import { MenuLine } from './MenuLine';
 import { OverlayBackground } from './OverlayBackground';
-import { Glossary } from './Glossary';
+import { GlossaryTexts } from './GlossaryTexts';
 import { Powerup } from '../entities/powerups/Powerup';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 
@@ -51,9 +51,11 @@ update(entities: Entity[], delta: FrameData): void {
 		} else if (isOverlayBackground(entity)) {
 			this.animateOverlayBackground(delta, entity as OverlayBackground);
 		} else if (isGlossary(entity)) {
-			this.animateGlossary(delta, entity as Glossary);
+			this.animateGlossary(delta, entity as GlossaryTexts);
 		} else if (isPowerup(entity)) {
-			this.animatePowerup(entity)
+			if (!this.menu.config.classicMode) {
+				this.animatePowerup(entity)
+			}
 		}
 	}
 	
@@ -175,7 +177,7 @@ update(entities: Entity[], delta: FrameData): void {
         }
     }
 
-	animateGlossary(delta: FrameData, entity: Glossary) {
+	animateGlossary(delta: FrameData, entity: GlossaryTexts) {
 		if (entity.getIsAnimating()) {
 			entity.updateAnimation(delta.deltaTime);
 		}

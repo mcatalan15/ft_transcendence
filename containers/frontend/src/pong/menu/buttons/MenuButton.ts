@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 10:37:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:07:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { BaseButton, ButtonAnimationConfig, ButtonStyle } from "./BaseButton";
 import { getButtonPoints } from "../../utils/MenuUtils";
 import { getThemeColors } from "../../utils/Utils";
 import { isMenuOrnament } from "../../utils/Guards";
+import { GAME_COLORS } from "../../utils/Types";
 
 export class MenuButton extends BaseButton {
     protected hoverTimeout: number | null = null;
@@ -54,6 +55,8 @@ export class MenuButton extends BaseButton {
         this.buttonGraphic.poly(points);
         this.buttonGraphic.fill({ color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 });
         this.buttonGraphic.stroke({ color: getThemeColors(this.menu.config.classicMode).white, width: 3, alpha: 1 });
+
+        this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
         
         if (this.buttonText) {
             this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
@@ -78,6 +81,8 @@ export class MenuButton extends BaseButton {
                 this.resetButtonState();
             }
         }, 10)
+
+        this.menu.overlayBackground.changeStrokeColor(getThemeColors(this.menu.config.classicMode).menuOrange);
     }
 
     protected resetButtonState(): void {
@@ -96,7 +101,7 @@ export class MenuButton extends BaseButton {
                 this.config.color;
             
             const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
-            let textAlpha: number;
+            let textAlpha: number = 1;
             
             if (!this.isClickable) {
                 textAlpha = 0.3;
