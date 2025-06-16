@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 17:02:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 14:40:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ export class MenuOverlayQuitButton extends MenuButton {
             fontSize: 24,
             fontFamily: 'monospace',
             fontWeight: 'bold',
-            //fontStyle: 'italic',
             padding: 0,
         };
     }

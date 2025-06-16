@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ButtonManager.ts                                   :+:      :+:    :+:   */
+/*   MenuButtonManager.ts                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 12:24:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 09:52:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Menu } from "./Menu";
+import { Menu } from "../Menu";
 
-import { MenuButton } from "./buttons/MenuButton";
-import { MenuHalfButton } from "./buttons/MenuHalfButton";
-import { MenuXButton } from "./buttons/MenuXButton";
-import { BallButton } from "./buttons/BallButton";
+import { MenuButton } from "../buttons/MenuButton";
+import { MenuHalfButton } from "../buttons/MenuHalfButton";
+import { MenuXButton } from "../buttons/MenuXButton";
+import { BallButton } from "../buttons/BallButton";
 
-import { VFXComponent } from "../components/VFXComponent";
-import { MenuBallSpawner } from "./MenuBallSpawner";
+import { VFXComponent } from "../../components/VFXComponent";
+import { MenuBallSpawner } from "../MenuBallSpawner";
 
-import { getThemeColors } from "../utils/Utils";
-import * as menuUtils from "../utils/MenuUtils"
-import { MenuOverlayQuitButton } from "./buttons/MenuOverlayQuitButton";
+import { getThemeColors } from "../../utils/Utils";
+import * as menuUtils from "../../utils/MenuUtils"
+import { MenuOverlayQuitButton } from "../buttons/MenuOverlayQuitButton";
 
 
 
@@ -34,7 +34,6 @@ export class ButtonManager {
 				text: 'START',
 				onClick: async () => {
 					console.log("Start clicked");
-					menu.sounds.menuSelect.rate(Math.random() * 0.2 + 1.1);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,

@@ -6,14 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 13:05:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 17:43:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Entity } from "../engine/Entity";
-import { TextComponent } from "../components/TextComponent";
-import { AnimationComponent } from "../components/AnimationComponent";
-import { GAME_COLORS } from "../utils/Types";
+import { Entity } from "../../engine/Entity";
+import { TextComponent } from "../../components/TextComponent";
+import { AnimationComponent } from "../../components/AnimationComponent";
+import { GAME_COLORS } from "../../utils/Types";
 
 export class GlossaryTexts extends Entity {
     private targetAlpha: number = 0;
@@ -30,9 +30,9 @@ export class GlossaryTexts extends Entity {
         this.createColumnTexts();
 
         // Add animation component
-        const animationComponent = new AnimationComponent();
+        /* const animationComponent = new AnimationComponent();
         this.addComponent(animationComponent, 'animation');
-
+ */
         // Set initial alpha to 0 for all text components
         this.textComponents.forEach(textComp => {
             textComp.getRenderable().alpha = 0;
@@ -301,40 +301,6 @@ export class GlossaryTexts extends Entity {
         this.isAnimating = true;
     }
 
-    public updateAnimation(deltaTime: number): void {
-        if (!this.isAnimating) return;
-
-        this.animationProgress += this.animationSpeed * deltaTime;
-        this.animationProgress = Math.min(this.animationProgress, 1.0);
-
-        // Smooth easing function (ease in-out)
-        const easedProgress = this.easeInOutCubic(this.animationProgress);
-        
-        // Interpolate between current and target alpha
-        const startAlpha = this.targetAlpha === 1 ? 0 : 1;
-        this.currentAlpha = startAlpha + (this.targetAlpha - startAlpha) * easedProgress;
-
-        // Update alpha for ALL text components
-        this.textComponents.forEach(textComponent => {
-            if (textComponent && textComponent.getRenderable()) {
-                textComponent.getRenderable().alpha = this.currentAlpha;
-            }
-        });
-
-        // Check if animation is complete
-        if (this.animationProgress >= 1.0) {
-            this.isAnimating = false;
-            this.currentAlpha = this.targetAlpha;
-            
-            // Update final alpha for all components
-            this.textComponents.forEach(textComponent => {
-                if (textComponent && textComponent.getRenderable()) {
-                    textComponent.getRenderable().alpha = this.currentAlpha;
-                }
-            });
-        }
-    }
-
     public redrawGlossaryTitles(classicMode: boolean): void {
         const titleColor = classicMode ? GAME_COLORS.white : GAME_COLORS.menuOrange;
         
@@ -349,12 +315,6 @@ export class GlossaryTexts extends Entity {
                 }
             }
         });
-    }
-
-    
-
-    private easeInOutCubic(t: number): number {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     public isAnimationComplete(): boolean {

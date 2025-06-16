@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/12 15:26:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 12:25:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ export abstract class BaseButton extends Entity {
             
             this.buttonContainer.addChild(this.buttonText);
             
-            // Set initial text position
             this.updateTextPosition();
         }
     }
@@ -162,6 +161,7 @@ export abstract class BaseButton extends Entity {
         this.highlightOrnament(this);
         this.updateTextColor(getThemeColors(this.menu.config.classicMode).black);
         if (this.menu.sounds && this.menu.sounds.menuMove) {
+            this.menu.sounds.menuMove.rate(Math.random() * 0.2 + 1.1);
             this.menu.sounds.menuMove.play();
         }
         this.isStateChanging = false;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 16:25:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 11:47:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,23 +107,21 @@ export class SecretCodeSystem implements System {
             sequence: ["Escape"],
             timeout: 2000,
             effect: () => {
-                setTimeout(() => {
-                    if (this.menu.glossaryButton.getIsClicked()) {
-                        console.log("ESC: Closing glossary");
-                        this.menu.eventQueue.push({
-                            type: 'GLOSSARY_BACK',
-                            target: this.menu.glossaryButton,
-                            buttonName: 'GLOSSARY'
-                        });
-                    } else if (this.menu.aboutButton.getIsClicked()) {
-                        console.log("ESC: Closing about");
-                        this.menu.eventQueue.push({
-                            type: 'ABOUT_BACK',
-                            target: this.menu.aboutButton,
-                            buttonName: 'ABOUT'
-                        });
-                    }
-                }, 500);
+                if (this.menu.glossaryButton.getIsClicked()) {
+                    console.log("ESC: Closing glossary");
+                    this.menu.eventQueue.push({
+                        type: 'GLOSSARY_BACK',
+                        target: this.menu.glossaryButton,
+                        buttonName: 'GLOSSARY'
+                    });
+                } else if (this.menu.aboutButton.getIsClicked()) {
+                    console.log("ESC: Closing about");
+                    this.menu.eventQueue.push({
+                        type: 'ABOUT_BACK',
+                        target: this.menu.aboutButton,
+                        buttonName: 'ABOUT'
+                    });
+                }
             },
         });
         this.registerCode({
@@ -134,7 +132,7 @@ export class SecretCodeSystem implements System {
             timeout: 2000,
             effect: () => this.konamiEffect()
         });
-        this.registerCode({
+        /* this.registerCode({
             name: "classic",
             sequence: ["KeyC", "KeyL", "KeyA", "KeyS", "KeyS", "KeyI", "KeyC"],
             timeout: 2000,
@@ -157,7 +155,7 @@ export class SecretCodeSystem implements System {
                     buttonName: 'FILTERS'
                 });
             },
-        });
+        }); */
         this.registerCode({
             name: "quickstart",
             sequence: ["KeyQ", "KeyU", "KeyI", "KeyC", "KeyK", "KeyS", "KeyT", "KeyA", "KeyR", "KeyT"],

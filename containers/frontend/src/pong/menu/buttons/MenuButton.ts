@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 17:07:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 16:07:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,20 +55,27 @@ export class MenuButton extends BaseButton {
         this.buttonGraphic.poly(points);
         this.buttonGraphic.fill({ color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 });
         this.buttonGraphic.stroke({ color: getThemeColors(this.menu.config.classicMode).white, width: 3, alpha: 1 });
-
-        this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+    
+        if (this.menu.glossaryOverlay.getIsDisplayed()) {
+            this.menu.glossaryOverlay.changeStrokeColor(GAME_COLORS.white);
+        }
+        
+        if (this.menu.aboutOverlay.getIsDisplayed()) {
+            this.menu.aboutOverlay.changeStrokeColor(GAME_COLORS.white);
+        }
         
         if (this.buttonText) {
             this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
         }
         
         this.highlightOrnament(this);
-
+    
         if (this.menu.sounds && this.menu.sounds.menuMove) {
+            this.menu.sounds.menuMove.rate(Math.random() * 0.2 + 1.1);
             this.menu.sounds.menuMove.play();
         }
     }
-
+    
     protected handlePointerLeave(): void {
         this.isHovered = false;
         
@@ -80,9 +87,17 @@ export class MenuButton extends BaseButton {
             if (!this.isHovered) {
                 this.resetButtonState();
             }
-        }, 10)
-
-        this.menu.overlayBackground.changeStrokeColor(getThemeColors(this.menu.config.classicMode).menuOrange);
+        }, 10);
+    
+        if (this.menu.glossaryOverlay.getIsDisplayed()) {
+            const glossaryColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuOrange;
+            this.menu.glossaryOverlay.changeStrokeColor(glossaryColor);
+        }
+        
+        if (this.menu.aboutOverlay.getIsDisplayed()) {
+            const aboutColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
+            this.menu.aboutOverlay.changeStrokeColor(aboutColor);
+        }
     }
 
     protected resetButtonState(): void {

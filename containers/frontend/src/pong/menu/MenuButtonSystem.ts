@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 16:22:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 15:17:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ import { GAME_COLORS, GameEvent } from "../utils/Types";
 import { PongGame } from "../engine/Game";
 import { RenderComponent } from "../components/RenderComponent";
 import { isBall } from "../utils/Guards";
-import { MenuPowerupManager } from './MenuPowerupManager';
-import { MenuImageManager } from './MenuImageManager';
 
 import { ShootPowerup } from "../entities/powerups/ShootPowerup";
 import { EnlargePowerup } from "../entities/powerups/EnlargePowerup";
@@ -38,7 +36,6 @@ import { MultiplyBallPowerup } from "../entities/powerups/MultiplyBallPowerup";
 
 export class ButtonSystem implements System {
     private menu: Menu;
-    private escapeActive: boolean = false;
 
     constructor(menu: Menu) {
         this.menu = menu;
@@ -75,12 +72,7 @@ export class ButtonSystem implements System {
             } else if (event.type === 'CLASSIC_CLICK') {
                 this.handleClassicClicked();
             } else if (event.type === 'GLOSSARY_ESC' || event.type === 'ABOUT_ESC') {
-                if (this.escapeActive) {
-                    this.resetLayer(event);
-                    this.escapeActive = false;
-                } else {
-                    unhandledEvents.push(event);
-                }
+                this.resetLayer(event);
             } else if (event.type.endsWith('BACK')) {
                 this.resetLayer(event);
             } else {
@@ -145,102 +137,15 @@ export class ButtonSystem implements System {
     }
 
     handleGlossaryClick() {
-        console.log("Glossary click - current state:", this.menu.glossaryButton.getIsClicked());
-        
-        const newClickedState = !this.menu.glossaryButton.getIsClicked();
-        this.menu.glossaryButton.setClicked(newClickedState);
-        this.menu.glossaryButton.setClickable(!newClickedState);
-        this.menu.glossaryButton.resetButton();
-    
-        console.log("Glossary click - new state:", newClickedState);
-    
+        this.menu.glossaryButton.setClicked(true);
+        this.menu.glossaryOverlay.show();
         this.setButtonsClickability(false);
-    
-        this.menu.menuHidden.addChild(this.menu.glossaryOrnament.getGraphic());
-        this.menu.menuContainer.addChild(this.menu.glossaryClickedOrnament.getGraphic());
-        this.menu.redrawFrame();
-    
-        if (this.menu.config.classicMode) {
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
-        } else {
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuOrange);
-        }
-        
-        if (newClickedState) { // Opening glossary
-            console.log("Opening glossary");
-            this.escapeActive = false;
-            
-            // Disable quit button initially
-            this.menu.glossaryQuitButton.setClickable(false);
-            
-            // CRITICAL: Reset overlay background to ensure consistent animation
-            this.resetOverlayBackgroundForAnimation();
-            
-            if (!this.menu.overlayBackground.getIsDisplayed()) {
-                // Add overlay background to layer
-                this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                this.menu.overlayBackground.setIsDisplayed(true);
-                
-                // Add glossary content to layers but keep hidden
-                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
-                glossaryRenderables.forEach(renderable => {
-                    this.menu.renderLayers.overlays.addChild(renderable);
-                });
-                
-                // Start overlay background AND quit button fade-in simultaneously
-                this.menu.overlayBackground.fadeIn();
-                MenuImageManager.fadeInGlossaryQuitButton(this.menu);
-                
-                this.waitForOverlayAndQuitButton();
-            }
-    
-            if (this.menu.aboutButton.getIsClicked()) {
-                this.menu.aboutButton.setClicked(false);
-                this.menu.aboutButton.resetButton();
-            }
-        } else { // Closing glossary
-            console.log("Closing glossary via button click");
-            this.menu.eventQueue.push({
-                type: 'GLOSSARY_BACK',
-                target: this.menu.glossaryButton,
-                buttonName: 'GLOSSARY'
-            });
-        }
     }
 
     handleAboutClick() {
-        this.menu.aboutButton.setClicked(!this.menu.aboutButton.getIsClicked());
-        this.menu.aboutButton.setClickable(!this.menu.aboutButton.getIsClicked());
-        this.menu.aboutButton.resetButton();
-
+        this.menu.aboutButton.setClicked(true);
+        this.menu.aboutOverlay.show();
         this.setButtonsClickability(false);
-
-        this.menu.menuHidden.addChild(this.menu.aboutOrnament.getGraphic());
-        this.menu.menuContainer.addChild(this.menu.aboutClickedOrnament.getGraphic());
-        this.menu.redrawFrame();
-
-        if (this.menu.config.classicMode) {
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
-        } else {
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.menuPink);
-        }
-
-        if (this.menu.aboutButton.getIsClicked()) {
-            this.escapeActive = false;
-            
-            if (!this.menu.overlayBackground.getIsDisplayed()) {
-                this.menu.renderLayers.overlays.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                this.menu.overlayBackground.fadeIn();
-                this.menu.overlayBackground.setIsDisplayed(true);
-                
-                this.waitForAboutOverlay();
-            }
-
-            if (this.menu.glossaryButton.getIsClicked()) {
-                this.menu.glossaryButton.setClicked(!this.menu.glossaryButton.getIsClicked());
-                this.menu.glossaryButton.resetButton();
-            }
-        } 
     }
 
     resetLayer(event: GameEvent){
@@ -292,53 +197,24 @@ export class ButtonSystem implements System {
 
             this.menu.optionsButton.resetButton();
             this.menu.optionsXButton.resetButton();
-        } else if (event.type.includes('GLOSSARY')) {     
-            this.escapeActive = false;
-            
+        } else if (event.type.includes('GLOSSARY')) {
+            this.setButtonsClickability(true)
+
             this.menu.glossaryButton.setClicked(false);
-            this.menu.glossaryButton.setClickable(true);
-            this.menu.glossaryButton.setHidden(false);
+
+            this.menu.glossaryButton.resetButton();
+            this.menu.glossaryQuitButton.resetButton();
             
-            this.menu.glossaryQuitButton.setClickable(false);
-
-            this.menu.menuContainer.addChild(this.menu.glossaryOrnament.getGraphic());
-            this.menu.menuHidden.addChild(this.menu.glossaryClickedOrnament.getGraphic());
-    
-            this.menu.glossaryES.fadeOut();
-            MenuPowerupManager.fadeOutAllPowerups(this.menu);
-            MenuImageManager.fadeOutAllWallImages(this.menu);
-            MenuImageManager.fadeOutGlossaryQuitButton(this.menu);
-    
-            this.waitForContentThenFadeOverlayAndQuitButton();
-    
-            this.menu.redrawFrame();
-
-            this.setButtonsClickability(true);
-            this.resetButtons(false);
+            this.menu.glossaryOverlay.hide();
         } else if (event.type.includes('ABOUT')) {
-            this.escapeActive = false;
+            this.setButtonsClickability(true);
             
             this.menu.aboutButton.setClicked(false);
-            this.menu.aboutButton.setClickable(true);
-            this.menu.aboutButton.setHidden(false);
 
-            this.menu.menuContainer.addChild(this.menu.aboutOrnament.getGraphic());
-            this.menu.menuHidden.addChild(this.menu.aboutClickedOrnament.getGraphic());
-
-            this.menu.overlayBackground.fadeOut();
-            this.menu.overlayBackground.setIsDisplayed(false);
-            
-            setTimeout(() => {
-                if (this.menu.overlayBackground.isAnimationComplete() && 
-                    this.menu.overlayBackground.getCurrentAlpha() === 0) {
-                    this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                    // Re-enable escape after closing complete
-                    this.escapeActive = false; // Keep false since we're back to main menu
-                }
-            }, 500);
-
-            this.menu.redrawFrame();
             this.menu.aboutButton.resetButton();
+            this.menu.aboutQuitButton.resetButton();
+            
+            this.menu.aboutOverlay.hide();
 
             this.setButtonsClickability(true);
         }
@@ -541,7 +417,7 @@ export class ButtonSystem implements System {
         if (this.menu.config.classicMode) {
             this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());       
             this.menu.renderLayers.logo.addChild(titleORender.graphic);
-            this.menu.overlayBackground.changeStrokeColor(GAME_COLORS.white);
+            this.menu.glossaryOverlay.changeStrokeColor(GAME_COLORS.white);
 
             if (this.menu.config.filters) {
                 this.menu.renderLayers.powerups.filters = this.menu.powerupClassicFilters;
@@ -566,7 +442,8 @@ export class ButtonSystem implements System {
 
         this.updatePowerups();
         this.updatePaddles();
-        this.menu.glossaryES.redrawGlossaryTitles(this.menu.config.classicMode);
+        this.menu.glossaryOverlay.redrawTitles();
+        this.menu.aboutOverlay.redrawTitles();
     }
 
     public updatePlayButtonState(): void {
@@ -600,206 +477,6 @@ export class ButtonSystem implements System {
             }
             
             playButton.resetButton();
-        }
-    }
-
-    private waitForOverlay(): void {
-        const checkOverlayComplete = () => {
-            if (this.menu.overlayBackground.isAnimationComplete() && 
-                this.menu.overlayBackground.getCurrentAlpha() === 1) {
-                
-                // Start glossary, powerups, wall images AND quit button fade-in
-                this.menu.glossaryES.fadeIn();
-                MenuPowerupManager.fadeInAllPowerups(this.menu);
-                MenuImageManager.fadeInAllWallImages(this.menu);
-                MenuImageManager.fadeInGlossaryQuitButton(this.menu);
-                
-                // Wait for all elements to complete
-                this.waitForAllGlossaryElementsComplete();
-            } else {
-                setTimeout(checkOverlayComplete, 16);
-            }
-        };
-        checkOverlayComplete();
-    }
-
-    private waitForAllGlossaryElementsComplete(): void {
-        const checkAllComplete = () => {
-            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
-                                   this.menu.glossaryES.getCurrentAlpha() === 1;
-            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
-            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
-            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
-            
-            if (glossaryComplete && powerupsComplete && wallImagesComplete && quitButtonComplete) {
-                this.escapeActive = true;
-                this.menu.glossaryQuitButton.setClickable(true);
-                console.log("Glossary fully loaded - Escape and quit button now available");
-            } else {
-                setTimeout(checkAllComplete, 16);
-            }
-        };
-        checkAllComplete();
-    }
-
-    private waitForAllGlossaryElementsThenFadeOverlay(): void {
-        const checkAllComplete = () => {
-            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
-                                   this.menu.glossaryES.getCurrentAlpha() === 0;
-            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
-            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
-            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
-            
-            if (glossaryComplete && powerupsComplete && wallImagesComplete && quitButtonComplete) {
-                this.menu.overlayBackground.fadeOut();
-                this.menu.overlayBackground.setIsDisplayed(false);
-                
-                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
-                glossaryRenderables.forEach(renderable => {
-                    this.menu.menuHidden.addChild(renderable);
-                });
-                
-                this.finalizeOverlayHiding();
-            } else {
-                setTimeout(checkAllComplete, 16);
-            }
-        };
-        checkAllComplete();
-    }
-
-    private waitForAboutOverlay(): void {
-        const checkOverlayComplete = () => {
-            if (this.menu.overlayBackground.isAnimationComplete() && 
-                this.menu.overlayBackground.getCurrentAlpha() === 1) {
-                // About overlay is complete - enable escape
-                this.escapeActive = true;
-                console.log("About overlay fully loaded - Escape now available");
-            } else {
-                setTimeout(checkOverlayComplete, 16);
-            }
-        };
-        checkOverlayComplete();
-    }
-
-    private waitForOverlayAndQuitButton(): void {
-        const checkBothComplete = () => {
-            const overlayComplete = this.menu.overlayBackground.isAnimationComplete() && 
-                                   this.menu.overlayBackground.getCurrentAlpha() === 1;
-            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
-            
-            if (overlayComplete && quitButtonComplete) {
-                // Both overlay and quit button are visible, now fade in content
-                this.menu.glossaryES.fadeIn();
-                MenuPowerupManager.fadeInAllPowerups(this.menu);
-                MenuImageManager.fadeInAllWallImages(this.menu);
-                
-                // Wait for content to complete
-                this.waitForContentComplete();
-            } else {
-                setTimeout(checkBothComplete, 16);
-            }
-        };
-        checkBothComplete();
-    }
-
-    private waitForContentComplete(): void {
-        const checkContentComplete = () => {
-            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
-                                   this.menu.glossaryES.getCurrentAlpha() === 1;
-            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
-            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
-            
-            if (glossaryComplete && powerupsComplete && wallImagesComplete) {
-                // All content complete - enable escape AND quit button
-                this.escapeActive = true;
-                this.menu.glossaryQuitButton.setClickable(true);
-                console.log("Glossary content loaded - Escape and quit button now available");
-            } else {
-                setTimeout(checkContentComplete, 16);
-            }
-        };
-        checkContentComplete();
-    }
-
-    private waitForContentThenFadeOverlayAndQuitButton(): void {
-        const checkContentComplete = () => {
-            const glossaryComplete = this.menu.glossaryES.isAnimationComplete() && 
-                                   this.menu.glossaryES.getCurrentAlpha() === 0;
-            const powerupsComplete = !MenuPowerupManager.arePowerupsAnimating();
-            const wallImagesComplete = !MenuImageManager.areWallImagesAnimating();
-            
-            if (glossaryComplete && powerupsComplete && wallImagesComplete) {
-                // Content is hidden, now fade out overlay and quit button together
-                this.menu.overlayBackground.fadeOut();
-                this.menu.overlayBackground.setIsDisplayed(false);
-                MenuImageManager.fadeOutGlossaryQuitButton(this.menu);
-                
-                // Move glossary content back to hidden
-                const glossaryRenderables = this.menu.glossaryES.getAllRenderables();
-                glossaryRenderables.forEach(renderable => {
-                    this.menu.menuHidden.addChild(renderable);
-                });
-                
-                this.finalizeOverlayAndQuitButtonHiding();
-            } else {
-                setTimeout(checkContentComplete, 16);
-            }
-        };
-        checkContentComplete();
-    }
-
-    private finalizeOverlayAndQuitButtonHiding(): void {
-        const checkBothComplete = () => {
-            const overlayComplete = this.menu.overlayBackground.isAnimationComplete() && 
-                                   this.menu.overlayBackground.getCurrentAlpha() === 0;
-            const quitButtonComplete = !MenuImageManager.isQuitButtonAnimating(this.menu);
-            
-            if (overlayComplete && quitButtonComplete) {
-                this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                
-                this.menu.overlayBackground.setIsDisplayed(false);
-
-                this.escapeActive = false;
-                
-                console.log("Overlay and quit button fully closed - ready for next use");
-            } else {
-                setTimeout(checkBothComplete, 16);
-            }
-        };
-        checkBothComplete();
-    }
-    
-    private finalizeOverlayHiding(): void {
-        const checkOverlayComplete = () => {
-            if (this.menu.overlayBackground.isAnimationComplete() && 
-                this.menu.overlayBackground.getCurrentAlpha() === 0) {
-                this.menu.menuHidden.addChild((this.menu.overlayBackground.getComponent('render') as RenderComponent).graphic);
-                // Reset escape state - back to main menu
-                this.escapeActive = false;
-                console.log("Overlay fully closed - Escape disabled");
-            } else {
-                setTimeout(checkOverlayComplete, 16);
-            }
-        };
-        checkOverlayComplete();
-    }
-
-    private resetOverlayBackgroundForAnimation(): void {
-        // Force reset the overlay background animation state
-        const overlayRender = this.menu.overlayBackground.getComponent('render') as RenderComponent;
-        if (overlayRender && overlayRender.graphic) {
-            // Reset alpha to 0 for consistent animation start
-            overlayRender.graphic.alpha = 0;
-        }
-        
-        // Reset the internal animation state of OverlayBackground
-        this.menu.overlayBackground.resetAnimationState();
-        
-        // Also reset quit button alpha
-        const quitButton = this.menu.glossaryQuitButton;
-        if (quitButton) {
-            const container = quitButton.getContainer();
-            container.alpha = 0;
         }
     }
 
@@ -850,14 +527,6 @@ export class ButtonSystem implements System {
     updatePaddles() {
         (this.menu.paddleL as Paddle).redrawFullPaddle();
         (this.menu.paddleR as Paddle).redrawFullPaddle();
-    }
-
-    public getEscapeActive(): boolean {
-        return this.escapeActive;
-    }
-
-    public setEscapeActive(active: boolean): void {
-        this.escapeActive = active;
     }
 
     setButtonsClickability(clickable: boolean): void {       

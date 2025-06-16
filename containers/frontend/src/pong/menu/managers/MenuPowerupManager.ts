@@ -6,37 +6,37 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 11:01:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 14:10:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Menu } from "./Menu";
+import { Menu } from "../Menu";
 
-import { Paddle } from "../entities/Paddle";
+import { Paddle } from "../../entities/Paddle";
 
-import { RenderComponent } from "../components/RenderComponent";
-import { PhysicsComponent } from "../components/PhysicsComponent";
-import { TextComponent } from "../components/TextComponent";
+import { RenderComponent } from "../../components/RenderComponent";
+import { PhysicsComponent } from "../../components/PhysicsComponent";
+import { TextComponent } from "../../components/TextComponent";
 
 import { MenuImageManager } from "./MenuImageManager";
 
-import { EnlargePowerup } from '../entities/powerups/EnlargePowerup';
-import { MagnetizePowerup } from '../entities/powerups/MagnetizePowerup';
-import { ShieldPowerup } from '../entities/powerups/ShieldPowerUp';
-import { ShootPowerup } from '../entities/powerups/ShootPowerup';
-import { ShrinkPowerDown } from "../entities/powerups/ShrinkPowerDown";
-import { InvertPowerDown } from "../entities/powerups/InvertPowerDown";
-import { FlatPowerDown } from "../entities/powerups/FlatPowerDown";
-import { SlowPowerDown } from "../entities/powerups/SlowPowerDown";
-import { CurveBallPowerup } from "../entities/powerups/CurveBallPowerup";
-import { SpinBallPowerup } from "../entities/powerups/SpinBallPowerup";
-import { BurstBallPowerup } from "../entities/powerups/BurstBallPowerup";
-import { MultiplyBallPowerup } from "../entities/powerups/MultiplyBallPowerup";
-import { isPaddle } from "../utils/Guards";
+import { EnlargePowerup } from '../../entities/powerups/EnlargePowerup';
+import { MagnetizePowerup } from '../../entities/powerups/MagnetizePowerup';
+import { ShieldPowerup } from '../../entities/powerups/ShieldPowerUp';
+import { ShootPowerup } from '../../entities/powerups/ShootPowerup';
+import { ShrinkPowerDown } from "../../entities/powerups/ShrinkPowerDown";
+import { InvertPowerDown } from "../../entities/powerups/InvertPowerDown";
+import { FlatPowerDown } from "../../entities/powerups/FlatPowerDown";
+import { SlowPowerDown } from "../../entities/powerups/SlowPowerDown";
+import { CurveBallPowerup } from "../../entities/powerups/CurveBallPowerup";
+import { SpinBallPowerup } from "../../entities/powerups/SpinBallPowerup";
+import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
+import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
+import { isPaddle } from "../../utils/Guards";
 
 export class MenuPowerupManager {
     // Store all powerups for easy access
-    private static powerupEntities: any[] = [];
+    public static powerupEntities: any[] = [];
 	private static isAnimating: boolean = false;
 
     static createPowerups(menu: Menu) {
@@ -167,53 +167,11 @@ export class MenuPowerupManager {
 
     // Animation methods
     static fadeInAllPowerups(menu: Menu): void {
-		this.powerupEntities.forEach(powerup => {
-			const renderComponent = powerup.getComponent('render') as RenderComponent;
-			if (renderComponent) {
-				if (powerup.affectation === 'powerUp') {
-					menu.renderLayers.powerups.addChild(renderComponent.graphic);
-				} else if (powerup.affectation === 'powerDown') {
-					menu.renderLayers.powerdowns.addChild(renderComponent.graphic);
-				} else if (powerup.affectation === 'ballChange') {
-					menu.renderLayers.ballchanges.addChild(renderComponent.graphic);
-				}
-			}
-
-            if (isPaddle(powerup) && powerup.id === 'paddleL') {
-                const paddleLText = powerup.getComponent('text') as TextComponent;
-                menu.renderLayers.powerups.addChild(renderComponent.graphic);
-                menu.renderLayers.powerups.addChild(paddleLText.getRenderable());
-            } else if (isPaddle(powerup) && powerup.id === 'paddleR') {
-                const paddleRText = powerup.getComponent('text') as TextComponent;
-                menu.renderLayers.powerdowns.addChild(renderComponent.graphic);
-                menu.renderLayers.powerdowns.addChild(paddleRText.getRenderable());
-            }
-		});
-	
-		// Faster fade in speed
-		this.animatePowerupsAlpha(1, 0.15); // Increased from 0.08 to 0.15
+		this.animatePowerupsAlpha(1, 0.2);
 	}
 
     static fadeOutAllPowerups(menu: Menu, onComplete?: () => void): void {
-		// Much faster fade out speed
-		this.animatePowerupsAlpha(0, 0.25, () => { // Increased from 0.08 to 0.25
-			// After fade out, move back to hidden
-			this.powerupEntities.forEach(powerup => {
-				const renderComponent = powerup.getComponent('render') as RenderComponent;
-                const textComponent = powerup.getComponent('text') as TextComponent;
-				if (renderComponent) {
-					menu.menuHidden.addChild(renderComponent.graphic);
-				}
-
-                if (textComponent) {
-                    menu.menuHidden.addChild(textComponent.getRenderable());
-                }
-			});
-			
-			if (onComplete) {
-				onComplete();
-			}
-		});
+		this.animatePowerupsAlpha(0, 0.25, onComplete);
 	}
 
     private static animatePowerupsAlpha(targetAlpha: number, speed: number, onComplete?: () => void): void {
@@ -275,7 +233,7 @@ export class MenuPowerupManager {
 	}
 
     static createGlossaryPaddles(menu: Menu) {
-		const paddleL = new Paddle('paddleL', 'foreground', menu, menu.paddleOffset, menu.height / 2, true, 'PLAYER');
+        const paddleL = new Paddle('paddleL', 'foreground', menu, menu.paddleOffset, menu.height / 2, true, 'PLAYER');
 		const paddleLPhysics = paddleL.getComponent('physics') as PhysicsComponent;
 		paddleLPhysics.x = 160;
 		paddleLPhysics.y = menu.height / 2 + 200;
@@ -299,6 +257,85 @@ export class MenuPowerupManager {
         
         this.powerupEntities.push(paddleL, paddleR);
 	}
+
+    static prepareForGlossary(menu: Menu): void {        
+        this.powerupEntities.forEach(powerup => {
+            const renderComponent = powerup.getComponent('render') as RenderComponent;
+            const textComponent = powerup.getComponent('text') as TextComponent;
+            
+            if (renderComponent) {
+                renderComponent.graphic.alpha = 0;
+                
+                if (renderComponent.graphic.parent) {
+                    renderComponent.graphic.parent.removeChild(renderComponent.graphic);
+                }
+                
+                if (powerup.id === 'paddleL') {
+                    menu.renderLayers.powerups.addChild(renderComponent.graphic);
+                } else if (powerup.id === 'paddleR') {
+                    menu.renderLayers.powerdowns.addChild(renderComponent.graphic);
+                } else if (powerup.affectation === 'powerUp') {
+                    menu.renderLayers.powerups.addChild(renderComponent.graphic);
+                } else if (powerup.affectation === 'powerDown') {
+                    menu.renderLayers.powerdowns.addChild(renderComponent.graphic);
+                } else if (powerup.affectation === 'ballChange') {
+                    menu.renderLayers.ballchanges.addChild(renderComponent.graphic);
+                }
+            }
+    
+            if (textComponent) {
+                textComponent.getRenderable().alpha = 0;
+                
+                if (textComponent.getRenderable().parent) {
+                    textComponent.getRenderable().parent.removeChild(textComponent.getRenderable());
+                }
+                
+                if (powerup.id === 'paddleL') {
+                    menu.renderLayers.powerups.addChild(textComponent.getRenderable());
+                } else if (powerup.id === 'paddleR') {
+                    menu.renderLayers.powerdowns.addChild(textComponent.getRenderable());
+                }
+            }
+        });
+    }
+
+    static hideFromGlossary(menu: Menu): void {
+        this.powerupEntities.forEach(powerup => {
+            const renderComponent = powerup.getComponent('render') as RenderComponent;
+            const textComponent = powerup.getComponent('text') as TextComponent;
+            
+            if (renderComponent && renderComponent.graphic) {
+                if (renderComponent.graphic.parent) {
+                    renderComponent.graphic.parent.removeChild(renderComponent.graphic);
+                }
+                menu.menuHidden.addChild(renderComponent.graphic);
+            }
+    
+            if (textComponent && textComponent.getRenderable()) {
+                if (textComponent.getRenderable().parent) {
+                    textComponent.getRenderable().parent.removeChild(textComponent.getRenderable());
+                }
+                menu.menuHidden.addChild(textComponent.getRenderable());
+            }
+        });
+    }
+
+    static resetAllPowerupAlpha(): void {
+        this.powerupEntities.forEach(powerup => {
+            const renderComponent = powerup.getComponent('render') as RenderComponent;
+            const textComponent = powerup.getComponent('text') as TextComponent;
+            
+            if (renderComponent && renderComponent.graphic) {
+                renderComponent.graphic.alpha = 0;
+            }
+            
+            if (textComponent && textComponent.getRenderable()) {
+                textComponent.getRenderable().alpha = 0;
+            }
+        });
+        
+        this.isAnimating = false;
+    }
 
     static cleanup(): void {
         this.powerupEntities = [];

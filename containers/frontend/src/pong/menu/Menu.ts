@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 18:30:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/16 16:32:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ import { MenuHalfButton } from './buttons/MenuHalfButton';
 import { MenuXButton } from './buttons/MenuXButton';
 import { BallButton } from './buttons/BallButton';
 import { Powerup } from '../entities/powerups/Powerup';
-import { MenuImageManager } from './MenuImageManager';
+import { MenuImageManager } from './managers/MenuImageManager';
 
 import { MenuOrnament } from './MenuOrnaments';
 import { OverlayBackground } from './OverlayBackground';
-import { GlossaryTexts } from './GlossaryTexts';
-import { AboutTexts } from './AboutTexts';
+import { GlossaryTexts } from './overlays/GlossaryTexts';
+import { AboutTexts } from './overlays/AboutTexts';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
@@ -45,7 +45,7 @@ import { TextComponent } from '../components/TextComponent';
 // Import spawners and Managers
 import { MenuParticleSpawner } from './MenuParticleSpawner';
 import { ButtonManager } from './ButtonManager';
-import { MenuPowerupManager } from './MenuPowerupManager';
+import { MenuPowerupManager } from './managers/MenuPowerupManager';
 
 // Import Implemented Systems
 import { MenuRenderSystem } from './MenuRenderSystem';
@@ -65,6 +65,8 @@ import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
 import { isRenderComponent } from '../utils/Guards';
 import { InvertPowerDown } from '../entities/powerups/InvertPowerDown';
+import { GlossaryOverlay } from './overlays/GlossaryOverlay';
+import { AboutOverlay } from './overlays/AboutOverlay';
 
 export class Menu{
 	config: GameConfig;
@@ -155,6 +157,8 @@ export class Menu{
 	aboutClickedOrnament!: MenuOrnament;
 
 	// Overlay items
+	glossaryOverlay!: GlossaryOverlay;
+	aboutOverlay!: AboutOverlay;
 	overlayBackground!: OverlayBackground;
 	glossaryES!: GlossaryTexts;
 	aboutES!: AboutTexts;
@@ -266,10 +270,10 @@ export class Menu{
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
-		await this.createGlossaries();
-		await this.createAbouts();
+		/* await this.createGlossaries();
+		await this.createAbouts(); */
+		await this.createOverlays();
 		await this.createPowerups();
-		await this.createGlossaryPaddles();
 		await this.initSystems();
 		await this.initDust();
 
@@ -342,9 +346,6 @@ export class Menu{
 
 		// Create frame
 		this.createFrame();
-
-		// Create overlay items
-		this.createOverlays();
 	}
 
 	createPostProcessingLayer() {
@@ -560,47 +561,19 @@ export class Menu{
 		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
 		this.menuContainer.addChild(frame);
 	}
-	
-	createOverlays() {
-		const overlayBackground = new OverlayBackground('overlay_background', 'overlays');
-		this.entities.push(overlayBackground);
-		const overlayRender = overlayBackground.getComponent('render') as RenderComponent;
-		this.menuHidden.addChild(overlayRender.graphic);
-		this.overlayBackground = overlayBackground;
-	}
 
-	createGlossaries() {
-		const glossaryES = new GlossaryTexts('glossary', 'overlays');
+	private createOverlays(): void {	
+		this.glossaryOverlay = new GlossaryOverlay(this);
+		this.entities.push(this.glossaryOverlay);
 		
-		const renderables = glossaryES.getAllRenderables();
-		renderables.forEach(renderable => {
-			this.menuHidden.addChild(renderable);
-		});
-		
-		this.entities.push(glossaryES);
-		this.glossaryES = glossaryES;
-	}
-
-	createAbouts() {
-		const aboutES = new AboutTexts('about', 'overlays');
-		
-		const renderables = aboutES.getAllRenderables();
-		renderables.forEach(renderable => {
-			this.renderLayers.pp.addChild(renderable);
-		});
-		
-		this.entities.push(aboutES);
-		this.aboutES = aboutES;
+		this.aboutOverlay = new AboutOverlay(this);
+		this.entities.push(this.aboutOverlay);
 	}
 
 	createPowerups() {
 		MenuPowerupManager.createPowerups(this);
 		MenuPowerupManager.createPowerdowns(this);
 		MenuPowerupManager.createBallchanges(this);
-	}
-
-	createGlossaryPaddles() {
-		MenuPowerupManager.createGlossaryPaddles(this);
 	}
 
 	async loadImages() {
@@ -618,12 +591,11 @@ export class Menu{
 			{ name: 'wallBowtie', url: '/wallFigures/wallBowtie.png' },
 			{ name: 'wallHoneycomb', url: '/wallFigures/wallHoneycomb.png' },
 
-
-		    /* { name: 'avatarNico', url: '/avatars/defaults/default_2.png' },
-    		{ name: 'avatarMarc', url: '/avatars/defaults/default_3.png' },
-		    { name: 'avatarEva', url: '/avatars/defaults/default_4.png' }, */
+		    { name: 'avatarEva', url: '/avatars/defaults/default1.png' },
+			{ name: 'avatarMarc', url: '/avatars/defaults/default2.png' },
+    		{ name: 'avatarNico', url: '/avatars/defaults/default3.png' },
+		    { name: 'avatarHugo', url: '/avatars/defaults/default4.png' },
         ]);
-		MenuImageManager.createImages(this);
 	}
 
 	cleanup(): void {
@@ -641,10 +613,8 @@ export class Menu{
 			});
 		}
 		
-		// Remove ticker callbacks but DON'T destroy the ticker
 		this.app.ticker.stop();
 		
-		// Cleanup systems properly
 		this.systems.forEach(system => {
 			if (system.cleanup) {
 				system.cleanup();
@@ -652,7 +622,6 @@ export class Menu{
 		});
 		this.systems = [];
 		
-		// Cleanup entities
 		this.entities.forEach(entity => {
 			const render = entity.getComponent('render') as RenderComponent;
 			if (render && render.graphic) {
@@ -672,8 +641,7 @@ export class Menu{
 			}
 		});
 		this.entities = [];
-		
-		// Cleanup render layers
+
 		Object.values(this.renderLayers).forEach(layer => {
 			if (layer.parent) {
 				layer.parent.removeChild(layer);
@@ -681,7 +649,6 @@ export class Menu{
 			layer.destroy({ children: true });
 		});
 		
-		// Cleanup containers
 		[this.menuContainer, this.menuHidden, this.visualRoot].forEach(container => {
 			if (container && container.parent) {
 				container.parent.removeChild(container);
@@ -691,17 +658,15 @@ export class Menu{
 			}
 		});
 
-		// Cleanup managers
 		MenuPowerupManager.cleanup();
+		//! need to clean up more managers?
 		
-		// Clear stage completely
 		this.app.stage.removeChildren();
 		
 		console.log("Menu cleanup complete");
 	}
 
 	initSounds(): void {
-		// Don't create Howl instances immediately
 		this.setupAudioContext();
 	}
 
@@ -709,11 +674,10 @@ export class Menu{
 		const initializeAudio = () => {
 			if (this.audioInitialized) return;
 			
-			// Create Howl objects AFTER user interaction
 			this.sounds = {
 				menuBGM: new Howl({
 					src: ['/assets/sfx/music/menuFiltered01.mp3'],
-					html5: true,  // Force HTML5 audio
+					html5: true,
 					preload: true,
 					loop: true,
 					volume: 1.0,
@@ -722,7 +686,7 @@ export class Menu{
 				}),
 				menuMove: new Howl({
 					src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
-					html5: true,  // Force HTML5 audio
+					html5: true,
 					preload: true,
 					volume: 1.0,
 					onload: () => console.log('menuMove loaded successfully'),
