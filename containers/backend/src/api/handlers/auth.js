@@ -86,7 +86,7 @@ async function signupHandler(request, reply) {
 			message: 'Internal server error'
 		});
 	}
-}
+};
 
 async function signinHandler(request, reply) {
 
@@ -175,11 +175,10 @@ async function logoutHandler(request, reply) {
 		  message: 'Internal server error'
 		});
 	}
-}
+};
 
 async function googleHandler(request, reply, fastify) {
 	const { credential } = request.body;
-
 	if (!credential) {
 		return reply.status(400).send({ success: false, message: 'Missing credential' });
 	}
@@ -189,37 +188,41 @@ async function googleHandler(request, reply, fastify) {
 			idToken: credential,
 			audience: process.env.GOOGLE_CLIENT_ID,
 		});
-  
+
 		const payload = ticket.getPayload();
 		const name = payload.name;
 		const email = payload.email;
-  
-		// check only by email
-		const userExists = await checkUserExists(null, email);
 
-		if (userExists?.exists) {
-			console.log(`User with email ${email} already exists.`);
-			// user exists? sign them in instead of registering
-			const user = await getUserByEmail(email);
+		console.log(`[Google Auth] Attempting to authenticate user with email: ${email}`);
 
-			//twoFA for existing users
-			const twoFAEnabled = user.twoFactorEnabled === 1 || user.twoFAEnabled === true;
+		// Try to get the user directly
+		let user = await getUserByEmail(email);
+
+		if (user) {
+			// Existing user flow
+			console.log(`[Google Auth - Existing User] User found - ID: ${user.id_user}, Email: ${user.email}`);
+			console.log(`[Google Auth - Existing User] Raw twoFactorEnabled value: ${user.twoFactorEnabled} (type: ${typeof user.twoFactorEnabled})`);
+
+			const twoFAEnabled = user.twoFactorEnabled;
+
+			console.log(`[Google Auth - Existing User] Processed 2FA status: ${twoFAEnabled} (DB value: ${user.twoFactorEnabled})`);
+
 			const authToken = jwt.sign({
-				id: user.id,
-				twoFAEnabled: twoFAEnabled
+				id: user.id_user,
+				twoFAEnabled: twoFAEnabled,
 			}, process.env.JWT_SECRET, {
-				expiresIn: process.env.JWT_EXPIRES_IN
+				expiresIn: process.env.JWT_EXPIRES_IN,
 			});
 
 			request.session.set('token', authToken);
 			request.session.set('user', {
-			userId: user.id_user,
-			username: user.username,
-			email: user.email,
-			twoFAEnabled: twoFAEnabled
+				userId: user.id_user,
+				username: user.username,
+				email: user.email,
+				twoFAEnabled: twoFAEnabled,
 			});
 
-			console.log(`[Google Auth - Existing User] User ID: ${user.id_user}, Email: ${user.email}, 2FA Enabled: ${twoFAEnabled}`);
+			console.log(`[Google Auth - Existing User] Sending response with 2FA: ${twoFAEnabled}`);
 
 			return reply.status(200).send({
 				success: true,
@@ -228,63 +231,82 @@ async function googleHandler(request, reply, fastify) {
 				userId: user.id_user,
 				username: user.username,
 				email: user.email,
-				twoFAEnabled: twoFAEnabled
+				twoFAEnabled: twoFAEnabled,
 			});
 		} else {
-			// user doesn't exist? register them with default generated nickname
-			console.log(`User with email ${email} does not exist. Registering new user.`);
-			const parts = name.toLowerCase().split(' ');
+			// New user flow
+			console.log(`[Google Auth - New User] User with email ${email} does not exist. Creating new user.`);
 
+			const parts = name.toLowerCase().split(' ');
 			const firstInitial = parts[0].charAt(0);
 			const lastName = parts[parts.length - 1];
 			const nickname = `${firstInitial}${lastName}`;
-  
-			const defaultAvatarId = Math.floor(Math.random() * 4) + 1; //Assuming 4 default avatars
+			const defaultAvatarId = Math.floor(Math.random() * 4) + 1;
 			const avatarFilename = `default_${defaultAvatarId}.png`;
-  
-			await saveUserToDatabase(nickname, email, null, 'google',avatarFilename);
-			const newUser = await getUserByEmail(email);
 
-			// TwoFA for new users
-			const twoFAEnabled = newUser.twoFactorEnabled === 1 || newUsertwoFAEnabled === true;
+			await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
+			console.log(`[Google Auth - New User] User saved to database`);
+
+			// Get the newly created user
+			const newUser = await getUserByEmail(email);
+			if (!newUser) {
+				throw new Error('Failed to retrieve newly created user');
+			}
+
+			console.log(`[Google Auth - New User] Retrieved new user - ID: ${newUser.id_user}`);
+			console.log(`[Google Auth - New User] Raw twoFactorEnabled value: ${newUser.twoFactorEnabled} (type: ${typeof newUser.twoFactorEnabled})`);
+
+			// FIXED: SQLite logic - 0 = enabled (true), 1 = disabled (false)
+			// New users have default value 1 (disabled/false)
+			const twoFAEnabled = newUser.twoFactorEnabled;
+			console.log(`[Google Auth - New User] Processed 2FA status: ${twoFAEnabled} (DB value: ${newUser.twoFactorEnabled})`);
 
 			const authToken = jwt.sign({
-				id: newUser.id,
-				twoFAEnabled: twoFAEnabled
+				id: newUser.id_user,
+				twoFAEnabled: twoFAEnabled,
 			}, process.env.JWT_SECRET, {
-				expiresIn: process.env.JWT_EXPIRES_IN
+				expiresIn: process.env.JWT_EXPIRES_IN,
 			});
 
-		  request.session.set('token', authToken);
-		  request.session.set('user', {
-			userId: newUser.id_user,
-			username: newUser.username,
-			email: newUser.email,
-			twoFAEnabled: newUser.twoFAEnabled
-		  });
+			request.session.set('token', authToken);
+			request.session.set('user', {
+				userId: newUser.id_user,
+				username: newUser.username,
+				email: newUser.email,
+				twoFAEnabled: twoFAEnabled,
+			});
 
-		  console.log(`[Google Auth - New User Registered] User ID: ${newUser.id_user}, Email: ${newUser.email}, 2FA Enabled: ${twoFAEnabled}`);
+			console.log(`[DEBUG] twoFAEnabled variable:`, twoFAEnabled);
+			console.log(`[DEBUG] typeof twoFAEnabled:`, typeof twoFAEnabled);
+			const responseObj = {
+				success: true,
+				message: 'User registered successfully',
+				token: authToken,
+				userId: newUser.id_user,
+				username: newUser.username,
+				email: newUser.email,
+				twoFAEnabled: twoFAEnabled,
+			};
+			console.log(`[DEBUG] EXACT response object:`, JSON.stringify(responseObj, null, 2));
 
-		//fastify.metrics.authAttempts.labels('local', 'success').inc();
-		return reply.status(201).send({
-		  success: true,
-		  message: 'User registered successfully',
-		  token: authToken,
-		  userId: newUser.id_user,
-		  username: newUser.username,
-		  email: newUser.email,
-		  twoFAEnabled: newUser.twoFAEnabled
-		});
+			return reply.status(201).send({
+				success: true,
+				message: 'User registered successfully',
+				token: authToken,
+				userId: newUser.id_user,
+				username: newUser.username,
+				email: newUser.email,
+				twoFAEnabled: twoFAEnabled,
+			});
 		}
-  
-	  } catch (error) {
-		console.error(error);
-		//fastify.metrics.authAttempts.labels('local', 'failure').inc();
+	} catch (error) {
+		console.error('[Google Auth] Error:', error);
 		return reply.status(401).send({
-		  success: false,
-		  message: 'Invalid Token' });
-	  }
-	};
+			success: false,
+			message: 'Invalid Token',
+		});
+	}
+};
 
 /**
  * Generates a new TOTP secret and QR code for a user.
@@ -318,15 +340,15 @@ async function generateTwoFaSetup(username, userId, email) {
 	  qrCodeUrl,
 	  otpAuthUrl
 	};
-  }
+};
   
-  /**
-   * Verifies a TOTP token provided by the user.
-   * @param {number} userId - The unique ID of the user.
-   * @param {string} token - The 6-digit token entered by the user.
-   * @returns {Promise<boolean>} True if the token is valid, false otherwise.
-   */
-  async function verifyTwoFaToken(userId, token) {
+/**
+ * Verifies a TOTP token provided by the user.
+ * @param {number} userId - The unique ID of the user.
+ * @param {string} token - The 6-digit token entered by the user.
+ * @returns {Promise<boolean>} True if the token is valid, false otherwise.
+ */
+async function verifyTwoFaToken(userId, token) {
 	// 1. Retrieve the stored secret for the user from the database
 	const secret = await getTwoFactorSecret(userId);
   
@@ -348,8 +370,8 @@ async function generateTwoFaSetup(username, userId, email) {
 	}
   
 	return isValid;
-  }
-
+};
+  
 async function setupTwoFa(request, reply) {
 	// These now come directly from the request body, which should be sent by the frontend
 	// after a successful signup.
@@ -374,8 +396,6 @@ async function setupTwoFa(request, reply) {
 		});
 	}
 };
-
-
 
 async function verifyTwoFa(request, reply) {
 	// userId and token come from the frontend request body
@@ -454,7 +474,7 @@ async function verifyTwoFa(request, reply) {
 		message: 'Failed to verify 2FA token.'
 	  });
     }
-}
+};
 
 module.exports = {
   signupHandler,

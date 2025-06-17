@@ -23,7 +23,7 @@ if [ ! -f "$DB_PATH" ]; then
 		password TEXT,
 		provider TEXT NOT NULL DEFAULT 'local',
 		twoFactorSecret TEXT,
-		twoFactorEnabled BOOLEAN DEFAULT FALSE,
+		twoFactorEnabled BOOLEAN DEFAULT 1 CHECK (twoFactorEnabled IN (0, 1)),
 		avatar_filename TEXT DEFAULT NULL,
 		avatar_type TEXT DEFAULT 'default' -- 'default', 'uploaded', 'generated'
 	);

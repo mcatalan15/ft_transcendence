@@ -200,7 +200,8 @@ const googleSchema = {
 				token: { type: 'string', description: 'JWT token for the authenticated user' },
 				userId: { type: 'number', description: 'ID of the user' },
 				username: { type: 'string', description: 'Username of the user' },
-				email: { type: 'string', description: 'Email of the user' }
+				email: { type: 'string', description: 'Email of the user' },
+				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled'}
 			},
 			example: {
 				success: true,
@@ -208,7 +209,8 @@ const googleSchema = {
 				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
 				userId: 42,
 				username: 'googleuser',
-				email: 'user@gmail.com'
+				email: 'user@gmail.com',
+				twoFAEnabled: '1'
 			}
 		},
 		201: {
@@ -220,7 +222,8 @@ const googleSchema = {
 				token: { type: 'string', description: 'JWT token for the registrated user' },
 				userId: { type: 'number', description: 'ID of the user' },
 				username: { type: 'string', description: 'Username of the user' },
-				email: { type: 'string', description: 'Email of the user' }
+				email: { type: 'string', description: 'Email of the user' },
+				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
 			},
 			example: {
 				success: true,
@@ -228,7 +231,8 @@ const googleSchema = {
 				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
 				userId: 42,
 				username: 'googleuser',
-				email: 'user@gmail.com'
+				email: 'user@gmail.com',
+				twoFAEnabled: '1'
 			}
 		},
 		400: {

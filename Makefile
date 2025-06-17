@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
+#    By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/06/03 11:54:12 by nponchon         ###   ########.fr        #
+#    Updated: 2025/06/16 15:26:16 by mcatalan@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,12 @@ frontend:
 #	$(MAKE) clean
 #	$(MAKE) dev
 
+back:
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml stop backend
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml rm -f backend
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build backend
+	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d backend
+
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
 	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
 
@@ -55,4 +61,4 @@ fclean:
 	docker image prune -a -f
 
 .PHONY:
-	up down re stop clean fclean frontend dev prod redev
+	up down re stop clean fclean frontend dev prod redev back

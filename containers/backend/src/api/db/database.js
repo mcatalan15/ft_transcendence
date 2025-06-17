@@ -62,20 +62,44 @@ async function updateUserAvatar(userId, filename, type) {
 
 async function checkUserExists(username, email) {
 	return new Promise((resolve, reject) => {
-	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
-	        console.log(`[DB checkUserExists] Query: "${query}" with params: [${username}, ${email}]`);
-		db.get(query, [username, email], (err, row) => {
+		let query;
+		let params;
+
+		if (username && email) {
+			query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+			params = [username, email];
+		} else if (username) {
+			query = `SELECT * FROM users WHERE username = ?`;
+			params = [username];
+		} else if (email) {
+			query = `SELECT * FROM users WHERE email = ?`;
+			params = [email];
+		} else {
+			// Neither username nor email provided
+			resolve({ exists: false });
+			return;
+		}
+
+		console.log(`[DB checkUserExists] Query: "${query}" with params: [${params.join(', ')}]`);
+
+		db.get(query, params, (err, row) => {
 			if (err) {
 				console.error('[DB ERROR]', err);
 				reject(new Error('Database error'));
 				return;
 			}
+
 			if (row) {
-				console.log('[DB checkUserExists] User found:', row);
+				console.log('[DB checkUserExists] User found:', {
+					id: row.id_user,
+					username: row.username,
+					email: row.email
+				});
 				resolve({
 					exists: true,
-					usernameExists: row.username === username,
-					emailExists: row.email === email
+					usernameExists: username ? row.username === username : false,
+					emailExists: email ? row.email === email : false,
+					user: row // Include the user data
 				});
 			} else {
 				console.log('[DB checkUserExists] User NOT found.');
