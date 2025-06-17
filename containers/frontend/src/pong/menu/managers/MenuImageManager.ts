@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 17:50:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 10:40:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ export class MenuImageManager {
     private static assets: Map<string, Texture> = new Map();
     private static wallImages: Sprite[] = [];
     private static avatarImages: Sprite[] = [];
+    private static pinkLogoImages: Sprite[] = [];
+    private static classicLogoImages: Sprite[] = [];
     private static isAnimating: boolean = false;
     
     static async loadAssets(assetList: Array<{name: string, url: string}>): Promise<void> {
@@ -60,140 +62,33 @@ export class MenuImageManager {
     }
 
     static createImages(menu: Menu): void {
-        // Store all wall images for fade animation
         this.wallImages = [];
-
-        const wallPyramids = MenuImageManager.createSprite('wallPyramids');
-        if (wallPyramids) {
-            wallPyramids.anchor.set(0.5);
-            wallPyramids.x = 1075;
-            wallPyramids.y = 540;
-            wallPyramids.scale.set(0.025);
-            wallPyramids.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallPyramids);
-            this.wallImages.push(wallPyramids);
-        }
-
-        const wallSteps = MenuImageManager.createSprite('wallSteps');
-        if (wallSteps) {
-            wallSteps.anchor.set(0.5);
-            wallSteps.x = 1180;
-            wallSteps.y = 540;
-            wallSteps.scale.set(0.025);
-            wallSteps.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallSteps);
-            this.wallImages.push(wallSteps);
-        }
-
-        const wallTrenches = MenuImageManager.createSprite('wallTrenches');
-        if (wallTrenches) {
-            wallTrenches.anchor.set(0.5);
-            wallTrenches.x = 1285;
-            wallTrenches.y = 540;
-            wallTrenches.scale.set(0.025);
-            wallTrenches.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallTrenches);
-            this.wallImages.push(wallTrenches);
-        }
-
-        const wallHourglass = MenuImageManager.createSprite('wallHourglass');
-        if (wallHourglass) {
-            wallHourglass.anchor.set(0.5);
-            wallHourglass.x = 1390;
-            wallHourglass.y = 540;
-            wallHourglass.scale.set(0.025);
-            wallHourglass.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallHourglass);
-            this.wallImages.push(wallHourglass);
-        }
-
-        const wallLightning = MenuImageManager.createSprite('wallLightning');
-        if (wallLightning) {
-            wallLightning.anchor.set(0.5);
-            wallLightning.x = 1495;
-            wallLightning.y = 540;
-            wallLightning.scale.set(0.025);
-            wallLightning.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallLightning);
-            this.wallImages.push(wallLightning);
-        }
-
-        const wallFangs = MenuImageManager.createSprite('wallFangs');
-        if (wallFangs) {
-            wallFangs.anchor.set(0.5);
-            wallFangs.x = 1600;
-            wallFangs.y = 540;
-            wallFangs.scale.set(0.025);
-            wallFangs.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallFangs);
-            this.wallImages.push(wallFangs);
-        }
-        
-        const wallWaystones = MenuImageManager.createSprite('wallWaystones');
-        if (wallWaystones) {
-            wallWaystones.anchor.set(0.5);
-            wallWaystones.x = 1075;
-            wallWaystones.y = 600;
-            wallWaystones.scale.set(0.025);
-            wallWaystones.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallWaystones);
-            this.wallImages.push(wallWaystones);
-        }
-
-        const wallSnakes = MenuImageManager.createSprite('wallSnakes');
-        if (wallSnakes) {
-            wallSnakes.anchor.set(0.5);
-            wallSnakes.x = 1180;
-            wallSnakes.y = 600;
-            wallSnakes.scale.set(0.025);
-            wallSnakes.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallSnakes);
-            this.wallImages.push(wallSnakes);
-        }
-
-        const wallVipers = MenuImageManager.createSprite('wallVipers');
-        if (wallVipers) {
-            wallVipers.anchor.set(0.5);
-            wallVipers.x = 1285;
-            wallVipers.y = 600;
-            wallVipers.scale.set(0.025);
-            wallVipers.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallVipers);
-            this.wallImages.push(wallVipers);
-        }
-
-        const wallKite = MenuImageManager.createSprite('wallKite');
-        if (wallKite) {
-            wallKite.anchor.set(0.5);
-            wallKite.x = 1390;
-            wallKite.y = 600;
-            wallKite.scale.set(0.025);
-            wallKite.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallKite);
-            this.wallImages.push(wallKite);
-        }
-
-        const wallBowtie = MenuImageManager.createSprite('wallBowtie');
-        if (wallBowtie) {
-            wallBowtie.anchor.set(0.5);
-            wallBowtie.x = 1495;
-            wallBowtie.y = 600;
-            wallBowtie.scale.set(0.025);
-            wallBowtie.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(wallBowtie);
-            this.wallImages.push(wallBowtie);
-        }
-
-        const wallHoneycomb = MenuImageManager.createSprite('wallHoneycomb');
-        if (wallHoneycomb) {
-            wallHoneycomb.anchor.set(0.5);
-            wallHoneycomb.x = 1600;
-            wallHoneycomb.y = 600;
-            wallHoneycomb.scale.set(0.025);
-            wallHoneycomb.alpha = 0; // Start invisible
-            menu.renderLayers.overlays.addChild(wallHoneycomb);
-            this.wallImages.push(wallHoneycomb);
-        }
+    
+        // Define wall image positions and names
+        const wallImageData = [
+            // Top row
+            { name: 'wallPyramids', x: 1075, y: 540 },
+            { name: 'wallSteps', x: 1180, y: 540 },
+            { name: 'wallTrenches', x: 1285, y: 540 },
+            { name: 'wallHourglass', x: 1390, y: 540 },
+            { name: 'wallLightning', x: 1495, y: 540 },
+            { name: 'wallFangs', x: 1600, y: 540 },
+            
+            // Bottom row
+            { name: 'wallWaystones', x: 1075, y: 600 },
+            { name: 'wallSnakes', x: 1180, y: 600 },
+            { name: 'wallVipers', x: 1285, y: 600 },
+            { name: 'wallKite', x: 1390, y: 600 },
+            { name: 'wallBowtie', x: 1495, y: 600 },
+            { name: 'wallHoneycomb', x: 1600, y: 600 }
+        ];
+    
+        wallImageData.forEach(data => {
+            const wallImage = this.createWallImage(data.name, data.x, data.y, menu);
+            if (wallImage) {
+                this.wallImages.push(wallImage);
+            }
+        });
     }
 
     static createAvatars(menu: Menu) {
@@ -221,6 +116,56 @@ export class MenuImageManager {
         });
     }
 
+    static createPinkLogos(menu: Menu) {
+        this.pinkLogoImages = [];
+    
+        const pinkLogoData = [
+            { name: 'typescriptPink', x: 1170, y: 550,},
+            { name: 'pixiPink', x: 1256, y: 550,},
+            { name: 'tailwindPink', x: 1342, y: 550,},
+            { name: 'nodejsPink', x: 1428, y: 550,},
+            { name: 'fastifyPink', x: 1514, y: 550,},
+            { name: 'SQLitePink', x: 1600, y: 550,},
+            { name: 'dockerPink', x: 1213, y: 625,},
+            { name: 'prometheusPink', x: 1299, y: 625,},
+            { name: 'grafanaPink', x: 1385, y: 625,},
+            { name: 'avalanchePink', x: 1471, y: 625,},
+            { name: 'solidityPink', x: 1557, y: 625,},
+        ];
+    
+        pinkLogoData.forEach(data => {
+            const logo = this.buildPinkLogo(data.name, data.x, data.y, menu);
+            if (logo) {
+                this.pinkLogoImages.push(logo);
+            }
+        });
+    }
+
+    static createClassicLogos(menu: Menu) {
+        this.classicLogoImages = [];
+    
+        const classicLogoData = [
+            { name: 'typescriptClassic', x: 1170, y: 550,},
+            { name: 'pixiClassic', x: 1256, y: 550,},
+            { name: 'tailwindClassic', x: 1342, y: 550,},
+            { name: 'nodejsClassic', x: 1428, y: 550,},
+            { name: 'fastifyClassic', x: 1514, y: 550,},
+            { name: 'SQLiteClassic', x: 1600, y: 550,},
+            { name: 'dockerClassic', x: 1213, y: 625,},
+            { name: 'prometheusClassic', x: 1299, y: 625,},
+            { name: 'grafanaClassic', x: 1385, y: 625,},
+            { name: 'avalancheClassic', x: 1471, y: 625,},
+            { name: 'solidityClassic', x: 1557, y: 625,},
+        ];
+    
+        classicLogoData.forEach(data => {
+            const logo = this.buildClassicLogo(data.name, data.x, data.y, menu);
+            if (logo) {
+                this.classicLogoImages.push(logo);
+            }
+        });
+    }
+
     static prepareWallImagesForGlossary(menu: Menu): void {
         this.wallImages.forEach(wallImage => {
             if (wallImage) {
@@ -229,6 +174,31 @@ export class MenuImageManager {
                     wallImage.parent.removeChild(wallImage);
                 }
                 menu.renderLayers.overlays.addChild(wallImage);
+            }
+        });
+    }
+
+    static preparePinkLogosForAbout(menu: Menu): void {
+        this.pinkLogoImages.forEach(pinkLogo => {
+            if (pinkLogo) {
+                pinkLogo.alpha = 0;
+                if (pinkLogo.parent) {
+                    pinkLogo.parent.removeChild(pinkLogo);
+                }
+                menu.renderLayers.overlays.addChild(pinkLogo);
+            }
+        });
+    }
+
+    static prepareClassicLogosForAbout(menu: Menu): void {
+        this.classicLogoImages.forEach(classicLogo => {
+            if (classicLogo) {
+                console.log('BBBBB');
+                classicLogo.alpha = 0;
+                if (classicLogo.parent) {
+                    classicLogo.parent.removeChild(classicLogo);
+                }
+                menu.renderLayers.overlays.addChild(classicLogo);
             }
         });
     }
@@ -253,6 +223,30 @@ export class MenuImageManager {
                 }
                 menu.menuHidden.addChild(wallImage);
                 wallImage.alpha = 0;
+            }
+        });
+    }
+
+    static hidePinkLogosFromAbout(menu: Menu): void {
+        this.pinkLogoImages.forEach(pinkLogo => {
+            if (pinkLogo) {
+                if (pinkLogo.parent) {
+                    pinkLogo.parent.removeChild(pinkLogo);
+                }
+                menu.menuHidden.addChild(pinkLogo);
+                pinkLogo.alpha = 0;
+            }
+        });
+    }
+
+    static hideClassicLogosFromAbout(menu: Menu): void {
+        this.classicLogoImages.forEach(classicLogo => {
+            if (classicLogo) {
+                if (classicLogo.parent) {
+                    classicLogo.parent.removeChild(classicLogo);
+                }
+                menu.menuHidden.addChild(classicLogo);
+                classicLogo.alpha = 0;
             }
         });
     }
@@ -451,6 +445,57 @@ export class MenuImageManager {
         return this.avatarImages;
     }
 
+    static getAllPinkLogoImages(): Sprite[] {
+        return this.pinkLogoImages;
+    }
+
+    static getAllClassicLogoImages(): Sprite[] {
+        return this.classicLogoImages;
+    }
+
+    // Helpers
+    static createWallImage(name: string, x: number, y: number, menu: Menu): Sprite | null {
+        const wallImage = MenuImageManager.createSprite(name);
+        if (!wallImage) return null;
+        
+        wallImage.anchor.set(0.5);
+        wallImage.x = x;
+        wallImage.y = y;
+        wallImage.scale.set(0.025);
+        wallImage.alpha = 0;
+        menu.menuHidden.addChild(wallImage);
+        
+        return wallImage;
+    }
+
+    static buildPinkLogo(name: string, x: number, y: number, menu: Menu): Sprite | null {
+        const pinkLogo = MenuImageManager.createSprite(name);
+        if (!pinkLogo) return null;
+        
+        pinkLogo.anchor.set(0.5);
+        pinkLogo.x = x;
+        pinkLogo.y = y;
+        pinkLogo.scale.set(0.025);
+        pinkLogo.alpha = 0;
+        menu.menuHidden.addChild(pinkLogo);
+        
+        return pinkLogo;
+    }
+
+    static buildClassicLogo(name: string, x: number, y: number, menu: Menu): Sprite | null {
+        const classicLogo = MenuImageManager.createSprite(name);
+        if (!classicLogo) return null;
+        
+        classicLogo.anchor.set(0.5);
+        classicLogo.x = x;
+        classicLogo.y = y;
+        classicLogo.scale.set(0.025);
+        classicLogo.alpha = 0;
+        menu.menuHidden.addChild(classicLogo);
+        
+        return classicLogo;
+    }
+
     static createClickableAvatar(
         name: string, 
         x: number, 
@@ -514,6 +559,7 @@ export class MenuImageManager {
         return avatar;
     }
 
+    // Cleanup
     static cleanup(): void {
         this.wallImages.forEach(wallImage => {
             if (wallImage.parent) {

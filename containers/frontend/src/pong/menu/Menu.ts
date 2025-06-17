@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 16:32:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 10:28:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -578,7 +578,8 @@ export class Menu{
 
 	async loadImages() {
 		await MenuImageManager.loadAssets([
-            { name: 'wallPyramids', url: '/wallFigures/wallPyramids.png' },
+            // Glossary wall figures
+			{ name: 'wallPyramids', url: '/wallFigures/wallPyramids.png' },
 			{ name: 'wallSteps', url: '/wallFigures/wallSteps.png' },
 			{ name: 'wallTrenches', url: '/wallFigures/wallTrenches.png' },
 			{ name: 'wallHourglass', url: '/wallFigures/wallHourglass.png' },
@@ -591,10 +592,38 @@ export class Menu{
 			{ name: 'wallBowtie', url: '/wallFigures/wallBowtie.png' },
 			{ name: 'wallHoneycomb', url: '/wallFigures/wallHoneycomb.png' },
 
-		    { name: 'avatarEva', url: '/avatars/defaults/default1.png' },
+		    // About avatars
+			{ name: 'avatarEva', url: '/avatars/defaults/default1.png' },
 			{ name: 'avatarMarc', url: '/avatars/defaults/default2.png' },
     		{ name: 'avatarNico', url: '/avatars/defaults/default3.png' },
 		    { name: 'avatarHugo', url: '/avatars/defaults/default4.png' },
+
+			// About pink logos
+			{ name: 'typescriptPink', url: '/logos/pink/logo_typescript.png' },
+			{ name: 'pixiPink', url: '/logos/pink/logo_pixi.png' },
+			{ name: 'tailwindPink', url: '/logos/pink/logo_tailwind.png' },
+			{ name: 'nodejsPink', url: '/logos/pink/logo_nodejs.png' },
+			{ name: 'fastifyPink', url: '/logos/pink/logo_fastify.png' },
+			{ name: 'SQLitePink', url: '/logos/pink/logo_sqlite.png' },
+			{ name: 'dockerPink', url: '/logos/pink/logo_docker.png' },
+			{ name: 'prometheusPink', url: '/logos/pink/logo_prometheus.png' },
+			{ name: 'grafanaPink', url: '/logos/pink/logo_grafana.png' },
+			{ name: 'avalanchePink', url: '/logos/pink/logo_avalanche.png' },
+			{ name: 'solidityPink', url: '/logos/pink/logo_solidity.png' },
+
+			// About classic logos
+			{ name: 'typescriptClassic', url: '/logos/classic/logo_typescript_classic.png' },
+			{ name: 'pixiClassic', url: '/logos/classic/logo_pixi_classic.png' },
+			{ name: 'tailwindClassic', url: '/logos/classic/logo_tailwind_classic.png' },
+			{ name: 'nodejsClassic', url: '/logos/classic/logo_nodejs_classic.png' },
+			{ name: 'fastifyClassic', url: '/logos/classic/logo_fastify_classic.png' },
+			{ name: 'SQLiteClassic', url: '/logos/classic/logo_sqlite_classic.png' },
+			{ name: 'dockerClassic', url: '/logos/classic/logo_docker_classic.png' },
+			{ name: 'prometheusClassic', url: '/logos/classic/logo_prometheus_classic.png' },
+			{ name: 'grafanaClassic', url: '/logos/classic/logo_grafana_classic.png' },
+			{ name: 'avalancheClassic', url: '/logos/classic/logo_avalanche_classic.png' },
+			{ name: 'solidityClassic', url: '/logos/classic/logo_solidity_classic.png' },
+			
         ]);
 	}
 

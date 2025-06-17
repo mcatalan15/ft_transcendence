@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 16:51:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 10:41:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,7 +271,13 @@ export abstract class Overlay extends Entity {
             this.updatePowerupAlphas(alpha);
             this.updateWallImageAlphas(alpha);
         } else if (this.id === 'aboutOverlay') {
-            this.updateAvatarImageAlphas(alpha); // Add avatar alpha updates for About overlay
+            this.updateAvatarImageAlphas(alpha);
+
+            if (this.menu.config.classicMode) {
+                this.updateClassicLogosAlphas(alpha);
+            } else {
+                this.updatePinkLogosAlphas(alpha);
+            }
         }
     }
 
@@ -312,6 +318,24 @@ export abstract class Overlay extends Entity {
         avatarImages.forEach((avatarImage: any) => {
             if (avatarImage) {
                 avatarImage.alpha = alpha;
+            }
+        });
+    }
+
+    private updatePinkLogosAlphas(alpha: number): void {
+        const pinkLogos = MenuImageManager.getAllPinkLogoImages();
+        pinkLogos.forEach((logo: any) => {
+            if (logo) {
+                logo.alpha = alpha;
+            }
+        });
+    }
+
+    private updateClassicLogosAlphas(alpha: number): void {
+        const classicLogos = MenuImageManager.getAllClassicLogoImages();
+        classicLogos.forEach((logo: any) => {
+            if (logo) {
+                logo.alpha = alpha;
             }
         });
     }

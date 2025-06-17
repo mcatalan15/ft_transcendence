@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 16:56:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 10:41:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ export class AboutOverlay extends Overlay {
         this.addContent(this.aboutTexts, 'overlays');
 
         MenuImageManager.createAvatars(this.menu);
+        MenuImageManager.createPinkLogos(this.menu);
+        MenuImageManager.createClassicLogos(this.menu);
         
         this.setQuitButton(this.menu.aboutQuitButton);
     }
@@ -53,6 +55,11 @@ export class AboutOverlay extends Overlay {
         super.show();
 
         MenuImageManager.prepareAvatarImagesForAbout(this.menu);
+        if (this.menu.config.classicMode) {
+            MenuImageManager.prepareClassicLogosForAbout(this.menu);
+        } else {
+            MenuImageManager.preparePinkLogosForAbout(this.menu);
+        }
     }
 
     public hide(): void {
@@ -61,5 +68,11 @@ export class AboutOverlay extends Overlay {
 
     protected onHideComplete(): void {
         MenuImageManager.hideAvatarImagesFromAbout(this.menu);
+        
+        if (this.menu.config.classicMode) {
+            MenuImageManager.hideClassicLogosFromAbout(this.menu);
+        } else {
+            MenuImageManager.hidePinkLogosFromAbout(this.menu);
+        }
     }
 }

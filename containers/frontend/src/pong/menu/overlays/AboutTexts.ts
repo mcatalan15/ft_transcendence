@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 18:44:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 09:34:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ export class AboutTexts extends Entity {
             {
                 tag: 'projectContent',
                 text: "This humble Pong recreation was developed as part of the ft_transcendence project at 42 Barcelona. It was created in accordance with the mandatory requirements, on top of which several optional modules were implemented. The game can be played in either classic mode —a homage to the original Atari game designed by Nolan Bushnell and released in 1972— or its default extended mode, which includes a variety of additional features. These additions include:\n\n" +
-                    "\u00A0\u00A0\u00A0\u00A0\u00A0-power-ups and power-downs that affect paddle controls, movement, and abilities;\n\u00A0\u00A0\u00A0\u00A0\u00A0-ball-changing pickups that modify the ball’s shape and behavior;\n\u00A0\u00A0\u00A0\u00A0\u00A0-shifting and moving walls that reshape the arena;\n\u00A0\u00A0\u00A0\u00A0\u00A0-and spawning obstacles that add a tactical layer to the gameplay.\n\n" +
+                    "\u00A0\u00A0\u00A0\u00A0\u00A0-Power-ups and power-downs that affect paddle controls, movement, and abilities;\n\u00A0\u00A0\u00A0\u00A0\u00A0-Ball-changing pickups that modify the ball’s shape and behavior;\n\u00A0\u00A0\u00A0\u00A0\u00A0-Shifting and moving walls that reshape the arena;\n\u00A0\u00A0\u00A0\u00A0\u00A0-Spawning obstacles that add a tactical layer to the gameplay.\n\n" +
                     "Beyond these features, the game supports local play —either 1v1 or against an AI opponent— and online multiplayer, ranging from 1v1 matches to tournaments with up to 8 concurrent players. All of this is available in both classic and extended modes, with additional options to toggle visual effects and filtering. The game is part of a larger project structure, a web design task set up as the final project of 42 school’s student common core. It is the result of an extensive group effort through several months, and among other requirements it is comprised of both front-end and back-end developments, in-depth dev-ops deployment with microservices, multi-language support, blockchain tracking of match results, live chat and meticulous user management. The full technology stack contains:\n\n" +
                     "\u00A0\u00A0\u00A0\u00A0\u00A0-Frontend: TypeScript, PIXI.js, Tailwind CSS\n\u00A0\u00A0\u00A0\u00A0\u00A0-Backend: Node.js, Fastify\n\u00A0\u00A0\u00A0\u00A0\u00A0-Database: SQLite\n\u00A0\u00A0\u00A0\u00A0\u00A0-DevOps & Monitoring: Docker, Prometheus, Grafana\n\u00A0\u00A0\u00A0\u00A0\u00A0-Blockchain: Avalanche, Solidity\n\n",
                 x: 650,
