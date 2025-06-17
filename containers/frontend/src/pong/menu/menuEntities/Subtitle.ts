@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 17:51:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,17 @@ interface SubtitleLine {
 
 interface SubtitleConfig {
 	lines: SubtitleLine[];
-	baseX?: number; // Base X position (default: calculated from screen)
-	baseY?: number; // Base Y position (default: calculated from screen)
-	spacing?: number; // Spacing between lines (default: 30)
-	marginFromEdge?: number; // Margin from screen edge (default: 430)
+	baseX?: number;
+	baseY?: number;
+	spacing?: number; 
+	marginFromEdge?: number;
 }
 
 export class Subtitle extends Entity {
 	menu: Menu;
 	width: number;
 	height: number;
-	private config: SubtitleConfig;
+	private config!: SubtitleConfig;
 	
 	constructor(id: string, layer: string, menu: Menu, config?: Partial<SubtitleConfig>) {
 		super(id, layer);
@@ -45,38 +45,147 @@ export class Subtitle extends Entity {
 		this.menu = menu;
 		this.width = menu.width;
 		this.height = menu.height;
-
-		this.config = {
-			lines: [
-				{
-					text: "AN ECHO FROM A DISTANT PAST",
-					fontSize: 20,
-					fontWeight: 'bold'
-				},
-				{
-					text: "eva + hugo + marc + nico x ft_transcendence", 
-					fontSize: 10,
-					fontWeight: 'bold'
-				},
-				{
-					text: "MCMLXXII - MMXXV",
-					fontSize: 10,
-					fontWeight: 'bold',
-					offsetY: 25
-				},
-				{
-					text: "42bcn",
-					fontSize: 8,
-					fontWeight: 'bold',
-					offsetY: 45
-				}
-			],
-			spacing: 30,
-			marginFromEdge: 430,
-			...config
-		};
+		
+		this.getConfig(config);
 
 		this.createSubtitleLines();
+	}
+
+	private getConfig(config?: Partial<SubtitleConfig>): void {
+		switch (this.menu.language)
+		{
+			case ('en'): {
+				this.config = {
+					lines: [
+						{
+							text: "THE ECHO FROM A DISTANT PAST",
+							fontSize: 20,
+							fontWeight: 'bold'
+						},
+						{
+							text: "eva + hugo + marc + nico x ft_transcendence", 
+							fontSize: 10,
+							fontWeight: 'bold'
+						},
+						{
+							text: "MCMLXXII - MMXXV",
+							fontSize: 10,
+							fontWeight: 'bold',
+							offsetY: 25
+						},
+						{
+							text: "42bcn",
+							fontSize: 8,
+							fontWeight: 'bold',
+							offsetY: 45
+						}
+					],
+					spacing: 30,
+					marginFromEdge: 430,
+					...config
+				};
+				break;
+			}
+
+			case ('es'): {
+				this.config = {
+					lines: [
+						{
+							text: "EL ECO DE UN PASADO DISTANTE",
+							fontSize: 20,
+							fontWeight: 'bold'
+						},
+						{
+							text: "eva + hugo + marc + nico x ft_transcendence", 
+							fontSize: 10,
+							fontWeight: 'bold'
+						},
+						{
+							text: "MCMLXXII - MMXXV",
+							fontSize: 10,
+							fontWeight: 'bold',
+							offsetY: 25
+						},
+						{
+							text: "42bcn",
+							fontSize: 8,
+							fontWeight: 'bold',
+							offsetY: 45
+						}
+					],
+					spacing: 30,
+					marginFromEdge: 430,
+					...config
+				};
+				break;
+			}
+
+			case ('fr'): {
+				this.config = {
+					lines: [
+						{
+							text: "L'ÉCHO D'UN PASSÉ LOINTAIN",
+							fontSize: 20,
+							fontWeight: 'bold'
+						},
+						{
+							text: "eva + hugo + marc + nico x ft_transcendence", 
+							fontSize: 10,
+							fontWeight: 'bold'
+						},
+						{
+							text: "MCMLXXII - MMXXV",
+							fontSize: 10,
+							fontWeight: 'bold',
+							offsetY: 25
+						},
+						{
+							text: "42bcn",
+							fontSize: 8,
+							fontWeight: 'bold',
+							offsetY: 45
+						}
+					],
+					spacing: 30,
+					marginFromEdge: 430,
+					...config
+				};
+				break;
+			}
+
+			case ('cat'): {
+				this.config = {
+					lines: [
+						{
+							text: "EL RESSÒ D'UN PASSAT LLUNYÀ",
+							fontSize: 20,
+							fontWeight: 'bold'
+						},
+						{
+							text: "eva + hugo + marc + nico x ft_transcendence", 
+							fontSize: 10,
+							fontWeight: 'bold'
+						},
+						{
+							text: "MCMLXXII - MMXXV",
+							fontSize: 10,
+							fontWeight: 'bold',
+							offsetY: 25
+						},
+						{
+							text: "42bcn",
+							fontSize: 8,
+							fontWeight: 'bold',
+							offsetY: 45
+						}
+					],
+					spacing: 30,
+					marginFromEdge: 430,
+					...config
+				};
+				break;
+			}
+		}
 	}
 
 	private createSubtitleLines(): void {

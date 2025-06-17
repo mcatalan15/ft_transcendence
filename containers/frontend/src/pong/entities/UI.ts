@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:36:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:52:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,18 +109,33 @@ export class UI extends Entity {
     }
 
 	private setUpScoreText(): TextData {
-		return {
-			tag: 'score',
-			text: '0 - 0',
-			x: 0,
-			y: 0,
-			style: {
-				fill: GAME_COLORS.white,
-				fontSize: 20,
-				fontWeight: 'bold',
-			} as TextStyle,
-			anchor: { x: 0.5, y: 0.5 },
-		};
+		if (this.game.config.classicMode) {
+			return {
+				tag: 'score',
+				text: '0          0',
+				x: 0,
+				y: 0,
+				style: {
+					fill: { color: GAME_COLORS.white, alpha: 1 },
+					fontSize: 200,
+					fontFamily: 'anatol-mn',
+				} as TextStyle,
+				anchor: { x: 0.5, y: 0.5 },
+			};
+		} else {
+			return {
+				tag: 'score',
+				text: '0 - 0',
+				x: 0,
+				y: 0,
+				style: {
+					fill: GAME_COLORS.white,
+					fontSize: 20,
+					fontWeight: 'bold',
+				} as TextStyle,
+				anchor: { x: 0.5, y: 0.5 },
+			};
+		}
 	}
 
 	private setUpTimerText(): TextData {

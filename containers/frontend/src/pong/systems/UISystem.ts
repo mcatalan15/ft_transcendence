@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 18:32:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:52:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,13 @@ export class UISystem implements System {
 					this.game.eventQueue.push(...unhandledEvents);
 
 					if (tag === 'score' || textComponent.instanceId === 'score') {
-						textObject.x = this.game.width / 2;
-						textObject.y = entity.topOffset + 12;
+						if (this.game.config.classicMode) {
+							textObject.x = this.game.width / 2;
+							textObject.y = 200;
+						} else {
+							textObject.x = this.game.width / 2;
+							textObject.y = entity.topOffset + 12;
+						}
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
 						textObject.x = entity.width - 50;
 						textObject.y = entity.topOffset + 20;
@@ -88,7 +93,12 @@ export class UISystem implements System {
 		if (event.side === 'left') uiEntity.incrementScore('left');
 		else if (event.side === 'right') uiEntity.incrementScore('right');
 
-		const newScore = `${uiEntity.getScore('left')} - ${uiEntity.getScore('right')}`;
+		let newScore;
+		if (this.game.config.classicMode) {
+			newScore = `${uiEntity.getScore('left')}          ${uiEntity.getScore('right')}`;
+		} else {
+			newScore = `${uiEntity.getScore('left')} - ${uiEntity.getScore('right')}`;
+		}
 		uiEntity.setScoreText(newScore);
 		}
 	}

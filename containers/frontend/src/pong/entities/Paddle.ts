@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/12 17:13:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 15:36:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ export class Paddle extends Entity {
         });
     }
 
-    public redrawPaddle(): void {
+    public redrawPaddle(inMenu: boolean = false, type?: 'powerup' | 'powerdown' | 'mixed' | 'reset'): void {
         const renderComponent = this.getComponent('render') as RenderComponent;
         if (!renderComponent || !renderComponent.graphic) return;
 
@@ -156,17 +156,33 @@ export class Paddle extends Entity {
         const currentHeight = physics ? physics.height : this.game.paddleHeight;
         
         let paddleColor: number;
-        if (this.game.config.classicMode) {
-            paddleColor = GAME_COLORS.white;
-        } else {
-            if (this.game.config.filters) {
+        if (inMenu) {
+            if (this.game.config.classicMode) {
                 paddleColor = GAME_COLORS.white;
             } else {
-                if (this.id === 'paddleL') {
-                    paddleColor = GAME_COLORS.green;
+                if (this.game.config.filters) {
+                    paddleColor = GAME_COLORS.white;
                 } else {
-                    paddleColor = GAME_COLORS.red;
+                    if (this.id === 'paddleL') {
+                        paddleColor = GAME_COLORS.green;
+                    } else {
+                        paddleColor = GAME_COLORS.red;
+                    }
                 }
+            }
+        }  else {
+            if (!this.game.config.filters) {
+                if (type === 'powerup') {
+                    paddleColor = GAME_COLORS.green;
+                } else if (type === 'powerdown') {
+                    paddleColor = GAME_COLORS.red;
+                } else if (type === 'mixed') {
+                    paddleColor = GAME_COLORS.orange;
+                } else {
+                    paddleColor = GAME_COLORS.white;
+                }
+            } else {
+                paddleColor = GAME_COLORS.white;
             }
         }
         
@@ -175,7 +191,7 @@ export class Paddle extends Entity {
         paddleGraphic.pivot.set(currentWidth / 2, currentHeight / 2);
     }
 
-    public redrawPaddleText(): void {
+    public redrawPaddleText(inMenu: boolean = false, type?: 'powerup' | 'powerdown' | 'mixed' |  'reset'): void {
         const textComponent = this.getComponent('text') as TextComponent;
         if (!textComponent) return;
         
@@ -189,17 +205,33 @@ export class Paddle extends Entity {
         }
 
         let textColor: number;
-        if (this.game.config.classicMode) {
-            textColor = GAME_COLORS.white;
-        } else {
-            if (this.game.config.filters) {
+        if (inMenu) {
+            if (this.game.config.classicMode) {
                 textColor = GAME_COLORS.white;
             } else {
-                if (this.id === 'paddleL') {
-                    textColor = GAME_COLORS.green;
+                if (this.game.config.filters) {
+                    textColor = GAME_COLORS.white;
                 } else {
-                    textColor = GAME_COLORS.red;
+                    if (this.id === 'paddleL') {
+                        textColor = GAME_COLORS.green;
+                    } else {
+                        textColor = GAME_COLORS.red;
+                    }
                 }
+            }
+        } else {
+            if (!this.game.config.filters) {
+                if (type === 'powerup') {
+                    textColor = GAME_COLORS.green;
+                } else if (type === 'powerdown') {
+                    textColor = GAME_COLORS.red;
+                } else if (type === 'mixed') {
+                    textColor = GAME_COLORS.orange;
+                } else {
+                    textColor = GAME_COLORS.white;
+                }
+            } else {
+                textColor = GAME_COLORS.white;
             }
         }
         
@@ -213,8 +245,8 @@ export class Paddle extends Entity {
         }
     }
 
-    public redrawFullPaddle(): void {
-        this.redrawPaddle();
-        this.redrawPaddleText();
+    public redrawFullPaddle(inMenu: boolean = false, type?: 'powerup' | 'powerdown' | 'mixed' | 'reset'): void {
+        this.redrawPaddle(inMenu, type);
+        this.redrawPaddleText(inMenu, type);
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 16:50:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,14 @@ export class AboutOverlay extends Overlay {
 
     constructor(menu: Menu) {
         super('aboutOverlay', menu, 0x151515, GAME_COLORS.menuPink);
+        
+        this.menu = menu;
+        
         this.initialize();
     }
 
     protected initializeContent(): void {
-        this.aboutTexts = new AboutTexts('aboutTexts', 'overlays');
+        this.aboutTexts = new AboutTexts(this.menu, 'aboutTexts', 'overlays');
         this.addContent(this.aboutTexts, 'overlays');
 
         MenuImageManager.createAvatars(this.menu);

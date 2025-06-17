@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:09:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 16:25:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ import { AboutOverlay } from './menuOverlays/AboutOverlay';
 
 export class Menu{
 	config: GameConfig;
+	language: string;
 	app: Application;
 	width: number;
 	height: number;
@@ -196,7 +197,8 @@ export class Menu{
 
 	hugoAvatar!: Sprite;
 
-	constructor(app: Application) {
+	constructor(app: Application, language: string) {
+		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
@@ -260,6 +262,7 @@ export class Menu{
 	}
 
 	async init(): Promise<void> {
+		console.log(this.language);
 		await this.loadImages();
 
 		await ButtonManager.createMainButtons(this);
@@ -270,8 +273,6 @@ export class Menu{
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
-		/* await this.createGlossaries();
-		await this.createAbouts(); */
 		await this.createOverlays();
 		await this.createPowerups();
 		await this.initSystems();
@@ -748,8 +749,6 @@ export class Menu{
 			};
 			
 			this.audioInitialized = true;
-			
-			const bgmId = this.sounds.menuBGM.play();
 			
 			// Process any pending audio
 			this.pendingAudio.forEach(fn => fn());

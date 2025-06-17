@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:37:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 14:14:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { GAME_COLORS } from '../../utils/Types';
 
 export class Shield extends Entity {
+	game: PongGame;
 	x: number;
 	y: number;
 	width: number;
@@ -34,6 +35,8 @@ export class Shield extends Entity {
 
 	constructor(id: string, layer: string, game: PongGame, side: string) {
 		super(id, layer);
+
+		this.game = game;
 		
 		this.lineHeight = game.height - game.topWallOffset - game.bottomWallOffset
 
@@ -45,7 +48,7 @@ export class Shield extends Entity {
 		this.x = side === 'left' ? 20 : game.width - 20;
 		this.y = game.height / 2;
 
-		const graphic = this.generateLine(GAME_COLORS.white);
+		const graphic = this.generateLine(this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.green);
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 

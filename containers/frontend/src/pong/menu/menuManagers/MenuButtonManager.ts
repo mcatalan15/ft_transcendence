@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 18:47:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ export class ButtonManager {
 		const buttonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
 				isClicked: false,
-				text: 'START',
+				text: this.getButtonTexts(menu, 'start'),
 				onClick: async () => {
 					console.log("Start clicked");
 					menu.playSound("menuSelect");
@@ -41,7 +41,7 @@ export class ButtonManager {
 			},
 			{
 				isClicked: false,
-				text: 'PLAY',
+				text: this.getButtonTexts(menu, 'play'),
 				onClick: async () => {
 					console.log("Play clicked");
 					menu.playSound("menuSelect");
@@ -437,8 +437,6 @@ export class ButtonManager {
 		});
 	}
 
-	
-
 	static createBallButton(menu: Menu) {
 		const ballButton = new BallButton('ballButton', 'foreground', menu, () => {
 			const vfx = ballButton.getComponent('vfx') as VFXComponent;
@@ -456,5 +454,31 @@ export class ButtonManager {
 		menu.renderLayers.foreground.addChild(ballButton.getContainer());
 
 		menu.ballButton = ballButton;
+	}
+
+	static getButtonTexts(menu: Menu, type: string): string {
+		switch (type) {
+			case ('start'): {
+				switch (menu.language) {
+					case ('en'): return 'START';
+					case ('es'): return 'INICIAR';
+					case ('fr'): return 'COMMENCER';
+					case ('cat'): return 'INICIAR';
+					default: return 'START';
+				}
+			}
+
+			case ('play'): {
+				switch (menu.language) {
+					case ('en'): return 'PLAY';
+					case ('es'): return 'JUGAR';
+					case ('fr'): return 'JOUER';
+					case ('cat'): return 'JUGAR';
+					default: return 'START';
+				}
+			}
+			default:
+				return 'UNKNOWN';
+		}
 	}
 }

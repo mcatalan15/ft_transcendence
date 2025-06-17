@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 11:58:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 14:53:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -525,8 +525,8 @@ export class ButtonSystem implements System {
     }
 
     updatePaddles() {
-        (this.menu.paddleL as Paddle).redrawFullPaddle();
-        (this.menu.paddleR as Paddle).redrawFullPaddle();
+        (this.menu.paddleL as Paddle).redrawFullPaddle(true, 'powerup');
+        (this.menu.paddleR as Paddle).redrawFullPaddle(true, 'powerdown');
     }
 
     setButtonsClickability(clickable: boolean): void {       

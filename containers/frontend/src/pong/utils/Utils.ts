@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/04 19:04:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 15:35:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                     for (const entity of game.entities) {
                         if (isPaddle(entity) && entity.id.includes('paddleL')) {
                             const text = entity.getComponent('text') as TextComponent;
+                            game.renderLayers.powerup.addChild(text.getRenderable());
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName' + game.leftPlayer.name;
 
@@ -207,10 +208,12 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                                 game.renderLayers.powerupGlitched.addChild(graphic);
                                 game.renderLayers.powerupGlitched.addChild(playerName);
                                 entity.currentLayer = 'powerupGlitched';
+                                entity.redrawFullPaddle(false, 'mixed');
                             } else {
                                 game.renderLayers.powerup.addChild(graphic);
                                 game.renderLayers.powerup.addChild(playerName);
                                 entity.currentLayer = 'powerup';
+                                entity.redrawFullPaddle(false, 'powerup');
                             }
                         }
                     }
@@ -219,6 +222,7 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                         if (isPaddle(entity) && entity.id.includes('paddleL')) {
                             const text = entity.getComponent('text') as TextComponent;
                             text.setText('#@%$&');
+                            game.renderLayers.powerdown.addChild(text.getRenderable());
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName' + game.leftPlayer.name;
                             
@@ -230,10 +234,12 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                                 game.renderLayers.powerupGlitched.addChild(graphic);
                                 game.renderLayers.powerupGlitched.addChild(playerName);
                                 entity.currentLayer = 'powerupGlitched';
+                                entity.redrawFullPaddle(false, 'mixed');
                             } else {
                                 game.renderLayers.powerdown.addChild(graphic);
                                 game.renderLayers.powerdown.addChild(playerName);
                                 entity.currentLayer = 'powerdown';
+                                entity.redrawFullPaddle(false, 'powerdown');
                             }
                         }
                     }
@@ -265,12 +271,15 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                                 game.renderLayers.powerup.addChild(playerName);
                                 entity.currentLayer = 'powerup';
                             }
+
+                            entity.redrawFullPaddle(false, 'powerup');
                         }
                     }
                 } else if (id.includes('powerDown')) {
                     for (const entity of game.entities) {
                         if (isPaddle(entity) && entity.id.includes('paddleR')) {
                             const text = entity.getComponent('text') as TextComponent;
+                            game.renderLayers.powerdown.addChild(text.getRenderable());
                             text.setText('#@%$&');
                             const playerName = text.getRenderable();
                             playerName.label = 'playerName'+ game.rightPlayer.name;
@@ -288,6 +297,8 @@ export function changePaddleLayer(game: PongGame, side: string, id: string) {
                                 game.renderLayers.powerdown.addChild(playerName);
                                 entity.currentLayer = 'powerdown';
                             }
+
+                            entity.redrawFullPaddle(false, 'powerdown');
                         }
                     }
                 }
@@ -303,12 +314,10 @@ export function removePaddleFromLayer(system: PowerupSystem, paddle: Paddle) {
         const powerdownLayer = system.game.renderLayers.powerdown;
         const powerupGlitchedLayer = system.game.renderLayers.powerupGlitched;
         
-        // Check powerdown layer first
         let targetChild = powerdownLayer.children.find(child => child.label === "paddle");
         let targetLeftName = powerdownLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
         let targetRightName = powerdownLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
         
-        // If not found in powerdown, check powerupGlitched layer
         if (!targetChild) {
             targetChild = powerupGlitchedLayer.children.find(child => child.label === "paddle");
         }
@@ -376,6 +385,8 @@ export function removePaddleFromLayer(system: PowerupSystem, paddle: Paddle) {
             text.setText(result);
         }
     }
+
+    paddle.redrawFullPaddle(false, 'reset');
 }
 
 export function lerp(a: number, b: number, t: number): number {

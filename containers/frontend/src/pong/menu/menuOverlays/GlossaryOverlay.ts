@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 17:54:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ export class GlossaryOverlay extends Overlay {
     }
 
     protected initializeContent(): void {
-        this.glossaryTexts = new GlossaryTexts('glossaryTexts', 'overlays');
+        this.glossaryTexts = new GlossaryTexts(this.menu, 'glossaryTexts', 'overlays');
         
         this.addContent(this.glossaryTexts, 'overlays');
 

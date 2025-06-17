@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 16:39:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 15:22:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,7 +314,6 @@ export class PongGame {
 		this.rightPlayer = { name: "Player 2" };
 
 		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
-
 		
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -353,13 +352,19 @@ export class PongGame {
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
 
 		const uiText = ui.getComponent('text') as TextComponent;
-		this.renderLayers.ui.addChild(uiText.getRenderable());
+		if (this.config.classicMode) {
+			this.renderLayers.background.addChild(uiText.getRenderable());
+		} else {
+			this.renderLayers.ui.addChild(uiText.getRenderable());
+		}
 
 		if (!this.config.classicMode) {
 			const bars = ui.getComponent('render') as RenderComponent;
 			this.renderLayers.ui.addChild(bars.graphic);
 			
 			this.renderLayers.ui.addChild(uiText.getRenderable());
+		} else {
+			this.createDashedMiddleLine();
 		}
 		
 		this.entities.push(ui);
@@ -419,6 +424,48 @@ export class PongGame {
 
 			this.entities.splice(index, 1);
 		}
+	}
+
+	private createDashedMiddleLine(): void {
+		const dashSize = 17;
+		const gapSize = 10;
+		const segmentSize = dashSize + gapSize;
+		
+		const startY = this.topWallOffset + this.wallThickness / 2;
+		const endY = this.height - this.bottomWallOffset + this.wallThickness / 2;
+		const totalHeight = endY - startY;
+		const centerX = this.width / 2;
+		
+		const middleLine = new Graphics();
+		
+		// Calculate how many complete segments we can fit
+		const numSegments = Math.floor(totalHeight / segmentSize);
+		
+		for (let i = 0; i < numSegments; i++) {
+			const dashStartY = startY + (i * segmentSize);
+			const dashEndY = dashStartY + dashSize;
+			
+			// Only draw if the dash end doesn't exceed our boundary
+			if (dashEndY <= endY) {
+				middleLine.moveTo(centerX, dashStartY);
+				middleLine.lineTo(centerX, dashEndY);
+			}
+		}
+		
+		// Handle any remaining space with a partial dash
+		const remainingSpace = totalHeight - (numSegments * segmentSize);
+		if (remainingSpace > 0) {
+			const lastDashStart = startY + (numSegments * segmentSize);
+			const lastDashEnd = Math.min(lastDashStart + dashSize, endY);
+			
+			if (lastDashEnd > lastDashStart) {
+				middleLine.moveTo(centerX, lastDashStart);
+				middleLine.lineTo(centerX, lastDashEnd);
+			}
+		}
+		
+		middleLine.stroke({ color: GAME_COLORS.white, width: 5, alpha: 0.5 });
+		this.renderLayers.ui.addChild(middleLine);
 	}
 
 	createBoundingBoxes() {
