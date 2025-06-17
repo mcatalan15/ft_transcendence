@@ -45,7 +45,7 @@ export function setupGoogleSignUp(): void {
 
 					// Conditional redirect based on 2FA status
 					setTimeout(() => {
-						window.location.href = '/home';
+						window.location.href = '/auth';
 					}, 100); // Small delay to ensure sessionStorage is set
 				} else {
 					alert('Google authentication failed: ' + (data.message || 'Unknown error'));

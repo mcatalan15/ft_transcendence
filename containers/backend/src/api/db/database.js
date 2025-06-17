@@ -305,7 +305,7 @@ async function enableTwoFactor(userId, secret) {
         // You might want to also ensure the provided 'secret' matches the stored one
         // before enabling. For now, we trust the handler has done this.
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        const params = [secret, true, userId]; // Set twoFactorEnabled to TRUE
+        const params = [secret, 0, userId]; // Set twoFactorEnabled to TRUE
 
         db.run(query, params, function (err) {
             if (err) {
