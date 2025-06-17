@@ -7,7 +7,8 @@ const signupSchema = {
     properties: {
       username: { type: 'string', description: 'Unique username' },
       email: { type: 'string', format: 'email', description: 'User email address' },
-      password: { type: 'string', description: 'User password' }
+      password: { type: 'string', description: 'User password' },
+	  twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
     }
   },
   response: {
@@ -19,14 +20,16 @@ const signupSchema = {
         message: { type: 'string' },
         userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
         username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
-		email: { type: 'string', description: 'Email of the new user' }
+		email: { type: 'string', description: 'Email of the new user' },
+		twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
         userId: 123,
         username: 'testuser',
-		email: 'test@user.com'
+		email: 'test@user.com',
+		twoFAEnabled: '1'
       }
     },
     400: {
@@ -66,7 +69,8 @@ const signinSchema = {
     required: ['email', 'password'],
     properties: {
       email: { type: 'string', format: 'email', description: 'User email address' },
-      password: { type: 'string', description: 'User password' }
+      password: { type: 'string', description: 'User password' },
+	  twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
     }
   },
   response: {
@@ -79,15 +83,17 @@ const signinSchema = {
         token: { type: 'string', description: 'JWT token generated from a secret' },
         userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
         username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
-		email: { type: 'string', description: 'Email of the new user' }
+		email: { type: 'string', description: 'Email of the new user' },
+		twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
       },
       example: {
         success: true,
         message: 'User registered successfully',
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
-		user: 'test-user',
+		userId: 42,
+		username: 'test-user',
 		email: 'cucufu@gmail.com',
-		userId: 42
+		twoFAEnabled: '1'
       }
     },
     400: {
@@ -97,13 +103,17 @@ const signinSchema = {
         success: { type: 'boolean' },
         message: { type: 'string' },
         token: { type: 'string' || null },
-		user: {type: 'string' || null }
+		usernumber: {type: 'string' || null },
+		userId: { type: 'number', description: 'ID of the user' },
+		twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
       },
       example: {
         success: false,
         message: 'User not found',
         token: null,
-		user: null
+		username: 'pepe123',
+		userId: 2,
+		twoFAEnabled: '1'
       }
     },
     500: {

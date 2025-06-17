@@ -50,34 +50,44 @@ async function signupHandler(request, reply) {
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 12);
-		// !!! IMPORTANT CHANGE HERE !!!
-		// Make sure saveUserToDatabase returns the newly created user's ID
-		const defaultAvatarId = Math.floor(Math.random() * 4) + 1; // Assuming 4 default avatars
+		const defaultAvatarId = Math.floor(Math.random() * 4) + 1;
 		const avatarFilename = `default_${defaultAvatarId}.png`;
 
 		const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
-		// MORE DEBUGGIng
-		console.log('[BACKEND - signupHandler] Preparing response with:', {
+		
+		// Create JWT token for new user (2FA is disabled by default for new users)
+		const twoFAEnabled = 1;
+		const authToken = jwt.sign({
+			id: newUserId,
+			twoFAEnabled: twoFAEnabled,
+		}, process.env.JWT_SECRET, {
+			expiresIn: process.env.JWT_EXPIRES_IN,
+		});
+
+		// Set session data
+		request.session.set('token', authToken);
+		request.session.set('user', {
 			userId: newUserId,
 			username: username,
 			email: email,
-			twoFAEnabled: false
+			twoFAEnabled: twoFAEnabled,
 		});
-		console.log('[BACKEND - signupHandler] Final response object before sending:', {
-			success: true,
-			message: 'User registered successfully',
+
+		console.log('[BACKEND - signupHandler] User registered and authenticated:', {
 			userId: newUserId,
 			username: username,
 			email: email,
-			twoFAEnabled: false
+			twoFAEnabled: twoFAEnabled
 		});
+
 		return reply.status(201).send({
 			success: true,
 			message: 'User registered successfully',
-			userId: newUserId, // <--- Add the new user ID
-			username: username, // <--- Add the username (or email, if that's what you use for 2FA display)
+			token: authToken,
+			userId: newUserId,
+			username: username,
 			email: email,
-			twoFAEnabled: false
+			twoFAEnabled: twoFAEnabled
 		});
 	} catch (error) {
 		console.error('Registration error:', error);
@@ -88,67 +98,106 @@ async function signupHandler(request, reply) {
 	}
 };
 
+
 async function signinHandler(request, reply) {
+	const { email, password, twoFACode } = request.body;
 
-    const { email, password } = request.body;
+	if (!email || !password) {
+		return reply.status(400).send({ 
+			success: false,
+			message: 'Email and password are required' 
+		});
+	}
 
-    if (!email || !password) {
-      return reply.status(400).send({ success: false, message: 'All fields are required' });
-    }
+	try {
+		// Find user by email
+		const user = await getUserByEmail(email);
+		console.log('Fetched user:', user);
+		if (!user) {
+			return reply.status(401).send({
+				success: false,
+				message: 'Invalid email or password'
+			});
+		}
 
-    try {
+		// Verify password
+		const isPasswordValid = await bcrypt.compare(password, user.password);
+		if (!isPasswordValid) {
+			return reply.status(401).send({
+				success: false,
+				message: 'Invalid email or password'
+			});
+		}
 
-      const hash = await getHashedPassword(email);
-      if (!hash) {
-        return reply.status(400).send({
-          success: false,
-          message: 'User not found'
-        });
-      }
+		// Check if 2FA is enabled
+		const twoFAEnabled = user.twoFactorEnabled;
+		console.log(`[Local Auth] User ${user.username} has 2FA enabled: ${twoFAEnabled}`);
+		if (twoFAEnabled === 1) {
+			// If 2FA is enabled but no code provided, request it
+			if (!twoFACode) {
+				return reply.status(200).send({
+					success: false,
+					requiresTwoFA: true,
+					message: 'Two-factor authentication required',
+					userId: user.id_user,
+					username: user.username,
+					email: user.email,
+					twoFAEnabled: twoFAEnabled
+				});
+			}
 
-      // Compare the provided password with the stored hash
-      const match = await bcrypt.compare(password, hash);
+			// Verify 2FA code
+			const isValid2FA = speakeasy.totp.verify({
+				secret: user.two_fa_secret,
+				encoding: 'base32',
+				token: twoFACode,
+				window: 2
+			});
 
-      if (match) {
+			if (!isValid2FA) {
+				return reply.status(401).send({
+					success: false,
+					message: 'Invalid two-factor authentication code'
+				});
+			}
+		}
 
-        const user = await getUserByEmail(email);
-		    const authToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-			    expiresIn: process.env.JWT_EXPIRES_IN
-		    });
-
-        request.session.set('token', authToken);
-        request.session.set('user', {
-		  userId: user.id_user,
-          username: user.username,
-          email: user.email,
-		  twoFAEnabled: user.twoFAEnabled
-          //! Never store sensitive data like passwords !
+		// Create JWT token
+		const authToken = jwt.sign({
+			id: user.id_user,
+			twoFAEnabled: twoFAEnabled,
+		}, process.env.JWT_SECRET, {
+			expiresIn: process.env.JWT_EXPIRES_IN,
 		});
 
-        return reply.status(201).send({
-          success: true,
-          message: 'Authentication successful',
-		  username: user.username,
-		  email: user.email,
-		  userId: user.id_user,
-		  token: authToken
-        });
-      }
-      
-      return reply.status(400).send({
-        success: false,
-        message: 'Invalid email or password'
-      });
+		// Set session data
+		request.session.set('token', authToken);
+		request.session.set('user', {
+			userId: user.id_user,
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: twoFAEnabled,
+		});
 
-    } catch (error) {
+		console.log(`[Local Auth] User authenticated with 2FA: ${twoFAEnabled}`);
 
-      console.error(error);
-      return reply.status(500).send({
-        success: false,
-        message: 'Internal server error'
-      });
+		return reply.status(200).send({
+			success: true,
+			message: 'Authentication successful',
+			token: authToken,
+			userId: user.id_user,
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: twoFAEnabled
+		});
 
-    }
+	} catch (error) {
+		console.error('Login error:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Internal server error'
+		});
+	}
 };
 
 async function logoutHandler(request, reply) {
