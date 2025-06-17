@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 13:05:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,13 @@ import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
 
-import { MenuPostProcessingLayer } from '../menu/MenuPostProcessingLayer';
-import { MenuLine } from '../menu/MenuLine';
-import { MenuButton } from '../menu/buttons/MenuButton';
-import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
-import { MenuXButton } from '../menu/buttons/MenuXButton';
-import { BallButton } from '../menu/buttons/BallButton';
-import { MenuOrnament } from '../menu/MenuOrnaments';
+import { MenuPostProcessingLayer } from '../menu/menuEntities/MenuPostProcessingLayer';
+import { MenuLine } from '../menu/menuEntities/MenuLine';
+import { MenuButton } from '../menu/menuButtons/MenuButton';
+import { MenuHalfButton } from '../menu/menuButtons/MenuHalfButton';
+import { MenuXButton } from '../menu/menuButtons/MenuXButton';
+import { BallButton } from '../menu/menuButtons/BallButton';
+import { MenuOrnament } from '../menu/menuEntities/MenuOrnaments';
 import { OverlayBackground } from '../menu/OverlayBackground';
 import { GlossaryTexts } from '../menu/GlossaryTexts';
 

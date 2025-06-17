@@ -6,23 +6,23 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 11:50:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:42:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Entity } from "../engine/Entity";
-import { System } from "../engine/System";
+import { Entity } from "../../engine/Entity";
+import { System } from "../../engine/System";
 
-import { Ball } from "../entities/balls/Ball";
-import { Menu } from "./Menu";
+import { Ball } from "../../entities/balls/Ball";
+import { Menu } from "../Menu";
 
-import { PhysicsComponent } from "../components/PhysicsComponent";
-import { VFXComponent } from "../components/VFXComponent";
+import { PhysicsComponent } from "../../components/PhysicsComponent";
+import { VFXComponent } from "../../components/VFXComponent";
 
-import { GAME_COLORS } from "../utils/Types";
-import { isBall } from "../utils/Guards";
-import { getBoundingBox } from "../utils/PhysicsUtils";
-import { MenuParticleSpawner } from "./MenuParticleSpawner";
+import { GAME_COLORS } from "../../utils/Types";
+import { isBall } from "../../utils/Guards";
+import { getBoundingBox } from "../../utils/PhysicsUtils";
+import { MenuParticleSpawner } from "../menuSpawners/MenuParticleSpawner";
 
 export class MenuPhysicsSystem implements System {
 	menu: Menu;

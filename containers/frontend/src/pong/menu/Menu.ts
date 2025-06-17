@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 10:28:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:09:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,43 +21,43 @@ import { GameConfig } from './GameConfig';
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { Paddle } from '../entities/Paddle';
-import { Title } from './Title';
-import { Subtitle } from './Subtitle';
-import { ClassicO } from './ClassicO';
+import { Title } from './menuEntities/Title';
+import { Subtitle } from './menuEntities/Subtitle';
+import { ClassicO } from './menuEntities/ClassicO';
 
-import { MenuPostProcessingLayer } from './MenuPostProcessingLayer';
-import { MenuButton } from './buttons/MenuButton';
-import { MenuHalfButton } from './buttons/MenuHalfButton';
-import { MenuXButton } from './buttons/MenuXButton';
-import { BallButton } from './buttons/BallButton';
+import { MenuPostProcessingLayer } from './menuEntities/MenuPostProcessingLayer';
+import { MenuButton } from './menuButtons/MenuButton';
+import { MenuHalfButton } from './menuButtons/MenuHalfButton';
+import { MenuXButton } from './menuButtons/MenuXButton';
+import { BallButton } from './menuButtons/BallButton';
 import { Powerup } from '../entities/powerups/Powerup';
-import { MenuImageManager } from './managers/MenuImageManager';
+import { MenuImageManager } from './menuManagers/MenuImageManager';
 
-import { MenuOrnament } from './MenuOrnaments';
-import { OverlayBackground } from './OverlayBackground';
-import { GlossaryTexts } from './overlays/GlossaryTexts';
-import { AboutTexts } from './overlays/AboutTexts';
+import { MenuOrnament } from './menuEntities/MenuOrnaments';
+import { OverlayBackground } from './menuOverlays/OverlayBackground';
+import { GlossaryTexts } from './menuOverlays/GlossaryTexts';
+import { AboutTexts } from './menuOverlays/AboutTexts';
 
 // Import components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 
 // Import spawners and Managers
-import { MenuParticleSpawner } from './MenuParticleSpawner';
-import { ButtonManager } from './ButtonManager';
-import { MenuPowerupManager } from './managers/MenuPowerupManager';
+import { MenuParticleSpawner } from './menuSpawners/MenuParticleSpawner';
+import { ButtonManager } from './menuManagers/MenuButtonManager';
+import { MenuPowerupManager } from './menuManagers/MenuPowerupManager';
 
 // Import Implemented Systems
-import { MenuRenderSystem } from './MenuRenderSystem';
-import { MenuAnimationSystem } from './MenuAnimationSystem';
-import { MenuParticleSystem } from './MenuParticleSystem';
-import { MenuPostProcessingSystem } from './MenuPostProcessingSystem';
-import { SecretCodeSystem } from './MenuSecretCodeSystem';
+import { MenuRenderSystem } from './menuSystems/MenuRenderSystem';
+import { MenuAnimationSystem } from './menuSystems/MenuAnimationSystem';
+import { MenuParticleSystem } from './menuSystems/MenuParticleSystem';
+import { MenuPostProcessingSystem } from './menuSystems/MenuPostProcessingSystem';
+import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
 
-import { MenuPhysicsSystem } from './MenuPhysicsSystem';
-import { MenuVFXSystem } from './MenuVFXSystem';
-import { MenuLineSystem } from './MenuLineSystem';
-import { ButtonSystem } from './MenuButtonSystem';
+import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
+import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
+import { MenuLineSystem } from './menuSystems/MenuLineSystem';
+import { ButtonSystem } from './menuSystems/MenuButtonSystem';
 
 
 import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
@@ -65,8 +65,8 @@ import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
 import { isRenderComponent } from '../utils/Guards';
 import { InvertPowerDown } from '../entities/powerups/InvertPowerDown';
-import { GlossaryOverlay } from './overlays/GlossaryOverlay';
-import { AboutOverlay } from './overlays/AboutOverlay';
+import { GlossaryOverlay } from './menuOverlays/GlossaryOverlay';
+import { AboutOverlay } from './menuOverlays/AboutOverlay';
 
 export class Menu{
 	config: GameConfig;

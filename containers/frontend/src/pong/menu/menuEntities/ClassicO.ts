@@ -6,19 +6,19 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 18:37:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //! Only God can judge me
 
 import { Graphics, Text } from "pixi.js"
-import { Menu } from "./Menu"
-import { Entity } from "../engine/Entity"
-import { RenderComponent } from "../components/RenderComponent"
-import { PhysicsComponent } from "../components/PhysicsComponent"
-import { AnimationComponent } from "../components/AnimationComponent"
-import { GAME_COLORS, PhysicsData, AnimationOptions } from "../utils/Types"
+import { Menu } from "../Menu"
+import { Entity } from "../../engine/Entity"
+import { RenderComponent } from "../../components/RenderComponent"
+import { PhysicsComponent } from "../../components/PhysicsComponent"
+import { AnimationComponent } from "../../components/AnimationComponent"
+import { GAME_COLORS, PhysicsData, AnimationOptions } from "../../utils/Types"
 
 export class ClassicO extends Entity {
 	menu: Menu;

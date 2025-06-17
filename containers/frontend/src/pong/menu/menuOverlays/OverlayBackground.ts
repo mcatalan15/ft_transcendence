@@ -1,10 +1,10 @@
 // Update OverlayBackground.ts to support animation
 import { Graphics } from "pixi.js";
-import { Menu } from "./Menu";
-import { Entity } from "../engine/Entity";
-import { RenderComponent } from "../components/RenderComponent";
-import { AnimationComponent } from "../components/AnimationComponent";
-import { GAME_COLORS } from "../utils/Types";
+import { Menu } from "../Menu";
+import { Entity } from "../../engine/Entity";
+import { RenderComponent } from "../../components/RenderComponent";
+import { AnimationComponent } from "../../components/AnimationComponent";
+import { GAME_COLORS } from "../../utils/Types";
 
 export class OverlayBackground extends Entity {
     private background!: Graphics;

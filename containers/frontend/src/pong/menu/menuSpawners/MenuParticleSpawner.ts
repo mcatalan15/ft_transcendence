@@ -6,16 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 12:22:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:04:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { PongGame } from '../engine/Game';
-import { Particle } from '../entities/Particle';
-import { RenderComponent } from '../components/RenderComponent';
+import { Menu } from '../Menu';
 
-import { GAME_COLORS } from '../utils/Types';
-import { Menu } from './Menu';
+import { RenderComponent } from '../../components/RenderComponent';
+
+import { Particle } from '../../entities/Particle';
+
+import { GAME_COLORS } from '../../utils/Types';
+
 
 interface AmbientDustConfig {
 	maxParticles: number;

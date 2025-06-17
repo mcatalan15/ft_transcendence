@@ -6,23 +6,23 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:42:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Menu } from './Menu';
-import type { Entity } from '../engine/Entity';
-import type { System } from '../engine/System';
+import type { Menu } from '../Menu';
+import type { Entity } from '../../engine/Entity';
+import type { System } from '../../engine/System';
 
-import { PhysicsComponent } from '../components/PhysicsComponent';
-import { RenderComponent } from '../components/RenderComponent';
-import { ParticleBehaviorComponent } from '../components/ParticleBehaviorComponent';
-import { LifetimeComponent } from '../components/LifetimeComponent';
+import { PhysicsComponent } from '../../components/PhysicsComponent';
+import { RenderComponent } from '../../components/RenderComponent';
+import { ParticleBehaviorComponent } from '../../components/ParticleBehaviorComponent';
+import { LifetimeComponent } from '../../components/LifetimeComponent';
 
-import { MenuParticleSpawner } from './MenuParticleSpawner';
+import { MenuParticleSpawner } from '../menuSpawners/MenuParticleSpawner';
 
-import type { FrameData } from '../utils/Types';
-import { isParticle } from '../utils/Guards'
+import type { FrameData } from '../../utils/Types';
+import { isParticle } from '../../utils/Guards'
 
 export class MenuParticleSystem implements System {
 	private menu: Menu;

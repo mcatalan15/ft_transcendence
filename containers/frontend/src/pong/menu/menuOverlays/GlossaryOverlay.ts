@@ -6,15 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 16:37:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Overlay } from "./Overlay";
 import { GlossaryTexts } from "./GlossaryTexts";
 import { Menu } from "../Menu";
-import { MenuPowerupManager } from "../managers/MenuPowerupManager";
-import { MenuImageManager } from "../managers/MenuImageManager";
+import { MenuPowerupManager } from "../menuManagers/MenuPowerupManager";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 import { GAME_COLORS } from "../../utils/Types";
 
 export class GlossaryOverlay extends Overlay {

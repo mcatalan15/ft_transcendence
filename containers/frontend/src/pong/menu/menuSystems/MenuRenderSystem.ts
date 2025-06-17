@@ -6,16 +6,16 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 15:11:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:01:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { Entity } from '../engine/Entity';
-import type { System } from '../engine/System'
+import type { Entity } from '../../engine/Entity';
+import type { System } from '../../engine/System'
 
-import type { RenderComponent } from '../components/RenderComponent';
-import type { PhysicsComponent } from '../components/PhysicsComponent';
-import type { TextComponent } from '../components/TextComponent';
+import type { RenderComponent } from '../../components/RenderComponent';
+import type { PhysicsComponent } from '../../components/PhysicsComponent';
+import type { TextComponent } from '../../components/TextComponent';
 
 export class MenuRenderSystem implements System {
 	update(entities: Entity[]): void {

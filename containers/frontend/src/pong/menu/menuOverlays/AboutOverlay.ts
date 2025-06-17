@@ -6,13 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 10:41:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Menu } from "../Menu";
 
-import { MenuImageManager } from "../managers/MenuImageManager";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 import { Overlay } from "./Overlay";
 

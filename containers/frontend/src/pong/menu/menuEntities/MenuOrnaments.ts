@@ -6,20 +6,20 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/12 11:45:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Container, Text, FederatedPointerEvent } from 'pixi.js';
-import { Entity } from '../engine/Entity';
-import { RenderComponent } from '../components/RenderComponent';
-import { AnimationComponent } from '../components/AnimationComponent';
-import { GAME_COLORS} from '../utils/Types';
-import { Menu } from './Menu';
-import { getButtonPoints, MenuButtonConfig } from '../utils/MenuUtils';
-import { getThemeColors } from '../utils/Utils';
-import { isMenuButton } from '../utils/Guards';
-import { MenuButton } from './buttons/MenuButton';
+import { Entity } from '../../engine/Entity';
+import { RenderComponent } from '../../components/RenderComponent';
+import { AnimationComponent } from '../../components/AnimationComponent';
+import { GAME_COLORS} from '../../utils/Types';
+import { Menu } from '../Menu';
+import { getButtonPoints, MenuButtonConfig } from '../../utils/MenuUtils';
+import { getThemeColors } from '../../utils/Utils';
+import { isMenuButton } from '../../utils/Guards';
+import { MenuButton } from '../menuButtons/MenuButton';
 
 interface OrnamentConfig {
 	layer: string;

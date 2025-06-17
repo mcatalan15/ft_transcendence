@@ -6,18 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 11:47:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // SecretCodeSystem.ts
-import { Entity } from '../engine/Entity';
-import { System } from '../engine/System';
-import { FrameData, GAME_COLORS } from '../utils/Types';
-import { Menu } from './Menu';
-import { MenuParticleSpawner } from './MenuParticleSpawner';
-import { SecretCode, getRandomGameColor } from '../utils/MenuUtils';
-import { MenuBallSpawner } from './MenuBallSpawner';
+import { Entity } from '../../engine/Entity';
+import { System } from '../../engine/System';
+import { FrameData, GAME_COLORS } from '../../utils/Types';
+import { Menu } from '../Menu';
+import { MenuParticleSpawner } from '../menuSpawners/MenuParticleSpawner';
+import { SecretCode, getRandomGameColor } from '../../utils/MenuUtils';
+import { MenuBallSpawner } from '../menuSpawners/MenuBallSpawner';
 
 
 export class SecretCodeSystem implements System {

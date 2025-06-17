@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 15:45:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:01:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Entity } from "../engine/Entity";
-import type { System } from '../engine/System'
+import { Entity } from "../../engine/Entity";
+import type { System } from '../../engine/System'
 
-import { PostProcessingComponent } from "../components/PostProcessingComponent";
+import { PostProcessingComponent } from "../../components/PostProcessingComponent";
 
-import { randomInRange } from "../utils/Utils";
+import { randomInRange } from "../../utils/Utils";
 
 export class MenuPostProcessingSystem implements System {
     time: number;

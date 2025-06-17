@@ -6,17 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 15:38:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Container, Point } from 'pixi.js'
 import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, MotionBlurFilter, GlitchFilter, DropShadowFilter } from 'pixi-filters'
-import { Menu } from './Menu';
-import { Entity } from "../engine/Entity";
-import { RenderComponent } from "../components/RenderComponent";
-import { PostProcessingComponent } from "../components/PostProcessingComponent";
-import { GAME_COLORS } from '../utils/Types';
+import { Menu } from '../Menu';
+import { Entity } from "../../engine/Entity";
+import { RenderComponent } from "../../components/RenderComponent";
+import { PostProcessingComponent } from "../../components/PostProcessingComponent";
+import { GAME_COLORS } from '../../utils/Types';
 
 export class MenuPostProcessingLayer extends Entity {
     constructor(id: string, layer: string, menu: Menu) {

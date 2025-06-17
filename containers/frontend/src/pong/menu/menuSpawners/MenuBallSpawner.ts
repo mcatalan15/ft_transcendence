@@ -6,18 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 11:45:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/03 17:37:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:04:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Menu } from './Menu';
+import { Menu } from '../Menu';
 
-import { DefaultBall } from '../entities/balls/DefaultBall'
+import { DefaultBall } from '../../entities/balls/DefaultBall'
 
-import { RenderComponent } from '../components/RenderComponent'
-import { PhysicsComponent } from '../components/PhysicsComponent';
+import { RenderComponent } from '../../components/RenderComponent'
+import { PhysicsComponent } from '../../components/PhysicsComponent';
 
-import { isBall } from '../utils/Guards';
+import { isBall } from '../../utils/Guards';
 
 
 

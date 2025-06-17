@@ -6,27 +6,27 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/13 13:05:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Entity } from '../engine/Entity';
-import type { System } from '../engine/System'
+import { Entity } from '../../engine/Entity';
+import type { System } from '../../engine/System'
 
-import { Menu } from './Menu';
-import { Title } from './Title';
-import { BallButton } from './buttons/BallButton';
+import { Menu } from '../Menu';
+import { Title } from '../menuEntities/Title';
+import { BallButton } from '../menuButtons/BallButton';
 
-import { RenderComponent } from '../components/RenderComponent';
-import { AnimationComponent } from '../components/AnimationComponent';
+import { RenderComponent } from '../../components/RenderComponent';
+import { AnimationComponent } from '../../components/AnimationComponent';
 
-import { FrameData } from '../utils/Types';
-import { isRenderComponent, isMenuLine, isOverlayBackground, isGlossary, isPowerup } from '../utils/Guards'
-import { MenuLine } from './MenuLine';
-import { OverlayBackground } from './OverlayBackground';
-import { GlossaryTexts } from './GlossaryTexts';
-import { Powerup } from '../entities/powerups/Powerup';
-import { PhysicsComponent } from '../components/PhysicsComponent';
+import { FrameData } from '../../utils/Types';
+import { isRenderComponent, isMenuLine, isOverlayBackground, isGlossary, isPowerup } from '../../utils/Guards'
+import { MenuLine } from '../menuEntities/MenuLine';
+import { OverlayBackground } from '../menuOverlays/OverlayBackground';
+import { GlossaryTexts } from '../menuOverlays/GlossaryTexts';
+import { Powerup } from '../../entities/powerups/Powerup';
+import { PhysicsComponent } from '../../components/PhysicsComponent';
 
 export class MenuAnimationSystem implements System {
 	private menu: Menu;
@@ -50,8 +50,6 @@ update(entities: Entity[], delta: FrameData): void {
 			this.animateMenuLine(delta, entitiesToRemove, entity);
 		} else if (isOverlayBackground(entity)) {
 			this.animateOverlayBackground(delta, entity as OverlayBackground);
-		} else if (isGlossary(entity)) {
-			this.animateGlossary(delta, entity as GlossaryTexts);
 		} else if (isPowerup(entity)) {
 			if (!this.menu.config.classicMode) {
 				this.animatePowerup(entity)
@@ -176,12 +174,6 @@ update(entities: Entity[], delta: FrameData): void {
             entity.updateAnimation(delta.deltaTime);
         }
     }
-
-	animateGlossary(delta: FrameData, entity: GlossaryTexts) {
-		if (entity.getIsAnimating()) {
-			entity.updateAnimation(delta.deltaTime);
-		}
-	}
 
 	animatePowerup(entity: Powerup) {	
 		const render = entity.getComponent('render') as RenderComponent;

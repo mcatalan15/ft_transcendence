@@ -6,18 +6,16 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:26:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 12:43:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 12:07:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics } from "pixi.js";
-import { Entity } from "../engine/Entity";
-import { System } from "../engine/System";
-import { FrameData, GAME_COLORS } from "../utils/Types";
-import { Menu } from "./Menu";
-import { MenuLine } from "./MenuLine";
-import { RenderComponent } from "../components/RenderComponent";
-import { isMenuLine } from "../utils/Guards";
+import { Entity } from "../../engine/Entity";
+import { System } from "../../engine/System";
+import { FrameData} from "../../utils/Types";
+import { Menu } from "../Menu";
+import { MenuLine } from "../menuEntities/MenuLine";
+import { isMenuLine } from "../../utils/Guards";
 
 export class MenuLineSystem implements System {
 	menu: Menu;

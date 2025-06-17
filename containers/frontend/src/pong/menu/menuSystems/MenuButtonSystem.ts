@@ -6,33 +6,33 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 15:17:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 11:58:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Menu } from "./Menu";
+import { Menu } from "../Menu";
 
-import { System } from "../engine/System";
+import { System } from "../../engine/System";
 
-import { Paddle } from "../entities/Paddle";
+import { Paddle } from "../../entities/Paddle";
 
-import { GAME_COLORS, GameEvent } from "../utils/Types";
-import { PongGame } from "../engine/Game";
-import { RenderComponent } from "../components/RenderComponent";
-import { isBall } from "../utils/Guards";
+import { GAME_COLORS, GameEvent } from "../../utils/Types";
+import { PongGame } from "../../engine/Game";
+import { RenderComponent } from "../../components/RenderComponent";
+import { isBall } from "../../utils/Guards";
 
-import { ShootPowerup } from "../entities/powerups/ShootPowerup";
-import { EnlargePowerup } from "../entities/powerups/EnlargePowerup";
-import { MagnetizePowerup } from "../entities/powerups/MagnetizePowerup";
-import { ShieldPowerup } from "../entities/powerups/ShieldPowerUp";
-import { ShrinkPowerDown } from "../entities/powerups/ShrinkPowerDown";
-import { InvertPowerDown } from "../entities/powerups/InvertPowerDown";
-import { FlatPowerDown } from "../entities/powerups/FlatPowerDown";
-import { SlowPowerDown } from "../entities/powerups/SlowPowerDown";
-import { CurveBallPowerup } from "../entities/powerups/CurveBallPowerup";
-import { SpinBallPowerup } from "../entities/powerups/SpinBallPowerup";
-import { BurstBallPowerup } from "../entities/powerups/BurstBallPowerup";
-import { MultiplyBallPowerup } from "../entities/powerups/MultiplyBallPowerup";
+import { ShootPowerup } from "../../entities/powerups/ShootPowerup";
+import { EnlargePowerup } from "../../entities/powerups/EnlargePowerup";
+import { MagnetizePowerup } from "../../entities/powerups/MagnetizePowerup";
+import { ShieldPowerup } from "../../entities/powerups/ShieldPowerUp";
+import { ShrinkPowerDown } from "../../entities/powerups/ShrinkPowerDown";
+import { InvertPowerDown } from "../../entities/powerups/InvertPowerDown";
+import { FlatPowerDown } from "../../entities/powerups/FlatPowerDown";
+import { SlowPowerDown } from "../../entities/powerups/SlowPowerDown";
+import { CurveBallPowerup } from "../../entities/powerups/CurveBallPowerup";
+import { SpinBallPowerup } from "../../entities/powerups/SpinBallPowerup";
+import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
+import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
 
 export class ButtonSystem implements System {
     private menu: Menu;
