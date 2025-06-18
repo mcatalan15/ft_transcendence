@@ -54,7 +54,7 @@ export function showAuth(container: HTMLElement): void {
 		<h2 class="text-xl font-semibold mb-4 text-center text-neutral-900">${i18n.t('Two-Factor Verification')}</h2>
 		<p class="text-neutral-700 mb-4">${i18n.t('Please enter your 6-digit authentication code')}</p>
 		<div class="space-y-4">
-		  <input
+		<input
 			type="text"
 			id="twoFaTokenInput"
 			placeholder="${i18n.t('123456')}"

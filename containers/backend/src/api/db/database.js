@@ -133,13 +133,6 @@ async function getHashedPassword(email) {
 	});
 }
 
-/* 
-    GET USER FUNCTIONS
-    - getUserByEmail: Retrieves a user by their email address.
-    - getUserById: Retrieves a user by their ID.
-    - getUserByUsername: Retrieves a user by their username.
-*/
-
 async function getUserByEmail(email) {
 	return new Promise((resolve, reject) => {
 	const query = `SELECT * FROM users WHERE email = ?`;
@@ -166,7 +159,6 @@ async function getUserById(userId) {
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
-				//! Delete console.log in prod
                 console.log('getUserById result for userId', userId, ':', row);
                 resolve(row);
             }
@@ -188,7 +180,6 @@ async function getUserByUsername(username) {
     });
 }
 
-//ADD ASYN FUNC TO SCORES (API)
 async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
 	return new Promise((resolve, reject) => {
 		const query = `INSERT INTO games (player1_name, player1_score,player2_name, player2_score, winner_name) VALUES (?, ?, ?, ?, ?)`;
@@ -237,28 +228,7 @@ async function getAllGames() {
 	});
 }
 
-// async function check2FA(username, email) {
-// 	return new Promise((resolve, reject) => {
-// 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
-// 		db.get(query, [username, email], (err, row) => {
-// 			if (err) {
-// 				console.error('[DB ERROR]', err);
-// 				reject(new Error('Database error'));
-// 				return;
-// 			}
-// 			if (row) {
-// 				resolve({
-// 					exists: true,
-// 					usernameExists: row.username === username,
-// 					emailExists: row.email === email
-// 				});
-// 			} else {
-// 				resolve({ exists: false });
-// 			}
-// 		});
-// 	});
-// }
-
+// ! Needed???? !!!!
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
@@ -291,10 +261,10 @@ async function getTwoFactorSecret(userId) {
                 reject(new Error('Database error getting 2FA secret.'));
             } else if (row) {
                 console.log(`[DB] Fetched 2FA secret for user ${userId}.`);
-                resolve(row.twoFactorSecret); // Return just the secret
+                resolve(row.twoFactorSecret);
             } else {
                 console.log(`[DB] No user found with ID ${userId} or no 2FA secret set.`);
-                resolve(null); // No secret found for this user
+                resolve(null);
             }
         });
     });
@@ -302,10 +272,8 @@ async function getTwoFactorSecret(userId) {
 
 async function enableTwoFactor(userId, secret) {
     return new Promise((resolve, reject) => {
-        // You might want to also ensure the provided 'secret' matches the stored one
-        // before enabling. For now, we trust the handler has done this.
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        const params = [secret, 0, userId]; // Set twoFactorEnabled to TRUE
+        const params = [secret, 0, userId];
 
         db.run(query, params, function (err) {
             if (err) {

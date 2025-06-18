@@ -28,14 +28,12 @@ export function setupGoogleSignUp(): void {
 				console.log('typeof data.twoFAEnabled:', typeof data.twoFAEnabled);
 				console.log('Raw /api/auth/google response:', data.twoFAEnabled); // Debug raw response
 				if (data.success) {
-					// Store basic user data
 					sessionStorage.setItem('username', data.username);
 					sessionStorage.setItem('userId', data.userId);
 					sessionStorage.setItem('email', data.email);
 					sessionStorage.setItem('token', data.token);
 
-					// Handle twoFAEnabled with proper validation and fallback
-					let twoFAValue = data.twoFAEnabled; // FIX: Use the value directly, not as a sessionStorage key
+					let twoFAValue = data.twoFAEnabled;
 
 					sessionStorage.setItem('twoFAEnabled', twoFAValue);
 
@@ -43,10 +41,9 @@ export function setupGoogleSignUp(): void {
 					console.log('Original backend value:', data.twoFAEnabled);
 					console.log('Value after setting:', sessionStorage.getItem('twoFAEnabled'));
 
-					// Conditional redirect based on 2FA status
 					setTimeout(() => {
 						window.location.href = '/auth';
-					}, 100); // Small delay to ensure sessionStorage is set
+					}, 100);
 				} else {
 					alert('Google authentication failed: ' + (data.message || 'Unknown error'));
 				}

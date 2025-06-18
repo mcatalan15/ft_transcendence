@@ -2,8 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const otplib = require('otplib');
 otplib.authenticator.options = {
-	step: 30, // Default is 30 seconds
-	digits: 6 // Default is 6 digits
+	step: 30,
+	digits: 6
 };
 
 const { OAuth2Client } = require('google-auth-library');
@@ -24,13 +24,13 @@ const { saveUserToDatabase,
 async function signupHandler(request, reply) {
 	const { username, email, password } = request.body;
 
-  	if (!username || !email || !password) {
+	if (!username || !email || !password) {
 		return reply.status(400).send({ success: false, message: 'All fields are required' });
 	}
 
 	try {
 		const userExists = await checkUserExists(username, email);
-    	if (userExists?.exists) {
+		if (userExists?.exists) {
 			if (userExists.usernameExists && userExists.emailExists) {
 				return reply.status(400).send({
 					success: false,
@@ -367,30 +367,30 @@ async function generateTwoFaSetup(username, userId, email) {
 	// 1. Generate a new TOTP secret
 	const secret = otplib.authenticator.generateSecret();
 	console.log(`Generated 2FA secret for user ${userId}: ${secret}`);
-  
+
 	// 2. Save the secret to the database (linked to the user)
 	// This is crucial for later verification
 	await saveTwoFactorSecret(userId, secret);
-  
+
 	// 3. Generate the OTPAuth URL
 	const accountLabel = `${username}@${email}`;
-  
+
 	// The 'issuer' is your application's name, 'label' is the user's identifier
 	const appName = 'ft_transcendence'; // Replace with your application's name
 	const otpAuthUrl = otplib.authenticator.keyuri(accountLabel, appName, secret);
 	console.log(`Generated OTPAuth URL: ${otpAuthUrl}`);
-  
+
 	// 4. Generate the QR code image as a data URL
 	const qrCodeUrl = await qrcode.toDataURL(otpAuthUrl);
 	console.log('QR Code Data URL generated.');
-  
+
 	return {
-	  secret,
-	  qrCodeUrl,
-	  otpAuthUrl
+		secret,
+		qrCodeUrl,
+		otpAuthUrl
 	};
 };
-  
+
 /**
  * Verifies a TOTP token provided by the user.
  * @param {number} userId - The unique ID of the user.
@@ -400,15 +400,15 @@ async function generateTwoFaSetup(username, userId, email) {
 async function verifyTwoFaToken(userId, token) {
 	// 1. Retrieve the stored secret for the user from the database
 	const secret = await getTwoFactorSecret(userId);
-  
+
 	if (!secret) {
-	  console.warn(`[2FA Verify] No 2FA secret found for user ${userId}.`);
-	  return false; // User has no 2FA secret set up
+		console.warn(`[2FA Verify] No 2FA secret found for user ${userId}.`);
+		return false; // User has no 2FA secret set up
 	}
-  
+
 	// 2. Verify the token using otplib
 	const isValid = otplib.authenticator.verify({ token, secret });
-  
+
 	if (isValid) {
 		// If verification is successful, you might want to mark 2FA as enabled for the user
 		// This is important if you want to require 2FA for future logins
@@ -417,10 +417,10 @@ async function verifyTwoFaToken(userId, token) {
 	} else {
 		console.log(`[2FA Verify] Token for user ${userId} is invalid.`);
 	}
-  
+
 	return isValid;
 };
-  
+
 async function setupTwoFa(request, reply) {
 	// These now come directly from the request body, which should be sent by the frontend
 	// after a successful signup.
@@ -450,87 +450,82 @@ async function verifyTwoFa(request, reply) {
 	// userId and token come from the frontend request body
 	const { userId, token } = request.body;
 
-    // Basic validation
-    if (typeof userId !== 'number' || !token) {
-        reply.code(400).send({ 
+	// Basic validation
+	if (typeof userId !== 'number' || !token) {
+		reply.code(400).send({ 
 			message: 'Invalid verification data provided.'
 		});
-        return;
-    }
+		return;
+	}
 
-    try {
-      const verified = await verifyTwoFaToken(userId, token);
-      if (verified) {
-		console.log("Entra verified 2FA token for user:", userId);
-        // reply.code(200).send({
-		// 	message: '2FA token verified successfully!',
-		// 	verified: true
-		// });
-		const user = await getUserById(userId); // Assuming you have a function to get user by ID
+	try {
+		const verified = await verifyTwoFaToken(userId, token);
+		if (verified) {
+			console.log("Entra verified 2FA token for user:", userId);
+			const user = await getUserById(userId); // Assuming you have a function to get user by ID
 
-		if (!user) {
-			// This shouldn't happen if userId is valid from `verifyTwoFaToken`
-			reply.code(404).send({ message: 'User not found.' });
-			return;
-		}
+			if (!user) {
+				// This shouldn't happen if userId is valid from `verifyTwoFaToken`
+				reply.code(404).send({ message: 'User not found.' });
+				return;
+			}
 
-		// 2. Create a new JWT with an updated payload
-		//    Add a claim like 'twoFAVerified: true' or 'fullyAuthenticated: true'
-		const newAuthToken = jwt.sign(
-			{
-				id: user.id_user, // Use user.id_user as consistently used
+			// 2. Create a new JWT with an updated payload
+			//    Add a claim like 'twoFAVerified: true' or 'fullyAuthenticated: true'
+			const newAuthToken = jwt.sign(
+				{
+					id: user.id_user, // Use user.id_user as consistently used
+					username: user.username,
+					email: user.email,
+					twoFAEnabled: true, // Confirm 2FA is now enabled
+					twoFAVerified: true // Crucial new claim indicating successful verification
+				},
+				process.env.JWT_SECRET, // Your secret key
+				{
+					expiresIn: process.env.JWT_EXPIRES_IN // Your token expiration time
+				}
+			);
+
+			// 3. Update the session (if you're using server-side sessions)
+			// This ensures the server-side session also reflects the updated 2FA status.
+			request.session.set('token', newAuthToken); // Update the token in session
+			request.session.set('user', { // Update user info in session
+				userId: user.id_user,
 				username: user.username,
 				email: user.email,
-				twoFAEnabled: true, // Confirm 2FA is now enabled
-				twoFAVerified: true // Crucial new claim indicating successful verification
-			},
-			process.env.JWT_SECRET, // Your secret key
-			{
-				expiresIn: process.env.JWT_EXPIRES_IN // Your token expiration time
-			}
-		);
+				twoFAEnabled: true,
+				twoFAVerified: true // Update this as well
+			});
 
-		// 3. Update the session (if you're using server-side sessions)
-		//    This ensures the server-side session also reflects the updated 2FA status.
-		request.session.set('token', newAuthToken); // Update the token in session
-		request.session.set('user', { // Update user info in session
-			userId: user.id_user,
-			username: user.username,
-			email: user.email,
-			twoFAEnabled: true,
-			twoFAVerified: true // Update this as well
+			// 4. Send the new token back to the frontend
+			reply.code(200).send({
+				message: '2FA token verified successfully!',
+				verified: true,
+				token: newAuthToken, // Send the new token to the frontend
+				userId: user.id_user, // Re-send relevant user data
+				username: user.username,
+				email: user.email,
+				twoFAEnabled: true // Explicitly confirm
+			});
+			// --- END: JWT Re-issuance Logic ---
+		} else {
+			reply.code(400).send({
+				message: 'Invalid 2FA token.'
+			});
+		}
+	} catch (error) {
+		console.error('Error verifying 2FA token for user:', userId, error);
+		reply.code(500).send({
+			message: 'Failed to verify 2FA token.'
 		});
-
-		// 4. Send the new token back to the frontend
-		reply.code(200).send({
-			message: '2FA token verified successfully!',
-			verified: true,
-			token: newAuthToken, // Send the new token to the frontend
-			userId: user.id_user, // Re-send relevant user data
-			username: user.username,
-			email: user.email,
-			twoFAEnabled: true // Explicitly confirm
-		});
-		// --- END: JWT Re-issuance Logic ---
-      	} else {
-        reply.code(400).send({
-			message: 'Invalid 2FA token.'
-		});
-      	}
-    } catch (error) {
-      console.error('Error verifying 2FA token for user:', userId, error);
-      reply.code(500).send({
-		message: 'Failed to verify 2FA token.'
-	  });
-    }
+	}
 };
 
 module.exports = {
-  signupHandler,
-  signinHandler,
-  logoutHandler,
-  googleHandler,
-  setupTwoFa,
-  verifyTwoFa
-
+	signupHandler,
+	signinHandler,
+	logoutHandler,
+	googleHandler,
+	setupTwoFa,
+	verifyTwoFa
 };
