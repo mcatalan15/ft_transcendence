@@ -42,7 +42,9 @@ export function setupGoogleSignUp(): void {
 					console.log('Value after setting:', sessionStorage.getItem('twoFAEnabled'));
 
 					setTimeout(() => {
-						window.location.href = '/auth';
+						// !Change for production
+						// window.location.href = '/auth';
+						window.location.href = '/home';
 					}, 100);
 				} else {
 					alert('Google authentication failed: ' + (data.message || 'Unknown error'));
