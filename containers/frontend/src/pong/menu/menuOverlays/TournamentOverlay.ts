@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AboutOverlay.ts                                    :+:      :+:    :+:   */
+/*   TournamentOverlay.ts                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 09:44:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 16:35:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,19 @@ import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 import { Overlay } from "./Overlay";
 
-import { AboutTexts } from "./AboutTexts";
+import { TournamentTexts } from "./TournamentTexts";
+import { OverlayHeader } from "./OverlayHeader";
+import { Bracket } from "./Bracket";
 
 import { GAME_COLORS } from "../../utils/Types";
 
-export class AboutOverlay extends Overlay {
-    private aboutTexts!: AboutTexts;
+export class TournamentOverlay extends Overlay {
+    tournamentTexts!: TournamentTexts;
+    header!: OverlayHeader;
+    bracket!: Bracket;
 
     constructor(menu: Menu) {
-        super('aboutOverlay', menu, 0x151515, GAME_COLORS.menuPink);
+        super('playOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
         
         this.menu = menu;
         
@@ -32,39 +36,41 @@ export class AboutOverlay extends Overlay {
     }
 
     protected initializeContent(): void {
-        this.aboutTexts = new AboutTexts(this.menu, 'aboutTexts', 'overlays');
-        this.addContent(this.aboutTexts, 'overlays');
+        this.tournamentTexts = new TournamentTexts(this.menu, 'tournamentTexts', 'overlays');
+        //this.addContent(this.tournamentTexts, 'overlays');
 
-        MenuImageManager.createAvatars(this.menu);
-        MenuImageManager.createClassicAvatars(this.menu);
-        MenuImageManager.createPinkLogos(this.menu);
-        MenuImageManager.createClassicLogos(this.menu);
-        
-        this.setQuitButton(this.menu.aboutQuitButton);
+        this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'TOURNAMENT');
+        this.addContent(this.header, 'overlays');
+
+        this.bracket = new Bracket(this.menu, 'tournamentBracket', 'overlays', 8);
+        this.addContent(this.bracket, 'overlays');
+
+        this.setQuitButton(this.menu.playQuitButton);
     }
 
     public redrawTitles(): void {
-        if (this.aboutTexts) {
-            this.aboutTexts.redrawAboutTitles(this.menu.config.classicMode);
+        if (this.tournamentTexts) {
+            this.tournamentTexts.redrawPlayTitles(this.menu.config.classicMode);
         }
     }
 
     protected getStrokeColor(): number {
-        return this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
+        return this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
+    }
+
+    private updateOverlayTexts(): void {
+        if (this.tournamentTexts) {
+            this.tournamentTexts.recreateTexts();
+
+            this.tournamentTexts.redrawPlayTitles(this.menu.config.classicMode);
+        }
     }
 
     public show(): void {
         this.changeStrokeColor(this.getStrokeColor());
+        this.updateOverlayTexts();
 
         super.show();
-
-        if (this.menu.config.classicMode) {
-            MenuImageManager.prepareClassicLogosForAbout(this.menu);
-            MenuImageManager.prepareClassicAvatarImagesForAbout(this.menu);
-        } else {
-            MenuImageManager.preparePinkLogosForAbout(this.menu);
-            MenuImageManager.prepareAvatarImagesForAbout(this.menu);
-        }
     }
 
     public hide(): void {

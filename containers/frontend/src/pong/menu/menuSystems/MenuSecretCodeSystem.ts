@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 12:26:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,13 @@ export class SecretCodeSystem implements System {
                         type: 'ABOUT_BACK',
                         target: this.menu.aboutButton,
                         buttonName: 'ABOUT'
+                    });
+                } else if (this.menu.playButton.getIsClicked()) {
+                    console.log("ESC: Closing play overlay");
+                    this.menu.eventQueue.push({
+                        type: 'PLAY_BACK',
+                        target: this.menu.playButton,
+                        buttonName: 'PLAY'
                     });
                 }
             },

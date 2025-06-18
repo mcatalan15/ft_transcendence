@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AboutOverlay.ts                                    :+:      :+:    :+:   */
+/*   PlayOverlay.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 09:44:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 12:13:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,15 @@ import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 import { Overlay } from "./Overlay";
 
-import { AboutTexts } from "./AboutTexts";
+import { PlayTexts } from "./PlayTexts";
 
 import { GAME_COLORS } from "../../utils/Types";
 
-export class AboutOverlay extends Overlay {
-    private aboutTexts!: AboutTexts;
+export class PlayOverlay extends Overlay {
+    private playTexts!: PlayTexts;
 
     constructor(menu: Menu) {
-        super('aboutOverlay', menu, 0x151515, GAME_COLORS.menuPink);
+        super('playOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
         
         this.menu = menu;
         
@@ -32,39 +32,35 @@ export class AboutOverlay extends Overlay {
     }
 
     protected initializeContent(): void {
-        this.aboutTexts = new AboutTexts(this.menu, 'aboutTexts', 'overlays');
-        this.addContent(this.aboutTexts, 'overlays');
-
-        MenuImageManager.createAvatars(this.menu);
-        MenuImageManager.createClassicAvatars(this.menu);
-        MenuImageManager.createPinkLogos(this.menu);
-        MenuImageManager.createClassicLogos(this.menu);
+        this.playTexts = new PlayTexts(this.menu, 'playTexts', 'overlays');
+        this.addContent(this.playTexts, 'overlays');
         
-        this.setQuitButton(this.menu.aboutQuitButton);
+        this.setQuitButton(this.menu.playQuitButton);
     }
 
     public redrawTitles(): void {
-        if (this.aboutTexts) {
-            this.aboutTexts.redrawAboutTitles(this.menu.config.classicMode);
+        if (this.playTexts) {
+            this.playTexts.redrawPlayTitles(this.menu.config.classicMode);
         }
     }
 
     protected getStrokeColor(): number {
-        return this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
+        return this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
+    }
+
+    private updateOverlayTexts(): void {
+        if (this.playTexts) {
+            this.playTexts.recreateTexts();
+
+            this.playTexts.redrawPlayTitles(this.menu.config.classicMode);
+        }
     }
 
     public show(): void {
         this.changeStrokeColor(this.getStrokeColor());
+        this.updateOverlayTexts();
 
         super.show();
-
-        if (this.menu.config.classicMode) {
-            MenuImageManager.prepareClassicLogosForAbout(this.menu);
-            MenuImageManager.prepareClassicAvatarImagesForAbout(this.menu);
-        } else {
-            MenuImageManager.preparePinkLogosForAbout(this.menu);
-            MenuImageManager.prepareAvatarImagesForAbout(this.menu);
-        }
     }
 
     public hide(): void {

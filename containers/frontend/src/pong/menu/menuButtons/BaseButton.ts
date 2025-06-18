@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 12:25:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:26:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ export interface ButtonAnimationConfig {
 
 export abstract class BaseButton extends Entity {
     protected menu: Menu;
+    protected buttonId: string;
     protected buttonContainer!: Container;
     protected buttonGraphic!: Graphics;
     protected buttonText?: Text;
@@ -50,8 +51,9 @@ export abstract class BaseButton extends Entity {
     public isStateChanging: boolean = false;
     public isUpdating: boolean = false;
 
-    constructor(id: string, layer: string, menu: Menu, config: MenuButtonConfig) {
+    constructor(id: string, buttonId: string, layer: string, menu: Menu, config: MenuButtonConfig) {
         super(id, layer);
+        this.buttonId = buttonId;
         this.menu = menu;
         this.config = config;
         this.isClicked = config.isClicked || false;
@@ -300,6 +302,10 @@ export abstract class BaseButton extends Entity {
 
     public getText(): string {
         return this.config.text || '';
+    }
+
+    public getButtonId(): string {
+        return this.buttonId || '';
     }
 
     public getIndex(): number {

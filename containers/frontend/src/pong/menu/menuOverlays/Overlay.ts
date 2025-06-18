@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 16:34:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ export abstract class Overlay extends Entity {
     protected content: OverlayContent[] = [];
     protected background: Graphics;
     protected quitButton?: any;
+    protected readyButton?: any;
     protected isContentInitialized: boolean = false;
     
     // Animation properties
@@ -92,6 +93,13 @@ export abstract class Overlay extends Entity {
 
     protected setQuitButton(button: any): void {
         this.quitButton = button;
+        if (button) {
+            button.getContainer().alpha = 0;
+        }
+    }
+
+    protected setReadyButton(button: any): void {
+        this.readyButton = button;
         if (button) {
             button.getContainer().alpha = 0;
         }
@@ -271,12 +279,12 @@ export abstract class Overlay extends Entity {
             this.updatePowerupAlphas(alpha);
             this.updateWallImageAlphas(alpha);
         } else if (this.id === 'aboutOverlay') {
-            this.updateAvatarImageAlphas(alpha);
-
             if (this.menu.config.classicMode) {
                 this.updateClassicLogosAlphas(alpha);
+                this.updateClassicAvatarImageAlphas(alpha);
             } else {
                 this.updatePinkLogosAlphas(alpha);
+                this.updateAvatarImageAlphas(alpha);
             }
         }
     }
@@ -315,6 +323,15 @@ export abstract class Overlay extends Entity {
 
     private updateAvatarImageAlphas(alpha: number): void {
         const avatarImages = MenuImageManager.getAllAvatarImages();
+        avatarImages.forEach((avatarImage: any) => {
+            if (avatarImage) {
+                avatarImage.alpha = alpha;
+            }
+        });
+    }
+
+    private updateClassicAvatarImageAlphas(alpha: number): void {
+        const avatarImages = MenuImageManager.getAllClassicAvatarImages();
         avatarImages.forEach((avatarImage: any) => {
             if (avatarImage) {
                 avatarImage.alpha = alpha;

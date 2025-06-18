@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 11:42:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 13:02:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,14 @@ export class MenuButton extends BaseButton {
         if (this.menu.aboutOverlay.getIsDisplayed()) {
             this.menu.aboutOverlay.changeStrokeColor(GAME_COLORS.white);
         }
+
+        if (this.menu.playOverlay.getIsDisplayed()) {
+            this.menu.playOverlay.changeStrokeColor(GAME_COLORS.white);
+        }
+
+        if (this.menu.tournamentOverlay.getIsDisplayed()) {
+            this.menu.tournamentOverlay.changeStrokeColor(GAME_COLORS.white);
+        }
         
         if (this.buttonText) {
             this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
@@ -98,6 +106,16 @@ export class MenuButton extends BaseButton {
             const aboutColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
             this.menu.aboutOverlay.changeStrokeColor(aboutColor);
         }
+
+        if (this.menu.playOverlay.getIsDisplayed()) {
+            const playColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
+            this.menu.playOverlay.changeStrokeColor(playColor);
+        }
+
+        if (this.menu.tournamentOverlay.getIsDisplayed()) {
+            const playColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
+            this.menu.tournamentOverlay.changeStrokeColor(playColor);
+        }
     }
 
     protected resetButtonState(): void {
@@ -115,7 +133,7 @@ export class MenuButton extends BaseButton {
                 getThemeColors(this.menu.config.classicMode).white : 
                 this.config.color;
             
-            const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
+            const isToggleButton = this.buttonId === 'ABOUT' || this.buttonId === 'GLOSSARY';
             let textAlpha: number = 1;
             
             if (!this.isClickable) {
@@ -181,7 +199,7 @@ export class MenuButton extends BaseButton {
 
     protected getEventType(): string | null {
         console.log(`text: ${this.config.text}`);
-        switch (this.config.text) {
+        switch (this.buttonId) {
             case 'START': return 'START_CLICK';
             case 'OPTIONS': return 'OPTIONS_CLICK';
             case 'GLOSSARY': return 'GLOSSARY_CLICK';
@@ -212,7 +230,7 @@ export class MenuButton extends BaseButton {
     }
 
     private getOrnament(button: BaseButton) {
-        switch ((button as MenuButton).getText()) {
+        switch ((button as MenuButton).getButtonId()) {
             case ('START'): return this.menu.startOrnament;
             case ('OPTIONS'): return this.menu.optionsOrnament;
             case ('GLOSSARY'): return this.menu.glossaryOrnament;

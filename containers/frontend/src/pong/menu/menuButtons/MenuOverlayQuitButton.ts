@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 14:40:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 12:25:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,12 @@ export class MenuOverlayQuitButton extends MenuButton {
                 type: 'ABOUT_BACK',
                 target: this.buttonContainer,
                 buttonName: 'aboutQuitButton'
+            });
+        } else if (this.menu.playButton.getIsClicked()) {
+            this.menu.eventQueue.push({
+                type: 'PLAY_BACK',
+                target: this.buttonContainer,
+                buttonName: 'playQuitButton'
             });
         }
     }

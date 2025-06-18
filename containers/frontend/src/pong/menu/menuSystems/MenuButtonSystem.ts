@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 14:53:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 14:39:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,12 +111,22 @@ export class ButtonSystem implements System {
     }
 
     handlePlayClick(){
-        this.menu.cleanup();
+        //this.menu.cleanup();
 
         this.setFinalConfig();
 
-        const game = new PongGame(this.menu.app, this.menu.config); //! send menu config to the game
-        game.init();
+        /* const game = new PongGame(this.menu.app, this.menu.config, this.menu.language); //! send menu config to the game
+        game.init(); */
+
+        if (this.menu.config.variant === 'tournament') {
+            this.menu.playButton.setClicked(true);
+            this.menu.tournamentOverlay.show();
+            this.setButtonsClickability(false);    
+        } else {
+            this.menu.playButton.setClicked(true);
+            this.menu.playOverlay.show();
+            this.setButtonsClickability(false);
+        }
     }
 
     handleOptionsClick() {
@@ -217,6 +227,16 @@ export class ButtonSystem implements System {
             this.menu.aboutOverlay.hide();
 
             this.setButtonsClickability(true);
+        } else if (event.type.includes('PLAY')) {
+            this.setButtonsClickability(true);
+            this.menu.playButton.setClicked(false);
+            this.menu.playButton.resetButton();
+            this.menu.playQuitButton.resetButton();
+            if (this.menu.config.variant === 'tournament') {
+                this.menu.tournamentOverlay.hide();
+            } else {
+                this.menu.playOverlay.hide();
+            }
         }
     }
 
@@ -318,7 +338,7 @@ export class ButtonSystem implements System {
         const isClicked = this.menu.filtersButton.getIsClicked();
     
         if (isClicked) {
-            this.menu.filtersButton.updateText(text.substring(0, text.indexOf('ON')) + 'OFF');
+            this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
             this.menu.visualRoot.filters = [];
             this.menu.menuContainer.filters = [];
             this.menu.renderLayers.overlays.filters = [];
@@ -328,7 +348,7 @@ export class ButtonSystem implements System {
             this.menu.renderLayers.overlayQuits.filters = [];
             this.menu.config.filters = false;
         } else {
-            this.menu.filtersButton.updateText(text.substring(0, text.indexOf('OFF')) + 'ON');
+            this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
             this.menu.visualRoot.filters = this.menu.baseFilters;
             this.menu.menuContainer.filters = this.menu.baseFilters;
             this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
@@ -384,9 +404,9 @@ export class ButtonSystem implements System {
         const isClicked = this.menu.classicButton.getIsClicked();
     
         if (isClicked) {
-            this.menu.classicButton.updateText(text.substring(0, text.indexOf('ON')) + 'OFF');
+            this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
         } else if (!isClicked) {
-            this.menu.classicButton.updateText(text.substring(0, text.indexOf('OFF')) + 'ON');
+            this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
         }
     
         this.menu.classicButton.setClicked(!this.menu.classicButton.getIsClicked());
@@ -446,6 +466,47 @@ export class ButtonSystem implements System {
         this.menu.aboutOverlay.redrawTitles();
     }
 
+    getUpdatedHalfButtonText(text: string, mode: string): string {
+        switch (this.menu.language) {
+            case ('en'): {
+                if (mode === 'ON') {
+                    return text.substring(0, text.indexOf('ON')) + 'OFF';
+                } else if (mode === 'OFF') {
+                    return text.substring(0, text.indexOf('OFF')) + 'ON';
+                }
+                break;
+            }
+
+            case ('es'): {
+                if (mode === 'ON') {
+                return text.substring(0, text.indexOf('SÍ')) + 'NO';
+                } else if (mode === 'OFF') {
+                    return text.substring(0, text.indexOf('NO')) + 'SÍ';
+                }
+                break;
+            }
+
+            case ('fr'): {
+                if (mode === 'ON') {
+                    return text.substring(0, text.indexOf('OUI')) + 'NON';
+                } else if (mode === 'OFF') {
+                    return text.substring(0, text.indexOf('NON')) + 'OUI';
+                }
+                break;
+            }
+
+            case ('cat'): {
+                if (mode === 'ON') {
+                    return text.substring(0, text.indexOf('SÍ')) + 'NO';
+                } else if (mode === 'OFF') {
+                    return text.substring(0, text.indexOf('NO')) + 'SÍ';
+                }
+                break;
+            }
+        }
+        return ('UNKNOWN');
+    }
+
     public updatePlayButtonState(): void {
         let shouldBeClickable = false;
         
@@ -496,6 +557,7 @@ export class ButtonSystem implements System {
         this.menu.optionsXButton.resetButton();
         this.menu.glossaryQuitButton.resetButton();
         this.menu.aboutQuitButton.resetButton();
+        this.menu.playQuitButton.resetButton();
         
         this.menu.playOrnament.resetOrnament();
         this.menu.startOrnament.resetOrnament();

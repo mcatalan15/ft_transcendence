@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:21:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 11:32:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:35:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ export class BallButton extends BaseButton {
             index: 0
         };
         
-        super(id, layer, menu, config);
+        super(id, "BALLBUTTON", layer, menu, config);
         this.onClick = onClick;
     }
 
@@ -44,7 +44,7 @@ export class BallButton extends BaseButton {
     }
 
     protected getButtonPoints(): number[] {
-        return []; // Not applicable for circular button
+        return [];
     }
 
     protected getButtonDimensions(): { width: number, height: number } {

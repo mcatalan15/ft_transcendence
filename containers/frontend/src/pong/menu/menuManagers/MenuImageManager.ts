@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 10:40:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 09:43:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ export class MenuImageManager {
     private static assets: Map<string, Texture> = new Map();
     private static wallImages: Sprite[] = [];
     private static avatarImages: Sprite[] = [];
+    private static classicAvatarImages: Sprite[] = [];
     private static pinkLogoImages: Sprite[] = [];
     private static classicLogoImages: Sprite[] = [];
     private static isAnimating: boolean = false;
@@ -112,6 +113,31 @@ export class MenuImageManager {
             
             if (avatar) {
                 this.avatarImages.push(avatar);
+            }
+        });
+    }
+
+    static createClassicAvatars(menu: Menu) {
+        this.classicAvatarImages = [];
+    
+        const avatarData = [
+            { name: 'EvaClassic', x: 220, y: 250, url: 'https://github.com/eferre-m' },
+            { name: 'HugoClassic', x: 450, y: 250, url: 'https://github.com/hugomgris' },
+            { name: 'MarcClassic', x: 220, y: 515, url: 'https://github.com/mcatalan15' },
+            { name: 'NicoClassic', x: 450, y: 515, url: 'https://github.com/mrlouf' }
+        ];
+    
+        avatarData.forEach(data => {
+            const avatar = this.createClickableAvatar(
+                data.name, 
+                data.x, 
+                data.y, 
+                data.url, 
+                menu
+            );
+            
+            if (avatar) {
+                this.classicAvatarImages.push(avatar);
             }
         });
     }
@@ -215,6 +241,18 @@ export class MenuImageManager {
         });
     }
 
+    static prepareClassicAvatarImagesForAbout(menu: Menu): void {
+        this.classicAvatarImages.forEach(avatarImage => {
+            if (avatarImage) {
+                avatarImage.alpha = 0;
+                if (avatarImage.parent) {
+                    avatarImage.parent.removeChild(avatarImage);
+                }
+                menu.renderLayers.overlays.addChild(avatarImage);
+            }
+        });
+    }
+
     static hideWallImagesFromGlossary(menu: Menu): void {
         this.wallImages.forEach(wallImage => {
             if (wallImage) {
@@ -253,6 +291,18 @@ export class MenuImageManager {
 
     static hideAvatarImagesFromAbout(menu: Menu): void {
         this.avatarImages.forEach(avatarImage => {
+            if (avatarImage) {
+                if (avatarImage.parent) {
+                    avatarImage.parent.removeChild(avatarImage);
+                }
+                menu.menuHidden.addChild(avatarImage);
+                avatarImage.alpha = 0;
+            }
+        });
+    }
+
+    static hideClassicAvatarImagesFromAbout(menu: Menu): void {
+        this.classicAvatarImages.forEach(avatarImage => {
             if (avatarImage) {
                 if (avatarImage.parent) {
                     avatarImage.parent.removeChild(avatarImage);
@@ -443,6 +493,10 @@ export class MenuImageManager {
 
     static getAllAvatarImages(): Sprite[] {
         return this.avatarImages;
+    }
+
+    static getAllClassicAvatarImages(): Sprite[] {
+        return this.classicAvatarImages;
     }
 
     static getAllPinkLogoImages(): Sprite[] {

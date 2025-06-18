@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 18:48:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:43:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export async function initGame() {
   });
 
   //const language = localStorage.getItem('i18nextLng') || 'en';
-  const language = 'es';
+  const language = 'en';
 
   const container = document.getElementById("game-container");
   if (!container) throw new Error("game-container not found!");

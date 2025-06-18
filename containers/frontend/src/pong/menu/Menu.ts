@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 16:25:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 12:58:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ import { isRenderComponent } from '../utils/Guards';
 import { InvertPowerDown } from '../entities/powerups/InvertPowerDown';
 import { GlossaryOverlay } from './menuOverlays/GlossaryOverlay';
 import { AboutOverlay } from './menuOverlays/AboutOverlay';
+import { PlayOverlay } from './menuOverlays/PlayOverlay';
+import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 
 export class Menu{
 	config: GameConfig;
@@ -145,6 +147,7 @@ export class Menu{
 	ballButton!: BallButton;
 	glossaryQuitButton!: MenuButton;
 	aboutQuitButton!: MenuButton;
+	playQuitButton!: MenuButton;
 
 	// Ornaments
 	frame!: Graphics;
@@ -160,6 +163,8 @@ export class Menu{
 	// Overlay items
 	glossaryOverlay!: GlossaryOverlay;
 	aboutOverlay!: AboutOverlay;
+	playOverlay!: PlayOverlay;
+	tournamentOverlay!: TournamentOverlay;
 	overlayBackground!: OverlayBackground;
 	glossaryES!: GlossaryTexts;
 	aboutES!: AboutTexts;
@@ -569,6 +574,12 @@ export class Menu{
 		
 		this.aboutOverlay = new AboutOverlay(this);
 		this.entities.push(this.aboutOverlay);
+
+		this.playOverlay = new PlayOverlay(this);
+		this.entities.push(this.playOverlay);
+
+		this.tournamentOverlay = new TournamentOverlay(this);
+		this.entities.push(this.tournamentOverlay);
 	}
 
 	createPowerups() {
@@ -598,6 +609,12 @@ export class Menu{
 			{ name: 'avatarMarc', url: '/avatars/defaults/default2.png' },
     		{ name: 'avatarNico', url: '/avatars/defaults/default3.png' },
 		    { name: 'avatarHugo', url: '/avatars/defaults/default4.png' },
+
+			// About classic avatars
+			{ name: 'avatarEvaClassic', url: '/avatars/classic/default1Classic.png' },
+			{ name: 'avatarMarcClassic', url: '/avatars/classic/default2Classic.png' },
+    		{ name: 'avatarNicoClassic', url: '/avatars/classic/default3Classic.png' },
+		    { name: 'avatarHugoClassic', url: '/avatars/classic/default4Classic.png' },
 
 			// About pink logos
 			{ name: 'typescriptPink', url: '/logos/pink/logo_typescript.png' },

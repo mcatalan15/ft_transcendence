@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:33:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 10:33:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:34:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ export class MenuHalfButton extends MenuButton {
         };
     }
 
-    // Override the alpha logic to be opposite of MenuButton
     protected getTextAlpha(): number {
         return this.isClicked ? 1 : 0.3;
     }
@@ -55,7 +54,7 @@ export class MenuHalfButton extends MenuButton {
         } else {
             const themeColors = getThemeColors(false);
             
-            switch (this.config.text) {
+            switch (this.buttonId) {
                 case 'LOCAL':
                 case 'ONLINE':
                 case '1 vs IA':
@@ -77,7 +76,7 @@ export class MenuHalfButton extends MenuButton {
         
         return {
             color: themeColor,
-            alpha: this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3  // Combine both conditions
+            alpha: this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3
         };
     }
     
@@ -85,7 +84,7 @@ export class MenuHalfButton extends MenuButton {
         const fillColor = this.getFillColor();
         return {
             color: fillColor.color,
-            alpha: this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3,  // Combine both conditions
+            alpha: this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3,
             width: 3
         };
     }
@@ -104,14 +103,12 @@ export class MenuHalfButton extends MenuButton {
     protected handlePointerEnter(): void {
         if (!this.isClickable) return;
         
-        // Clear any pending timeout
         if (this.hoverTimeout) {
             clearTimeout(this.hoverTimeout);
         }
         
         this.isHovered = true;
         
-        // Immediate visual update
         this.buttonGraphic.clear();
         const points = this.getButtonPoints();
         this.buttonGraphic.poly(points);
@@ -132,16 +129,15 @@ export class MenuHalfButton extends MenuButton {
     protected handlePointerLeave(): void {
         this.isHovered = false;
         
-        // Debounce the reset to prevent rapid updates
         if (this.hoverTimeout) {
             clearTimeout(this.hoverTimeout);
         }
         
         this.hoverTimeout = window.setTimeout(() => {
-            if (!this.isHovered) { // Double-check we're still not hovered
+            if (!this.isHovered) {
                 this.resetButtonState();
             }
-        }, 10); // Very short delay
+        }, 10);
     }
     
     protected resetButtonState(): void {
@@ -162,10 +158,10 @@ export class MenuHalfButton extends MenuButton {
             
             if (this.menu.config.classicMode) {
                 textColor = 0xfff8e3;
-                textAlpha = this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3;  // Updated logic
+                textAlpha = this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3;
             } else {
                 textColor = fillColor.color;
-                textAlpha = this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3;  // Updated logic
+                textAlpha = this.isClickable ? (this.isClicked ? 1 : 0.3) : 0.3;
             }
             
             this.buttonText.style.fill = { color: textColor, alpha: textAlpha };
@@ -175,13 +171,13 @@ export class MenuHalfButton extends MenuButton {
     }
 
     protected getEventType(): string | null {
-        if (this.config.text.includes('FILTER')) return 'FILTERS_CLICK';
-        else if (this.config.text.includes('CLASSIC')) return 'CLASSIC_CLICK';
-        else if (this.config.text.includes('LOCAL')) return 'LOCAL_CLICK';
-        else if (this.config.text.includes('ONLINE')) return 'ONLINE_CLICK';
-        else if (this.config.text.includes('1 vs IA')) return 'IA_CLICK';
-        else if (this.config.text.includes('TOURNAMENT')) return 'TOURNAMENT_CLICK';
-        else if (this.config.text.includes('1 vs 1')) return 'DUEL_CLICK';
+        if (this.buttonId.includes('FILTER')) return 'FILTERS_CLICK';
+        else if (this.buttonId.includes('CLASSIC')) return 'CLASSIC_CLICK';
+        else if (this.buttonId.includes('LOCAL')) return 'LOCAL_CLICK';
+        else if (this.buttonId.includes('ONLINE')) return 'ONLINE_CLICK';
+        else if (this.buttonId.includes('1 vs IA')) return 'IA_CLICK';
+        else if (this.buttonId.includes('TOURNAMENT')) return 'TOURNAMENT_CLICK';
+        else if (this.buttonId.includes('1 vs 1')) return 'DUEL_CLICK';
         else return null;
     }
 

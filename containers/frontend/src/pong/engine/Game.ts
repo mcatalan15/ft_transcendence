@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 15:22:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:06:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '..
 
 export class PongGame {
 	config: GameConfig;
+	language: string;
 	app: Application;
 	width: number;
 	height: number;
@@ -90,8 +91,9 @@ export class PongGame {
 	leftPlayer: any = '';
 	rightPlayer: any = '';
 
-	constructor(app: Application, config: GameConfig) {
+	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
+		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
