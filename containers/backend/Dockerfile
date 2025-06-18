@@ -33,7 +33,7 @@ RUN npm cache clean --force \
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh
+RUN chmod +x tools/init_db.sh tools/data.sh
 
 RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 
