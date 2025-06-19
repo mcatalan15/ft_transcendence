@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 18:40:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 12:51:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'affectationsContent',
                 text: 
                       "Affected paddles change visually when they collect a powerup or a powerdown.\n\n" + 
-                      "Their affectation timer is tracked by the bar at the bottom of their screen side.",
+                      "Their affectation timer is tracked by the bar at the bottom of their side of the screen.",
                 x: 240,
                 y: 490,
                 style: {
@@ -275,7 +275,7 @@ export class GlossaryTexts extends Entity {
             {
                 tag: 'wallShapesContent',
                 text: 
-                      "Walls change, warp and move over time, affecting the balls' trajectories.\n\n" + 
+                      "Walls change, warp and move over time, affecting the balls' paths and trajectories.\n\n" + 
                       "Sometimes, blocking figures spawn in the middle of the arena as solid obstacles.",
                 x: 670,
                 y: 490,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 14:39:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 12:51:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,8 @@ export class ButtonSystem implements System {
 
         this.menu.menuHidden.addChild(this.menu.optionsOrnament.getGraphic());
         this.menu.menuContainer.addChild(this.menu.optionsClickedOrnament.getGraphic());
+
+        this.menu.redrawFrame();
     }
 
     handleGlossaryClick() {

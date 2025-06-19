@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 12:58:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 09:42:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ export class Menu{
 
 	// Ornaments
 	frame!: Graphics;
+	subframe!: Graphics;
 	startOrnament!: MenuOrnament;
 	playOrnament!: MenuOrnament;
 	optionsOrnament!: MenuOrnament;
@@ -558,6 +559,14 @@ export class Menu{
 		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
 		this.menuContainer.addChild(frame);
 		this.frame = frame;
+
+		const subFrame = new Graphics();
+		subFrame.rect(0, 0, this.width - 60, this.height - 60);
+		subFrame.stroke({ color: getThemeColors(this.config.classicMode).black, width: 5});
+		subFrame.x = 30;
+		subFrame.y = 30;
+		this.menuContainer.addChild(subFrame);
+		this.subframe = subFrame;
 	}
 
 	redrawFrame() {
@@ -566,6 +575,14 @@ export class Menu{
 		frame.rect(0, 0, this.width, this.height);
 		frame.stroke({ color: getThemeColors(this.config.classicMode).white, width: 75});
 		this.menuContainer.addChild(frame);
+
+		const subframe = this.subframe;
+		subframe.clear();
+		subframe.rect(0, 0, this.width - 60, this.height - 60);
+		subframe.stroke({ color: getThemeColors(this.config.classicMode).black, width: 5});
+		subframe.x = 30;
+		subframe.y = 30;
+		this.menuContainer.addChild(subframe);
 	}
 
 	private createOverlays(): void {	

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 09:43:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 12:47:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,20 +68,20 @@ export class MenuImageManager {
         // Define wall image positions and names
         const wallImageData = [
             // Top row
-            { name: 'wallPyramids', x: 1075, y: 540 },
-            { name: 'wallSteps', x: 1180, y: 540 },
-            { name: 'wallTrenches', x: 1285, y: 540 },
-            { name: 'wallHourglass', x: 1390, y: 540 },
-            { name: 'wallLightning', x: 1495, y: 540 },
-            { name: 'wallFangs', x: 1600, y: 540 },
+            { name: 'wallPyramids', x: 1075, y: 520 },
+            { name: 'wallSteps', x: 1180, y: 520 },
+            { name: 'wallTrenches', x: 1285, y: 520 },
+            { name: 'wallHourglass', x: 1390, y: 520 },
+            { name: 'wallLightning', x: 1495, y: 520 },
+            { name: 'wallFangs', x: 1600, y: 520 },
             
             // Bottom row
-            { name: 'wallWaystones', x: 1075, y: 600 },
-            { name: 'wallSnakes', x: 1180, y: 600 },
-            { name: 'wallVipers', x: 1285, y: 600 },
-            { name: 'wallKite', x: 1390, y: 600 },
-            { name: 'wallBowtie', x: 1495, y: 600 },
-            { name: 'wallHoneycomb', x: 1600, y: 600 }
+            { name: 'wallWaystones', x: 1075, y: 580 },
+            { name: 'wallSnakes', x: 1180, y: 580 },
+            { name: 'wallVipers', x: 1285, y: 580 },
+            { name: 'wallKite', x: 1390, y: 580 },
+            { name: 'wallBowtie', x: 1495, y: 580 },
+            { name: 'wallHoneycomb', x: 1600, y: 580 }
         ];
     
         wallImageData.forEach(data => {

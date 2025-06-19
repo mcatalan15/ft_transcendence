@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 12:13:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 10:55:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,13 @@ import { MenuImageManager } from "../menuManagers/MenuImageManager";
 import { Overlay } from "./Overlay";
 
 import { PlayTexts } from "./PlayTexts";
+import { OverlayHeader } from "./OverlayHeader";
 
 import { GAME_COLORS } from "../../utils/Types";
 
 export class PlayOverlay extends Overlay {
     private playTexts!: PlayTexts;
+    header!: OverlayHeader;
 
     constructor(menu: Menu) {
         super('playOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
@@ -32,8 +34,11 @@ export class PlayOverlay extends Overlay {
     }
 
     protected initializeContent(): void {
-        this.playTexts = new PlayTexts(this.menu, 'playTexts', 'overlays');
-        this.addContent(this.playTexts, 'overlays');
+        /* this.playTexts = new PlayTexts(this.menu, 'playTexts', 'overlays');
+        this.addContent(this.playTexts, 'overlays'); */
+
+        this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', '1 VS 1');
+        this.addContent(this.header, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
     }

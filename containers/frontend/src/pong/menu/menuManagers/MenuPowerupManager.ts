@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 14:10:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 12:45:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,7 @@ export class MenuPowerupManager {
         const paddleL = new Paddle('paddleL', 'foreground', menu, menu.paddleOffset, menu.height / 2, true, 'PLAYER');
 		const paddleLPhysics = paddleL.getComponent('physics') as PhysicsComponent;
 		paddleLPhysics.x = 160;
-		paddleLPhysics.y = menu.height / 2 + 200;
+		paddleLPhysics.y = menu.height / 2 + 180;
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		menu.menuHidden.addChild(paddleLRender.graphic);
@@ -247,7 +247,7 @@ export class MenuPowerupManager {
 		const paddleR = new Paddle('paddleR', 'foreground', menu, menu.width - menu.paddleOffset, menu.height / 2, false, "#@%$&");
 		const paddleRPhysics = paddleR.getComponent('physics') as PhysicsComponent;
 		paddleRPhysics.x = 190;
-		paddleRPhysics.y = menu.height / 2 + 200;
+		paddleRPhysics.y = menu.height / 2 + 180;
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		menu.menuHidden.addChild(paddleRRender.graphic);    
