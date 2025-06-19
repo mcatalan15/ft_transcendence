@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:51:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:32:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ export class ButtonSystem implements System {
         /* const game = new PongGame(this.menu.app, this.menu.config, this.menu.language); //! send menu config to the game
         game.init(); */
 
+        this.menu.playQuitButton.resetButton();
+        
         if (this.menu.config.variant === 'tournament') {
             this.menu.playButton.setClicked(true);
             this.menu.tournamentOverlay.show();
@@ -149,12 +151,14 @@ export class ButtonSystem implements System {
     }
 
     handleGlossaryClick() {
+        this.menu.glossaryQuitButton.resetButton();
         this.menu.glossaryButton.setClicked(true);
         this.menu.glossaryOverlay.show();
         this.setButtonsClickability(false);
     }
 
     handleAboutClick() {
+        this.menu.aboutQuitButton.resetButton();
         this.menu.aboutButton.setClicked(true);
         this.menu.aboutOverlay.show();
         this.setButtonsClickability(false);
@@ -215,7 +219,6 @@ export class ButtonSystem implements System {
             this.menu.glossaryButton.setClicked(false);
 
             this.menu.glossaryButton.resetButton();
-            this.menu.glossaryQuitButton.resetButton();
             
             this.menu.glossaryOverlay.hide();
         } else if (event.type.includes('ABOUT')) {
@@ -224,7 +227,6 @@ export class ButtonSystem implements System {
             this.menu.aboutButton.setClicked(false);
 
             this.menu.aboutButton.resetButton();
-            this.menu.aboutQuitButton.resetButton();
             
             this.menu.aboutOverlay.hide();
 
@@ -233,7 +235,6 @@ export class ButtonSystem implements System {
             this.setButtonsClickability(true);
             this.menu.playButton.setClicked(false);
             this.menu.playButton.resetButton();
-            this.menu.playQuitButton.resetButton();
             if (this.menu.config.variant === 'tournament') {
                 this.menu.tournamentOverlay.hide();
             } else {

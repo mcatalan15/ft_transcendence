@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 10:55:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:54:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ export class PlayOverlay extends Overlay {
     protected initializeContent(): void {
         /* this.playTexts = new PlayTexts(this.menu, 'playTexts', 'overlays');
         this.addContent(this.playTexts, 'overlays'); */
-
-        this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', '1 VS 1');
+        this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'play');
         this.addContent(this.header, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 09:44:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:51:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ import { Menu } from "../Menu";
 import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 import { Overlay } from "./Overlay";
+import { OverlayHeader } from "./OverlayHeader";
 
 import { AboutTexts } from "./AboutTexts";
 
@@ -22,6 +23,7 @@ import { GAME_COLORS } from "../../utils/Types";
 
 export class AboutOverlay extends Overlay {
     private aboutTexts!: AboutTexts;
+    header!: OverlayHeader;
 
     constructor(menu: Menu) {
         super('aboutOverlay', menu, 0x151515, GAME_COLORS.menuPink);
@@ -34,6 +36,9 @@ export class AboutOverlay extends Overlay {
     protected initializeContent(): void {
         this.aboutTexts = new AboutTexts(this.menu, 'aboutTexts', 'overlays');
         this.addContent(this.aboutTexts, 'overlays');
+
+        this.header = new OverlayHeader(this.menu, 'glossaryHeader', 'overlays', 'info');
+        this.addContent(this.header, 'overlays');
 
         MenuImageManager.createAvatars(this.menu);
         MenuImageManager.createClassicAvatars(this.menu);

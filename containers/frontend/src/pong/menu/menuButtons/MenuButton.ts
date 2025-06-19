@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 13:02:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:55:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,22 +55,6 @@ export class MenuButton extends BaseButton {
         this.buttonGraphic.poly(points);
         this.buttonGraphic.fill({ color: getThemeColors(this.menu.config.classicMode).white, alpha: 1 });
         this.buttonGraphic.stroke({ color: getThemeColors(this.menu.config.classicMode).white, width: 3, alpha: 1 });
-    
-        if (this.menu.glossaryOverlay.getIsDisplayed()) {
-            this.menu.glossaryOverlay.changeStrokeColor(GAME_COLORS.white);
-        }
-        
-        if (this.menu.aboutOverlay.getIsDisplayed()) {
-            this.menu.aboutOverlay.changeStrokeColor(GAME_COLORS.white);
-        }
-
-        if (this.menu.playOverlay.getIsDisplayed()) {
-            this.menu.playOverlay.changeStrokeColor(GAME_COLORS.white);
-        }
-
-        if (this.menu.tournamentOverlay.getIsDisplayed()) {
-            this.menu.tournamentOverlay.changeStrokeColor(GAME_COLORS.white);
-        }
         
         if (this.buttonText) {
             this.buttonText.style.fill = { color: getThemeColors(this.menu.config.classicMode).black, alpha: 1 };
@@ -96,21 +80,6 @@ export class MenuButton extends BaseButton {
                 this.resetButtonState();
             }
         }, 10);
-    
-        if (this.menu.glossaryOverlay.getIsDisplayed()) {
-            const glossaryColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuOrange;
-            this.menu.glossaryOverlay.changeStrokeColor(glossaryColor);
-        }
-        
-        if (this.menu.aboutOverlay.getIsDisplayed()) {
-            const aboutColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
-            this.menu.aboutOverlay.changeStrokeColor(aboutColor);
-        }
-
-        if (this.menu.playOverlay.getIsDisplayed()) {
-            const playColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
-            this.menu.playOverlay.changeStrokeColor(playColor);
-        }
 
         if (this.menu.tournamentOverlay.getIsDisplayed()) {
             const playColor = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;

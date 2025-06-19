@@ -6,19 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 11:58:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:38:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Menu } from "../Menu";
 import { Overlay } from "./Overlay";
 import { GlossaryTexts } from "./GlossaryTexts";
-import { Menu } from "../Menu";
+import { OverlayHeader } from "./OverlayHeader";
 import { MenuPowerupManager } from "../menuManagers/MenuPowerupManager";
 import { MenuImageManager } from "../menuManagers/MenuImageManager";
 import { GAME_COLORS } from "../../utils/Types";
 
 export class GlossaryOverlay extends Overlay {
     private glossaryTexts!: GlossaryTexts;
+    header!: OverlayHeader;
 
     constructor(menu: Menu) {
         super('glossaryOverlay', menu, 0x151515, GAME_COLORS.menuOrange);
@@ -28,8 +30,10 @@ export class GlossaryOverlay extends Overlay {
 
     protected initializeContent(): void {
         this.glossaryTexts = new GlossaryTexts(this.menu, 'glossaryTexts', 'overlays');
-        
         this.addContent(this.glossaryTexts, 'overlays');
+
+        this.header = new OverlayHeader(this.menu, 'glossaryHeader', 'overlays', 'glossary');
+        this.addContent(this.header, 'overlays');
 
         MenuPowerupManager.createPowerdowns(this.menu);
         

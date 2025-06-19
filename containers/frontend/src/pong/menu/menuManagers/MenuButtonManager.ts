@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:55:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 17:14:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -627,7 +627,7 @@ export class ButtonManager {
 			case ('CLASSICOFF'): {
 				switch (menu.language) {
 					case ('en'): return 'CLASSIC: OFF';
-					case ('es'): return 'CLÁSICO: No';
+					case ('es'): return 'CLÁSICO: NO';
 					case ('fr'): return 'CLASSIQUE: NON';
 					case ('cat'): return 'CLÀSSIC: NO';
 					default: return 'CLASSIC: OFF';

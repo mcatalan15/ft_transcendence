@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:06:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 10:56:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:53:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ export class OverlayHeader extends Entity {
 		
 		this.menu = menu;
 
-		const headerGraphic = this.createHeaderGraphic();
+		const color = this.getColor(type);
+
+		const headerGraphic = this.createHeaderGraphic(color);
 		const renderComponent = new RenderComponent(headerGraphic);
 		this.addComponent(renderComponent);
 		
@@ -39,7 +41,7 @@ export class OverlayHeader extends Entity {
 		const textComponent = new TextComponent(headerText);
 		this.addComponent(textComponent);
 
-		const logoText = this.createLogoText();
+		const logoText = this.createLogoText(color);
 		const logoTextComponent = new TextComponent(logoText);
 		this.addComponent(logoTextComponent);
 
@@ -47,101 +49,119 @@ export class OverlayHeader extends Entity {
 		const blockingComponent = new RenderComponent(blocking);
 		this.addComponent(blockingComponent);
 
-		const overHead = this.createOverHead();
+		const overHead = this.createOverHead(color);
 		const overHeadComponent = new RenderComponent(overHead);
 		this.addComponent(overHeadComponent);
+	}
+
+	getColor(overlay: string) {
+		if (overlay === 'glossary' || overlay === 'glossaire' || overlay === 'glosario' || overlay === 'glossari') {
+			if (this.menu.config.classicMode) {
+				return (GAME_COLORS.white) as number;
+			}
+			return (GAME_COLORS.menuOrange) as number;
+		} else if (overlay === 'play' || overlay === 'jouer' || overlay === 'jugar' || overlay === 'tournament' || overlay === 'torneo' || overlay === 'tornoi' || overlay === 'torneig') {
+			if (this.menu.config.classicMode) {
+				return (GAME_COLORS.white) as number;
+			}
+			return (GAME_COLORS.menuBlue) as number;
+		} else if (overlay === 'info') {
+			if (this.menu.config.classicMode) {
+				return (GAME_COLORS.white) as number;
+			}
+			return (GAME_COLORS.menuPink) as number;
+		}
+
+		return (GAME_COLORS.white) as number;
 	}
 
 	createBlocking(): Graphics {
 		const blocking = new Graphics();
 		blocking.rect(0, 0, 250, 25);
 		blocking.fill(GAME_COLORS.black);
-		blocking.x = 1320;
-		blocking.y = 112;
+		blocking.x = 1380;
+		blocking.y = 65;
 		return(blocking);
 	}
 
-	createOverHead(): Graphics {
+	createOverHead(color: number): Graphics {
+		const offset = 239;
 		const overHead = new Graphics();
 
 		overHead.moveTo(0, 0);
-		overHead.lineTo(1112, 0);
-		overHead.moveTo(1138, 0);
-		overHead.lineTo(1173, 0);
-		overHead.moveTo(1191, 0);
-		overHead.lineTo(1231, 0);
-		overHead.moveTo(1258, 0);
-		overHead.lineTo(1301, 0);
+		overHead.lineTo(1112 + offset, 0);
+		overHead.moveTo(1138 + offset, 0);
+		overHead.lineTo(1173 + offset, 0);
+		overHead.moveTo(1191 + offset, 0);
+		overHead.lineTo(1231 + offset, 0);
+		overHead.moveTo(1258 + offset, 0);
+		overHead.lineTo(1398 + offset, 0);
 
 		overHead.moveTo(0, 5.3);
-		overHead.lineTo(1117.8, 5.3);
-		overHead.moveTo(1132, 5.3);
-		overHead.lineTo(1179, 5.3);
-		overHead.moveTo(1191, 5.3);
-		overHead.lineTo(1238, 5.3);
-		overHead.moveTo(1252, 5.3);
-		overHead.lineTo(1301, 5.3);
+		overHead.lineTo(1117.8 + offset, 5.3);
+		overHead.moveTo(1132 + offset, 5.3);
+		overHead.lineTo(1179 + offset, 5.3);
+		overHead.moveTo(1191 + offset, 5.3);
+		overHead.lineTo(1238 + offset, 5.3);
+		overHead.moveTo(1252 + offset, 5.3);
+		overHead.lineTo(1398 + offset, 5.3);
 
 		overHead.moveTo(0, 10.5);
-		overHead.lineTo(1120, 10.5);
-		overHead.moveTo(1130, 10.5);
-		overHead.lineTo(1181, 10.5);
-		overHead.moveTo(1191, 10.5);
-		overHead.lineTo(1240, 10.5);
-		overHead.moveTo(1250, 10.5);
-		overHead.lineTo(1301, 10.5);
+		overHead.lineTo(1120 + offset, 10.5);
+		overHead.moveTo(1130 + offset, 10.5);
+		overHead.lineTo(1181 + offset, 10.5);
+		overHead.moveTo(1191 + offset, 10.5);
+		overHead.lineTo(1240 + offset, 10.5);
+		overHead.moveTo(1250 + offset, 10.5);
+		overHead.lineTo(1398 + offset, 10.5);
 
 		overHead.moveTo(0, 15.80);
-		overHead.lineTo(1120, 15.80);
-		overHead.moveTo(1129.8, 15.80);
-		overHead.lineTo(1180.8, 15.80);
-		overHead.moveTo(1191, 15.80);
-		overHead.lineTo(1240, 15.80);
-		overHead.moveTo(1250, 15.80);
-		overHead.lineTo(1301, 15.80);
+		overHead.lineTo(1120 + offset, 15.80);
+		overHead.moveTo(1129.8 + offset, 15.80);
+		overHead.lineTo(1180.8 + offset, 15.80);
+		overHead.moveTo(1191 + offset, 15.80);
+		overHead.lineTo(1240 + offset, 15.80);
+		overHead.moveTo(1250 + offset, 15.80);
+		overHead.lineTo(1398 + offset, 15.80);
 
-		overHead.stroke( { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 1.3 } );
-		overHead.x = 250;
-		overHead.y = 113.3;
+		overHead.stroke( { color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 1.5 } );
+		overHead.x = 73.5;
+		overHead.y = 66;
 		return(overHead);
 	}
 
-	createHeaderGraphic(): Graphics {
+	createHeaderGraphic(color: number): Graphics {
 		const graphic = new Graphics();
-		//graphic.rect(0, 0, 1300, 32);
-		graphic.moveTo(1090, 0);
-		graphic.lineTo(0, 0);
-		graphic.lineTo(0, 32);
-		graphic.lineTo(1090, 32);
-		//graphic.stroke( {color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 2} );
-		graphic.fill(this.menu.config.classicMode ? GAME_COLORS.black : GAME_COLORS.menuBlue);
-		graphic.pivot.set(650, 12.5);
-		graphic.x = this.menu.width / 2;
-		graphic.y = 149.33;
+		graphic.rect(0, 0, 1330, 32);
+		graphic.rect(1520, 0, 116, 32)
+		graphic.stroke( {color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 2} );
+		graphic.fill(this.menu.config.classicMode ? GAME_COLORS.black : color);
+		graphic.x = 74.5;
+		graphic.y = 91.5;
 		return(graphic);
 	}
 
 	createHeaderText(type: string) {
 		return {
-			text: type,
-			x: 300,
-			y: 152.5,
+			text: type.toUpperCase(),
+			x: 140,
+			y: 107.5,
 			style: {
 				fill: GAME_COLORS.black,
-				fontSize: 12,
+				fontSize: 15,
 				fontWeight: 'bold' as const,
 				align: 'left' as const,
 			},
 		};
 	}
 
-	createLogoText() {
+	createLogoText(color: number) {
 		return {
 			text: "PONG",
-			x: 1436,
-			y: 138.5,
+			x: 1498,
+			y: 93.2,
 			style: {
-				fill: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue,
+				fill: this.menu.config.classicMode ? GAME_COLORS.white : color,
 				fontSize: 110,
 				fontFamily: 'anatol-mn',
 			},

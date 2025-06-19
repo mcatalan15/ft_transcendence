@@ -6,22 +6,18 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:51:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 19:02:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Menu } from "../Menu";
 import { Entity } from "../../engine/Entity";
 import { TextComponent } from "../../components/TextComponent";
-import { AnimationComponent } from "../../components/AnimationComponent";
 import { GAME_COLORS } from "../../utils/Types";
 
 export class GlossaryTexts extends Entity {
     private menu: Menu;
-    private targetAlpha: number = 0;
     private currentAlpha: number = 0;
-    private animationProgress: number = 0;
-    private animationSpeed: number = 0.08;
     private isAnimating: boolean = false;
     private textComponents: TextComponent[] = [];
 
@@ -64,7 +60,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -90,7 +86,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Spawns a protecting shield behind the paddle\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Makes the paddle shoot 3 stunning projectiles\n",
                 x: 120,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -112,7 +108,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -138,7 +134,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Flattens all the paddle's ball returns\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Slows down the paddle's movements\n",
                 x: 650,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -160,7 +156,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'ballchangesTitle',
                 text: "--------------------[ BALL CHANGES ]--------------------",
                 x: 1200,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -186,7 +182,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Spawns an arrow-like burst ball\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Spawns multiple tiny balls with decoys\n",
                 x: 1200,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -208,7 +204,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFFECTATIONS ]--------------------",
                 x: 120,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -232,7 +228,7 @@ export class GlossaryTexts extends Entity {
                       "Affected paddles change visually when they collect a powerup or a powerdown.\n\n" + 
                       "Their affectation timer is tracked by the bar at the bottom of their side of the screen.",
                 x: 240,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -254,7 +250,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'wallShapesTitle',
                 text: "----------------------------------------------------[ WALL FIGURES ]----------------------------------------------------",
                 x: 650,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -278,7 +274,7 @@ export class GlossaryTexts extends Entity {
                       "Walls change, warp and move over time, affecting the balls' paths and trajectories.\n\n" + 
                       "Sometimes, blocking figures spawn in the middle of the arena as solid obstacles.",
                 x: 670,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -304,7 +300,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -330,14 +326,14 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invoca un escudo protector detrás de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hace que la pala dispare 3 proyectiles aturdidores\n",
                 x: 120,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
                     fontWeight: 'lighter' as const,
                     align: 'left' as const,
                     wordWrap: true,
-                    wordWrapWidth: 500,
+                    wordWrapWidth: 510,
                     breakWords: true,
                     lineHeight: 71,
                     fontFamily: '"Roboto Mono", monospace',
@@ -352,7 +348,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -378,7 +374,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplana todas las devoluciones de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Ralentiza la velocidad de la pala\n",
                 x: 650,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -400,7 +396,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'ballchangesTitle',
                 text: "------------------[ CAMBIOS DE PELOTA ]-----------------",
                 x: 1200,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -426,7 +422,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Genera una flecha explosiva\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Genera varias pelotas pequeñas con señuelos\n",
                 x: 1200,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -448,7 +444,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFECTACIONES ]--------------------",
                 x: 120,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -472,7 +468,7 @@ export class GlossaryTexts extends Entity {
                       "Las palas afectadas cambian visualmente al recoger un power-up o un power-down.\n\n" + 
                       "El tiempo restante del efecto se muestra en la barra de la parte inferior de su lado de pantalla.",
                 x: 240,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -494,7 +490,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'wallShapesTitle',
                 text: "------------------------------------------------[ FIGURAS DE LOS MUROS ]------------------------------------------------",
                 x: 650,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -518,7 +514,7 @@ export class GlossaryTexts extends Entity {
                       "Los muros cambian, se deforman y se mueven con el tiempo, afectando las trayectorias de las pelotas.\n\n" + 
                       "A veces, aparecen figuras en el centro de la arena como obstáculos sólidos.",
                 x: 670,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -544,7 +540,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -570,7 +566,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Génère un bouclier derrière la raquette\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0La raquette tire 3 projectiles étourdissants\n",
                 x: 120,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -592,7 +588,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -618,7 +614,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplatis tous les renvois de la raquette\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Ralentit les mouvements de la raquette\n",
                 x: 650,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -640,7 +636,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'ballchangesTitle',
                 text: "----------------[ CHANGEMENTS DE BALLE ]----------------",
                 x: 1200,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -666,7 +662,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Génère une flèche avec une poussée rapide\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Génère plusieurs petites balles et leurres\n",
                 x: 1200,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -688,7 +684,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFFECTATIONS ]--------------------",
                 x: 120,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -712,7 +708,7 @@ export class GlossaryTexts extends Entity {
                       "Les raquettes affectées changent visuellement lorsqu’elles collectent un bonus ou un malus.\n\n" + 
                       "La durée de l’effet est indiquée par la barre située en bas de leur côté de l’écran.",
                 x: 240,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -734,7 +730,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'wallShapesTitle',
                 text: "--------------------------------------------------[ FIGURES MURALES ]---------------------------------------------------",
                 x: 650,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -758,7 +754,7 @@ export class GlossaryTexts extends Entity {
                       "Les murs changent, se déforment et se déplacent avec le temps, influençant les trajectoires des balles.\n\n" + 
                       "Parfois, des formes bloquantes apparaissent au centre de l’arène en tant qu’obstacles solides.",
                 x: 670,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -784,7 +780,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -810,7 +806,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Genera un escut protector darrere de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Fa que la pala dispari 3 projectils atordidors\n",
                 x: 120,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -832,7 +828,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -858,7 +854,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplana totes les devolucions de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Alenteix la velocitat de la pala\n",
                 x: 650,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -880,7 +876,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'ballchangesTitle',
                 text: "-------------------[ CANVIS DE BOLA ]-------------------",
                 x: 1200,
-                y: 120,
+                y: 160,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -906,7 +902,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Genera una fletxa explosiva\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Genera diverses pilotes petites amb cimbells\n",
                 x: 1200,
-                y: 140,
+                y: 180,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -928,7 +924,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'affectationsTitle',
                 text: "---------------------[ AFECTACIONS ]--------------------",
                 x: 120,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -952,7 +948,7 @@ export class GlossaryTexts extends Entity {
                       "Les pales afectades canvien visualment quan recullen una potenciació o un retrocés.\n\n" + 
                       "El seu temporitzador d'afectació és seguit per la barra a la part inferior de la pantalla.",
                 x: 240,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -974,7 +970,7 @@ export class GlossaryTexts extends Entity {
                 tag: 'wallShapesTitle',
                 text: "-----------------------------------------------[ FIGURES DE LAS PARETS ]------------------------------------------------",
                 x: 650,
-                y: 450,
+                y: 470,
                 style: {
                     fill: GAME_COLORS.menuOrange,
                     fontSize: 13,
@@ -998,7 +994,7 @@ export class GlossaryTexts extends Entity {
                       "Les parets canvien, deformen i es mouen amb el temps, afectant les trajectòries de les boles.\n\n" + 
                       "De vegades, les figures que bloquegen al mig de l'arena com a obstacles sòlids.",
                 x: 670,
-                y: 490,
+                y: 510,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -1015,18 +1011,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
         ];
-    }
-
-    public fadeIn(): void {
-        this.targetAlpha = 1;
-        this.animationProgress = 0;
-        this.isAnimating = true;
-    }
-
-    public fadeOut(): void {
-        this.targetAlpha = 0;
-        this.animationProgress = 0;
-        this.isAnimating = true;
     }
 
     public redrawGlossaryTitles(classicMode: boolean): void {

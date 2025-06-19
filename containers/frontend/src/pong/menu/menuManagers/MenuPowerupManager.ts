@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:45:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 19:11:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ export class MenuPowerupManager {
 	private static isAnimating: boolean = false;
 
     static createPowerups(menu: Menu) {
-        const enlargePowerup = new EnlargePowerup('enlarge', 'overlays', menu, 170, 175);
+        const enlargePowerup = new EnlargePowerup('enlarge', 'overlays', menu, 170, 215);
         const renderComponent = enlargePowerup.getComponent('render') as RenderComponent;
         if (renderComponent) {
             renderComponent.graphic.alpha = 0; // Start invisible
@@ -50,7 +50,7 @@ export class MenuPowerupManager {
         menu.enlargePowerup = enlargePowerup;
         this.powerupEntities.push(enlargePowerup);
 
-        const magnetizePowerup = new MagnetizePowerup('magnetize', 'overlays', menu, 170, 248);
+        const magnetizePowerup = new MagnetizePowerup('magnetize', 'overlays', menu, 170, 285);
         const magnetRenderComponent = magnetizePowerup.getComponent('render') as RenderComponent;
         if (magnetRenderComponent) {
             magnetRenderComponent.graphic.alpha = 0;
@@ -60,7 +60,7 @@ export class MenuPowerupManager {
         menu.magnetizePowerup = magnetizePowerup;
         this.powerupEntities.push(magnetizePowerup);
 
-        const shieldPowerup = new ShieldPowerup('shield', 'overlays', menu, 170, 320);
+        const shieldPowerup = new ShieldPowerup('shield', 'overlays', menu, 170, 355);
         const shieldRenderComponent = shieldPowerup.getComponent('render') as RenderComponent;
         if (shieldRenderComponent) {
             shieldRenderComponent.graphic.alpha = 0;
@@ -70,7 +70,7 @@ export class MenuPowerupManager {
         menu.shieldPowerup = shieldPowerup;
         this.powerupEntities.push(shieldPowerup);
 
-        const shootPowerup = new ShootPowerup('shoot', 'overlays', menu, 170, 390);
+        const shootPowerup = new ShootPowerup('shoot', 'overlays', menu, 170, 425);
         const shootRenderComponent = shootPowerup.getComponent('render') as RenderComponent;
         if (shootRenderComponent) {
             shootRenderComponent.graphic.alpha = 0;
@@ -82,7 +82,7 @@ export class MenuPowerupManager {
     }
 
     static createPowerdowns(menu: Menu) {
-        const shrinkPowerDown = new ShrinkPowerDown('shrink', 'overlays', menu, 690, 170);
+        const shrinkPowerDown = new ShrinkPowerDown('shrink', 'overlays', menu, 690, 207);
         const shrinkRenderComponent = shrinkPowerDown.getComponent('render') as RenderComponent;
         if (shrinkRenderComponent) {
             shrinkRenderComponent.graphic.alpha = 0;
@@ -92,7 +92,7 @@ export class MenuPowerupManager {
         menu.shrinkPowerdown = shrinkPowerDown;
         this.powerupEntities.push(shrinkPowerDown);
 
-        const invertPowerDown = new InvertPowerDown('invert', 'overlays', menu, 690, 240);
+        const invertPowerDown = new InvertPowerDown('invert', 'overlays', menu, 690, 277);
         const invertRenderComponent = invertPowerDown.getComponent('render') as RenderComponent;
         if (invertRenderComponent) {
             invertRenderComponent.graphic.alpha = 0;
@@ -102,7 +102,7 @@ export class MenuPowerupManager {
         menu.invertPowerdown = invertPowerDown;
         this.powerupEntities.push(invertPowerDown);
 
-        const flatPowerDown = new FlatPowerDown('flat', 'overlays', menu, 690, 310);
+        const flatPowerDown = new FlatPowerDown('flat', 'overlays', menu, 690, 345);
         const flatRenderComponent = flatPowerDown.getComponent('render') as RenderComponent;
         if (flatRenderComponent) {
             flatRenderComponent.graphic.alpha = 0;
@@ -112,7 +112,7 @@ export class MenuPowerupManager {
         menu.flattenPowerdown = flatPowerDown;
         this.powerupEntities.push(flatPowerDown);
 
-        const slowPowerDown = new SlowPowerDown('slow', 'overlays', menu, 690, 380);
+        const slowPowerDown = new SlowPowerDown('slow', 'overlays', menu, 690, 415);
         const slowRenderComponent = slowPowerDown.getComponent('render') as RenderComponent;
         if (slowRenderComponent) {
             slowRenderComponent.graphic.alpha = 0;
@@ -124,7 +124,7 @@ export class MenuPowerupManager {
     }
 
     static createBallchanges(menu: Menu) {
-        const curveBallPowerup = new CurveBallPowerup('curve', 'overlays', menu, 1250, 175);
+        const curveBallPowerup = new CurveBallPowerup('curve', 'overlays', menu, 1250, 215);
         const curveRenderComponent = curveBallPowerup.getComponent('render') as RenderComponent;
         if (curveRenderComponent) {
             curveRenderComponent.graphic.alpha = 0;
@@ -134,7 +134,7 @@ export class MenuPowerupManager {
         menu.curveBallChange = curveBallPowerup;
         this.powerupEntities.push(curveBallPowerup);
 
-        const spinBallPowerup = new SpinBallPowerup('spin', 'overlays', menu, 1250, 245);
+        const spinBallPowerup = new SpinBallPowerup('spin', 'overlays', menu, 1250, 285);
         const spinRenderComponent = spinBallPowerup.getComponent('render') as RenderComponent;
         if (spinRenderComponent) {
             spinRenderComponent.graphic.alpha = 0;
@@ -144,7 +144,7 @@ export class MenuPowerupManager {
         menu.spinBallChange = spinBallPowerup;
         this.powerupEntities.push(spinBallPowerup);
 
-        const burstBallPowerup = new BurstBallPowerup('burst', 'overlays', menu, 1250, 315);
+        const burstBallPowerup = new BurstBallPowerup('burst', 'overlays', menu, 1250, 355);
         const burstRenderComponent = burstBallPowerup.getComponent('render') as RenderComponent;
         if (burstRenderComponent) {
             burstRenderComponent.graphic.alpha = 0;
@@ -154,7 +154,7 @@ export class MenuPowerupManager {
         menu.burstBallChange = burstBallPowerup;
         this.powerupEntities.push(burstBallPowerup);
 
-        const multiplyBallPowerup = new MultiplyBallPowerup('multiply', 'overlays', menu, 1250, 385);
+        const multiplyBallPowerup = new MultiplyBallPowerup('multiply', 'overlays', menu, 1250, 425);
         const multiplyRenderComponent = multiplyBallPowerup.getComponent('render') as RenderComponent;
         if (multiplyRenderComponent) {
             multiplyRenderComponent.graphic.alpha = 0;
@@ -236,7 +236,7 @@ export class MenuPowerupManager {
         const paddleL = new Paddle('paddleL', 'foreground', menu, menu.paddleOffset, menu.height / 2, true, 'PLAYER');
 		const paddleLPhysics = paddleL.getComponent('physics') as PhysicsComponent;
 		paddleLPhysics.x = 160;
-		paddleLPhysics.y = menu.height / 2 + 180;
+		paddleLPhysics.y = menu.height / 2 + 200;
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		menu.menuHidden.addChild(paddleLRender.graphic);
@@ -247,7 +247,7 @@ export class MenuPowerupManager {
 		const paddleR = new Paddle('paddleR', 'foreground', menu, menu.width - menu.paddleOffset, menu.height / 2, false, "#@%$&");
 		const paddleRPhysics = paddleR.getComponent('physics') as PhysicsComponent;
 		paddleRPhysics.x = 190;
-		paddleRPhysics.y = menu.height / 2 + 180;
+		paddleRPhysics.y = menu.height / 2 + 200;
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		menu.menuHidden.addChild(paddleRRender.graphic);    

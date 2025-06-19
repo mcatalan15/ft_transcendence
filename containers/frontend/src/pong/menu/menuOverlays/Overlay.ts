@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 16:34:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:18:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,10 +379,15 @@ export abstract class Overlay extends Entity {
 
     public changeStrokeColor(color: number): void {
         this.background.clear();
-        this.background.rect(0, 0, 1635, 600);
+        this.background.rect(0, 0, 1635, 610);
         this.background.x = 75;
-        this.background.y = 75;
+        this.background.y = 65;
         this.background.fill({ color: 0x151515, alpha: 1 });
+        this.background.endFill();
+        this.background.moveTo(0, 50);
+        this.background.lineTo(0, 610);
+        this.background.lineTo(1635, 610);
+        this.background.lineTo(1635, 50);
         this.background.stroke({ color: color, width: 3 });
         this.background.alpha = this.currentAlpha;
     }

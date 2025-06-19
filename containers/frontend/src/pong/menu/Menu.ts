@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 09:42:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/19 18:30:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -540,17 +540,47 @@ export class Menu{
 		boundingBoxK.rect(0, 0, this.width, this.height);
 		boundingBoxK.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
 
-		this.renderLayers.logo.addChild(boundingBoxA);
+		const boundingBoxL = new Graphics();
+		boundingBoxL.rect(0, 0, this.width, this.height);
+		boundingBoxL.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+		
+		const boundingBoxM = new Graphics();
+		boundingBoxM.rect(0, 0, this.width, this.height);
+		boundingBoxM.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
+		const boundingBoxN = new Graphics();
+		boundingBoxN.rect(0, 0, this.width, this.height);
+		boundingBoxN.stroke({width: 0.1, color: getThemeColors(this.config.classicMode).white});
+
+		this.renderLayers.blackEnd.addChild(boundingBoxL);
+		this.renderLayers.logo.addChild(boundingBoxM);
+		this.renderLayers.subtitle.addChild(boundingBoxA);
 		this.renderLayers.background.addChild(boundingBoxB);
 		this.renderLayers.midground.addChild(boundingBoxC);
 		this.renderLayers.foreground.addChild(boundingBoxD);
-		this.menuContainer.addChild(boundingBoxE);
+		this.menuContainer.addChild(boundingBoxN);
+		this.renderLayers.dust.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
 		this.renderLayers.overlays.addChild(boundingBoxG);
 		this.renderLayers.powerups.addChild(boundingBoxH);
 		this.renderLayers.powerdowns.addChild(boundingBoxI);
 		this.renderLayers.ballchanges.addChild(boundingBoxJ);
 		this.renderLayers.overlayQuits.addChild(boundingBoxK);
+		renderLayers: {
+			blackEnd: Container;
+			logo: Container;
+			midground: Container;
+			subtitle: Container;
+			background: Container;
+			foreground: Container;
+			dust: Container;
+			overlays: Container;
+			overlayQuits: Container;
+			pp: Container;
+			powerups: Container;
+			powerdowns: Container;
+			ballchanges: Container;
+		};
 	}
 
 	createFrame() {
