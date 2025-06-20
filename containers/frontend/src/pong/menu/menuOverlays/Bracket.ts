@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 12:55:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:16:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ import { GAME_COLORS } from "../../utils/Types";
 export class Bracket extends Entity {
 	menu: Menu;
 	playerAmount: number = 8;
-	bracketGraphic!: Graphics;
+	bracketGraphic: Graphics = new Graphics();
+	statsCell: Graphics = new Graphics();
 	bracketNames: Text[] = [];
 	crown: any;
 
@@ -33,12 +34,15 @@ export class Bracket extends Entity {
 		
 		this.menu = menu;
 		this.playerAmount = playerAmount;
-		
-		this.bracketGraphic = new Graphics();
+
 		this.createBracketGraphic(playerAmount);
 		this.bracketGraphic.y += 50;
 		const renderComponent = new RenderComponent(this.bracketGraphic);
 		this.addComponent(renderComponent);
+
+		this.createStatsCell();
+		const statsCellComponent = new RenderComponent(this.statsCell);
+		this.addComponent(statsCellComponent, 'statsCell');
 
 		this.createBracketNames(playerAmount);
 		for (let i = 0; i < this.bracketNames.length; i++) {
@@ -55,6 +59,11 @@ export class Bracket extends Entity {
 			const tag = new TextComponent(readyTags[i]);
 			this.addComponent(tag);
 		} */
+	}
+
+	createStatsCell() {
+		this.statsCell.rect(1090, 170, 570, 405);
+		this.statsCell.stroke({ color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3 });
 	}
 
 	createBracketGraphic(playerAmount: number) {
@@ -108,6 +117,14 @@ export class Bracket extends Entity {
 
 		this.bracketGraphic.moveTo(732.5, 357.5);
 		this.bracketGraphic.lineTo(800, 357.5);
+
+		// Stats part
+		/* this.bracketGraphic.moveTo(975, 357.5);
+		this.bracketGraphic.lineTo(1050, 357.5);
+		this.bracketGraphic.moveTo(1050, 130);
+		this.bracketGraphic.lineTo(1050, 585);
+		this.bracketGraphic.moveTo(1050, 130);
+		this.bracketGraphic.lineTo(1600, 130); */
 		
 		this.bracketGraphic.stroke({ color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3 });
 	}

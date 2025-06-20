@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 19:15:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:12:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ export class MenuImageManager {
     private static wallImages: Sprite[] = [];
     private static avatarImages: Sprite[] = [];
     private static classicAvatarImages: Sprite[] = [];
+    private static squareAvatarImages: Sprite[] = [];
     private static pinkLogoImages: Sprite[] = [];
     private static classicLogoImages: Sprite[] = [];
     private static isAnimating: boolean = false;
@@ -65,17 +66,14 @@ export class MenuImageManager {
     static createImages(menu: Menu): void {
         this.wallImages = [];
     
-        // Define wall image positions and names
         const wallImageData = [
-            // Top row
             { name: 'wallPyramids', x: 1075, y: 540 },
             { name: 'wallSteps', x: 1180, y: 540 },
             { name: 'wallTrenches', x: 1285, y: 540 },
             { name: 'wallHourglass', x: 1390, y: 540 },
             { name: 'wallLightning', x: 1495, y: 540 },
             { name: 'wallFangs', x: 1600, y: 540 },
-            
-            // Bottom row
+
             { name: 'wallWaystones', x: 1075, y: 600 },
             { name: 'wallSnakes', x: 1180, y: 600 },
             { name: 'wallVipers', x: 1285, y: 600 },
@@ -85,7 +83,7 @@ export class MenuImageManager {
         ];
     
         wallImageData.forEach(data => {
-            const wallImage = this.createWallImage(data.name, data.x, data.y, menu);
+            const wallImage = this.createSimpleImage(data.name, data.x, data.y, menu);
             if (wallImage) {
                 this.wallImages.push(wallImage);
             }
@@ -138,6 +136,22 @@ export class MenuImageManager {
             
             if (avatar) {
                 this.classicAvatarImages.push(avatar);
+            }
+        });
+    }
+
+    static createSquareAvatars(menu: Menu): void {
+        this.squareAvatarImages = [];
+    
+        const squareAvatarData = [
+            { name: 'avatarMarcSquare', x: 1175, y: 290 },
+            { name: 'avatarEvaSquare', x: 1575, y: 490 },
+        ]
+    
+        squareAvatarData.forEach(data => {
+            const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.15);
+            if (squareAvatar) {
+                this.squareAvatarImages.push(squareAvatar);
             }
         });
     }
@@ -219,12 +233,23 @@ export class MenuImageManager {
     static prepareClassicLogosForAbout(menu: Menu): void {
         this.classicLogoImages.forEach(classicLogo => {
             if (classicLogo) {
-                console.log('BBBBB');
                 classicLogo.alpha = 0;
                 if (classicLogo.parent) {
                     classicLogo.parent.removeChild(classicLogo);
                 }
                 menu.renderLayers.overlays.addChild(classicLogo);
+            }
+        });
+    }
+
+    static prepareSquareAvatarImagesForPlay(menu: Menu): void {
+        this.squareAvatarImages.forEach(squareAvatar => {
+            if (squareAvatar) {
+                squareAvatar.alpha = 0;
+                if (squareAvatar.parent) {
+                    squareAvatar.parent.removeChild(squareAvatar);
+                }
+                menu.renderLayers.overlays.addChild(squareAvatar);
             }
         });
     }
@@ -309,6 +334,18 @@ export class MenuImageManager {
                 }
                 menu.menuHidden.addChild(avatarImage);
                 avatarImage.alpha = 0;
+            }
+        });
+    }
+
+    static hideSquareAvatarImagesFromPlay(menu: Menu): void {
+        this.squareAvatarImages.forEach(squareAvatar => {
+            if (squareAvatar) {
+                if (squareAvatar.parent) {
+                    squareAvatar.parent.removeChild(squareAvatar);
+                }
+                menu.menuHidden.addChild(squareAvatar);
+                squareAvatar.alpha = 0;
             }
         });
     }
@@ -434,7 +471,6 @@ export class MenuImageManager {
     static fadeOutGlossaryQuitButton(menu: Menu, onComplete?: () => void): void {
         const quitButton = menu.glossaryQuitButton;
         if (quitButton) {
-            // Match the new faster overlay background speed (0.12)
             this.animateQuitButtonAlpha(quitButton, 0, 0.5, () => {
                 menu.menuHidden.addChild(quitButton.getContainer());
                 if (onComplete) onComplete();
@@ -495,6 +531,10 @@ export class MenuImageManager {
         return this.avatarImages;
     }
 
+    static getAllSquareAvatarImages(): Sprite[] {
+        return this.squareAvatarImages;
+    }
+
     static getAllClassicAvatarImages(): Sprite[] {
         return this.classicAvatarImages;
     }
@@ -508,14 +548,14 @@ export class MenuImageManager {
     }
 
     // Helpers
-    static createWallImage(name: string, x: number, y: number, menu: Menu): Sprite | null {
+    static createSimpleImage(name: string, x: number, y: number, menu: Menu, scale?: number): Sprite | null {
         const wallImage = MenuImageManager.createSprite(name);
         if (!wallImage) return null;
         
         wallImage.anchor.set(0.5);
         wallImage.x = x;
         wallImage.y = y;
-        wallImage.scale.set(0.025);
+        wallImage.scale.set(scale? scale : 0.025);
         wallImage.alpha = 0;
         menu.menuHidden.addChild(wallImage);
         
@@ -566,18 +606,14 @@ export class MenuImageManager {
         avatar.scale.set(0.175);
         avatar.alpha = 0;
         
-        // Make interactive
         avatar.eventMode = 'static';
         avatar.cursor = 'pointer';
         
-        // Store original scale for reset
         const originalScale = 0.175;
         const hoverScale = 0.19;
         const clickScale = 0.16;
-        
-        // Add click handler with visual feedback
+
         avatar.on('pointerdown', () => {
-            // Click animation
             avatar.scale.set(clickScale);
             
             setTimeout(() => {
@@ -585,19 +621,16 @@ export class MenuImageManager {
                 window.open(url, '_blank');
                 console.log(`${name} avatar clicked - opening ${url}`);
             }, 100);
-            
-            // Play sound
+
             if (menu.sounds && menu.sounds.menuSelect) {
                 menu.sounds.menuSelect.play();
             }
         });
         
-        // Hover effects
         avatar.on('pointerenter', () => {
             avatar.scale.set(hoverScale);
-            
-            // Optional: Add tint or filter
-            avatar.tint = 0xF0F0F0; // Slight brightening
+
+            avatar.tint = 0xF0F0F0;
             
             if (menu.sounds && menu.sounds.menuMove) {
                 menu.sounds.menuMove.play();
@@ -606,7 +639,7 @@ export class MenuImageManager {
         
         avatar.on('pointerleave', () => {
             avatar.scale.set(originalScale);
-            avatar.tint = 0xFFFFFF; // Reset tint
+            avatar.tint = 0xFFFFFF;
         });
         
         menu.menuHidden.addChild(avatar);

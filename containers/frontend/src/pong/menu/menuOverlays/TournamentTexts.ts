@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 12:58:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:04:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,9 @@ export class TournamentTexts extends Entity {
             // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
-                text:  '----------------------[ TORNEITO PAPA ]----------------------',
-                x: 120,
-                y: 120,
+                text:  'WINS:\nLOSSES:\nGOALS FOR:\nGOALS AGAINST:\n',
+                x: 1260,
+                y: 215,
                 style: {
                     fill: GAME_COLORS.menuBlue,
                     fontSize: 13,
@@ -77,7 +77,7 @@ export class TournamentTexts extends Entity {
                     wordWrap: true,
                     wordWrapWidth: 480,
                     breakWords: true,
-                    lineHeight: 10,
+                    lineHeight: 20,
                     fontFamily: '"Roboto Mono", monospace',
                     letterSpacing: 0.5,
                 },
@@ -118,9 +118,9 @@ export class TournamentTexts extends Entity {
             // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
-                text: "----------------------[ SALUT ]----------------------",
-                x: 120,
-                y: 120,
+                text: "---------------[ STATISTIQUES ]---------------",
+                x: 1260,
+                y: 300,
                 style: {
                     fill: GAME_COLORS.menuBlue,
                     fontSize: 13,

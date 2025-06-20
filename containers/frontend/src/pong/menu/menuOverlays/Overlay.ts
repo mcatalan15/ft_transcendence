@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 11:46:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 16:37:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,6 +285,14 @@ export abstract class Overlay extends Entity {
                 this.updatePinkLogosAlphas(alpha);
                 this.updateAvatarImageAlphas(alpha);
             }
+        } else if (this.id === 'tournamentOverlay') {
+            /* if (this.menu.config.classicMode) {
+                this.updateSquareAvatarAlphas(alpha);
+            } else {
+                this.updateSquareAvatarAlphas(alpha);
+            } */
+
+            this.updateSquareAvatarAlphas(alpha);
         }
     }
 
@@ -332,6 +340,15 @@ export abstract class Overlay extends Entity {
     private updateClassicAvatarImageAlphas(alpha: number): void {
         const avatarImages = MenuImageManager.getAllClassicAvatarImages();
         avatarImages.forEach((avatarImage: any) => {
+            if (avatarImage) {
+                avatarImage.alpha = alpha;
+            }
+        });
+    }
+
+    private updateSquareAvatarAlphas(alpha: number): void {
+        const squareAvatarImages = MenuImageManager.getAllSquareAvatarImages();
+        squareAvatarImages.forEach((avatarImage: any) => {
             if (avatarImage) {
                 avatarImage.alpha = alpha;
             }

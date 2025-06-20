@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 19:19:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:34:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ export class AboutTexts extends Entity {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
                 x: 175,
-                y: 310,
+                y: 315,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,
@@ -134,7 +134,7 @@ export class AboutTexts extends Entity {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
             x: 190,
-            y: 335,
+            y: 340,
             style: {
                 fill: GAME_COLORS.white,
                 fontSize: 10,
@@ -251,7 +251,7 @@ export class AboutTexts extends Entity {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
                 x: 175,
-                y: 310,
+                y: 315,
                 style: {
                     fill: GAME_COLORS.white,
                     fontSize: 12,

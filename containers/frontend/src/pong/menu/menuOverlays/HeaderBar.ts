@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 16:13:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:53:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ export class HeaderBar extends Entity {
 
 		const overlay = this.getActualOverlay(overlayBase);
 		
-		const color = this.getColor(overlay);
+		const color = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
 		this.color = color;
 
 		const bar = this.createBar(color, x, y, width, height);
@@ -49,25 +49,25 @@ export class HeaderBar extends Entity {
 		const renderComponent = new RenderComponent(bar);
 		this.addComponent(renderComponent);
 
-		const text = this.createText(overlay);
+		const text = this.createText(overlay, x, y);
 		const textComponent = new TextComponent(text);
 		this.addComponent(textComponent);
 	}
 	
 	getActualOverlay(overlayBase: string): string{
-		if (this.menu.language === 'en' || overlayBase === 'info') {
+		if (this.menu.language === 'en') {
 			return (overlayBase);
 		}
 
 		switch (this.menu.language) {
 			case('es'): {
 				switch (overlayBase) {
-					case ('glossary'): {
-						return ('glosario');
+					case ('profile'): {
+						return ('perfil');
 					}
 					
-					case ('play'): {
-						return ('jugar');
+					case ('next match'): {
+						return ('próximo partido');
 					}
 				}
 				break;
@@ -75,12 +75,12 @@ export class HeaderBar extends Entity {
 
 			case ('fr'): {
 				switch (overlayBase) {
-					case ('glossary'): {
-						return ('glossaire');
+					case ('profile'): {
+						return ('profil');
 					}
 					
-					case ('play'): {
-						return ('jouer');
+					case ('next match'): {
+						return ('prochain match');
 					}
 				}
 				break;
@@ -88,40 +88,20 @@ export class HeaderBar extends Entity {
 
 			case ('cat'): {
 				switch (overlayBase) {
-					case ('glossary'): {
-						return ('glossari');
+					case ('profile'): {
+						return ('perfil');
 					}
 					
-					case ('play'): {
-						return ('jugar');
+					case ('next match'): {
+						return ('pròxim partit');
 					}
 				}
+				break;
 			}
 		}
 
 		return ('unknown');
 	}	
-
-	getColor(overlay: string) {
-		if ( overlay === 'glossary' || overlay === 'glossaire' || overlay === 'glosario' || overlay === 'glossari') {
-			if (this.menu.config.classicMode) {
-				return (GAME_COLORS.white) as number;
-			}
-			return (GAME_COLORS.menuOrange) as number;
-		} else if (overlay === 'play' || overlay === 'jouer' || overlay === 'jugar') {
-			if (this.menu.config.classicMode) {
-				return (GAME_COLORS.white) as number;
-			}
-			return (GAME_COLORS.menuBlue) as number;
-		} else if (overlay === 'info') {
-			if (this.menu.config.classicMode) {
-				return (GAME_COLORS.white) as number;
-			}
-			return (GAME_COLORS.menuPink) as number;
-		}
-
-		return (GAME_COLORS.white) as number;
-	}
 
 	createBar(color: number, x: number, y: number, width: number, height: number): Graphics {
 		const bar = new Graphics();
@@ -131,12 +111,12 @@ export class HeaderBar extends Entity {
 		return bar;
 	}
 
-	createText(overlay: string) {
+	createText(overlay: string, x: number, y: number){
 		return {
 			tag: overlay,
 			text: overlay.toUpperCase(),
-			x: 80,
-			y: 80,
+			x: x + 10,
+			y: y + 2,
 			style: {
 				fill: GAME_COLORS.black,
 				fontSize: 15,

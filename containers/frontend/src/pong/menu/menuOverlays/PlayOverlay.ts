@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:54:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 14:32:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ import { Overlay } from "./Overlay";
 
 import { PlayTexts } from "./PlayTexts";
 import { OverlayHeader } from "./OverlayHeader";
+import { HeaderBar } from "./HeaderBar";
 
-import { GAME_COLORS } from "../../utils/Types";
+import { GAME_COLORS } from "../../utils/Types"
 
 export class PlayOverlay extends Overlay {
     private playTexts!: PlayTexts;
     header!: OverlayHeader;
+    playerHeader!: HeaderBar;
 
     constructor(menu: Menu) {
         super('playOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
