@@ -370,6 +370,36 @@ async function checkFriendship(userId, friendId) {
     });
 }
 
+async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink) {
+    return new Promise((resolve, reject) => {
+        const query = `UPDATE games SET contract_address = ?, explorer_link = ? WHERE id_game = ?`;
+        const params = [contractAddress, explorerLink, gameId];
+        
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB UPDATE ERROR] Failed to save smart contract data:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else if (this.changes === 0) {
+                console.warn(`[DB WARN] No game found with ID ${gameId} to update contract data.`);
+                reject(new Error('Game not found'));
+            } else {
+                console.log(`[DB] Successfully saved smart contract data for game ${gameId}`);
+                resolve({
+                    gameId: gameId,
+                    contractAddress: contractAddress,
+                    explorerLink: explorerLink,
+                    changes: this.changes
+                });
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -389,5 +419,6 @@ module.exports = {
     addFriend,
     removeFriend,
     getFriendsList,
-    checkFriendship
+    checkFriendship,
+	saveSmartContractToDatabase
 };

@@ -190,6 +190,7 @@ const deployContractSchema = {
             properties: {
                 success: { type: 'boolean' },
                 contractAddress: { type: 'string', description: 'Address of the deployed smart contract' },
+				explorerLink: { type: 'string', description: 'Blockchain explorer link for the contract' },
                 gameData: {
                     type: 'object',
                     properties: {
@@ -203,7 +204,8 @@ const deployContractSchema = {
             example: {
                 success: true,
                 contractAddress: '0x1234567890abcdef1234567890abcdef12345678',
-                gameData: {
+                explorerLink: 'https://etherscan.io/address/0x1234567890abcdef1234567890abcdef12345678',
+				gameData: {
                     player1_name: 'Eva',
                     player1_score: 5,
                     player2_name: 'Marc',
