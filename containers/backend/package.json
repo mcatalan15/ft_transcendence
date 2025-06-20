@@ -4,12 +4,13 @@
 	"description": "Fastify server to host the 42 transcendence project",
 	"main": "main.js",
 	"scripts": {
-	  "build": "tsc",
-	  "start": "node src/main.js",
-	  "dev": "nodemon --watch src --ext js --watch pong --ext ts --exec \"npm run build && node src/main.js\""
+		"build": "tsc",
+		"start": "node src/main.js",
+		"dev": "nodemon --watch src --ext js --watch pong --ext ts --exec \"npm run build && node src/main.js\""
 	},
 	"dependencies": {
 		"@fastify/cookie": "^11.0.2",
+		"@fastify/multipart": "^9.0.0",
 		"@fastify/session": "^11.1.0",
 		"@sendgrid/mail": "^8.1.5",
 		"@socket.io/redis-adapter": "^8.3.0",
@@ -18,14 +19,13 @@
 		"i18next": "^25.0.2",
 		"jsonwebtoken": "^9.0.2",
 		"nodemailer": "^7.0.3",
+		"otplib": "^12.0.1",
+		"qrcode": "^1.5.4",
 		"redis": "^5.0.1",
 		"socket.io": "^4.8.1",
 		"sqlite3": "^5.0.0",
-		"otplib": "^12.0.1",
-		"qrcode": "^1.5.4",
-		"ws": "^8.18.2",
-		"@fastify/multipart": "^9.0.0"
-
+		"vim": "^0.1.0",
+		"ws": "^8.18.2"
 	},
 	"author": "",
 	"license": "ISC",

@@ -2,7 +2,7 @@ FROM node:18-alpine3.21
 
 ENV TZ=Europe/Paris
 
-RUN apk add --no-cache sqlite
+RUN apk add --no-cache sqlite python3
 
 WORKDIR /usr/src/app
 
@@ -29,11 +29,12 @@ RUN npm cache clean --force \
 	qrcode \
 	jsonwebtoken \
 	redis \
-	ws
+	ws \
+	vim
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh tools/data.sh
+RUN chmod +x tools/init_db.sh tools/data.py
 
 RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 
