@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/16 10:14:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 10:51:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,17 +131,27 @@ export class Entity {
             const key = this._formatKey(type, instanceId);
             return this.components.delete(key);
         } else {
-            let removed = this.components.delete(type);
-            
+            let removed = false;
+    
             for (const key of this.components.keys()) {
                 if (typeof key === 'string' && key.startsWith(`${type}:`)) {
                     this.components.delete(key);
                     removed = true;
                 }
             }
-            
+    
             return removed;
         }
+    }
+
+    replaceComponent(type: string, newComponent: Component, instanceId: string | null = null): void {
+        if (!instanceId) {
+            instanceId = newComponent.instanceId || `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        }
+    
+        this.removeComponent(type, instanceId);
+    
+        this.addComponent(newComponent, instanceId);
     }
 
     private _formatKey(type: string, instanceId: string): string {

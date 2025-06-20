@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:26:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 12:55:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,32 @@ import { GAME_COLORS } from "../../utils/Types";
 
 export class Bracket extends Entity {
 	menu: Menu;
+	playerAmount: number = 8;
+	bracketGraphic!: Graphics;
+	bracketNames: Text[] = [];
+	crown: any;
 
 	constructor(menu: Menu, id: string, layer: string, playerAmount: number) {
 		super(id, layer);
 		
 		this.menu = menu;
-
-		const bracketGraphic = this.createBracketGraphic(playerAmount);
-		bracketGraphic.y += 50;
-		const renderComponent = new RenderComponent(bracketGraphic);
+		this.playerAmount = playerAmount;
+		
+		this.bracketGraphic = new Graphics();
+		this.createBracketGraphic(playerAmount);
+		this.bracketGraphic.y += 50;
+		const renderComponent = new RenderComponent(this.bracketGraphic);
 		this.addComponent(renderComponent);
 
-		const bracketNames = this.createBracketNames(playerAmount);
-		for (let i = 0; i < bracketNames.length; i++) {
-			const nameComponent = new TextComponent(bracketNames[i]);
-			this.addComponent(nameComponent);
+		this.createBracketNames(playerAmount);
+		for (let i = 0; i < this.bracketNames.length; i++) {
+			const nameComponent = new TextComponent(this.bracketNames[i]);
+			this.addComponent(nameComponent, `braketName_${i}`);
 		}
 
-		const vsText = this.createVSText();
-		const vsTextComponent = new TextComponent(vsText);
-		this.addComponent(vsTextComponent);
+		this.crown = this.createCrown();
+		const crownTextComponent = new TextComponent(this.crown);
+		this.addComponent(crownTextComponent, 'crown');
 		
 		/* const readyTags = this.createReadyTags(playerAmount);
 		for (let i = 0; i < readyTags.length; i++) {
@@ -51,47 +57,64 @@ export class Bracket extends Entity {
 		} */
 	}
 
-	createBracketGraphic(playerAmount: number): Graphics {
-		const bracketGraphic = new Graphics();
-		bracketGraphic.moveTo(800, 500);
-		bracketGraphic.lineTo(900, 500);
-		bracketGraphic.lineTo(900, 575);
-		bracketGraphic.lineTo(800, 575);
-		bracketGraphic.moveTo(900, 537.5);
-		bracketGraphic.lineTo(1000, 537.5);
-		bracketGraphic.lineTo(1000, 690);
-		bracketGraphic.lineTo(900, 690);
-		bracketGraphic.moveTo(800, 650);
-		bracketGraphic.lineTo(900, 650);
-		bracketGraphic.lineTo(900, 725);
-		bracketGraphic.lineTo(800, 725);
-		bracketGraphic.moveTo(1000, 613.75);
-		bracketGraphic.lineTo(1100, 613.75);
+	createBracketGraphic(playerAmount: number) {
+		this.bracketGraphic.moveTo(135, 130);
+		this.bracketGraphic.lineTo(335, 130);
+		this.bracketGraphic.moveTo(135, 195);
+		this.bracketGraphic.lineTo(335, 195);
+		this.bracketGraphic.moveTo(135, 260);
+		this.bracketGraphic.lineTo(335, 260);
+		this.bracketGraphic.moveTo(135, 325);
+		this.bracketGraphic.lineTo(335, 325);
+		this.bracketGraphic.moveTo(135, 390);
+		this.bracketGraphic.lineTo(335, 390);
+		this.bracketGraphic.moveTo(135, 455);
+		this.bracketGraphic.lineTo(335, 455);
+		this.bracketGraphic.moveTo(135, 520);
+		this.bracketGraphic.lineTo(335, 520);
+		this.bracketGraphic.moveTo(135, 585);
+		this.bracketGraphic.lineTo(335, 585);
 
-		bracketGraphic.moveTo(1185, 613.75);
-		bracketGraphic.lineTo(1285, 613.75);
-		bracketGraphic.moveTo(1385, 537.5);
-		bracketGraphic.lineTo(1285, 537.5);
-		bracketGraphic.lineTo(1285, 690);
-		bracketGraphic.lineTo(1385, 690);
-		bracketGraphic.moveTo(1485, 500);
-		bracketGraphic.lineTo(1385, 500);
-		bracketGraphic.lineTo(1385, 575);
-		bracketGraphic.lineTo(1485, 575);
-		bracketGraphic.moveTo(1485, 650);
-		bracketGraphic.lineTo(1385, 650);
-		bracketGraphic.lineTo(1385, 725);
-		bracketGraphic.lineTo(1485, 725);
-		bracketGraphic.stroke({ color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 2 });
-		bracketGraphic.pivot.set(250, 250);
-		return bracketGraphic;
+		this.bracketGraphic.moveTo(333.5, 129);
+		this.bracketGraphic.lineTo(333.5, 196);
+		this.bracketGraphic.moveTo(333.5, 259);
+		this.bracketGraphic.lineTo(333.5, 326);
+		this.bracketGraphic.moveTo(333.5, 389);
+		this.bracketGraphic.lineTo(333.5, 456);
+		this.bracketGraphic.moveTo(333.5, 519);
+		this.bracketGraphic.lineTo(333.5, 586);
+
+		this.bracketGraphic.moveTo(333.5, 162.5);
+		this.bracketGraphic.lineTo(533.5, 162.5);
+		this.bracketGraphic.moveTo(333.5, 292.5);
+		this.bracketGraphic.lineTo(533.5, 292.5);
+		this.bracketGraphic.moveTo(333.5, 422.5);
+		this.bracketGraphic.lineTo(533.5, 422.5);
+		this.bracketGraphic.moveTo(333.5, 552.5);
+		this.bracketGraphic.lineTo(533.5, 552.5);
+
+		this.bracketGraphic.moveTo(532.5, 161.5);
+		this.bracketGraphic.lineTo(532.5, 293.5);
+		this.bracketGraphic.moveTo(532, 423.5);
+		this.bracketGraphic.lineTo(532, 554);
+
+		this.bracketGraphic.moveTo(532.5, 227.5);
+		this.bracketGraphic.lineTo(732.5, 227.5);
+		this.bracketGraphic.moveTo(532.5, 487.5);
+		this.bracketGraphic.lineTo(732.5, 487.5);
+
+		this.bracketGraphic.moveTo(732, 226);
+		this.bracketGraphic.lineTo(732, 489);
+
+		this.bracketGraphic.moveTo(732.5, 357.5);
+		this.bracketGraphic.lineTo(800, 357.5);
+		
+		this.bracketGraphic.stroke({ color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3 });
 	}
 
-	createBracketNames(playerAmount: number): Text[] {
-		let names: Text[] = [];
-
+	createBracketNames(playerAmount: number) {
 		for (let i = 0; i < playerAmount; i++) {
-			names.push({
+			this.bracketNames.push({
 				text: `PLAYER ${i + 1}`,
 				x: this.getNamePosition(i).x,
 				y: this.getNamePosition(i).y,
@@ -102,17 +125,15 @@ export class Bracket extends Entity {
 				},
 			} as Text);
 		};
-		
-		return (names);
 	}
 
-	createVSText() {
+	createCrown() {
 		return {
-			text: "VS",
-			x: this.menu.width / 2 - 5,
-			y: this.menu.height/ 2 + 40,
+			text: "♔", // Crown
+			x: this.menu.width / 2 - 10,
+			y: this.menu.height/ 2 - 50,
 			style: {
-				fill: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue,
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.5 },
 				fontSize: 75,
 				fontWeight: 'lighter' as const,
 				fontFamily: 'anatol-mn',
@@ -141,64 +162,85 @@ export class Bracket extends Entity {
 	}
 
 	getNamePosition(index: number): { x: number, y: number } {
+		const vOffset = 10;
+		
 		switch (index) {
 			case (0): {
 				return {
-					x: 475,
-					y: 300,
+					x: 175,
+					y: 175 - vOffset,
 				};
 			}
 
 			case (1): {
 				return {
-					x: 475,
-					y: 375,
+					x: 175,
+					y: 240 - vOffset,
 				};
 			}
 
 			case (2): {
 				return {
-					x: 475,
-					y: 450,
+					x: 175,
+					y: 305 - vOffset,
 				};
 			}
 
 			case (3): {
 				return {
-					x: 475,
-					y: 525,
+					x: 175,
+					y: 370 - vOffset,
 				};
 			}
 
 			case (4): {
 				return {
-					x: 1300,
-					y: 300,
+					x: 175,
+					y: 435 - vOffset,
 				};
 			}
 
 			case (5): {
 				return {
-					x: 1300,
-					y: 375,
+					x: 175,
+					y: 500 - vOffset,
 				};
 			}
 
 			case (6): {
 				return {
-					x: 1300,
-					y: 450,
+					x: 175,
+					y: 565 - vOffset,
 				};
 			}
 
 			case (7): {
 				return {
-					x: 1300,
-					y: 525,
+					x: 175,
+					y: 630 - vOffset,
 				};
 			}
 		}
 		
 		return ({x: 100, y: 100});
+	}
+
+	redrawBracket(): void {
+		this.bracketGraphic.clear();
+		this.createBracketGraphic(this.playerAmount);
+	
+		for (let i = 0; i < this.playerAmount; i++) {
+			this.removeComponent('text', `bracketName_${i}`);
+		}
+	
+		this.createBracketNames(this.playerAmount);
+		for (let i = 0; i < this.bracketNames.length; i++) {
+			const nameComponent = new TextComponent(this.bracketNames[i]);
+			this.addComponent(nameComponent, `bracketName_${i}`);
+		}
+
+		const updatedCrown = this.createCrown();
+		const crownComponent = new TextComponent(updatedCrown);
+		this.replaceComponent('text', crownComponent, 'crown');
 	}
 }

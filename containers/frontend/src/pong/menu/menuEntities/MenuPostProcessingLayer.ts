@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 09:25:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,10 @@ export class MenuPostProcessingLayer extends Entity {
         const glow = new GlowFilter({
             alpha: 0.1,
             color: GAME_COLORS.white,
-            distance: 10,
+            distance: 5,
             innerStrength: 0,
             knockout: false,
-            outerStrength: 2,
+            outerStrength: 0.5,
             quality: 0.1,
         });
 

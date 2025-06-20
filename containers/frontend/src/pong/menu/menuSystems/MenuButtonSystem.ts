@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:32:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 12:44:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,9 @@ export class ButtonSystem implements System {
         game.init(); */
 
         this.menu.playQuitButton.resetButton();
+        this.menu.playOverlay.header.redrawOverlayElements();
+        this.menu.tournamentOverlay.header.redrawOverlayElements();
+        this.menu.tournamentOverlay.bracket.redrawBracket();
         
         if (this.menu.config.variant === 'tournament') {
             this.menu.playButton.setClicked(true);
@@ -152,6 +155,7 @@ export class ButtonSystem implements System {
 
     handleGlossaryClick() {
         this.menu.glossaryQuitButton.resetButton();
+        this.menu.glossaryOverlay.header.redrawOverlayElements();
         this.menu.glossaryButton.setClicked(true);
         this.menu.glossaryOverlay.show();
         this.setButtonsClickability(false);
@@ -159,6 +163,7 @@ export class ButtonSystem implements System {
 
     handleAboutClick() {
         this.menu.aboutQuitButton.resetButton();
+        this.menu.aboutOverlay.header.redrawOverlayElements();
         this.menu.aboutButton.setClicked(true);
         this.menu.aboutOverlay.show();
         this.setButtonsClickability(false);

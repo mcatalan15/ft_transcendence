@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:06:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:53:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/20 11:38:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,35 +23,105 @@ import { GAME_COLORS } from "../../utils/Types";
 
 export class OverlayHeader extends Entity {
 	menu: Menu;
+	overlayType: string;
 	headerGraphic!: Graphics;
-	headerText!: Text;
+	blocking!: Graphics;
+	overHead!: Graphics;
+	headerText!: any;
+	logoText!: any;
 
-	constructor(menu: Menu, id: string, layer: string, type: string) {
+	constructor(menu: Menu, id: string, layer: string, preType: string) {
 		super(id, layer);
 		
 		this.menu = menu;
 
-		const color = this.getColor(type);
+		this.overlayType = preType;
+		const color = this.getColor(preType);
 
-		const headerGraphic = this.createHeaderGraphic(color);
-		const renderComponent = new RenderComponent(headerGraphic);
+		this.headerGraphic = new Graphics();
+		this.createHeaderGraphic(color);
+		const renderComponent = new RenderComponent(this.headerGraphic);
 		this.addComponent(renderComponent);
+
+		const type = this.getType(preType);
 		
-		const headerText = this.createHeaderText(type);
-		const textComponent = new TextComponent(headerText);
+		this.headerText = this.createHeaderText(type);
+		const textComponent = new TextComponent(this.headerText);
 		this.addComponent(textComponent);
 
-		const logoText = this.createLogoText(color);
-		const logoTextComponent = new TextComponent(logoText);
-		this.addComponent(logoTextComponent);
+		this.logoText = this.createLogoText(color);
+		const logoTextComponent = new TextComponent(this.logoText);
+		this.addComponent(logoTextComponent, 'logoText');
 
-		const blocking = this.createBlocking();
-		const blockingComponent = new RenderComponent(blocking);
+		this.blocking = new Graphics();
+		this.createBlocking();
+		const blockingComponent = new RenderComponent(this.blocking);
 		this.addComponent(blockingComponent);
 
-		const overHead = this.createOverHead(color);
-		const overHeadComponent = new RenderComponent(overHead);
+		this.overHead = new Graphics();
+		this.createOverHead(color);
+		const overHeadComponent = new RenderComponent(this.overHead);
 		this.addComponent(overHeadComponent);
+	}
+
+	getType(overlayBase: string): string {
+		if (this.menu.language === 'en' || overlayBase === 'info') {
+			return (overlayBase);
+		}
+
+		switch (this.menu.language) {
+			case('es'): {
+				switch (overlayBase) {
+					case ('glossary'): {
+						return ('glosario');
+					}
+					
+					case ('play'): {
+						return ('jugar');
+					}
+
+					case ('tournament'): {
+						return ('torneo');
+					}
+				}
+				break;
+			}
+
+			case ('fr'): {
+				switch (overlayBase) {
+					case ('glossary'): {
+						return ('glossaire');
+					}
+					
+					case ('play'): {
+						return ('jouer');
+					}
+
+					case ('tournament'): {
+						return ('tournoi');
+					}
+				}
+				break;
+			}
+
+			case ('cat'): {
+				switch (overlayBase) {
+					case ('glossary'): {
+						return ('glossari');
+					}
+					
+					case ('play'): {
+						return ('jugar');
+					}
+
+					case ('tournament'): {
+						return ('torneig');
+					}
+				}
+			}
+		}
+
+		return ('unknown');
 	}
 
 	getColor(overlay: string) {
@@ -75,76 +145,77 @@ export class OverlayHeader extends Entity {
 		return (GAME_COLORS.white) as number;
 	}
 
-	createBlocking(): Graphics {
-		const blocking = new Graphics();
-		blocking.rect(0, 0, 250, 25);
-		blocking.fill(GAME_COLORS.black);
-		blocking.x = 1380;
-		blocking.y = 65;
-		return(blocking);
+	createBlocking(){
+		this.blocking.rect(0, 0, 250, 25);
+		this.blocking.fill(GAME_COLORS.black);
+		this.blocking.x = 1380;
+		this.blocking.y = 65;
 	}
 
-	createOverHead(color: number): Graphics {
+	createOverHead(color: number) {
 		const offset = 239;
-		const overHead = new Graphics();
 
-		overHead.moveTo(0, 0);
-		overHead.lineTo(1112 + offset, 0);
-		overHead.moveTo(1138 + offset, 0);
-		overHead.lineTo(1173 + offset, 0);
-		overHead.moveTo(1191 + offset, 0);
-		overHead.lineTo(1231 + offset, 0);
-		overHead.moveTo(1258 + offset, 0);
-		overHead.lineTo(1398 + offset, 0);
+		this.overHead.moveTo(0, 0);
+		this.overHead.lineTo(1112 + offset, 0);
+		this.overHead.moveTo(1138 + offset, 0);
+		this.overHead.lineTo(1173 + offset, 0);
+		this.overHead.moveTo(1191 + offset, 0);
+		this.overHead.lineTo(1231 + offset, 0);
+		this.overHead.moveTo(1258 + offset, 0);
+		this.overHead.lineTo(1398 + offset, 0);
 
-		overHead.moveTo(0, 5.3);
-		overHead.lineTo(1117.8 + offset, 5.3);
-		overHead.moveTo(1132 + offset, 5.3);
-		overHead.lineTo(1179 + offset, 5.3);
-		overHead.moveTo(1191 + offset, 5.3);
-		overHead.lineTo(1238 + offset, 5.3);
-		overHead.moveTo(1252 + offset, 5.3);
-		overHead.lineTo(1398 + offset, 5.3);
+		this.overHead.moveTo(0, 5.3);
+		this.overHead.lineTo(1117.8 + offset, 5.3);
+		this.overHead.moveTo(1132 + offset, 5.3);
+		this.overHead.lineTo(1179 + offset, 5.3);
+		this.overHead.moveTo(1191 + offset, 5.3);
+		this.overHead.lineTo(1238 + offset, 5.3);
+		this.overHead.moveTo(1252 + offset, 5.3);
+		this.overHead.lineTo(1398 + offset, 5.3);
 
-		overHead.moveTo(0, 10.5);
-		overHead.lineTo(1120 + offset, 10.5);
-		overHead.moveTo(1130 + offset, 10.5);
-		overHead.lineTo(1181 + offset, 10.5);
-		overHead.moveTo(1191 + offset, 10.5);
-		overHead.lineTo(1240 + offset, 10.5);
-		overHead.moveTo(1250 + offset, 10.5);
-		overHead.lineTo(1398 + offset, 10.5);
+		this.overHead.moveTo(0, 10.5);
+		this.overHead.lineTo(1120 + offset, 10.5);
+		this.overHead.moveTo(1130 + offset, 10.5);
+		this.overHead.lineTo(1181 + offset, 10.5);
+		this.overHead.moveTo(1191 + offset, 10.5);
+		this.overHead.lineTo(1240 + offset, 10.5);
+		this.overHead.moveTo(1250 + offset, 10.5);
+		this.overHead.lineTo(1398 + offset, 10.5);
 
-		overHead.moveTo(0, 15.80);
-		overHead.lineTo(1120 + offset, 15.80);
-		overHead.moveTo(1129.8 + offset, 15.80);
-		overHead.lineTo(1180.8 + offset, 15.80);
-		overHead.moveTo(1191 + offset, 15.80);
-		overHead.lineTo(1240 + offset, 15.80);
-		overHead.moveTo(1250 + offset, 15.80);
-		overHead.lineTo(1398 + offset, 15.80);
+		this.overHead.moveTo(0, 15.80);
+		this.overHead.lineTo(1120 + offset, 15.80);
+		this.overHead.moveTo(1129.8 + offset, 15.80);
+		this.overHead.lineTo(1180.8 + offset, 15.80);
+		this.overHead.moveTo(1191 + offset, 15.80);
+		this.overHead.lineTo(1240 + offset, 15.80);
+		this.overHead.moveTo(1250 + offset, 15.80);
+		this.overHead.lineTo(1398 + offset, 15.80);
 
-		overHead.stroke( { color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 1.5 } );
-		overHead.x = 73.5;
-		overHead.y = 66;
-		return(overHead);
+		this.overHead.stroke( { color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 1.5 } );
+		this.overHead.x = 73.5;
+		this.overHead.y = 66;
 	}
 
-	createHeaderGraphic(color: number): Graphics {
-		const graphic = new Graphics();
-		graphic.rect(0, 0, 1330, 32);
-		graphic.rect(1520, 0, 116, 32)
-		graphic.stroke( {color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 2} );
-		graphic.fill(this.menu.config.classicMode ? GAME_COLORS.black : color);
-		graphic.x = 74.5;
-		graphic.y = 91.5;
-		return(graphic);
+	createHeaderGraphic(color: number) {
+		this.headerGraphic.rect(0, 0.1, 1309.5, 32);
+		this.headerGraphic.rect(1539.5, -0.04, 98.3, 32)
+		this.headerGraphic.stroke( {color: this.menu.config.classicMode ? GAME_COLORS.white : color, width: 0.1} );
+		this.headerGraphic.fill(this.menu.config.classicMode ? GAME_COLORS.white : color);
+		this.headerGraphic.x = 73.5;
+		this.headerGraphic.y = 90.6;
 	}
 
 	createHeaderText(type: string) {
+		// Only God can judge me
+		let x = 100 + (type.length - 4) * 5;
+
+		switch (type.length) {
+
+		}
+		
 		return {
 			text: type.toUpperCase(),
-			x: 140,
+			x: x,
 			y: 107.5,
 			style: {
 				fill: GAME_COLORS.black,
@@ -159,12 +230,34 @@ export class OverlayHeader extends Entity {
 		return {
 			text: "PONG",
 			x: 1498,
-			y: 93.2,
+			y: 93,
 			style: {
 				fill: this.menu.config.classicMode ? GAME_COLORS.white : color,
 				fontSize: 110,
 				fontFamily: 'anatol-mn',
 			},
 		};
+	}
+
+	redrawOverlayElements(): void {
+		const color = this.menu.config.classicMode ? GAME_COLORS.white : this.getColor(this.overlayType);
+
+		this.headerGraphic.clear();
+		this.overHead.clear();
+
+		this.createHeaderGraphic(color);
+
+		const updatedLogoText = this.createLogoText(color);
+		const logoTextComponent = new TextComponent(updatedLogoText);
+		this.replaceComponent('text', logoTextComponent, 'logoText');
+
+		const newBlocking = this.blocking;
+		const blockingComponent = new RenderComponent(newBlocking);
+		this.replaceComponent('render', blockingComponent, 'blocking');
+
+		this.createOverHead(color);
+		const newOverHead = this.overHead;
+		const overHeadComponent = new RenderComponent(newOverHead);
+		this.replaceComponent('render', overHeadComponent, 'overHead');
 	}
 }
