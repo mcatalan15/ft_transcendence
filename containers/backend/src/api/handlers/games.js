@@ -4,38 +4,63 @@ const { saveGameToDatabase,
 	saveSmartContractToDatabase
  } = require('../db/database');
 
-async function saveGameHandler(request, reply){
-	const {
-		player1_name,
-		player1_score,player2_name,
-		player2_score,
-		winner_name
-	} = request.body;
+async function saveGameHandler(request, reply) {
+    const {
+        player1_id,
+        player2_id,
+        winner_id,
+        player1_name,
+        player2_name,
+        player1_score,
+        player2_score,
+        winner_name,
+        player1_is_ai,
+        player2_is_ai,
+        game_mode,
+        is_tournament,
+        smart_contract_link,
+        contract_address
+    } = request.body;
 
-	try {
-		const gameId = await saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name);
-		
-		reply.status(201).send({
-			success: true,
-			message: 'Game saved successfully',
-			gameId
-		});
-	} catch (error) {
-		fastify.log.error('Error saving game:', error);
-		
-		if (error.message.includes('SQLITE_CONSTRAINT')) {
-			reply.status(400).send({
-				success: false,
-				message: 'Database constraint error'
-			});
-		} else {
-			reply.status(500).send({
-				success: false,
-				message: 'Failed to save game'
-			});
-		}
-	}
-};
+    try {
+        const gameId = await saveGameToDatabase(
+            player1_id,
+            player2_id,
+            winner_id,
+            player1_name,
+            player2_name,
+            player1_score,
+            player2_score,
+            winner_name,
+            player1_is_ai,
+            player2_is_ai,
+            game_mode,
+            is_tournament,
+            smart_contract_link,
+            contract_address
+        );
+
+        reply.status(201).send({
+            success: true,
+            message: 'Game saved successfully',
+            gameId
+        });
+    } catch (error) {
+        fastify.log.error('Error saving game:', error);
+
+        if (error.message.includes('SQLITE_CONSTRAINT')) {
+            reply.status(400).send({
+                success: false,
+                message: 'Database constraint error'
+            });
+        } else {
+            reply.status(500).send({
+                success: false,
+                message: 'Failed to save game'
+            });
+        }
+    }
+}
 
 async function retrieveGamesHandler(request, reply) {
 	try {
@@ -156,9 +181,78 @@ async function deployContractHandler(request, reply) {
     }
 };
 
+const getGamesHistoryHandler = async (request, reply) => {
+  try {
+    const userId = request.user.id;
+    
+    if (!userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Authentication required'
+      });
+    }
+
+    const { page = 0, limit = 10 } = request.query;
+    const offset = page * limit;
+
+    // If you have promisified your database connection
+    const db = request.server.db;
+    
+    const [totalResult, gamesResult] = await Promise.all([
+      db.get(`SELECT COUNT(*) as total FROM games WHERE player1_id = ? OR player2_id = ?`, [userId, userId]),
+      db.all(`
+        SELECT 
+          id_game,
+          datetime(created_at, 'localtime') as created_at,
+          is_tournament,
+          player1_id,
+          player2_id,
+          winner_id,
+          player1_name,
+          player2_name,
+          player1_score,
+          player2_score,
+          winner_name,
+          player1_is_ai,
+          player2_is_ai,
+          COALESCE(game_mode, 'Classic') as game_mode,
+          smart_contract_link,
+          contract_address
+        FROM games 
+        WHERE player1_id = ? OR player2_id = ?
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+      `, [userId, userId, limit, offset])
+    ]);
+
+    const total = totalResult?.total || 0;
+    const games = gamesResult || [];
+
+    reply.send({
+      success: true,
+      games,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNext: (page + 1) * limit < total,
+      hasPrev: page > 0
+    });
+
+  } catch (error) {
+    request.log.error('Error fetching game history:', error);
+    reply.code(500).send({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to fetch game history'
+    });
+  }
+};
+
 module.exports = {
 	saveGameHandler,
 	retrieveGamesHandler,
 	retrieveLastGameHandler,
-	deployContractHandler
+	deployContractHandler,
+	getGamesHistoryHandler
 };

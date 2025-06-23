@@ -12,6 +12,7 @@ import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
+import { showHistory } from '../views/matches';
 
 let app: HTMLElement | null = null;
 
@@ -62,6 +63,14 @@ function renderRoute(path: string) {
 				return;
 			}
 			showHome(app);
+			break;
+
+		case '/matches':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			showHistory(app);
 			break;
 
 		case '/profile':

@@ -180,26 +180,72 @@ async function getUserByUsername(username) {
     });
 }
 
-async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
-	return new Promise((resolve, reject) => {
-		const query = `INSERT INTO games (player1_name, player1_score,player2_name, player2_score, winner_name) VALUES (?, ?, ?, ?, ?)`;
-		const params = [player1_name, player1_score,player2_name, player2_score, winner_name];
-		db.run(query, params, function (err) {
-			if (err) {
-				console.error('[DB INSERT ERROR] Full error:', {
-					message: err.message,
-					code: err.code,
-					errno: err.errno,
-					stack: err.stack
-				});
-				reject(err);
-			} else {
-				resolve(this.lastID);
-			}
-		});
-	});
+async function saveGameToDatabase(
+    player1_id,
+    player2_id,
+    winner_id,
+    player1_name,
+    player2_name,
+    player1_score,
+    player2_score,
+    winner_name,
+    player1_is_ai,
+    player2_is_ai,
+    game_mode,
+    is_tournament,
+    smart_contract_link,
+    contract_address
+) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            INSERT INTO games (
+                player1_id,
+                player2_id,
+                winner_id,
+                player1_name,
+                player2_name,
+                player1_score,
+                player2_score,
+                winner_name,
+                player1_is_ai,
+                player2_is_ai,
+                game_mode,
+                is_tournament,
+                smart_contract_link,
+                contract_address
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const params = [
+            player1_id,
+            player2_id,
+            winner_id,
+            player1_name,
+            player2_name,
+            player1_score,
+            player2_score,
+            winner_name,
+            player1_is_ai,
+            player2_is_ai,
+            game_mode,
+            is_tournament,
+            smart_contract_link,
+            contract_address
+        ];
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB INSERT ERROR] Full error:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else {
+                resolve(this.lastID);
+            }
+        });
+    });
 }
-
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
