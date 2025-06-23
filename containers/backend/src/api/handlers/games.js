@@ -1,6 +1,7 @@
 const { saveGameToDatabase,
 	getLatestGame,
-	getAllGames
+	getAllGames,
+	saveSmartContractToDatabase
  } = require('../db/database');
 
 async function saveGameHandler(request, reply){

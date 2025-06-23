@@ -45,7 +45,8 @@ if [ ! -f "$DB_PATH" ]; then
 		player1_is_ai BOOLEAN,
 		player2_is_ai BOOLEAN,
 		game_mode TEXT,
-		smart_contract_link URL,
+		smart_contract_link TEXT, -- Changed from URL to TEXT for SQLite compatibility
+		contract_address TEXT,   -- Added to store contract address
 		FOREIGN KEY(player1_id) REFERENCES users(id_user),
 		FOREIGN KEY(player2_id) REFERENCES users(id_user),
 		FOREIGN KEY(winner_id) REFERENCES users(id_user)
