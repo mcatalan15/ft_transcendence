@@ -372,9 +372,10 @@ async function checkFriendship(userId, friendId) {
 
 async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink) {
     return new Promise((resolve, reject) => {
-        const query = `UPDATE games SET contract_address = ?, explorer_link = ? WHERE id_game = ?`;
+        const query = `UPDATE games SET contract_address = ?, smart_contract_link = ? WHERE id_game = ?`;
         const params = [contractAddress, explorerLink, gameId];
         
+        console.log('Executing DB query:', { query, params });
         db.run(query, params, function (err) {
             if (err) {
                 console.error('[DB UPDATE ERROR] Failed to save smart contract data:', {
