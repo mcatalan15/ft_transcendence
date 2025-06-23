@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 17:11:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/23 10:49:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -652,10 +652,10 @@ export class Menu{
 			{ name: 'wallHoneycomb', url: '/wallFigures/wallHoneycomb.png' },
 
 		    // About avatars
-			{ name: 'avatarEva', url: '/avatars/defaults/default1.png' },
-			{ name: 'avatarMarc', url: '/avatars/defaults/default2.png' },
-    		{ name: 'avatarNico', url: '/avatars/defaults/default3.png' },
-		    { name: 'avatarHugo', url: '/avatars/defaults/default4.png' },
+			{ name: 'avatarEva', url: '/avatars/square/square1.png' },
+			{ name: 'avatarMarc', url: '/avatars/square/square2.png' },
+    		{ name: 'avatarNico', url: '/avatars/square/square3.png' },
+		    { name: 'avatarHugo', url: '/avatars/square/square4.png' },
 
 			// About classic avatars
 			{ name: 'avatarEvaClassic', url: '/avatars/classic/default1Classic.png' },
@@ -664,8 +664,11 @@ export class Menu{
 		    { name: 'avatarHugoClassic', url: '/avatars/classic/default4Classic.png' },
 
 			// Square Avatars
-			{ name: 'avatarMarcSquare', url: '/avatars/square/default2Square.png' },
-			{ name: 'avatarEvaSquare', url: '/avatars/square/default2Square.png' },
+			{ name: 'avatarEvaSquare', url: '/avatars/square/square1.png' },
+			{ name: 'avatarMarcSquare', url: '/avatars/square/square2.png' },
+			{ name: 'avatarNicoSquare', url: '/avatars/square/square3.png' },
+			{ name: 'avatarHugoSquare', url: '/avatars/square/square4.png' },
+			
 
 			// About pink logos
 			{ name: 'typescriptPink', url: '/logos/pink/logo_typescript.png' },

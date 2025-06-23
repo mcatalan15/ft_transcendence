@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 17:56:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/23 16:25:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,9 @@ export class TournamentOverlay extends Overlay {
 
         this.bracket = new Bracket(this.menu, 'tournamentBracket', 'overlays', 8);
         this.addContent(this.bracket, 'overlays');
+        for (let i = 0; i < this.bracket.nameCells.length; i++) {
+            this.addContent(this.bracket.nameCells[i], 'overlays');
+        }
 
         this.playerHeader = new HeaderBar(this.menu, 'playerHeader', 'overlays', 'profile', 1100, 180, 550, 20);
         this.addContent(this.playerHeader, 'overlays');

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/23 13:01:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ export class ButtonManager {
 	
 		buttonConfigs.forEach((config, index) => {
 			const menuButton = new MenuButton(
-				`menuButton_${config.text.toLowerCase()}`, 
+				`menuButton_${config.text.toLowerCase()}`,
+				'menuButton',
 				'menuContainer', 
 				menu, 
 				config
@@ -204,6 +205,7 @@ export class ButtonManager {
 		HalfButtonConfigs.forEach((config, index) => {
 			const halfButton = new MenuHalfButton(
 				`startHalfButton_index${index}_${config.text.toLowerCase()}`, 
+				'halfButton',
 				'menuContainer', 
 				menu, 
 				config,
@@ -277,7 +279,8 @@ export class ButtonManager {
 	
 		halfButtonConfigs.forEach((config, index) => {
 			const halfButton = new MenuHalfButton(
-				`halfButton_${config.text.toLowerCase()}`, 
+				`halfButton_${config.text.toLowerCase()}`,
+				"halfButton", 
 				'menuContainer', 
 				menu, 
 				config
@@ -338,7 +341,8 @@ export class ButtonManager {
 			}
 			
 			const xButton = new MenuXButton(
-				tag!, 
+				tag!,
+				"xButton",
 				'menuContainer', 
 				menu, 
 				config,
@@ -407,7 +411,8 @@ export class ButtonManager {
 			}
 			
 			const quitButton = new MenuOverlayQuitButton(
-				tag!, 
+				tag!,
+				"quitButton",
 				'menuContainer', 
 				menu, 
 				config,
