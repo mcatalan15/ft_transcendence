@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/23 18:29:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/24 17:27:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@ import { TextComponent } from "../../components/TextComponent";
 
 import { GAME_COLORS } from "../../utils/Types";
 
-interface BracketTier {
-	cells: NameCell[];
-	startX: number;
-	spacing: number;
-}
-
 export class Bracket extends Entity {
 	menu: Menu;
 	playerAmount: number = 8;
@@ -35,6 +29,8 @@ export class Bracket extends Entity {
 	bracketGraphic: Graphics = new Graphics();
 	roundGraphic: Graphics = new Graphics();
 	statsCell: Graphics = new Graphics();
+	upperRoundLegend: Text[] = [];
+	lowerRoundLegend: Text[] = [];
 	bracketNames: Text[] = [];
 	dashedLines: Text[] = [];
 	crown: any;
@@ -45,6 +41,7 @@ export class Bracket extends Entity {
 	private readonly LINE_LENGTH = 30;
 	private readonly LINE_GAP = 5;
 	private readonly BASE_X = 142.5;
+	private readonly HORIZONTAL_LINE_EXTENSION = 1.5;
 
 	constructor(menu: Menu, id: string, layer: string, playerAmount: number) {
 		super(id, layer);
@@ -56,9 +53,96 @@ export class Bracket extends Entity {
 		this.addNameCellComponents();
 		this.createBracketGraphic();
 		this.createRoundGraphic();
+		this.createUpperRoundLegend();
+		this.createLowerRoundLegend();
 		this.createStatsCell();
 		this.createDashedLines();
 		this.createCrownElement();
+	}
+
+	createUpperRoundLegend() {
+		this.upperRoundLegend.push({
+			text: "⩔⩔⩔⩔⩔\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 18,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+				letterSpacing: 212,
+			},
+		} as Text);
+
+		this.upperRoundLegend[0].anchor = { x: 0.5, y: 0.5 };
+		this.upperRoundLegend[0].x = 552;
+		this.upperRoundLegend[0].y = 155;
+
+		this.upperRoundLegend.push({
+			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 12,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		this.upperRoundLegend[1].x = 550;
+		this.upperRoundLegend[1].y = 155;
+
+		const upperRoundLegendComponent = new TextComponent(this.upperRoundLegend[0]);
+		this.addComponent(upperRoundLegendComponent, 'upperRoundLegend');
+
+		const upperRoundLegendTextComponent = new TextComponent(this.upperRoundLegend[1]);
+		this.addComponent(upperRoundLegendTextComponent, 'upperRoundLegendText');
+	}
+
+	createLowerRoundLegend() {
+		this.lowerRoundLegend.push({
+			text: "⩔⩔⩔⩔⩔\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 18,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+				letterSpacing: 212,
+			},
+		} as Text);
+	
+		this.lowerRoundLegend[0].anchor = { x: 0.5, y: 0.5 };
+		this.lowerRoundLegend[0].x = 552;
+		this.lowerRoundLegend[0].y = 635;
+		this.lowerRoundLegend[0].rotation = Math.PI;
+	
+		this.lowerRoundLegend.push({
+			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 12,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+	
+		this.lowerRoundLegend[1].x = 550;
+		this.lowerRoundLegend[1].y = 655;
+	
+		const lowerRoundLegendComponent = new TextComponent(this.lowerRoundLegend[0]);
+		this.addComponent(lowerRoundLegendComponent, 'lowerRoundLegend');
+	
+		const lowerRoundLegendTextComponent = new TextComponent(this.lowerRoundLegend[1]);
+		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
 	private createBracketStructure() {
@@ -125,24 +209,24 @@ export class Bracket extends Entity {
 
 	private drawTierConnections(tier: { startIndex: number, count: number, nextTierIndex: number }) {
 		const horizontalLines: { x: number, y: number }[] = [];
-
+	
 		for (let i = 0; i < tier.count && (tier.startIndex + i) < this.nameCells.length; i++) {
 			const cellIndex = tier.startIndex + i;
 			const nameCell = this.nameCells[cellIndex];
 			const lineY = nameCell.y + (this.CELL_HEIGHT / 2);
 			const lineStartX = nameCell.x + nameCell.width + this.LINE_GAP;
-			const lineEndX = lineStartX + this.LINE_LENGTH;
+			const lineEndX = lineStartX + this.LINE_LENGTH + this.HORIZONTAL_LINE_EXTENSION; // Use the constant
 			
 			this.bracketGraphic.moveTo(lineStartX, lineY);
 			this.bracketGraphic.lineTo(lineEndX, lineY);
 			
-			horizontalLines.push({ x: lineEndX, y: lineY });
+			horizontalLines.push({ x: lineEndX - this.HORIZONTAL_LINE_EXTENSION, y: lineY }); // Use the constant here too
 		}
-
+	
 		for (let i = 0; i < horizontalLines.length - 1; i += 2) {
 			const line1 = horizontalLines[i];
 			const line2 = horizontalLines[i + 1];
-
+	
 			this.bracketGraphic.moveTo(line1.x, line1.y);
 			this.bracketGraphic.lineTo(line1.x, line2.y);
 			
@@ -153,7 +237,7 @@ export class Bracket extends Entity {
 				const nextCellCenterY = nextCell.y + (this.CELL_HEIGHT / 2);
 				const connectionStartX = line1.x;
 				const connectionEndX = nextCell.x - this.LINE_GAP;
-
+	
 				this.bracketGraphic.moveTo(connectionStartX, nextCellCenterY);
 				this.bracketGraphic.lineTo(connectionEndX, nextCellCenterY);
 			}
@@ -187,8 +271,8 @@ export class Bracket extends Entity {
 	createRoundGraphic() {
 		const hOffset = 30;
 		const baseX = 135;
-		const baseY = 150;
-		const bottomY = 625;
+		const baseY = 160;
+		const bottomY = 615;
 		const groupWidth = 16;
 		const groupHeight = 20;
 		const numGroups = 4;
@@ -275,7 +359,7 @@ export class Bracket extends Entity {
 			x: this.menu.width / 2 - 10,
 			y: this.menu.height / 2 - 50,
 			style: {
-				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.5 },
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.3 },
 				fontSize: 75,
 				fontWeight: 'lighter' as const,
 				fontFamily: 'anatol-mn',

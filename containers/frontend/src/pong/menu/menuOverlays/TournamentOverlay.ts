@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/23 16:25:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:50:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ export class TournamentOverlay extends Overlay {
         this.dummyButton = new HeaderBar(this.menu, 'dummyButton', 'overlays', 'dummy', 1088, 585, 573, 50);
         this.addContent(this.dummyButton, 'overlays');
 
-        MenuImageManager.createSquareAvatars(this.menu);
+        MenuImageManager.createTournamentAvatars(this.menu);
 
         this.setQuitButton(this.menu.playQuitButton);
     }
@@ -90,7 +90,7 @@ export class TournamentOverlay extends Overlay {
         super.show();
 
         //! OJO classic mode
-        MenuImageManager.prepareSquareAvatarImagesForPlay(this.menu);
+        MenuImageManager.prepareTournamentAvatarImages(this.menu);
     }
 
     public hide(): void {
@@ -104,6 +104,6 @@ export class TournamentOverlay extends Overlay {
             MenuImageManager.hideSquareAvatarImagesFromPlay(this.menu);
         } */
 
-        MenuImageManager.hideSquareAvatarImagesFromPlay(this.menu);
+        MenuImageManager.hideTournamentAvatarImages(this.menu);
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 12:44:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/24 17:53:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,8 +261,18 @@ export class ButtonSystem implements System {
             this.menu.menuContainer.addChild(this.menu.IAButton.getContainer());
         }
 
+        if (this.menu.IAButton.getIsClicked()) {
+            this.menu.IAButton.setClicked(!this.menu.IAButton.getIsClicked());
+        }
+
+        if (this.menu.duelButton.getIsClicked()) {
+            this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
+        }
+
         this.menu.localButton.resetButton();
         this.menu.onlineButton.resetButton();
+        this.menu.IAButton.resetButton();
+        this.menu.duelButton.resetButton();
 
         this.updatePlayButtonState();
     };
@@ -280,8 +290,18 @@ export class ButtonSystem implements System {
             this.menu.menuHidden.addChild(this.menu.IAButton.getContainer());
         }
 
+        if (this.menu.tournamentButton.getIsClicked()) {
+            this.menu.tournamentButton.setClicked(!this.menu.tournamentButton.getIsClicked());
+        }
+
+        if (this.menu.duelButton.getIsClicked()) {
+            this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
+        }
+
         this.menu.localButton.resetButton();
         this.menu.onlineButton.resetButton();
+        this.menu.tournamentButton.resetButton();
+        this.menu.duelButton.resetButton();
 
         this.updatePlayButtonState();
     };

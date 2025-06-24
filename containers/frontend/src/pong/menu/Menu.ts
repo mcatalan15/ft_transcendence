@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/23 10:49:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:50:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -658,12 +658,12 @@ export class Menu{
 		    { name: 'avatarHugo', url: '/avatars/square/square4.png' },
 
 			// About classic avatars
-			{ name: 'avatarEvaClassic', url: '/avatars/classic/default1Classic.png' },
-			{ name: 'avatarMarcClassic', url: '/avatars/classic/default2Classic.png' },
-    		{ name: 'avatarNicoClassic', url: '/avatars/classic/default3Classic.png' },
-		    { name: 'avatarHugoClassic', url: '/avatars/classic/default4Classic.png' },
+			{ name: 'avatarEvaClassic', url: '/avatars/squareClassic/squareClassic1.png' },
+			{ name: 'avatarMarcClassic', url: '/avatars/squareClassic/squareClassic2.png' },
+    		{ name: 'avatarNicoClassic', url: '/avatars/squareClassic/squareClassic3.png' },
+		    { name: 'avatarHugoClassic', url: '/avatars/squareClassic/squareClassic4.png' },
 
-			// Square Avatars
+			// Tournament Avatars
 			{ name: 'avatarEvaSquare', url: '/avatars/square/square1.png' },
 			{ name: 'avatarMarcSquare', url: '/avatars/square/square2.png' },
 			{ name: 'avatarNicoSquare', url: '/avatars/square/square3.png' },
