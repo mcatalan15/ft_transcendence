@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/23 16:14:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 12:28:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ export class HeaderBar extends Entity {
 		const bar = this.createBar(color, x, y, width, height);
 		this.bar = bar;
 		const renderComponent = new RenderComponent(bar);
-		this.addComponent(renderComponent);
+		this.addComponent(renderComponent, 'render');
 
 		const text = this.createText(overlay, x, y);
 		const textComponent = new TextComponent(text);
-		this.addComponent(textComponent);
+		this.addComponent(textComponent, 'text');
 	}
 	
 	getActualOverlay(overlayBase: string): string{

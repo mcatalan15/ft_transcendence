@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/24 17:53:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:21:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ export class ButtonSystem implements System {
                 this.resetLayer(event);
             } else if (event.type.endsWith('BACK')) {
                 this.resetLayer(event);
+            } else if (event.type === 'READY_CLICK') {
+                this.handleReadyClick();
             } else {
                 unhandledEvents.push(event);
             }
@@ -111,12 +113,7 @@ export class ButtonSystem implements System {
     }
 
     handlePlayClick(){
-        //this.menu.cleanup();
-
         this.setFinalConfig();
-
-        /* const game = new PongGame(this.menu.app, this.menu.config, this.menu.language); //! send menu config to the game
-        game.init(); */
 
         this.menu.playQuitButton.resetButton();
         this.menu.playOverlay.header.redrawOverlayElements();
@@ -126,12 +123,19 @@ export class ButtonSystem implements System {
         if (this.menu.config.variant === 'tournament') {
             this.menu.playButton.setClicked(true);
             this.menu.tournamentOverlay.show();
-            this.setButtonsClickability(false);    
+            this.setButtonsClickability(false);
         } else {
             this.menu.playButton.setClicked(true);
             this.menu.playOverlay.show();
             this.setButtonsClickability(false);
         }
+    }
+
+    handleReadyClick() {
+        this.menu.cleanup();
+
+        const game = new PongGame(this.menu.app, this.menu.config, this.menu.language); //! send menu config to the game
+        game.init();
     }
 
     handleOptionsClick() {
@@ -492,6 +496,7 @@ export class ButtonSystem implements System {
         this.updatePaddles();
         this.menu.glossaryOverlay.redrawTitles();
         this.menu.aboutOverlay.redrawTitles();
+        this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
     }
 
     getUpdatedHalfButtonText(text: string, mode: string): string {

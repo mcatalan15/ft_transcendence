@@ -6,9 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/24 10:50:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:01:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Text } from "pixi.js";
 
 import { Menu } from "../Menu";
 
@@ -20,16 +22,18 @@ import { TournamentTexts } from "./TournamentTexts";
 import { OverlayHeader } from "./OverlayHeader";
 import { HeaderBar } from "./HeaderBar";
 import { Bracket } from "./Bracket";
+import { TournamentNextMatchDisplay } from "./TournamentNextMatchDisplay";
 
 import { GAME_COLORS } from "../../utils/Types";
+import { TextComponent } from "../../components/TextComponent";
 
 export class TournamentOverlay extends Overlay {
     tournamentTexts!: TournamentTexts;
     header!: OverlayHeader;
     bracket!: Bracket;
-    playerHeader!: HeaderBar;
-    rivalHeader!: HeaderBar;
+    nextMatchHeader!: HeaderBar;
     dummyButton!: HeaderBar;
+    nextMatchDisplay!: TournamentNextMatchDisplay;
 
     constructor(menu: Menu) {
         super('tournamentOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
@@ -40,8 +44,8 @@ export class TournamentOverlay extends Overlay {
     }
 
     protected initializeContent(): void {      
-        this.tournamentTexts = new TournamentTexts(this.menu, 'tournamentTexts', 'overlays');
-        this.addContent(this.tournamentTexts, 'overlays');
+        /* this.tournamentTexts = new TournamentTexts(this.menu, 'tournamentTexts', 'overlays');
+        this.addContent(this.tournamentTexts, 'overlays'); */
 
         this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'tournament');
         this.addContent(this.header, 'overlays');
@@ -52,14 +56,8 @@ export class TournamentOverlay extends Overlay {
             this.addContent(this.bracket.nameCells[i], 'overlays');
         }
 
-        this.playerHeader = new HeaderBar(this.menu, 'playerHeader', 'overlays', 'profile', 1100, 180, 550, 20);
-        this.addContent(this.playerHeader, 'overlays');
-
-        this.rivalHeader = new HeaderBar(this.menu, 'playerHeader', 'overlays', 'next match', 1100, 380, 550, 20);
-        this.addContent(this.rivalHeader, 'overlays');
-
-        this.dummyButton = new HeaderBar(this.menu, 'dummyButton', 'overlays', 'dummy', 1088, 585, 573, 50);
-        this.addContent(this.dummyButton, 'overlays');
+        this.nextMatchDisplay = new TournamentNextMatchDisplay(this.menu, 'nextMatchDisplay', 'overlays');
+        this.addContent(this.nextMatchDisplay, 'overlays');
 
         MenuImageManager.createTournamentAvatars(this.menu);
 
@@ -91,10 +89,16 @@ export class TournamentOverlay extends Overlay {
 
         //! OJO classic mode
         MenuImageManager.prepareTournamentAvatarImages(this.menu);
+        this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
+        this.menu.renderLayers.overlays.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
     }
 
     public hide(): void {
         super.hide();
+        this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
+        this.menu.menuHidden.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
     }
 
     protected onHideComplete(): void {

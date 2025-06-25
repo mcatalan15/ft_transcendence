@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 12:26:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:22:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,19 +169,9 @@ export class SecretCodeSystem implements System {
             timeout: 2000,
             effect: () => {
                 this.menu.eventQueue.push({
-                    type: 'PLAY_CLICK',
+                    type: 'READY_CLICK',
                     target: this.menu.playButton,
-                    buttonName: 'PLAY'
-                });
-                this.menu.eventQueue.push({
-                    type: 'IA_CLICK',
-                    target: this.menu.IAButton,
-                    buttonName: '1 VS IA'
-                });
-                this.menu.eventQueue.push({
-                    type: 'START_CLICK',
-                    target: this.menu.startButton,
-                    buttonName: 'START'
+                    buttonName: 'READY'
                 });
             },
         });

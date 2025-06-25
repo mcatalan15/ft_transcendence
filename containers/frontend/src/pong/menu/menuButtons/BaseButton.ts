@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:43:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:15:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ export interface ButtonStyle {
     fontFamily: string;
     fontWeight: 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
     fontStyle?: 'normal' | 'italic' | 'oblique';
+    letterSpacing?: number;
     padding?: number;
 }
 
@@ -93,6 +94,7 @@ export abstract class BaseButton extends Entity {
                 fontSize: style.fontSize,
                 fontFamily: style.fontFamily,
                 fontWeight: style.fontWeight,
+                ...(style.letterSpacing && { letterSpacing: style.letterSpacing }),
                 ...(style.fontStyle && { fontStyle: style.fontStyle }),
                 ...(style.padding && { padding: style.padding })
             };

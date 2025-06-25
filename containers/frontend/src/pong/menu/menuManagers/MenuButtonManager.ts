@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 17:14:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:04:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ import { MenuButton } from "../menuButtons/MenuButton";
 import { MenuHalfButton } from "../menuButtons/MenuHalfButton";
 import { MenuXButton } from "../menuButtons/MenuXButton";
 import { BallButton } from "../menuButtons/BallButton";
+import { MenuReadyButton } from "../menuButtons/MenuReadyButton";
 
 import { VFXComponent } from "../../components/VFXComponent";
 import { MenuBallSpawner } from "../menuSpawners/MenuBallSpawner";
@@ -23,8 +24,7 @@ import { MenuBallSpawner } from "../menuSpawners/MenuBallSpawner";
 import { getThemeColors } from "../../utils/Utils";
 import * as menuUtils from "../../utils/MenuUtils"
 import { MenuOverlayQuitButton } from "../menuButtons/MenuOverlayQuitButton";
-
-
+import { MenuTournamentOverlayButton } from "../menuButtons/MenuTournamentOverlayButton";
 
 export class ButtonManager {
 	static createMainButtons(menu: Menu) {
@@ -502,6 +502,92 @@ export class ButtonManager {
 		menu.ballButton = ballButton;
 	}
 
+	static createReadyButton(menu: Menu) {
+		const readyButtonConfig: menuUtils.MenuButtonConfig = {
+			isClicked: false,
+			text: this.getButtonTexts(menu, 'ready'),
+			onClick: () => {
+				console.log('Ready button clicked');
+				menu.playSound("menuSelect");
+			},
+			color: getThemeColors(menu.config.classicMode).menuBlue,
+			index: 0
+		};
+	
+		const readyButton = new MenuReadyButton(
+			'menuReadyButton',
+			'READY',
+			'menuContainer',
+			menu,
+			readyButtonConfig
+		);
+	
+		const x = 1300;
+		const y = 540;
+	
+		readyButton.setPosition(x, y);
+		readyButton.setHidden(true);
+		menu.entities.push(readyButton);
+		menu.menuHidden.addChild(readyButton.getContainer());
+	
+		menu.readyButton = readyButton;
+	}
+
+	static createTournamentOverlayButtons(menu: Menu) {
+		const tournamentOverlayButtonConfigs: menuUtils.MenuButtonConfig[] = [
+			{
+				isClicked: false,
+				text: this.getButtonTexts(menu, 'taunt'),
+				onClick: () => {
+					console.log('Tournament Taunt button clicked');
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 0
+			},
+			{
+				isClicked: false,
+				text: this.getButtonTexts(menu, 'filters'),
+				onClick: () => {
+					console.log('Tournament Filters button clicked');
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 1
+			}
+		];
+	
+		const buttonIds: string[] = ['CHAT', 'FILTERS'];
+	
+		tournamentOverlayButtonConfigs.forEach((config, index) => {
+			const tournamentOverlayButton = new MenuTournamentOverlayButton(
+				`tournamentOverlayButton_${config.text.toLowerCase()}`,
+				buttonIds[index],
+				'menuContainer',
+				menu,
+				config
+			);
+	
+			const baseX = menu.width / 2 + 200;
+			const baseY = 540;
+			const verticalOffset = menu.tournamentOverlayButtonHeight + 10;
+	
+			const x = baseX;
+			const y = baseY + (index * verticalOffset);
+	
+			tournamentOverlayButton.setPosition(x, y);
+			tournamentOverlayButton.setHidden(true);
+			menu.entities.push(tournamentOverlayButton);
+			menu.menuHidden.addChild(tournamentOverlayButton.getContainer());
+	
+			if (index === 0) {
+				menu.tournamentTauntButton = tournamentOverlayButton;
+			} else if (index === 1) {
+				menu.tournamentFiltersButton = tournamentOverlayButton;
+			}
+		});
+	}
+
 	static getButtonTexts(menu: Menu, type: string): string {
 		switch (type) {
 			case ('start'): {
@@ -631,6 +717,36 @@ export class ButtonManager {
 					case ('fr'): return 'CLASSIQUE: NON';
 					case ('cat'): return 'CLÀSSIC: NO';
 					default: return 'CLASSIC: OFF';
+				}
+			}
+
+			case ('ready'): {
+				switch (menu.language) {
+					case ('en'): return 'READY';
+					case ('es'): return 'LISTO';
+					case ('fr'): return 'PRÊT';
+					case ('cat'): return 'LLEST';
+					default: return 'READY';
+				}
+			}
+
+			case ('taunt'): {
+				switch (menu.language) {
+					case ('en'): return 'TAUNT';
+					case ('es'): return 'PULLA';
+					case ('fr'): return 'RAILLE';
+					case ('cat'): return 'PULLA';
+					default: return 'TAUNT';
+				}
+			}
+			
+			case ('filters'): {
+				switch (menu.language) {
+					case ('en'): return 'FILTERS';
+					case ('es'): return 'FILTROS';
+					case ('fr'): return 'FILTRES';
+					case ('cat'): return 'FILTRES';
+					default: return 'FILTERS';
 				}
 			}
 

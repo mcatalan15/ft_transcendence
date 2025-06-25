@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/24 17:27:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 18:01:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,8 @@ export class Bracket extends Entity {
 	nameCells: NameCell[] = [];
 	bracketGraphic: Graphics = new Graphics();
 	roundGraphic: Graphics = new Graphics();
-	statsCell: Graphics = new Graphics();
 	upperRoundLegend: Text[] = [];
 	lowerRoundLegend: Text[] = [];
-	bracketNames: Text[] = [];
 	dashedLines: Text[] = [];
 	crown: any;
 
@@ -53,57 +51,71 @@ export class Bracket extends Entity {
 		this.addNameCellComponents();
 		this.createBracketGraphic();
 		this.createRoundGraphic();
-		this.createUpperRoundLegend();
-		this.createLowerRoundLegend();
-		this.createStatsCell();
-		this.createDashedLines();
 		this.createCrownElement();
-	}
 
-	createUpperRoundLegend() {
-		this.upperRoundLegend.push({
-			text: "⩔⩔⩔⩔⩔\n" ,
-			x: 0,
-			y: 0,
-			style: {
-				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
-				fontSize: 18,
-				fontWeight: 'bold' as const,
-				align: 'left' as const,
-				fontFamily: 'monospace',
-				letterSpacing: 212,
-			},
-		} as Text);
+		this.dashedLines = this.createDashedLines();
+		this.dashedLines.forEach(element => {
+			const dashedLinesComponent = new TextComponent(element);
+			this.addComponent(dashedLinesComponent, `dashedLines${this.dashedLines.indexOf(element)}`);
+		});
 
-		this.upperRoundLegend[0].anchor = { x: 0.5, y: 0.5 };
-		this.upperRoundLegend[0].x = 552;
-		this.upperRoundLegend[0].y = 155;
-
-		this.upperRoundLegend.push({
-			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
-			x: 0,
-			y: 0,
-			style: {
-				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
-				fontSize: 12,
-				fontWeight: 'bold' as const,
-				align: 'left' as const,
-				fontFamily: 'monospace',
-			},
-		} as Text);
-
-		this.upperRoundLegend[1].x = 550;
-		this.upperRoundLegend[1].y = 155;
-
+		this.upperRoundLegend = this.createUpperRoundLegend();
 		const upperRoundLegendComponent = new TextComponent(this.upperRoundLegend[0]);
 		this.addComponent(upperRoundLegendComponent, 'upperRoundLegend');
-
 		const upperRoundLegendTextComponent = new TextComponent(this.upperRoundLegend[1]);
 		this.addComponent(upperRoundLegendTextComponent, 'upperRoundLegendText');
+		
+		this.lowerRoundLegend = this.createLowerRoundLegend();
+		const lowerRoundLegendComponent = new TextComponent(this.lowerRoundLegend[0]);
+		this.addComponent(lowerRoundLegendComponent, 'lowerRoundLegend');
+		const lowerRoundLegendTextComponent = new TextComponent(this.lowerRoundLegend[1]);
+		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
-	createLowerRoundLegend() {
-		this.lowerRoundLegend.push({
+	createUpperRoundLegend(): Text[] {
+		const legend: Text[] = [];
+
+		legend.push({
+			text: "⩔⩔⩔⩔⩔\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 18,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+				letterSpacing: 212,
+			},
+		} as Text);
+
+		legend[0].anchor = { x: 0.5, y: 0.5 };
+		legend[0].x = 552;
+		legend[0].y = 155;
+
+		legend.push({
+			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
+				fontSize: 12,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		legend[1].x = 550;
+		legend[1].y = 155;
+
+		return (legend);
+	}
+
+	createLowerRoundLegend(): Text[] {
+		const legend: Text[] = [];
+		
+		legend.push({
 			text: "⩔⩔⩔⩔⩔\n" ,
 			x: 0,
 			y: 0,
@@ -117,12 +129,12 @@ export class Bracket extends Entity {
 			},
 		} as Text);
 	
-		this.lowerRoundLegend[0].anchor = { x: 0.5, y: 0.5 };
-		this.lowerRoundLegend[0].x = 552;
-		this.lowerRoundLegend[0].y = 635;
-		this.lowerRoundLegend[0].rotation = Math.PI;
+		legend[0].anchor = { x: 0.5, y: 0.5 };
+		legend[0].x = 552;
+		legend[0].y = 635;
+		legend[0].rotation = Math.PI;
 	
-		this.lowerRoundLegend.push({
+		legend.push({
 			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
 			x: 0,
 			y: 0,
@@ -135,14 +147,10 @@ export class Bracket extends Entity {
 			},
 		} as Text);
 	
-		this.lowerRoundLegend[1].x = 550;
-		this.lowerRoundLegend[1].y = 655;
+		legend[1].x = 550;
+		legend[1].y = 655;
 	
-		const lowerRoundLegendComponent = new TextComponent(this.lowerRoundLegend[0]);
-		this.addComponent(lowerRoundLegendComponent, 'lowerRoundLegend');
-	
-		const lowerRoundLegendTextComponent = new TextComponent(this.lowerRoundLegend[1]);
-		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
+		return (legend);
 	}
 
 	private createBracketStructure() {
@@ -244,28 +252,27 @@ export class Bracket extends Entity {
 		}
 	}
 
-	createDashedLines() {
+	createDashedLines(): Text[] {
+		const dashedLines: Text[] = [];
+		
 		for (let i = 0; i < 5; i++) {
-			this.dashedLines.push({
-				text: "------------------------------------------------", 
-				x: 104.5 + (i * 224),
-				y: 400,
+			dashedLines.push({
+				text: "----------------------------------------------", 
+				x: 105.2 + (i * 224),
+				y: 397,
 				style: {
 					fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
 					fontSize: 14,
 					fontWeight: 'bold' as const,
 					align: 'left' as const,
 					fontFamily: 'monospace',
-					lineHeight: 250,
+					lineHeight: 252,
 				},
 			} as Text);
-			this.dashedLines[i].rotation = 1.5708;
+			dashedLines[i].rotation = 1.5708;
 		}
-		
-		for (let i = 0; i < this.dashedLines.length; i++) {
-			const dashedLinesComponent = new TextComponent(this.dashedLines[i]);
-			this.addComponent(dashedLinesComponent, `dashedLines${i}`);
-		}
+
+		return (dashedLines);
 	}
 
 	createRoundGraphic() {
@@ -338,15 +345,6 @@ export class Bracket extends Entity {
 		const roundComponent = new RenderComponent(this.roundGraphic);
 		this.addComponent(roundComponent, 'roundGraphic');
 	}
-
-	createStatsCell() {
-		this.statsCell.rect(1090, 170, 570, 405);
-		this.statsCell.stroke({ color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3 });
-		
-		const statsCellComponent = new RenderComponent(this.statsCell);
-		this.addComponent(statsCellComponent, 'statsCell');
-	}
-
 	private createCrownElement() {
 		this.crown = this.createCrown();
 		const crownTextComponent = new TextComponent(this.crown);
@@ -355,7 +353,7 @@ export class Bracket extends Entity {
 
 	createCrown() {
 		return {
-			text: "♔",
+			text: "♛",
 			x: this.menu.width / 2 - 10,
 			y: this.menu.height / 2 - 50,
 			style: {
@@ -373,13 +371,34 @@ export class Bracket extends Entity {
 		this.createBracketStructure();
 		this.createBracketGraphic();
 
-		for (let i = 0; i < this.playerAmount; i++) {
-			this.removeComponent('text', `bracketName_${i}`);
-		}
-
 		const updatedCrown = this.createCrown();
 		const crownComponent = new TextComponent(updatedCrown);
 		this.replaceComponent('text', crownComponent, 'crown');
+
+		this.nameCells.forEach(element => {
+			element.redrawCell(); 
+		 });
+
+		this.roundGraphic.clear();
+		this.createRoundGraphic();
+
+		const newDashedLines = this.createDashedLines();
+		for (let i = 0; i < this.dashedLines.length; i++) {
+			const dashedLinesComponent = new TextComponent(newDashedLines[i]);
+			this.replaceComponent('text', dashedLinesComponent, `dashedLines${i}`);
+		};
+
+		const newUpperRoundLegend = this.createUpperRoundLegend();
+		const upperRoundLegendComponent = new TextComponent(newUpperRoundLegend[0]);
+		this.replaceComponent('text', upperRoundLegendComponent, 'upperRoundLegend');
+		const upperRoundLegendTextComponent = new TextComponent(newUpperRoundLegend[1]);
+		this.replaceComponent('text', upperRoundLegendTextComponent, 'upperRoundLegendText');
+
+		const newLowerRoundLegend = this.createLowerRoundLegend();
+		const lowerRoundLegendComponent = new TextComponent(newLowerRoundLegend[0]);
+		this.replaceComponent('text', lowerRoundLegendComponent, 'lowerRoundLegend');
+		const lowerRoundLegendTextComponent = new TextComponent(newLowerRoundLegend[1]);
+		this.replaceComponent('text', lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
 	getRandomName(index: number): string {

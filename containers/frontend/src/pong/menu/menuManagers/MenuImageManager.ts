@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/24 10:51:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 14:11:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,12 +144,12 @@ export class MenuImageManager {
         this.tournamentAvatars = [];
     
         const squareAvatarData = [
-            { name: 'avatarMarcSquare', x: 1175, y: 290 },
-            { name: 'avatarEvaSquare', x: 1575, y: 490 },
+            { name: 'avatarNicoSquare', x: 1225.5, y: 340 },
+            { name: 'avatarEvaSquare', x: 1524.5, y: 340 },
         ]
     
         squareAvatarData.forEach(data => {
-            const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.15);
+            const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.240);
             if (squareAvatar) {
                 this.tournamentAvatars.push(squareAvatar);
             }

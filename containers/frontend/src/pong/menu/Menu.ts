@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/24 10:50:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:00:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,10 @@ export class Menu{
 	halfButtonSlant = this.buttonSlant * (25 / 60) + 0.5;
 	ornamentOffset: number = 25;
 	ornamentGap: number = 80;
+	readyButtonWidth: number = 350;
+	readyButtonHeight: number = 75;
+	tournamentOverlayButtonWidth: number = 190;
+	tournamentOverlayButtonHeight: number = 32.5;
 
 	// Button Containers
 	startButton!: MenuButton;
@@ -148,6 +152,9 @@ export class Menu{
 	glossaryQuitButton!: MenuButton;
 	aboutQuitButton!: MenuButton;
 	playQuitButton!: MenuButton;
+	readyButton!: MenuButton;
+	tournamentTauntButton!: MenuButton;
+	tournamentFiltersButton!: MenuButton;
 
 	// Ornaments
 	frame!: Graphics;
@@ -200,8 +207,6 @@ export class Menu{
 	wallKite!: Sprite;
 	wallBowtie!: Sprite;
 	wallHoneycomb!: Sprite;
-
-	hugoAvatar!: Sprite;
 
 	constructor(app: Application, language: string) {
 		this.language = language;
@@ -276,6 +281,8 @@ export class Menu{
 		await ButtonManager.createXButtons(this);
 		await ButtonManager.createBallButton(this);
 		await ButtonManager.createOverlayQuitButtons(this);
+		await ButtonManager.createReadyButton(this);
+		await ButtonManager.createTournamentOverlayButtons(this);
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();

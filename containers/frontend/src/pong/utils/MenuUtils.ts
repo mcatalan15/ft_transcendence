@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:44:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:38:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ import { MenuButton } from '../menu/menuButtons/MenuButton';
 import { MenuHalfButton } from '../menu/menuButtons/MenuHalfButton';
 import { MenuXButton } from '../menu/menuButtons/MenuXButton';
 import { MenuOverlayQuitButton } from '../menu/menuButtons/MenuOverlayQuitButton';
+import { MenuReadyButton } from '../menu/menuButtons/MenuReadyButton';
+import { MenuTournamentOverlayButton } from '../menu/menuButtons/MenuTournamentOverlayButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -155,6 +157,28 @@ export function getOverlayQuitButtonPoints(menu: Menu, button: MenuOverlayQuitBu
 			90, 0,
 			90, 30,
 			0, 30,
+		];
+	}
+}
+
+export function getReadyButtonPoints(menu: Menu, button: MenuReadyButton): number[] | undefined {
+	if (!button.getIsClicked()) {
+		return [
+			0, 0,
+			menu.readyButtonWidth, 0,
+			menu.readyButtonWidth , menu.readyButtonHeight,
+			0, menu.readyButtonHeight 
+		];
+	}
+}
+
+export function getTournamentOverlayButtonPoints(menu: Menu, button: MenuTournamentOverlayButton): number[] | undefined {
+	if (!button.getIsClicked()) {
+		return [
+			0, 0,
+			menu.tournamentOverlayButtonWidth, 0,
+			menu.tournamentOverlayButtonWidth , menu.tournamentOverlayButtonHeight,
+			0, menu.tournamentOverlayButtonHeight 
 		];
 	}
 }
