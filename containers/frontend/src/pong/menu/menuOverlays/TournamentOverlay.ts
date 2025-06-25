@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:01:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:23:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ export class TournamentOverlay extends Overlay {
     nextMatchDisplay!: TournamentNextMatchDisplay;
 
     constructor(menu: Menu) {
-        super('tournamentOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
+        super('tournamentOverlay', menu, 'tournament', 0x151515, GAME_COLORS.menuBlue);
         
         this.menu = menu;
         
@@ -86,28 +86,31 @@ export class TournamentOverlay extends Overlay {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
         super.show();
-
-        //! OJO classic mode
+    
         MenuImageManager.prepareTournamentAvatarImages(this.menu);
+        
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentTauntButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
+        
+        this.menu.readyButton.setHidden(false);
+        this.menu.tournamentTauntButton.setHidden(false);
+        this.menu.tournamentFiltersButton.setHidden(false);  
     }
-
+    
     public hide(): void {
         super.hide();
+    }
+    
+    protected onHideComplete(): void {
         this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentTauntButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
-    }
-
-    protected onHideComplete(): void {
-        /* if (this.menu.config.classicMode) {
-            MenuImageManager.hideSquareAvatarImagesFromPlay(this.menu);
-        } else {
-            MenuImageManager.hideSquareAvatarImagesFromPlay(this.menu);
-        } */
-
+        
+        this.menu.readyButton.setHidden(true);
+        this.menu.tournamentTauntButton.setHidden(true);
+        this.menu.tournamentFiltersButton.setHidden(true);
+    
         MenuImageManager.hideTournamentAvatarImages(this.menu);
     }
 }

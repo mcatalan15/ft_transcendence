@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 14:32:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:20:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ export class PlayOverlay extends Overlay {
     playerHeader!: HeaderBar;
 
     constructor(menu: Menu) {
-        super('playOverlay', menu, 0x151515, GAME_COLORS.menuBlue);
+        super('playOverlay', menu, 'play', 0x151515, GAME_COLORS.menuBlue);
         
         this.menu = menu;
         

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:51:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:20:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ export class AboutOverlay extends Overlay {
     header!: OverlayHeader;
 
     constructor(menu: Menu) {
-        super('aboutOverlay', menu, 0x151515, GAME_COLORS.menuPink);
+        super('aboutOverlay', menu, 'info', 0x151515, GAME_COLORS.menuPink);
         
         this.menu = menu;
         

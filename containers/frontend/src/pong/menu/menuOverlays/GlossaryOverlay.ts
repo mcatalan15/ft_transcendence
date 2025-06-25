@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:38:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:21:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ export class GlossaryOverlay extends Overlay {
     header!: OverlayHeader;
 
     constructor(menu: Menu) {
-        super('glossaryOverlay', menu, 0x151515, GAME_COLORS.menuOrange);
+        super('glossaryOverlay', menu, 'glossary', 0x151515, GAME_COLORS.menuOrange);
         
         this.initialize();
     }

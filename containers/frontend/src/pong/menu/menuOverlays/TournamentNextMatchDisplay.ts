@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 19:57:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:24:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ export class TournamentNextMatchDisplay extends Entity {
 
 		statsTexts.push({
 			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
-			x: 1225,
+			x: 1225.5,
 			y: 517.5,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
@@ -81,7 +81,7 @@ export class TournamentNextMatchDisplay extends Entity {
 
 		statsTexts.push({
 			text: "           000           000             000\n    000      000     000        0.000    000", 
-			x: 1225,
+			x: 1225.5,
 			y: 517.5,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
@@ -94,7 +94,7 @@ export class TournamentNextMatchDisplay extends Entity {
 
 		statsTexts.push({
 			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
-			x: 1525,
+			x: 1523,
 			y: 517.5,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
@@ -107,7 +107,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		
 		statsTexts.push({
 			text: "           000           000             000\n    000      000     000        0.000    000", 
-			x: 1525,
+			x: 1523,
 			y: 517.5,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},

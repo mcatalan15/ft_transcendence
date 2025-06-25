@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 16:37:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:21:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 import { AnimationComponent } from "../../components/AnimationComponent";
 import { RenderComponent } from "../../components/RenderComponent";
+import { TextComponent } from "../../components/TextComponent";
 
 import { GAME_COLORS } from "../../utils/Types";
 
@@ -35,6 +36,7 @@ export abstract class Overlay extends Entity {
     protected quitButton?: any;
     protected readyButton?: any;
     protected isContentInitialized: boolean = false;
+    protected overlayType: string;
     
     // Animation properties
     protected targetAlpha: number = 0;
@@ -44,9 +46,10 @@ export abstract class Overlay extends Entity {
     protected isAnimating: boolean = false;
     protected isDisplayed: boolean = false;
 
-    constructor(id: string, menu: Menu, backgroundColor: number = 0x151515, strokeColor: number = GAME_COLORS.menuOrange) {
+    constructor(id: string, menu: Menu, overlayType: string, backgroundColor: number = 0x151515, strokeColor: number = GAME_COLORS.menuOrange) {
         super(id, 'overlays');
         this.menu = menu;
+        this.overlayType = overlayType;
         
         // Create background
         this.background = new Graphics();
@@ -214,16 +217,25 @@ export abstract class Overlay extends Entity {
             if (render && render.graphic) {
                 render.graphic.alpha = 0;
             }
-
+    
             if (entity.getAllRenderables && typeof entity.getAllRenderables === 'function') {
                 entity.getAllRenderables().forEach((renderable: any) => {
                     if (renderable) renderable.alpha = 0;
                 });
             }
+    
+            const textComponent = entity.getComponent('text') as TextComponent;
+            if (textComponent && textComponent.getRenderable()) {
+                textComponent.getRenderable().alpha = 0;
+            }
         });
-
+    
         if (this.quitButton) {
             this.quitButton.getContainer().alpha = 0;
+        }
+    
+        if (this.overlayType === 'tournament') {
+            this.updateTournamentButtonAlphas(0);
         }
         
         this.animateToTarget();
@@ -233,24 +245,55 @@ export abstract class Overlay extends Entity {
         const animate = () => {
             this.animationProgress += this.animationSpeed * (1/60);
             this.animationProgress = Math.min(this.animationProgress, 1.0);
-
+    
             const easedProgress = this.easeInOutCubic(this.animationProgress);
             const startAlpha = this.targetAlpha === 1 ? 0 : 1;
             this.currentAlpha = startAlpha + (this.targetAlpha - startAlpha) * easedProgress;
+    
+            this.background.alpha = this.currentAlpha;
+    
+            this.content.forEach(({ entity }) => {
+                const render = entity.getComponent('render') as RenderComponent;
+                if (render && render.graphic) {
+                    render.graphic.alpha = this.currentAlpha;
+                }
+    
+                if (entity.getAllRenderables && typeof entity.getAllRenderables === 'function') {
+                    entity.getAllRenderables().forEach((renderable: any) => {
+                        if (renderable) renderable.alpha = this.currentAlpha;
+                    });
+                }
+    
+                const textComponent = entity.getComponent('text') as TextComponent;
+                if (textComponent && textComponent.getRenderable()) {
+                    textComponent.getRenderable().alpha = this.currentAlpha;
+                }
+            });
+    
+            if (this.quitButton) {
+                this.quitButton.getContainer().alpha = this.currentAlpha;
+            }
+    
+            if (this.overlayType === 'tournament') {
+                this.updateTournamentButtonAlphas(this.currentAlpha);
+            }
+    
 
-            this.updateAllAlphas(this.currentAlpha);
-
+            this.updateClassicAvatarImageAlphas(this.currentAlpha);
+            this.updateSquareAvatarAlphas(this.currentAlpha);
+            this.updatePinkLogosAlphas(this.currentAlpha);
+            this.updateClassicLogosAlphas(this.currentAlpha);
+    
             if (this.animationProgress >= 1.0) {
                 this.isAnimating = false;
                 this.currentAlpha = this.targetAlpha;
-                this.updateAllAlphas(this.currentAlpha);
                 
                 if (onComplete) onComplete();
             } else {
                 requestAnimationFrame(animate);
             }
         };
-
+    
         animate();
     }
 
@@ -293,6 +336,18 @@ export abstract class Overlay extends Entity {
             } */
 
             this.updateSquareAvatarAlphas(alpha);
+        }
+    }
+
+    private updateTournamentButtonAlphas(alpha: number): void {
+        if (this.menu.readyButton) {
+            this.menu.readyButton.getContainer().alpha = alpha;
+        }
+        if (this.menu.tournamentTauntButton) {
+            this.menu.tournamentTauntButton.getContainer().alpha = alpha;
+        }
+        if (this.menu.tournamentFiltersButton) {
+            this.menu.tournamentFiltersButton.getContainer().alpha = alpha;
         }
     }
 
