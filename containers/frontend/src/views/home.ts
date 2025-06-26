@@ -16,6 +16,6 @@ export function showHome(container: HTMLElement): void {
 		`;
 
 	container.appendChild(homeDiv);
-
+	console.log('2FA status: ', sessionStorage.getItem('twoFAEnabled'));
   }
   

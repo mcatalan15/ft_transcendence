@@ -20,11 +20,19 @@ export async function logUserOut(): Promise<{success: boolean, message: string}>
 		}
 
 		// Clear the user data from local storage
+		console.log('LogOut!!');
+		console.log(`userId: ${sessionStorage.getItem('userId')}`);
 		sessionStorage.removeItem('userId');
+		console.log(`username: ${sessionStorage.getItem('username')}`);
 		sessionStorage.removeItem('username');
+		console.log(`token: ${sessionStorage.getItem('token')}`);
 		sessionStorage.removeItem('token');
+		console.log(`email: ${sessionStorage.getItem('email')}`);
 		sessionStorage.removeItem('email');
-		
+		console.log(`twoFAEnabled ${sessionStorage.getItem('twoFAEnabled')}`);
+		sessionStorage.removeItem('twoFAEnabled');
+		console.log('Running: sessionStorage.clear();');
+		sessionStorage.clear(); // Clear all the sessionStorage
 		return {
 			success: true,
 			message: 'User logged out'

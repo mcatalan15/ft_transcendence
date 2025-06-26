@@ -5,6 +5,7 @@ const {
 	retrieveGamesSchema,
 	retrieveLastGameSchema,
 	deployContractSchema,
+	getGamesHistorySchema,
 
  } = require('../../schemas/games');
  
@@ -13,6 +14,7 @@ const {
 	retrieveGamesHandler,
 	retrieveLastGameHandler,
 	deployContractHandler,
+	getGamesHistoryHandler,
 
  } = require('../../handlers/games');
 
@@ -22,4 +24,5 @@ module.exports = async function (fastify, options) {
   fastify.get('/api/games', { schema: retrieveGamesSchema, preHandler: verifyToken }, retrieveGamesHandler);
   fastify.get('/api/games/latest', { schema: retrieveLastGameSchema, preHandler: verifyToken }, retrieveLastGameHandler);
   fastify.post('/api/deploy', { schema: deployContractSchema, preHandler: verifyToken }, deployContractHandler);
+  fastify.get('/api/games/history', { schema: getGamesHistorySchema, preHandler: verifyToken }, getGamesHistoryHandler);
 };

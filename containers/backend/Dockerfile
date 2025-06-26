@@ -2,7 +2,7 @@ FROM node:18-alpine3.21
 
 ENV TZ=Europe/Paris
 
-RUN apk add --no-cache sqlite
+RUN apk add --no-cache sqlite python3
 
 WORKDIR /usr/src/app
 
@@ -13,7 +13,7 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh
+RUN chmod +x tools/init_db.sh tools/data.py
 
 RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 

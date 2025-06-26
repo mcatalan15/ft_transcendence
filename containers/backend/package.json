@@ -30,7 +30,8 @@
         "redis": "^5.0.1",
         "socket.io": "^4.8.1",
         "sqlite3": "^5.0.0",
-        "ws": "^8.18.2"
+        "ws": "^8.18.2",
+		"vim": "^0.1.0"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",

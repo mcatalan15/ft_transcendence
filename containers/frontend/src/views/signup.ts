@@ -2,10 +2,11 @@ import { localSignUp } from "../utils/auth/localSignUp";
 import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
+import { navigate } from "../utils/router";
 
 export function showSignUp(container: HTMLElement): void {
 	loadGoogleScript();
-	setupGoogleSignUp()
+	setupGoogleSignUp();
 
 	const SignUpDiv = document.createElement('div');
 	SignUpDiv.innerHTML = `
@@ -100,7 +101,7 @@ export function showSignUp(container: HTMLElement): void {
 		if (password === confirmPassword) {
 			const result = await localSignUp(username, email, password);
 			console.log('[CALLING CODE] localSignUp result:', result);
-			console.log('[CALLING CODE] result.userId:', result.userId);
+			// console.log('[CALLING CODE] result.userId:', result.userId);
 			console.log('[CALLING CODE] result.username:', result.username);
 			console.log('[CALLING CODE] result.email:', result.email);
 			sessionStorage.setItem('userId', String(result.userId));
@@ -110,9 +111,9 @@ export function showSignUp(container: HTMLElement): void {
 				errorMessageDiv.textContent = result.message;
 			} else {
 				alert('Registration successful!');
-				//window.location.href = '/auth?from=signup';
 				//! Change for prod!
-				navigate('/signin');
+				// navigate('/auth');
+				navigate('/home');
 			}
 		} else {
 			errorMessageDiv.textContent = 'Passwords do not match!';

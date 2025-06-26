@@ -62,20 +62,47 @@ async function updateUserAvatar(userId, filename, type) {
 
 async function checkUserExists(username, email) {
 	return new Promise((resolve, reject) => {
-	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
-		db.get(query, [username, email], (err, row) => {
+		let query;
+		let params;
+
+		if (username && email) {
+			query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+			params = [username, email];
+		} else if (username) {
+			query = `SELECT * FROM users WHERE username = ?`;
+			params = [username];
+		} else if (email) {
+			query = `SELECT * FROM users WHERE email = ?`;
+			params = [email];
+		} else {
+			// Neither username nor email provided
+			resolve({ exists: false });
+			return;
+		}
+
+		console.log(`[DB checkUserExists] Query: "${query}" with params: [${params.join(', ')}]`);
+
+		db.get(query, params, (err, row) => {
 			if (err) {
 				console.error('[DB ERROR]', err);
 				reject(new Error('Database error'));
 				return;
 			}
+
 			if (row) {
+				console.log('[DB checkUserExists] User found:', {
+					id: row.id_user,
+					username: row.username,
+					email: row.email
+				});
 				resolve({
 					exists: true,
-					usernameExists: row.username === username,
-					emailExists: row.email === email
+					usernameExists: username ? row.username === username : false,
+					emailExists: email ? row.email === email : false,
+					user: row // Include the user data
 				});
 			} else {
+				console.log('[DB checkUserExists] User NOT found.');
 				resolve({ exists: false });
 			}
 		});
@@ -106,13 +133,6 @@ async function getHashedPassword(email) {
 	});
 }
 
-/* 
-    GET USER FUNCTIONS
-    - getUserByEmail: Retrieves a user by their email address.
-    - getUserById: Retrieves a user by their ID.
-    - getUserByUsername: Retrieves a user by their username.
-*/
-
 async function getUserByEmail(email) {
 	return new Promise((resolve, reject) => {
 	const query = `SELECT * FROM users WHERE email = ?`;
@@ -133,13 +153,12 @@ async function getUserByEmail(email) {
 
 async function getUserById(userId) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type FROM users WHERE id_user = ?`;
+        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
         db.get(query, [userId], (err, row) => {
             if (err) {
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
-				//! Delete console.log in prod
                 console.log('getUserById result for userId', userId, ':', row);
                 resolve(row);
             }
@@ -161,27 +180,72 @@ async function getUserByUsername(username) {
     });
 }
 
-//ADD ASYN FUNC TO SCORES (API)
-async function saveGameToDatabase(player1_name, player1_score,player2_name, player2_score, winner_name) {
-	return new Promise((resolve, reject) => {
-		const query = `INSERT INTO games (player1_name, player1_score,player2_name, player2_score, winner_name) VALUES (?, ?, ?, ?, ?)`;
-		const params = [player1_name, player1_score,player2_name, player2_score, winner_name];
-		db.run(query, params, function (err) {
-			if (err) {
-				console.error('[DB INSERT ERROR] Full error:', {
-					message: err.message,
-					code: err.code,
-					errno: err.errno,
-					stack: err.stack
-				});
-				reject(err);
-			} else {
-				resolve(this.lastID);
-			}
-		});
-	});
+async function saveGameToDatabase(
+    player1_id,
+    player2_id,
+    winner_id,
+    player1_name,
+    player2_name,
+    player1_score,
+    player2_score,
+    winner_name,
+    player1_is_ai,
+    player2_is_ai,
+    game_mode,
+    is_tournament,
+    smart_contract_link,
+    contract_address
+) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            INSERT INTO games (
+                player1_id,
+                player2_id,
+                winner_id,
+                player1_name,
+                player2_name,
+                player1_score,
+                player2_score,
+                winner_name,
+                player1_is_ai,
+                player2_is_ai,
+                game_mode,
+                is_tournament,
+                smart_contract_link,
+                contract_address
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const params = [
+            player1_id,
+            player2_id,
+            winner_id,
+            player1_name,
+            player2_name,
+            player1_score,
+            player2_score,
+            winner_name,
+            player1_is_ai,
+            player2_is_ai,
+            game_mode,
+            is_tournament,
+            smart_contract_link,
+            contract_address
+        ];
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB INSERT ERROR] Full error:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else {
+                resolve(this.lastID);
+            }
+        });
+    });
 }
-
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
@@ -210,28 +274,7 @@ async function getAllGames() {
 	});
 }
 
-// async function check2FA(username, email) {
-// 	return new Promise((resolve, reject) => {
-// 	const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
-// 		db.get(query, [username, email], (err, row) => {
-// 			if (err) {
-// 				console.error('[DB ERROR]', err);
-// 				reject(new Error('Database error'));
-// 				return;
-// 			}
-// 			if (row) {
-// 				resolve({
-// 					exists: true,
-// 					usernameExists: row.username === username,
-// 					emailExists: row.email === email
-// 				});
-// 			} else {
-// 				resolve({ exists: false });
-// 			}
-// 		});
-// 	});
-// }
-
+// ! Needed???? !!!!
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
@@ -264,10 +307,10 @@ async function getTwoFactorSecret(userId) {
                 reject(new Error('Database error getting 2FA secret.'));
             } else if (row) {
                 console.log(`[DB] Fetched 2FA secret for user ${userId}.`);
-                resolve(row.twoFactorSecret); // Return just the secret
+                resolve(row.twoFactorSecret);
             } else {
                 console.log(`[DB] No user found with ID ${userId} or no 2FA secret set.`);
-                resolve(null); // No secret found for this user
+                resolve(null);
             }
         });
     });
@@ -275,10 +318,8 @@ async function getTwoFactorSecret(userId) {
 
 async function enableTwoFactor(userId, secret) {
     return new Promise((resolve, reject) => {
-        // You might want to also ensure the provided 'secret' matches the stored one
-        // before enabling. For now, we trust the handler has done this.
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        const params = [secret, true, userId]; // Set twoFactorEnabled to TRUE
+        const params = [secret, 0, userId];
 
         db.run(query, params, function (err) {
             if (err) {
@@ -375,6 +416,37 @@ async function checkFriendship(userId, friendId) {
     });
 }
 
+async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink) {
+    return new Promise((resolve, reject) => {
+        const query = `UPDATE games SET contract_address = ?, smart_contract_link = ? WHERE id_game = ?`;
+        const params = [contractAddress, explorerLink, gameId];
+        
+        console.log('Executing DB query:', { query, params });
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB UPDATE ERROR] Failed to save smart contract data:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else if (this.changes === 0) {
+                console.warn(`[DB WARN] No game found with ID ${gameId} to update contract data.`);
+                reject(new Error('Game not found'));
+            } else {
+                console.log(`[DB] Successfully saved smart contract data for game ${gameId}`);
+                resolve({
+                    gameId: gameId,
+                    contractAddress: contractAddress,
+                    explorerLink: explorerLink,
+                    changes: this.changes
+                });
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -394,5 +466,6 @@ module.exports = {
     addFriend,
     removeFriend,
     getFriendsList,
-    checkFriendship
+    checkFriendship,
+	saveSmartContractToDatabase
 };
