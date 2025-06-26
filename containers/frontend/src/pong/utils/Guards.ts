@@ -6,9 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 11:40:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:21:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Menu } from '../menu/Menu';
+import { PongGame } from '../engine/Game';
 
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
@@ -52,14 +55,21 @@ import { RenderSystem } from '../systems/RenderSystem';
 import { AnimationSystem } from '../systems/AnimationSystem';
 import { PowerupSystem } from '../systems/PowerupSystem';
 
-import { MenuPostProcessingLayer } from '../menu/MenuPostProcessingLayer';
-import { MenuLine } from '../menu/MenuLine';
-import { MenuButton } from '../menu/buttons/MenuButton';
-import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
-import { MenuXButton } from '../menu/buttons/MenuXButton';
-import { BallButton } from '../menu/buttons/BallButton';
-import { MenuOrnament } from '../menu/MenuOrnaments';
-import { OverlayBackground } from '../menu/OverlayBackground';
+import { MenuPostProcessingLayer } from '../menu/menuEntities/MenuPostProcessingLayer';
+import { MenuLine } from '../menu/menuEntities/MenuLine';
+import { MenuButton } from '../menu/menuButtons/MenuButton';
+import { MenuHalfButton } from '../menu/menuButtons/MenuHalfButton';
+import { MenuXButton } from '../menu/menuButtons/MenuXButton';
+import { MenuOrnament } from '../menu/menuEntities/MenuOrnaments';
+import { MenuTournamentOverlayButton } from '../menu/menuButtons/MenuTournamentOverlayButton';
+
+export function isMenu(entity: any): entity is Menu {
+	return entity instanceof Menu;
+}
+
+export function isGame(entity: any): entity is PongGame {
+	return entity instanceof PongGame;
+}
 
 export function isMenuPostProcessingLayer(entity: Entity): entity is MenuPostProcessingLayer {
 	return entity instanceof MenuPostProcessingLayer
@@ -105,12 +115,12 @@ export function isMenuHalfButton(entity: Entity): entity is MenuHalfButton {
 	return entity instanceof MenuHalfButton;
 }
 
-export function isMenuOrnament(entity: Entity): entity is MenuOrnament {
-	return entity instanceof MenuOrnament;
+export function isOverlayButton(entity: Entity): entity is MenuTournamentOverlayButton {
+	return entity instanceof MenuTournamentOverlayButton;
 }
 
-export function isOverlayBackground(entity: Entity): entity is OverlayBackground {
-    return entity.id === 'overlay_background';
+export function isMenuOrnament(entity: Entity): entity is MenuOrnament {
+	return entity instanceof MenuOrnament;
 }
 
 export function isMenuLine(entity: Entity): entity is MenuLine {

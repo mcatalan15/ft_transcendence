@@ -6,13 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:40:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 17:01:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 10:48:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Container } from 'pixi.js';
 
 import { PongGame } from '../../engine/Game.js';
+import { Menu } from '../../menu/Menu.js';
 
 import { Entity } from '../../engine/Entity.js';
 
@@ -23,7 +24,7 @@ import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { PowerupComponent } from '../../components/PowerupComponent';
 
 import { PhysicsData, AnimationOptions, GameEvent } from '../../utils/Types.js';
-import { isPaddle } from '../../utils/Guards.js';
+import { isPaddle, isGame, isMenu } from '../../utils/Guards.js';
 
 export type AffectationType = 'powerUp' | 'powerDown' | 'ballChange';
 
@@ -36,13 +37,22 @@ export interface PowerupOptions {
 }
 
 export abstract class Powerup extends Entity {
+    game: PongGame | Menu;
     effect: string;
     lifetime: number;
     affectation: AffectationType;
     event: GameEvent;
 
-    constructor(id: string, layer: string, game: any, x: number, y: number, options: PowerupOptions = {}) {
+    constructor(id: string, layer: string, game: PongGame | Menu, x: number, y: number, options: PowerupOptions = {}) {
         super(id, layer);
+
+        if (isGame(game)) {
+            this.game = game as PongGame;
+        } else if (isMenu(game)) {
+            this.game = game as Menu;
+        } else {
+            throw new Error('Invalid game type provided to Powerup constructor');
+        }
 
         const {
             lifetime = 1100,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:58:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:11:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ export class WorldSystem implements System {
         
         this.wallFigureManager = new WallFigureManager();
         this.obstacleManager = new ObstacleManager();
-        this.worldManager = new WorldManager();
+        this.worldManager = new WorldManager(this.game);
 
         this.initializeWorld();
     }

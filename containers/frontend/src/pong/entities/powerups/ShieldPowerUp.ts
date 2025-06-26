@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:18:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 12:17:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@ import { Graphics, Container } from 'pixi.js';
 import { PongGame } from '../../engine/Game';
 import { Entity } from '../../engine/Entity';
 import { Powerup } from './Powerup';
+
+import { RenderComponent } from '../../components/RenderComponent';
 
 import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
@@ -42,12 +44,12 @@ export class ShieldPowerup extends Powerup {
 
         const base = new Graphics();
         base.rect(-10, -10, 20, 20);
-        base.fill(GAME_COLORS.white);
+        base.fill(this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.green);
         container.addChild(base);
     
         const ornament = new Graphics();
         ornament.rect(-15, -15, 30, 30);
-        ornament.stroke({ color: GAME_COLORS.white, width: 3 });
+        ornament.stroke({ color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.green, width: 3 });
         container.addChild(ornament);
     
         const innerSign = new Graphics();
@@ -88,5 +90,51 @@ export class ShieldPowerup extends Powerup {
             this.event.side = side;
         }
         this.game.eventQueue.push(this.event);
+    }
+
+    public redrawPowerup(): void {
+        const renderComponent = this.getComponent('render') as RenderComponent;
+        if (!renderComponent || !renderComponent.graphic) return;
+
+        let color;
+
+        if (this.game.config.classicMode) {
+            color = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                color = GAME_COLORS.white;
+            } else {
+                color = GAME_COLORS.green;
+            }
+        }
+    
+        const container = renderComponent.graphic as Container;
+        container.removeChildren();
+        
+        const outline = new Graphics();
+        outline.rect(-15, -15, 30, 30);
+        outline.fill(GAME_COLORS.black);
+        container.addChild(outline);
+    
+        const base = new Graphics();
+        base.rect(-10, -10, 20, 20);
+        base.fill(color);
+        container.addChild(base);
+    
+        const ornament = new Graphics();
+        ornament.rect(-15, -15, 30, 30);
+        ornament.stroke({ color: color, width: 3 });
+        container.addChild(ornament);
+    
+        const innerSign = new Graphics();
+        innerSign.moveTo(0, -8);
+        innerSign.lineTo(7.5, -6);
+        innerSign.lineTo(5.5, 4);
+        innerSign.lineTo(0, 8);
+        innerSign.lineTo(-5.5, 4);
+        innerSign.lineTo(-7.5, -6);
+        innerSign.closePath();
+        innerSign.fill(GAME_COLORS.black);
+        container.addChild(innerSign);
     }
 }

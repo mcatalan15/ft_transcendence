@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 11:19:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 15:25:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,17 +74,13 @@ export class PostProcessingSystem implements System {
                 options.powerupGlow.distance = randomInRange(90, 100);
             }
             
-            // Animate the powerup glow with a sine wave pattern
             if (options.powerupGlow) {
-                // Create a pulsing effect with values between 1.5 and 2.5
                 const baseStrength = 3;
                 const pulseAmplitude = 0.5;
                 const pulseValue = baseStrength + Math.sin(this.powerupGlowTime) * pulseAmplitude;
                 
-                // Apply the pulsing to the glow's outerStrength
                 options.powerupGlow.outerStrength = pulseValue;
                 
-                // Optionally, also animate the alpha for a more dramatic effect
                 const baseAlpha = 0.2;
                 const alphaAmplitude = 0.05;
                 options.powerupGlow.alpha = baseAlpha + Math.sin(this.powerupGlowTime) * alphaAmplitude;

@@ -6,18 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/10 09:22:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:12:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Container, Text, Application } from 'pixi.js';
+import { Graphics, Container, Text, Application, ColorMatrixFilter } from 'pixi.js';
 
 import { Menu } from '../menu/Menu';
 
 import { GAME_COLORS } from './Types';
-import { MenuButton } from '../menu/buttons/MenuButton';
-import { MenuHalfButton } from '../menu/buttons/MenuHalfButton';
-import { MenuXButton } from '../menu/buttons/MenuXButton';
+import { MenuButton } from '../menu/menuButtons/MenuButton';
+import { MenuHalfButton } from '../menu/menuButtons/MenuHalfButton';
+import { MenuXButton } from '../menu/menuButtons/MenuXButton';
+import { MenuOverlayQuitButton } from '../menu/menuButtons/MenuOverlayQuitButton';
+import { MenuReadyButton } from '../menu/menuButtons/MenuReadyButton';
+import { MenuTournamentOverlayButton } from '../menu/menuButtons/MenuTournamentOverlayButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -39,9 +42,7 @@ export function createBallButton(width: number, height: number, color: number): 
 	button.addChild(ball);
 
 	// Add the onClick method to the button
-	button.onClick = () => {
-		console.log('SPAWNING BALLZZZ');
-	};
+	button.onClick = () => {};
 
 	// Hover effects
 	button.on('pointerenter', () => {
@@ -147,4 +148,74 @@ export function getXButtonPoints(menu: Menu, button: MenuXButton): number[] | un
 			0 - menu.buttonSlant, menu.buttonHeight 
 		];
 	}
+}
+
+export function getOverlayQuitButtonPoints(menu: Menu, button: MenuOverlayQuitButton): number[] | undefined {
+	if (!button.getIsClicked()) {
+		return [
+			0, 0,
+			90, 0,
+			90, 30,
+			0, 30,
+		];
+	}
+}
+
+export function getReadyButtonPoints(menu: Menu, button: MenuReadyButton): number[] | undefined {
+	if (!button.getIsClicked()) {
+		return [
+			0, 0,
+			menu.readyButtonWidth, 0,
+			menu.readyButtonWidth , menu.readyButtonHeight,
+			0, menu.readyButtonHeight 
+		];
+	}
+}
+
+export function getTournamentOverlayButtonPoints(menu: Menu, button: MenuTournamentOverlayButton): number[] | undefined {
+	return [
+		0, 0,
+		menu.tournamentOverlayButtonWidth, 0,
+		menu.tournamentOverlayButtonWidth , menu.tournamentOverlayButtonHeight,
+		0, menu.tournamentOverlayButtonHeight 
+	];
+}
+export function createAdaptiveDuotoneFilter(menu: Menu): ColorMatrixFilter {
+    const filter = new ColorMatrixFilter();
+    
+    // Convert to grayscale first
+    filter.desaturate();
+    
+    let darkColor: number;
+    let lightColor: number;
+    
+    if (menu.config.classicMode) {
+        // In classic mode, use your game's black and white
+        darkColor = GAME_COLORS.black;   // 0x171717
+        lightColor = GAME_COLORS.white;  // 0xfff8e3
+    } else {
+        // In modern mode, you could use a different color scheme
+        // or still use your game's colors
+        darkColor = GAME_COLORS.black;   // 0x171717
+        lightColor = GAME_COLORS.white;  // 0xfff8e3
+    }
+    
+    // Extract RGB components
+    const darkR = (darkColor >> 16) & 0xFF;
+    const darkG = (darkColor >> 8) & 0xFF;
+    const darkB = darkColor & 0xFF;
+    
+    const lightR = (lightColor >> 16) & 0xFF;
+    const lightG = (lightColor >> 8) & 0xFF;
+    const lightB = lightColor & 0xFF;
+    
+    // Create the gradient mapping matrix
+    filter.matrix = [
+        (lightR - darkR) / 255, 0, 0, 0, darkR / 255,
+        0, (lightG - darkG) / 255, 0, 0, darkG / 255,
+        0, 0, (lightB - darkB) / 255, 0, darkB / 255,
+        0, 0, 0, 1, 0
+    ];
+    
+    return filter;
 }

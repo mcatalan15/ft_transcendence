@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:59:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:27:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,45 +17,131 @@ import { GAME_COLORS } from "../utils/Types";
 import { World, GameEvent } from "../utils/Types";
 
 export class WorldManager {
+	game: PongGame;
 	worldColor: number = GAME_COLORS.marine;
-	worldTags: string[] = [
-		'initialWorld',
-		'flatWorld',
-		'pyramidWorld',
-		'trenchesFlippedWorld',
-		'trenchesWorld',
-		'lightningWorld',
-		'lightningFlippedWorld',
-		'stepsWorld',
-		'hourglassWorld',
-		'mawWorld',
-		'rakesWorld',
-		'cairnsWorld',
-		'kiteWorld',
-		'honeycombWorld',
-		'bowtieWorld',
-		'snakesWorld',
-		'vipersWorld',
-	]
-	worldNames: string[] = [
-		'Initializing',
-		'The Flatlands',
-		'The Pyramids',
-		'The Trenches',
-		'The Trenches',
-		'The Lightning',
-		'The Lightning',
-		'The Steps',
-		'The Hourglass',
-		'The Fangs',
-		'The Rakes',
-		'The Waystones',
-		'The Kite',
-		'The Honeycomb',
-		'The Bowtie',
-		'The Snakes',
-		'The Vipers',
-	]
+	worldTags: string[] = [];
+	worldNames: string[] = [];
+
+	
+
+	constructor(game: PongGame) {
+		this.game = game;
+		this. worldTags = [
+			'initialWorld',
+			'flatWorld',
+			'pyramidWorld',
+			'trenchesFlippedWorld',
+			'trenchesWorld',
+			'lightningWorld',
+			'lightningFlippedWorld',
+			'stepsWorld',
+			'hourglassWorld',
+			'mawWorld',
+			'rakesWorld',
+			'cairnsWorld',
+			'kiteWorld',
+			'honeycombWorld',
+			'bowtieWorld',
+			'snakesWorld',
+			'vipersWorld',
+		];
+
+		this.worldNames = this.createWorldNames();
+	}
+
+	createWorldNames(): string[] {
+		switch (this.game.language) {
+			case ('en'): {
+				return [
+					'Initializing',
+					'The Flatlands',
+					'The Pyramids',
+					'The Trenches',
+					'The Trenches',
+					'The Lightning',
+					'The Lightning',
+					'The Steps',
+					'The Hourglass',
+					'The Fangs',
+					'The Rakes',
+					'The Watchstones',
+					'The Kite',
+					'The Honeycomb',
+					'The Bowtie',
+					'The Snakes',
+					'The Vipers',
+				];
+			}
+
+			case ('es'): {
+				return [
+					'Inicializando',
+					'Las Planicies',
+					'Las Pirámides',
+					'Las Trincheras',
+					'Las Trincheras',
+					'El Relámpago',
+					'El Relámpago',
+					'Los Escalones',
+					'El Reloj de Arena',
+					'Las Fauces',
+					'Los Rastrillos',
+					'Las Señales',
+					'La Cometa',
+					'El Panal',
+					'La Pajarita',
+					'Las Serpientes',
+					'Las Víbora',
+				];
+			}
+
+			case ('fr'): {
+				return [
+					'Initialisation',
+					'Les Plaines',
+					'Les Pyramides',
+					'Les Tranchées',
+					'Les Tranchées',
+					'La Foudre',
+					'La Foudre',
+					'Les Marches',
+					'Le Sablier',
+					'Les Crocs',
+					'Les Râteaux',
+					'Les Signes',
+					'Le Cerf-Volant',
+					'Le Rayon',
+					'Le Nœud Papillon',
+					'Les Serpents',
+					'Les Vipères',
+				];
+			}
+
+			case ('cat'): {
+				return [
+					'Inicialitzant',
+					'Les Planes',
+					'Les Piràmides',
+					'Les Trinxeres',
+					'Les Trinxeres',
+					'El Raig',
+					'El Raig',
+					'Els Graons',
+					'El Rellotge de Sorra',
+					'Les Mandíbules',
+					'Els Rasclets',
+					'Els Senyals',
+					'L\'Estel',
+					'La Bresca',
+					'El Corbatí',
+					'Les Serps',
+					'Els Escurçons',
+				];
+			}
+		}
+
+		return [];
+	}
 
 	populateWorlds(worlds: World[]) {
 		for (let i = 0; i < 17; i++ ) {

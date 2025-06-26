@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 16:14:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/12 12:34:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@ import { Graphics, Container } from 'pixi.js';
 import { PongGame } from '../../engine/Game';
 import { Entity } from '../../engine/Entity';
 import { Powerup } from './Powerup';
+
+import { RenderComponent } from '../../components/RenderComponent';
 
 import { PhysicsData, GAME_COLORS } from '../../utils/Types.js';
 
@@ -45,7 +47,7 @@ export class InvertPowerDown extends Powerup {
 		// Base diamond (rotated square)
 		const base = new Graphics();
 		base.rect(-10, -10, 20, 20);
-		base.fill(GAME_COLORS.white);
+		base.fill(this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red);
 		base.pivot.set(-5, -5);
 		base.angle = 45;
 		container.addChild(base);
@@ -53,7 +55,7 @@ export class InvertPowerDown extends Powerup {
 		// Ornament stroke, matching the base rotation
 		const ornament = new Graphics();
 		ornament.rect(-15, -15, 30, 30);
-		ornament.stroke({ color: GAME_COLORS.white, width: 3 });
+		ornament.stroke({ color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red, width: 3 });
 		ornament.pivot.set(-5, -5);
 		ornament.angle = 45;
 		container.addChild(ornament);
@@ -66,14 +68,14 @@ export class InvertPowerDown extends Powerup {
 		const topStar = new Graphics();
 		topStar.star(1.3, 1.6, 5, 5.5);
 		topStar.fill(GAME_COLORS.black);
-		topStar.stroke({width: 1, color: GAME_COLORS.white})
+		topStar.stroke({width: 1, color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red})
 		
 		container.addChild(topStar);
 		
 		const botStar = new Graphics();
 		botStar.star(-1.1, 13, 5, 4);
 		botStar.fill(GAME_COLORS.black);
-		botStar.stroke({width: 1, color: GAME_COLORS.white})
+		botStar.stroke({width: 1, color: this.game.config.filters ? GAME_COLORS.white : GAME_COLORS.red})
 		container.addChild(botStar);
 	
 		return container;
@@ -103,5 +105,63 @@ export class InvertPowerDown extends Powerup {
             this.event.side = side;
         }
 		this.game.eventQueue.push(this.event);
+	}
+
+	public redrawPowerup(): void {
+		const renderComponent = this.getComponent('render') as RenderComponent;
+		if (!renderComponent || !renderComponent.graphic) return;
+
+		let color;
+
+        if (this.game.config.classicMode) {
+            color = GAME_COLORS.white;
+        } else {
+            if (this.game.config.filters) {
+                color = GAME_COLORS.white;
+            } else {
+                color = GAME_COLORS.red;
+            }
+        }
+	
+		const container = renderComponent.graphic as Container;
+		container.removeChildren();
+	
+		const outline = new Graphics();
+		outline.rect(-15, -15, 30, 30);
+		outline.fill(GAME_COLORS.black);
+		outline.pivot.set(-5, -5);
+		outline.angle = 45;
+		container.addChild(outline);
+		
+		const base = new Graphics();
+		base.rect(-10, -10, 20, 20);
+		base.fill(color);
+		base.pivot.set(-5, -5);
+		base.angle = 45;
+		container.addChild(base);
+	
+		const ornament = new Graphics();
+		ornament.rect(-15, -15, 30, 30);
+		ornament.stroke({ color: color, width: 3 });
+		ornament.pivot.set(-5, -5);
+		ornament.angle = 45;
+		container.addChild(ornament);
+	
+		const innerSign = new Graphics();
+		innerSign.ellipse(0, 7, 8.5, 6.5);
+		innerSign.stroke({width: 2.2,color: GAME_COLORS.black});
+		container.addChild(innerSign);
+		
+		const topStar = new Graphics();
+		topStar.star(1.3, 1.6, 5, 5.5);
+		topStar.fill(GAME_COLORS.black);
+		topStar.stroke({ color: color, width: 1 })
+		container.addChild(topStar);
+		
+		const botStar = new Graphics();
+		botStar.star(-1.1, 13, 5, 4);
+		botStar.fill(GAME_COLORS.black);
+		botStar.stroke({ color: color, width: 1 })
+		container.addChild(botStar);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/04/29 15:50:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/25 12:58:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ Hence, it has an id and a container of components, with functions to add/get to/
 */
 
 import { Component } from './Component'
+
+
+import { RenderComponent } from '../components/RenderComponent';
+import { TextComponent } from '../components/TextComponent';
 
 export class Entity {
     id: string;
@@ -71,6 +75,49 @@ export class Entity {
         return result;
     }
 
+    getAllRenderables(): any[] {
+        const renderables: any[] = [];
+        
+        for (const component of this.components.values()) {
+            if (component.type === 'render') {
+                const renderComp = component as RenderComponent;
+                if (renderComp.graphic) {
+                    renderables.push(renderComp.graphic);
+                }
+            }
+            
+            else if (component.type === 'text') {
+                const textComp = component as TextComponent;
+                const renderable = textComp.getRenderable();
+                if (renderable) {
+                    renderables.push(renderable);
+                }
+            } else if (component.type === 'textCollection' || 
+                     (component as any).getAllRenderables && 
+                     typeof (component as any).getAllRenderables === 'function') {
+                const componentRenderables = (component as any).getAllRenderables();
+                if (Array.isArray(componentRenderables)) {
+                    renderables.push(...componentRenderables);
+                }
+            }
+        }
+        
+        return renderables;
+    }
+
+    setAllRenderablesAlpha(alpha: number): void {
+        const renderables = this.getAllRenderables();
+        renderables.forEach(renderable => {
+            if (renderable && typeof renderable.alpha !== 'undefined') {
+                renderable.alpha = alpha;
+            }
+        });
+    }
+    getPrimaryRenderable(): any {
+        const renderComponent = this.getComponent('render') as RenderComponent;
+        return renderComponent ? renderComponent.graphic : null;
+    }
+
     hasComponent(type: string, instanceId: string | null = null): boolean {
         if (instanceId) {
             const key = this._formatKey(type, instanceId);
@@ -84,17 +131,27 @@ export class Entity {
             const key = this._formatKey(type, instanceId);
             return this.components.delete(key);
         } else {
-            let removed = this.components.delete(type);
-            
+            let removed = false;
+    
             for (const key of this.components.keys()) {
                 if (typeof key === 'string' && key.startsWith(`${type}:`)) {
                     this.components.delete(key);
                     removed = true;
                 }
             }
-            
+    
             return removed;
         }
+    }
+
+    replaceComponent(type: string, newComponent: Component, instanceId: string | null = null): void {
+        if (!instanceId) {
+            instanceId = newComponent.instanceId || `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        }
+    
+        this.removeComponent(type, instanceId);
+    
+        this.addComponent(newComponent, instanceId);
     }
 
     private _formatKey(type: string, instanceId: string): string {

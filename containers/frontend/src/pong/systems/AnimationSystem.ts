@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/09 15:45:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/17 15:21:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,12 +161,12 @@ export class AnimationSystem implements System {
 		const render = entity.getComponent('render') as RenderComponent;
 		const physics = entity.getComponent('physics') as PhysicsComponent;
 		if (!render || !physics) return;
-
+	
 		entity.enlargeProgress += delta.deltaTime * 0.1;
 		const t = Math.min(entity.enlargeProgress, 1);
 		let easeT = 1 - Math.pow(2, -10 * t);
 		let targetHeight;
-
+	
 		if (entity.overshootPhase === 'expand') {
 			targetHeight = lerp(entity.originalHeight, entity.overshootTarget, easeT);
 			if (t >= 1) {
@@ -180,13 +180,16 @@ export class AnimationSystem implements System {
 				entity.overshootPhase = '';
 			}
 		}
-
+	
 		if (targetHeight !== undefined) {
 			physics.height = targetHeight;
 			const graphic = render.graphic as Graphics;
+			
+			const currentFillColor = graphic.fillStyle?.color || GAME_COLORS.white;
+			
 			graphic.clear();
 			graphic.rect(0, 0, physics.width, targetHeight);
-			graphic.fill(GAME_COLORS.white);
+			graphic.fill(currentFillColor);
 			graphic.pivot.set(physics.width / 2, targetHeight / 2);
 		}
 	}
