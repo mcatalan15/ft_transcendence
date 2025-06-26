@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 12:21:34 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/26 17:18:50 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,7 @@ export class PongGame {
 		const renderSystem = new RenderSystem();
 		const inputSystem = new InputSystem();
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
-		const worldSystem = new WorldSystem(this);
+		if (!this.isOnline) {const worldSystem = new WorldSystem(this)};
 		const animationSystem = new AnimationSystem(this);
 		const vfxSystem = new VFXSystem();
 		const particleSystem = new ParticleSystem(this);
@@ -199,7 +199,7 @@ export class PongGame {
 		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
-		if (!this.config.classicMode) this.systems.push(worldSystem);
+		if (!this.config.classicMode && !this.isOnline) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		if (!this.config.classicMode) this.systems.push(vfxSystem);
 		if (!this.config.classicMode) this.systems.push(particleSystem);
