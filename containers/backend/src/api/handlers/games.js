@@ -46,7 +46,7 @@ async function saveGameHandler(request, reply) {
             gameId
         });
     } catch (error) {
-        fastify.log.error('Error saving game:', error);
+        console.log('Error saving game:', error);
 
         if (error.message.includes('SQLITE_CONSTRAINT')) {
             reply.status(400).send({
