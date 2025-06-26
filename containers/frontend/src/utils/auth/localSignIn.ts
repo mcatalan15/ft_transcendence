@@ -32,9 +32,10 @@ export function localSignIn(email: string, password: string, twoFACode?: string)
 				console.log('Original backend value:', data.twoFAEnabled);
 				console.log('Value after setting:', sessionStorage.getItem('twoFAEnabled'));
 
-				setTimeout(() => {
+/* 				setTimeout(() => {
 					window.location.href = '/auth';
-				}, 100);
+				}, 100); */
+				navigate('/home');
 			} else {
 				alert('Local sign-in failed: ' + (data.message || 'Unknown error'));
 			}
