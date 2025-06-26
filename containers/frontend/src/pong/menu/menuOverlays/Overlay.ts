@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:00:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:50:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ export abstract class Overlay extends Entity {
         } else if (this.overlayType === 'glossary') {
             this.updatePowerupAlphas(0);
             this.updateWallImageAlphas(0);
-        } else if (this.overlayType === 'about') {
+        } else if (this.overlayType === 'info') {
             if (this.menu.config.classicMode) {
                 this.updateClassicLogosAlphas(0);
                 this.updateClassicAvatarImageAlphas(0);
@@ -292,7 +292,7 @@ export abstract class Overlay extends Entity {
             } else if (this.overlayType === 'glossary') {
                 this.updatePowerupAlphas(this.currentAlpha);
                 this.updateWallImageAlphas(this.currentAlpha);
-            } else if (this.overlayType === 'about') {
+            } else if (this.overlayType === 'info') {
                 if (this.menu.config.classicMode) {
                     this.updateClassicLogosAlphas(this.currentAlpha);
                     this.updateClassicAvatarImageAlphas(this.currentAlpha);

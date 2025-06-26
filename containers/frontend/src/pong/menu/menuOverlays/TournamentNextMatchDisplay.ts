@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 09:54:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:48:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,13 +80,13 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "           000           000             000\n    000      000     000        0.000    000", 
+			text: "           002           083             067\n    000      000     000        0.000    000", 
 			x: 1225.5,
 			y: 517.5,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
 				fontSize: 8,
-				fontWeight: 'lighter' as const,
+				fontWeight: '900' as const,
 				align: 'center' as const,
 				fontFamily: '"Roboto Mono", monospace',
 			},
@@ -112,7 +112,7 @@ export class TournamentNextMatchDisplay extends Entity {
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
 				fontSize: 8,
-				fontWeight: 'lighter' as const,
+				fontWeight: '900' as const,
 				align: 'center' as const,
 				fontFamily: '"Roboto Mono", monospace',
 			},
