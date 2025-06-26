@@ -1,5 +1,6 @@
 import i18n from '../i18n';
-import { Header } from '../components/header';
+//import { Header } from '../components/header';
+import { HeaderTest } from '../components/testmenu'
 import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
 
@@ -154,8 +155,9 @@ export function showChat(container: HTMLElement): void {
   addBlockedUserStyles();
 
   // Header
-  const headerWrapper = new Header().getElement();
-  headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
+  const headerWrapper = new HeaderTest().getElement();
+  headerWrapper.classList.add(
+  );
   container.appendChild(headerWrapper);
 
   //TODO: implement second language selector button at the bottom?

@@ -1,7 +1,8 @@
 import { addFriend, removeFriend } from '../utils/profile/friends';
 
 import i18n from '../i18n';
-import { Header } from '../components/header';
+//import { Header } from '../components/header';
+import { HeaderTest } from '../components/testmenu'
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
@@ -54,7 +55,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
     ].join(' ');
   }
 
-  const headerWrapper = new Header().getElement();
+  const headerWrapper = new HeaderTest().getElement();
   headerWrapper.classList.add(
     'row-start-1',
     hasMenu ? 'col-span-2' : 'col-span-1',
@@ -62,6 +63,15 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
     'z-30'
   );
   container.appendChild(headerWrapper);
+  
+  /*const headerWrapper = new Header().getElement();
+  headerWrapper.classList.add(
+    'row-start-1',
+    hasMenu ? 'col-span-2' : 'col-span-1',
+    'w-full',
+    'z-30'
+  );
+  container.appendChild(headerWrapper);*/
 
   const langSelector = new LanguageSelector(() => showProfile(container)).getElement();
   langSelector.classList.add(
@@ -116,7 +126,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 
   const profileTitle = document.createElement('div');
   profileTitle.className = `
-    text-amber-50 text-2xl font-bold tracking-wide break-all text-left w-full mb-6
+    text-amber-50 text-7xl font-anatol tracking-wide break-all text-left w-full mb-5
   `.replace(/\s+/g, ' ').trim();
 
   const centerCol = document.createElement('div');

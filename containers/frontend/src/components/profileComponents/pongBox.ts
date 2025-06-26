@@ -13,7 +13,7 @@ type PongBoxOptions = {
       this.pongBox = document.createElement('div');
       this.pongBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-amber-50
+        mx-auto bg-neutral-900 border-4 
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();
@@ -26,7 +26,7 @@ type PongBoxOptions = {
   
       const profileTitle = document.createElement('div');
       profileTitle.className = `
-        text-amber-50 text-2xl font-bold tracking-wide break-all text-left w-full mb-6
+        text-amber-50 text-7xl font-anatol tracking-wide break-all text-left w-full mb-6
       `.replace(/\s+/g, ' ').trim();
       profileTitle.textContent = options.title;
   
@@ -34,8 +34,8 @@ type PongBoxOptions = {
       avatar.src = options.avatarUrl;
       avatar.alt = 'Profile';
       avatar.className = `
-        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
-        shadow-xl transition-all duration-300 mt-20
+        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-neutral-900 object-cover
+         transition-all duration-300 mt-20
       `.replace(/\s+/g, ' ').trim();
   
       const nicknameSpan = document.createElement('span');

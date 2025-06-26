@@ -6,6 +6,7 @@ import { MatchTableComponent } from '../components/profileComponents/history/tab
 import { PongBoxComponent } from '../components/profileComponents/pongBox';
 
 export function showHistory(container: HTMLElement) {
+  
   i18n
     .loadNamespaces('history')
     .then(() => i18n.changeLanguage(i18n.language))
@@ -28,6 +29,8 @@ export function showHistory(container: HTMLElement) {
       const langSelector = new LanguageSelector(() => showHistory(container)).getElement();
       container.appendChild(langSelector);
 
+
+      //mirar como reccuperar esta informacion
       const matchResults = [
         { song: 'The Sliding Mr. Bones (Next Stop, Pottersville)', artist: 'Malcolm Lockyer', year: 1961 },
         { song: 'Witchy Woman', artist: 'The Eagles', year: 1972 },
@@ -38,9 +41,8 @@ export function showHistory(container: HTMLElement) {
       tableWrapper.className = "w-full flex justify-center p-8";
       tableWrapper.appendChild(matchTableComponent.getElement());
 
-      // 2. Crea PongBox con datos estáticos por defecto (los puedes actualizar luego tras el fetch)
       const pongBox = new PongBoxComponent({
-        title: '', // Se actualizará con el username tras el fetch
+        title: '',
         avatarUrl: '...',
         nickname: '...',
         mainContent: tableWrapper
@@ -59,11 +61,9 @@ export function showHistory(container: HTMLElement) {
       })
         .then(response => response.json())
         .then(data => {
-          // Aquí buscas los elementos que quieres actualizar dentro de PongBox:
-          // Puedes hacerlo accediendo a los nodos del DOM de PongBox:
           const pongBoxElement = pongBox.getElement();
-          const titleEl = pongBoxElement.querySelector('div.text-amber-50');
-          const nicknameEl = pongBoxElement.querySelector('span.text-amber-50');
+          const titleEl = pongBoxElement.querySelector('div.text-cyan-400');
+          const nicknameEl = pongBoxElement.querySelector('span.text-cyan-400');
           const avatarImg = pongBoxElement.querySelector('img');
 
           if (titleEl)
@@ -71,7 +71,7 @@ export function showHistory(container: HTMLElement) {
           if (nicknameEl)
             nicknameEl.textContent = data.username;
           if (avatarImg && data.avatar)
-            (avatarImg as HTMLImageElement).src = data.avatar;
+            (avatarImg as HTMLImageElement).src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
         })
         .catch(error => {
           navigate('/home');

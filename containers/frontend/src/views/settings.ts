@@ -1,5 +1,6 @@
 import i18n from '../i18n';
-import { Header } from '../components/header';
+//import { Header } from '../components/header';
+import { HeaderTest } from '../components/testmenu'
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
@@ -60,7 +61,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
   }
 
   // Header
-  const headerWrapper = new Header().getElement();
+  const headerWrapper = new HeaderTest().getElement();
   headerWrapper.classList.add(
     'row-start-1',
     hasMenu ? 'col-span-2' : 'col-span-1',
@@ -112,7 +113,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
   const pingpongBox = document.createElement('div');
   pingpongBox.className = `
     w-full max-w-[1800px] h-auto md:h-[750px]
-    mx-auto bg-neutral-900 border-4 border-amber-50
+    mx-auto bg-neutral-900 border-4 border-amber-400
     flex flex-col md:flex-row overflow-hidden shadow-xl
     min-h-[600px]
   `.replace(/\s+/g, ' ').trim();
@@ -126,7 +127,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   const settingsTitle = document.createElement('div');
   settingsTitle.className = `
-    text-amber-50 text-2xl font-bold tracking-wide break-all text-left w-full mb-6
+    text-amber-400 text-7xl font-anatol tracking-wide break-all text-left w-full mb-5
   `.replace(/\s+/g, ' ').trim();
   settingsTitle.textContent = i18n.t('settings', { ns: 'profile' }) || 'Ajustes';
 
@@ -137,7 +138,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
   const avatar = document.createElement('img');
   avatar.alt = 'Profile';
   avatar.className = `
-    w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
+    w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-400 object-cover
     shadow-xl transition-all duration-300 cursor-pointer hover:opacity-80
   `.replace(/\s+/g, ' ').trim();
 
@@ -153,7 +154,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   const avatarLabel = document.createElement('span');
   avatarLabel.className = `
-    mt-2 text-amber-50 text-sm text-center cursor-pointer hover:text-amber-100
+    mt-2 text-amber-400 text-sm text-center cursor-pointer hover:text-amber-500
   `.replace(/\s+/g, ' ').trim();
   avatarLabel.textContent = 'Click here to change avatar';
 
@@ -202,10 +203,10 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   // Nickname change form
   const nicknameForm = document.createElement('div');
-  nicknameForm.className = 'w-full max-w-xs bg-white p-6 rounded-lg shadow-lg';
+  nicknameForm.className = 'w-full max-w-xs bg-neutral-900 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
   
   const nicknameTitle = document.createElement('h3');
-  nicknameTitle.className = 'text-xl font-bold text-gray-900 mb-4 text-center';
+  nicknameTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
   nicknameTitle.textContent = 'Change Nickname';
   
   const currentNicknameField = createFormField('currentNickname', 'text', 'Current nickname', false);
@@ -244,10 +245,10 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   // Password change form
   const passwordForm = document.createElement('div');
-  passwordForm.className = 'w-full max-w-xs bg-white p-6 rounded-lg shadow-lg';
+  passwordForm.className = 'w-full max-w-xs bg-neutral-800 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
   
   const passwordTitle = document.createElement('h3');
-  passwordTitle.className = 'text-xl font-bold text-gray-900 mb-4 text-center';
+  passwordTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
   passwordTitle.textContent = 'Change Password';
   
   const currentPasswordField = createFormField('currentPassword', 'password', 'Current password');
