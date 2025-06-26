@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:12:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:44:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,6 @@ export class ButtonSystem implements System {
     }
 
     handlePlayClick(){
-        this.setFinalConfig();
-
         this.menu.playQuitButton.resetButton();
         this.menu.playOverlay.header.redrawOverlayElements();
         this.menu.tournamentOverlay.header.redrawOverlayElements();
@@ -133,6 +131,8 @@ export class ButtonSystem implements System {
 
     handleReadyClick() {
         this.menu.cleanup();
+
+        this.setFinalConfig();
 
         const game = new PongGame(this.menu.app, this.menu.config, this.menu.language); //! send menu config to the game
         game.init();
@@ -498,8 +498,18 @@ export class ButtonSystem implements System {
 
         this.updatePowerups();
         this.updatePaddles();
+
         this.menu.glossaryOverlay.redrawTitles();
+        this.menu.glossaryOverlay.powerupBar.redrawBar();
+        this.menu.glossaryOverlay.powerdownBar.redrawBar();
+        this.menu.glossaryOverlay.ballchangeBar.redrawBar();
+        this.menu.glossaryOverlay.affectationsBar.redrawBar();
+        this.menu.glossaryOverlay.wallfiguresBar.redrawBar();
+
         this.menu.aboutOverlay.redrawTitles();
+        this.menu.aboutOverlay.teamBar.redrawBar();
+        this.menu.aboutOverlay.projectBar.redrawBar();
+
         this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
     }
 

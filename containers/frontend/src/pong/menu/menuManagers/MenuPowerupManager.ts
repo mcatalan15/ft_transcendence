@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 19:11:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:35:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ import { Paddle } from "../../entities/Paddle";
 import { RenderComponent } from "../../components/RenderComponent";
 import { PhysicsComponent } from "../../components/PhysicsComponent";
 import { TextComponent } from "../../components/TextComponent";
-
-import { MenuImageManager } from "./MenuImageManager";
 
 import { EnlargePowerup } from '../../entities/powerups/EnlargePowerup';
 import { MagnetizePowerup } from '../../entities/powerups/MagnetizePowerup';
@@ -32,7 +30,6 @@ import { CurveBallPowerup } from "../../entities/powerups/CurveBallPowerup";
 import { SpinBallPowerup } from "../../entities/powerups/SpinBallPowerup";
 import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
 import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
-import { isPaddle } from "../../utils/Guards";
 
 export class MenuPowerupManager {
     // Store all powerups for easy access
@@ -82,7 +79,7 @@ export class MenuPowerupManager {
     }
 
     static createPowerdowns(menu: Menu) {
-        const shrinkPowerDown = new ShrinkPowerDown('shrink', 'overlays', menu, 690, 207);
+        const shrinkPowerDown = new ShrinkPowerDown('shrink', 'overlays', menu, 700, 207);
         const shrinkRenderComponent = shrinkPowerDown.getComponent('render') as RenderComponent;
         if (shrinkRenderComponent) {
             shrinkRenderComponent.graphic.alpha = 0;
@@ -92,7 +89,7 @@ export class MenuPowerupManager {
         menu.shrinkPowerdown = shrinkPowerDown;
         this.powerupEntities.push(shrinkPowerDown);
 
-        const invertPowerDown = new InvertPowerDown('invert', 'overlays', menu, 690, 277);
+        const invertPowerDown = new InvertPowerDown('invert', 'overlays', menu, 700, 277);
         const invertRenderComponent = invertPowerDown.getComponent('render') as RenderComponent;
         if (invertRenderComponent) {
             invertRenderComponent.graphic.alpha = 0;
@@ -102,7 +99,7 @@ export class MenuPowerupManager {
         menu.invertPowerdown = invertPowerDown;
         this.powerupEntities.push(invertPowerDown);
 
-        const flatPowerDown = new FlatPowerDown('flat', 'overlays', menu, 690, 345);
+        const flatPowerDown = new FlatPowerDown('flat', 'overlays', menu, 700, 345);
         const flatRenderComponent = flatPowerDown.getComponent('render') as RenderComponent;
         if (flatRenderComponent) {
             flatRenderComponent.graphic.alpha = 0;
@@ -112,7 +109,7 @@ export class MenuPowerupManager {
         menu.flattenPowerdown = flatPowerDown;
         this.powerupEntities.push(flatPowerDown);
 
-        const slowPowerDown = new SlowPowerDown('slow', 'overlays', menu, 690, 415);
+        const slowPowerDown = new SlowPowerDown('slow', 'overlays', menu, 700, 415);
         const slowRenderComponent = slowPowerDown.getComponent('render') as RenderComponent;
         if (slowRenderComponent) {
             slowRenderComponent.graphic.alpha = 0;

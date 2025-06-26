@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 18:34:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:49:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ export class AboutTexts extends Entity {
     private getColumnDataEN() {
         return [
             // Column 1A: Team Title (Left)
-            {
+            /* {
                 tag: 'teamTitle',
                 text: "----------------------[ TEAM ]----------------------",
                 x: 120,
@@ -83,13 +83,13 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
-                x: 175,
+                x: 190,
                 y: 315,
                 style: {
                     fill: GAME_COLORS.white,
@@ -111,7 +111,7 @@ export class AboutTexts extends Entity {
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
-                x: 150,
+                x: 160,
                 y: 550,
                 style: {
                     fill: GAME_COLORS.white,
@@ -133,7 +133,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
-            x: 190,
+            x: 200,
             y: 340,
             style: {
                 fill: GAME_COLORS.white,
@@ -155,7 +155,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
-            x: 185,
+            x: 200,
             y: 575,
             style: {
                 fill: GAME_COLORS.white,
@@ -174,7 +174,7 @@ export class AboutTexts extends Entity {
             },
 
             // Column 2A: Project Title (Left)
-            {
+            /* {
                 tag: 'projectTitle',
                 text: "------------------------------------------------------[ PROJECT ]-------------------------------------------------------",
                 x: 650,
@@ -193,7 +193,7 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Project content (Left)
             {
@@ -225,7 +225,7 @@ export class AboutTexts extends Entity {
     private getColumnDataES() {
         return [
             // Column 1A: Team Title (Left)
-            {
+            /* {
                 tag: 'teamTitle',
                 text: "---------------------[ EQUIPO ]---------------------",
                 x: 120,
@@ -244,13 +244,13 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
-                x: 175,
+                x: 190,
                 y: 315,
                 style: {
                     fill: GAME_COLORS.white,
@@ -272,7 +272,7 @@ export class AboutTexts extends Entity {
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
-                x: 150,
+                x: 160,
                 y: 550,
                 style: {
                     fill: GAME_COLORS.white,
@@ -294,7 +294,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
-            x: 190,
+            x: 200,
             y: 335,
             style: {
                 fill: GAME_COLORS.white,
@@ -316,7 +316,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
-            x: 185,
+            x: 200,
             y: 575,
             style: {
                 fill: GAME_COLORS.white,
@@ -335,7 +335,7 @@ export class AboutTexts extends Entity {
             },
 
             // Column 2A: Project Title (Left)
-            {
+            /* {
                 tag: 'projectTitle',
                 text: "------------------------------------------------------[ PROYECTO ]------------------------------------------------------",
                 x: 650,
@@ -354,7 +354,7 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Project content (Left)
             {
@@ -386,7 +386,7 @@ export class AboutTexts extends Entity {
     private getColumnDataFR() {
         return [
             // Column 1A: Team Title (Left)
-            {
+            /* {
                 tag: 'teamTitle',
                 text: "---------------------[ ÉQUIPE ]---------------------",
                 x: 120,
@@ -405,13 +405,13 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
-                x: 175,
+                x: 190,
                 y: 310,
                 style: {
                     fill: GAME_COLORS.white,
@@ -433,7 +433,7 @@ export class AboutTexts extends Entity {
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
-                x: 150,
+                x: 160,
                 y: 550,
                 style: {
                     fill: GAME_COLORS.white,
@@ -455,7 +455,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
-            x: 190,
+            x: 200,
             y: 335,
             style: {
                 fill: GAME_COLORS.white,
@@ -477,7 +477,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
-            x: 185,
+            x: 200,
             y: 575,
             style: {
                 fill: GAME_COLORS.white,
@@ -496,7 +496,7 @@ export class AboutTexts extends Entity {
             },
 
             // Column 2A: Project Title (Left)
-            {
+            /* {
                 tag: 'projectTitle',
                 text: "-------------------------------------------------------[ PROJET ]-------------------------------------------------------",
                 x: 650,
@@ -515,7 +515,7 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Project content (Left)
             {
@@ -547,7 +547,7 @@ export class AboutTexts extends Entity {
     private getColumnDataCAT() {
         return [
             // Column 1A: Team Title (Left)
-            {
+            /* {
                 tag: 'teamTitle',
                 text: "----------------------[ EQUIP ]---------------------",
                 x: 120,
@@ -566,13 +566,13 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
-                x: 175,
+                x: 190,
                 y: 310,
                 style: {
                     fill: GAME_COLORS.white,
@@ -594,7 +594,7 @@ export class AboutTexts extends Entity {
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
-                x: 150,
+                x: 160,
                 y: 550,
                 style: {
                     fill: GAME_COLORS.white,
@@ -616,7 +616,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
-            x: 190,
+            x: 200,
             y: 335,
             style: {
                 fill: GAME_COLORS.white,
@@ -638,7 +638,7 @@ export class AboutTexts extends Entity {
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
-            x: 185,
+            x: 200,
             y: 575,
             style: {
                 fill: GAME_COLORS.white,
@@ -657,7 +657,7 @@ export class AboutTexts extends Entity {
             },
 
             // Column 2A: Project Title (Left)
-            {
+            /* {
                 tag: 'projectTitle',
                 text: "------------------------------------------------------[ PROJECTE ]------------------------------------------------------",
                 x: 650,
@@ -676,7 +676,7 @@ export class AboutTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Project content (Left)
             {

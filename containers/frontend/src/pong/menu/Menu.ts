@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:00:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:21:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,6 @@ export class Menu{
 			variant: '1v1',
 			classicMode: false,
 			filters: true,
-			powerupsEnabled: true,
 			players: [
 				{ name: 'Player 1', type: 'human', side: 'left' },
 				{ name: 'Player 2', type: 'human', side: 'right' }

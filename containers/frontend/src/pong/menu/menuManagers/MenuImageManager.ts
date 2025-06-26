@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 09:36:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:46:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,10 @@ export class MenuImageManager {
         this.avatarImages = [];
     
         const avatarData = [
-            { name: 'Eva', x: 220, y: 280, url: 'https://github.com/eferre-m' },
-            { name: 'Hugo', x: 450, y: 280, url: 'https://github.com/hugomgris' },
-            { name: 'Marc', x: 220, y: 515, url: 'https://github.com/mcatalan15' },
-            { name: 'Nico', x: 450, y: 515, url: 'https://github.com/mrlouf' }
+            { name: 'Eva', x: 235, y: 280, url: 'https://github.com/eferre-m' },
+            { name: 'Hugo', x: 465, y: 280, url: 'https://github.com/hugomgris' },
+            { name: 'Marc', x: 235, y: 515, url: 'https://github.com/mcatalan15' },
+            { name: 'Nico', x: 465, y: 515, url: 'https://github.com/mrlouf' }
         ];
     
         avatarData.forEach(data => {
@@ -119,10 +119,10 @@ export class MenuImageManager {
         this.classicAvatarImages = [];
     
         const avatarData = [
-            { name: 'EvaClassic', x: 220, y: 280, url: 'https://github.com/eferre-m' },
-            { name: 'HugoClassic', x: 450, y: 280, url: 'https://github.com/hugomgris' },
-            { name: 'MarcClassic', x: 220, y: 515, url: 'https://github.com/mcatalan15' },
-            { name: 'NicoClassic', x: 450, y: 515, url: 'https://github.com/mrlouf' }
+            { name: 'EvaClassic', x: 235, y: 280, url: 'https://github.com/eferre-m' },
+            { name: 'HugoClassic', x: 465, y: 280, url: 'https://github.com/hugomgris' },
+            { name: 'MarcClassic', x: 235, y: 515, url: 'https://github.com/mcatalan15' },
+            { name: 'NicoClassic', x: 465, y: 515, url: 'https://github.com/mrlouf' }
         ];
     
         avatarData.forEach(data => {

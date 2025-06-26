@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:21:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:30:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ import { Menu } from "../Menu";
 import { Overlay } from "./Overlay";
 import { GlossaryTexts } from "./GlossaryTexts";
 import { OverlayHeader } from "./OverlayHeader";
+import { HeaderBar } from "./HeaderBar";
 import { MenuPowerupManager } from "../menuManagers/MenuPowerupManager";
 import { MenuImageManager } from "../menuManagers/MenuImageManager";
 import { GAME_COLORS } from "../../utils/Types";
@@ -21,6 +22,11 @@ import { GAME_COLORS } from "../../utils/Types";
 export class GlossaryOverlay extends Overlay {
     private glossaryTexts!: GlossaryTexts;
     header!: OverlayHeader;
+    powerupBar!: HeaderBar;
+    powerdownBar!: HeaderBar;
+    ballchangeBar!: HeaderBar;
+    affectationsBar!: HeaderBar;
+    wallfiguresBar!: HeaderBar;
 
     constructor(menu: Menu) {
         super('glossaryOverlay', menu, 'glossary', 0x151515, GAME_COLORS.menuOrange);
@@ -34,6 +40,21 @@ export class GlossaryOverlay extends Overlay {
 
         this.header = new OverlayHeader(this.menu, 'glossaryHeader', 'overlays', 'glossary');
         this.addContent(this.header, 'overlays');
+
+        this.powerupBar = new HeaderBar(this.menu, 'glossaryPowerupBar', 'overlays', 'POWER UPS', 120, 160, 475, 20);
+        this.addContent(this.powerupBar, 'overlays');
+
+        this.powerdownBar = new HeaderBar(this.menu, 'glossaryPowerdownBar', 'overlays', 'POWER DOWNS', 660, 160, 475, 20);
+        this.addContent(this.powerdownBar, 'overlays');
+
+        this.ballchangeBar = new HeaderBar(this.menu, 'glossaryBallchangeBar', 'overlays', 'BALL CHANGES', 1200, 160, 475, 20);
+        this.addContent(this.ballchangeBar, 'overlays');
+
+        this.affectationsBar = new HeaderBar(this.menu, 'glossaryAffectationsBar', 'overlays', 'AFFECTATIONS', 120, 470, 475, 20);
+        this.addContent(this.affectationsBar, 'overlays');
+
+        this.wallfiguresBar = new HeaderBar(this.menu, 'glossaryWallfiguresBar', 'overlays', 'WALL FIGURES', 660, 470, 1010, 20);
+        this.addContent(this.wallfiguresBar, 'overlays');
 
         MenuPowerupManager.createPowerdowns(this.menu);
         

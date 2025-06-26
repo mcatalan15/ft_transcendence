@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 11:48:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:34:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,13 @@ export class GlossaryTexts extends Entity {
     private getColumnDataEN() {
         return [
             // Column 1A: Powerups Title (Left)
-            {
+            /* {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -75,7 +75,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Powerups Content (Left)
             {
@@ -104,13 +104,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 2A: Powerdowns Title (Center)
-            {
+            /* {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -123,7 +123,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Powerdowns Content (Center)
             {
@@ -152,13 +152,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 3A: Ball Changes Title (Right)
-            {
+            /* {
                 tag: 'ballchangesTitle',
                 text: "--------------------[ BALL CHANGES ]--------------------",
                 x: 1200,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -171,7 +171,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 3B: Ball Changes Content (Right)
             {
@@ -200,13 +200,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 4A: Affectations title (Down - Left)
-            {
+            /* {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFFECTATIONS ]--------------------",
                 x: 120,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -219,7 +219,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 4B: Affectations content (Down - Left)
             {
@@ -246,13 +246,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 5A: Wall shapes (Down - center/right)
-            {
+            /* {
                 tag: 'wallShapesTitle',
                 text: "----------------------------------------------------[ WALL FIGURES ]----------------------------------------------------",
                 x: 650,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -265,7 +265,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 5B: Wall shapes (Down - center/right)
             {
@@ -273,7 +273,7 @@ export class GlossaryTexts extends Entity {
                 text: 
                       "Walls change, warp and move over time, affecting the balls' paths and trajectories.\n\n" + 
                       "Sometimes, blocking figures spawn in the middle of the arena as solid obstacles.",
-                x: 670,
+                x: 680,
                 y: 510,
                 style: {
                     fill: GAME_COLORS.white,
@@ -296,13 +296,13 @@ export class GlossaryTexts extends Entity {
     private getColumnDataES() {
         return [
             // Column 1A: Powerups Title (Left)
-            {
+            /* {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -315,7 +315,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Powerups Content (Left)
             {
@@ -344,13 +344,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 2A: Powerdowns Title (Center)
-            {
+            /* {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -363,7 +363,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Powerdowns Content (Center)
             {
@@ -373,7 +373,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invierte las direcciones de control de la pala\n" + 
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplana todas las devoluciones de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Ralentiza la velocidad de la pala\n",
-                x: 650,
+                x: 660,
                 y: 180,
                 style: {
                     fill: GAME_COLORS.white,
@@ -392,13 +392,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 3A: Ball Changes Title (Right)
-            {
+            /* {
                 tag: 'ballchangesTitle',
                 text: "------------------[ CAMBIOS DE PELOTA ]-----------------",
                 x: 1200,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -411,7 +411,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 3B: Ball Changes Content (Right)
             {
@@ -440,13 +440,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 4A: Affectations title (Down - Left)
-            {
+            /* {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFECTACIONES ]--------------------",
                 x: 120,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -459,7 +459,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 4B: Affectations content (Down - Left)
             {
@@ -486,13 +486,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 5A: Wall shapes (Down - center/right)
-            {
+            /* {
                 tag: 'wallShapesTitle',
                 text: "------------------------------------------------[ FIGURAS DE LOS MUROS ]------------------------------------------------",
                 x: 650,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -505,7 +505,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 5B: Wall shapes (Down - center/right)
             {
@@ -513,7 +513,7 @@ export class GlossaryTexts extends Entity {
                 text: 
                       "Los muros cambian, se deforman y se mueven con el tiempo, afectando las trayectorias de las pelotas.\n\n" + 
                       "A veces, aparecen figuras en el centro de la arena como obstáculos sólidos.",
-                x: 670,
+                x: 680,
                 y: 510,
                 style: {
                     fill: GAME_COLORS.white,
@@ -536,13 +536,13 @@ export class GlossaryTexts extends Entity {
     private getColumnDataFR() {
         return [
             // Column 1A: Powerups Title (Left)
-            {
+            /* {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -555,7 +555,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Powerups Content (Left)
             {
@@ -584,13 +584,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 2A: Powerdowns Title (Center)
-            {
+            /* {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -603,7 +603,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Powerdowns Content (Center)
             {
@@ -613,7 +613,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Inverse les contrôles de la raquette\n" + 
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplatis tous les renvois de la raquette\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Ralentit les mouvements de la raquette\n",
-                x: 650,
+                x: 660,
                 y: 180,
                 style: {
                     fill: GAME_COLORS.white,
@@ -632,13 +632,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 3A: Ball Changes Title (Right)
-            {
+            /* {
                 tag: 'ballchangesTitle',
                 text: "----------------[ CHANGEMENTS DE BALLE ]----------------",
                 x: 1200,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -651,7 +651,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 3B: Ball Changes Content (Right)
             {
@@ -680,13 +680,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 4A: Affectations title (Down - Left)
-            {
+            /* {
                 tag: 'affectationsTitle',
                 text: "--------------------[ AFFECTATIONS ]--------------------",
                 x: 120,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -699,7 +699,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 4B: Affectations content (Down - Left)
             {
@@ -726,13 +726,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 5A: Wall shapes (Down - center/right)
-            {
+            /* {
                 tag: 'wallShapesTitle',
                 text: "--------------------------------------------------[ FIGURES MURALES ]---------------------------------------------------",
                 x: 650,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -745,7 +745,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 5B: Wall shapes (Down - center/right)
             {
@@ -753,7 +753,7 @@ export class GlossaryTexts extends Entity {
                 text: 
                       "Les murs changent, se déforment et se déplacent avec le temps, influençant les trajectoires des balles.\n\n" + 
                       "Parfois, des formes bloquantes apparaissent au centre de l’arène en tant qu’obstacles solides.",
-                x: 670,
+                x: 680,
                 y: 510,
                 style: {
                     fill: GAME_COLORS.white,
@@ -776,13 +776,13 @@ export class GlossaryTexts extends Entity {
     private getColumnDataCAT() {
         return [
             // Column 1A: Powerups Title (Left)
-            {
+            /* {
                 tag: 'powerupsTitle',
                 text: "----------------------[ POWERUPS ]----------------------",
                 x: 120,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -795,7 +795,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 1B: Powerups Content (Left)
             {
@@ -824,13 +824,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 2A: Powerdowns Title (Center)
-            {
+            /* {
                 tag: 'powerdownsTitle',
                 text: "---------------------[ POWERDOWNS ]---------------------" ,
                 x: 650,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -843,7 +843,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 2B: Powerdowns Content (Center)
             {
@@ -853,7 +853,7 @@ export class GlossaryTexts extends Entity {
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Inverteix les direccions de control de la pala\n" + 
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Aplana totes les devolucions de la pala\n" +
                       "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Alenteix la velocitat de la pala\n",
-                x: 650,
+                x: 660,
                 y: 180,
                 style: {
                     fill: GAME_COLORS.white,
@@ -872,13 +872,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 3A: Ball Changes Title (Right)
-            {
+            /* {
                 tag: 'ballchangesTitle',
                 text: "-------------------[ CANVIS DE BOLA ]-------------------",
                 x: 1200,
                 y: 160,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -891,7 +891,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 3B: Ball Changes Content (Right)
             {
@@ -920,13 +920,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 4A: Affectations title (Down - Left)
-            {
+            /* {
                 tag: 'affectationsTitle',
                 text: "---------------------[ AFECTACIONS ]--------------------",
                 x: 120,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -939,7 +939,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 4B: Affectations content (Down - Left)
             {
@@ -966,13 +966,13 @@ export class GlossaryTexts extends Entity {
             },
 
             // Column 5A: Wall shapes (Down - center/right)
-            {
+            /* {
                 tag: 'wallShapesTitle',
                 text: "-----------------------------------------------[ FIGURES DE LAS PARETS ]------------------------------------------------",
                 x: 650,
                 y: 470,
                 style: {
-                    fill: GAME_COLORS.menuOrange,
+                    fill: GAME_COLORS.red,
                     fontSize: 13,
                     fontWeight: 'bolder' as const,
                     align: 'left' as const,
@@ -985,7 +985,7 @@ export class GlossaryTexts extends Entity {
                 },
                 anchor: { x: 0, y: 0 },
                 rotation: 0,
-            },
+            }, */
 
             // Column 5B: Wall shapes (Down - center/right)
             {
@@ -993,7 +993,7 @@ export class GlossaryTexts extends Entity {
                 text: 
                       "Les parets canvien, deformen i es mouen amb el temps, afectant les trajectòries de les boles.\n\n" + 
                       "De vegades, les figures que bloquegen al mig de l'arena com a obstacles sòlids.",
-                x: 670,
+                x: 680,
                 y: 510,
                 style: {
                     fill: GAME_COLORS.white,
@@ -1014,7 +1014,7 @@ export class GlossaryTexts extends Entity {
     }
 
     public redrawGlossaryTitles(classicMode: boolean): void {
-        const titleColor = classicMode ? GAME_COLORS.white : GAME_COLORS.menuOrange;
+        const titleColor = classicMode ? GAME_COLORS.white : GAME_COLORS.red;
         
         this.textComponents.forEach((textComponent, index) => {
             const columnData = this.getColumnDataEN();

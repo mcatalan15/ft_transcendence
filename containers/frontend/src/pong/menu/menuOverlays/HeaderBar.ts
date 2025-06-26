@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 12:28:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:09:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ export class HeaderBar extends Entity {
 	width: number;
 	height: number;
 
-	constructor(menu: Menu,	id: string, layer: string, overlayBase:string, x: number, y: number, width: number, height: number) {
+	constructor(menu: Menu,	id: string, layer: string, overlayBase: string, x: number, y: number, width: number, height: number) {
 		super(id, layer);
 
 		this.menu = menu;
@@ -41,7 +41,7 @@ export class HeaderBar extends Entity {
 
 		const overlay = this.getActualOverlay(overlayBase);
 		
-		const color = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
+		const color = this.getColor();
 		this.color = color;
 
 		const bar = this.createBar(color, x, y, width, height);
@@ -52,6 +52,24 @@ export class HeaderBar extends Entity {
 		const text = this.createText(overlay, x, y);
 		const textComponent = new TextComponent(text);
 		this.addComponent(textComponent, 'text');
+	}
+
+	getColor(): number {
+		let color;
+
+		if (this.menu.config.classicMode) {
+			color = GAME_COLORS.white;
+		} else {
+			if (this.id.includes('glossary')) {
+				color = GAME_COLORS.menuOrange
+			} else if (this.id.includes('info')) {
+				color = GAME_COLORS.menuPink;
+			} else {
+				color = GAME_COLORS.menuBlue;
+			}
+		}
+
+		return (color);
 	}
 	
 	getActualOverlay(overlayBase: string): string{
