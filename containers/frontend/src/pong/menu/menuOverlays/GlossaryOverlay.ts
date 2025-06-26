@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:30:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:10:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ export class GlossaryOverlay extends Overlay {
         this.header = new OverlayHeader(this.menu, 'glossaryHeader', 'overlays', 'glossary');
         this.addContent(this.header, 'overlays');
 
-        this.powerupBar = new HeaderBar(this.menu, 'glossaryPowerupBar', 'overlays', 'POWER UPS', 120, 160, 475, 20);
+        this.powerupBar = new HeaderBar(this.menu, 'glossaryPowerupBar', 'overlays', 'POWER-UPS', 120, 160, 475, 20);
         this.addContent(this.powerupBar, 'overlays');
 
-        this.powerdownBar = new HeaderBar(this.menu, 'glossaryPowerdownBar', 'overlays', 'POWER DOWNS', 660, 160, 475, 20);
+        this.powerdownBar = new HeaderBar(this.menu, 'glossaryPowerdownBar', 'overlays', 'POWER-DOWNS', 660, 160, 475, 20);
         this.addContent(this.powerdownBar, 'overlays');
 
-        this.ballchangeBar = new HeaderBar(this.menu, 'glossaryBallchangeBar', 'overlays', 'BALL CHANGES', 1200, 160, 475, 20);
+        this.ballchangeBar = new HeaderBar(this.menu, 'glossaryBallchangeBar', 'overlays', 'BALL-CHANGES', 1200, 160, 475, 20);
         this.addContent(this.ballchangeBar, 'overlays');
 
         this.affectationsBar = new HeaderBar(this.menu, 'glossaryAffectationsBar', 'overlays', 'AFFECTATIONS', 120, 470, 475, 20);

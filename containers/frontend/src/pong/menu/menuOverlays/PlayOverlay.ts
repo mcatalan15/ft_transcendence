@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:20:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:19:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import { Overlay } from "./Overlay";
 import { PlayTexts } from "./PlayTexts";
 import { OverlayHeader } from "./OverlayHeader";
 import { HeaderBar } from "./HeaderBar";
+import { TournamentNextMatchDisplay } from "./TournamentNextMatchDisplay";
 
 import { GAME_COLORS } from "../../utils/Types"
 
@@ -26,6 +27,7 @@ export class PlayOverlay extends Overlay {
     private playTexts!: PlayTexts;
     header!: OverlayHeader;
     playerHeader!: HeaderBar;
+    nextMatchDisplay!: TournamentNextMatchDisplay;
 
     constructor(menu: Menu) {
         super('playOverlay', menu, 'play', 0x151515, GAME_COLORS.menuBlue);
@@ -36,10 +38,11 @@ export class PlayOverlay extends Overlay {
     }
 
     protected initializeContent(): void {
-        /* this.playTexts = new PlayTexts(this.menu, 'playTexts', 'overlays');
-        this.addContent(this.playTexts, 'overlays'); */
         this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'play');
         this.addContent(this.header, 'overlays');
+
+        this.nextMatchDisplay = new TournamentNextMatchDisplay(this.menu, 'nextMatchDisplay', 'overlays');
+        this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
     }

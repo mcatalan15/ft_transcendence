@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pong.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 14:35:18 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:25:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ export async function initGame(container: HTMLElement) {
   });
 
   //const language = localStorage.getItem('i18nextLng') || 'en';
-  const language = 'en';
+  const language = 'cat';
 
   container.appendChild(app.canvas);
   

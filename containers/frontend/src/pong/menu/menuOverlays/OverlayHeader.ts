@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:06:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 11:38:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:25:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ export class OverlayHeader extends Entity {
 		const type = this.getType(preType);
 		
 		this.headerText = this.createHeaderText(type);
-		const textComponent = new TextComponent(this.headerText);
-		this.addComponent(textComponent);
 
 		this.logoText = this.createLogoText(color);
 		const logoTextComponent = new TextComponent(this.logoText);
@@ -83,6 +81,14 @@ export class OverlayHeader extends Entity {
 					case ('tournament'): {
 						return ('torneo');
 					}
+					
+					case ('local'):	{
+						return ('local');
+					}
+
+					case ('online'):	{
+						return ('en línea');
+					}
 				}
 				break;
 			}
@@ -100,6 +106,14 @@ export class OverlayHeader extends Entity {
 					case ('tournament'): {
 						return ('tournoi');
 					}
+
+					case ('local'):	{
+						return ('local');
+					}
+
+					case ('online'):	{
+						return ('en ligne');
+					}
 				}
 				break;
 			}
@@ -116,6 +130,14 @@ export class OverlayHeader extends Entity {
 
 					case ('tournament'): {
 						return ('torneig');
+					}
+
+					case ('local'):	{
+						return ('local');
+					}
+
+					case ('online'):	{
+						return ('en línia');
 					}
 				}
 			}
@@ -241,20 +263,53 @@ export class OverlayHeader extends Entity {
 
 	redrawOverlayElements(): void {
 		const color = this.menu.config.classicMode ? GAME_COLORS.white : this.getColor(this.overlayType);
-
+	
 		this.headerGraphic.clear();
 		this.overHead.clear();
-
+	
 		this.createHeaderGraphic(color);
+		
+		let preType;
 
+		if (this.menu.config.mode === 'local') {
+			preType = 'local';
+		} else if (this.menu.config.mode === 'online') {
+			preType = 'online'
+		}
+
+		if (this.menu.config.variant === 'tournament') {
+			preType = 'tournament';
+		} else if (this.overlayType === 'info') {
+			preType = 'info';
+		} else if (this.overlayType === 'glossary') {
+			preType = 'glossary';
+		}
+
+
+		let langType = this.getType(preType!);
+
+		let finalType = langType;
+
+		if (this.overlayType !== 'info' && this.overlayType !== 'glossary') {
+			if (this.menu.config.variant === '1v1') {
+				finalType += " - 1 vs 1";
+			} else if (this.menu.config.variant === '1vAI') {
+				finalType += " - 1 vs AI";
+			}
+		}
+		
+		const newHeaderText = this.createHeaderText(finalType!);
+		const headerTextComponent = new TextComponent(newHeaderText);
+		this.replaceComponent('text', headerTextComponent, 'headerText');
+	
 		const updatedLogoText = this.createLogoText(color);
 		const logoTextComponent = new TextComponent(updatedLogoText);
 		this.replaceComponent('text', logoTextComponent, 'logoText');
-
+	
 		const newBlocking = this.blocking;
 		const blockingComponent = new RenderComponent(newBlocking);
 		this.replaceComponent('render', blockingComponent, 'blocking');
-
+	
 		this.createOverHead(color);
 		const newOverHead = this.overHead;
 		const overHeadComponent = new RenderComponent(newOverHead);
