@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:24:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 09:54:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		const headerText = this.header.getComponent('text') as RenderComponent;
 		this.addComponent(headerText, 'barText');
 
-		this.avatarFrames = this.createAvatarFrames();
+		this.createAvatarFrames();
 		const avatarFramesComponent = new RenderComponent(this.avatarFrames);
 		this.addComponent(avatarFramesComponent, 'avatarFrames');
 
@@ -138,17 +138,15 @@ export class TournamentNextMatchDisplay extends Entity {
 		return (container);
 	}
 
-	createAvatarFrames(): Graphics {
-		const avatarFrames = new Graphics();
+	createAvatarFrames() {
 		const color = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue;
 
-		avatarFrames.rect(1100, 215, 250, 250);
-		avatarFrames.stroke( {color: color, width: 2.5, alpha: 1} )
+		this.avatarFrames.rect(1100, 215, 250, 250);
+		this.avatarFrames.stroke( {color: color, width: 2.5, alpha: 1} )
 
-		avatarFrames.rect(1400, 215, 250, 250);
-		avatarFrames.stroke( {color: color, width: 2.5, alpha: 1} )
+		this.avatarFrames.rect(1400, 215, 250, 250);
+		this.avatarFrames.stroke( {color: color, width: 2.5, alpha: 1} )
 
-		return avatarFrames;
 	}
 
 	createVsTexts(): Text[] {
@@ -220,6 +218,14 @@ export class TournamentNextMatchDisplay extends Entity {
 			const vsTextComponent = new TextComponent(newVsTexts[i]);
 			this.replaceComponent(`text`, vsTextComponent, `vsText${i}`);
 		}
+
+		const newStatsTexts = this.createStatsTexts();
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const statsTextComponent = new TextComponent(newStatsTexts[i]);
+			this.replaceComponent(`text`, statsTextComponent, `statsText${i}`);
+		}
 		
+		this.avatarFrames.clear();
+		this.createAvatarFrames();
 	}
 }

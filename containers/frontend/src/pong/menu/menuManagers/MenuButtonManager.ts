@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:04:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:03:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -547,7 +547,7 @@ export class ButtonManager {
 			},
 			{
 				isClicked: false,
-				text: this.getButtonTexts(menu, 'filters'),
+				text: this.getButtonTexts(menu, 'CRTON'),
 				onClick: () => {
 					console.log('Tournament Filters button clicked');
 					menu.playSound("menuSelect");

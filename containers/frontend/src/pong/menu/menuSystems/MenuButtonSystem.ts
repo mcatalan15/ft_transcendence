@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 19:21:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:12:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,10 +367,11 @@ export class ButtonSystem implements System {
 
     handleFiltersClicked() {
         const text = this.menu.filtersButton.getText();
-        const isClicked = this.menu.filtersButton.getIsClicked();
+        let isClicked = this.menu.filtersButton.getIsClicked();
     
         if (isClicked) {
             this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
+            this.menu.tournamentFiltersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
             this.menu.visualRoot.filters = [];
             this.menu.menuContainer.filters = [];
             this.menu.renderLayers.overlays.filters = [];
@@ -381,6 +382,7 @@ export class ButtonSystem implements System {
             this.menu.config.filters = false;
         } else {
             this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
+            this.menu.tournamentFiltersButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
             this.menu.visualRoot.filters = this.menu.baseFilters;
             this.menu.menuContainer.filters = this.menu.baseFilters;
             this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
@@ -401,6 +403,8 @@ export class ButtonSystem implements System {
     
         this.menu.filtersButton.setClicked(!this.menu.filtersButton.getIsClicked());
         this.menu.filtersButton.resetButton();
+        this.menu.tournamentFiltersButton.setClicked(!this.menu.tournamentFiltersButton.getIsClicked());
+        this.menu.tournamentFiltersButton.resetButton();
 
         this.updatePowerups();
         this.updatePaddles();
@@ -591,6 +595,9 @@ export class ButtonSystem implements System {
         this.menu.glossaryQuitButton.resetButton();
         this.menu.aboutQuitButton.resetButton();
         this.menu.playQuitButton.resetButton();
+        this.menu.readyButton.resetButton();
+        this.menu.tournamentTauntButton.resetButton();
+        this.menu.tournamentFiltersButton.resetButton();
         
         this.menu.playOrnament.resetOrnament();
         this.menu.startOrnament.resetOrnament();

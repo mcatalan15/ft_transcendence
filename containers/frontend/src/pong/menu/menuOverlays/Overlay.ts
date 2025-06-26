@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:21:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:00:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ export abstract class Overlay extends Entity {
     protected currentAlpha: number = 0;
     protected animationProgress: number = 0;
     protected animationSpeed: number = 2;
-    protected isAnimating: boolean = false;
+    public isAnimating: boolean = false;
     protected isDisplayed: boolean = false;
 
     constructor(id: string, menu: Menu, overlayType: string, backgroundColor: number = 0x151515, strokeColor: number = GAME_COLORS.menuOrange) {
@@ -233,9 +233,21 @@ export abstract class Overlay extends Entity {
         if (this.quitButton) {
             this.quitButton.getContainer().alpha = 0;
         }
-    
+        
         if (this.overlayType === 'tournament') {
             this.updateTournamentButtonAlphas(0);
+            this.updateSquareAvatarAlphas(0);
+        } else if (this.overlayType === 'glossary') {
+            this.updatePowerupAlphas(0);
+            this.updateWallImageAlphas(0);
+        } else if (this.overlayType === 'about') {
+            if (this.menu.config.classicMode) {
+                this.updateClassicLogosAlphas(0);
+                this.updateClassicAvatarImageAlphas(0);
+            } else {
+                this.updatePinkLogosAlphas(0);
+                this.updateAvatarImageAlphas(0);
+            }
         }
         
         this.animateToTarget();
@@ -276,13 +288,19 @@ export abstract class Overlay extends Entity {
     
             if (this.overlayType === 'tournament') {
                 this.updateTournamentButtonAlphas(this.currentAlpha);
+                this.updateSquareAvatarAlphas(this.currentAlpha);
+            } else if (this.overlayType === 'glossary') {
+                this.updatePowerupAlphas(this.currentAlpha);
+                this.updateWallImageAlphas(this.currentAlpha);
+            } else if (this.overlayType === 'about') {
+                if (this.menu.config.classicMode) {
+                    this.updateClassicLogosAlphas(this.currentAlpha);
+                    this.updateClassicAvatarImageAlphas(this.currentAlpha);
+                } else {
+                    this.updatePinkLogosAlphas(this.currentAlpha);
+                    this.updateAvatarImageAlphas(this.currentAlpha);
+                }
             }
-    
-
-            this.updateClassicAvatarImageAlphas(this.currentAlpha);
-            this.updateSquareAvatarAlphas(this.currentAlpha);
-            this.updatePinkLogosAlphas(this.currentAlpha);
-            this.updateClassicLogosAlphas(this.currentAlpha);
     
             if (this.animationProgress >= 1.0) {
                 this.isAnimating = false;
@@ -295,48 +313,6 @@ export abstract class Overlay extends Entity {
         };
     
         animate();
-    }
-
-    private updateAllAlphas(alpha: number): void {
-        this.background.alpha = alpha;
-
-        this.content.forEach(({ entity }) => {
-            const render = entity.getComponent('render') as RenderComponent;
-            if (render && render.graphic) {
-                render.graphic.alpha = alpha;
-            }
-
-            if (entity.getAllRenderables && typeof entity.getAllRenderables === 'function') {
-                entity.getAllRenderables().forEach((renderable: any) => {
-                    if (renderable) renderable.alpha = alpha;
-                });
-            }
-        });
-
-        if (this.quitButton) {
-            this.quitButton.getContainer().alpha = alpha;
-        }
-
-        if (this.id === 'glossaryOverlay') {
-            this.updatePowerupAlphas(alpha);
-            this.updateWallImageAlphas(alpha);
-        } else if (this.id === 'aboutOverlay') {
-            if (this.menu.config.classicMode) {
-                this.updateClassicLogosAlphas(alpha);
-                this.updateClassicAvatarImageAlphas(alpha);
-            } else {
-                this.updatePinkLogosAlphas(alpha);
-                this.updateAvatarImageAlphas(alpha);
-            }
-        } else if (this.id === 'tournamentOverlay') {
-            /* if (this.menu.config.classicMode) {
-                this.updateSquareAvatarAlphas(alpha);
-            } else {
-                this.updateSquareAvatarAlphas(alpha);
-            } */
-
-            this.updateSquareAvatarAlphas(alpha);
-        }
     }
 
     private updateTournamentButtonAlphas(alpha: number): void {

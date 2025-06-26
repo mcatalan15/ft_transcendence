@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:24:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ import { RenderComponent } from '../../components/RenderComponent';
 import { AnimationComponent } from '../../components/AnimationComponent';
 
 import { FrameData } from '../../utils/Types';
-import { isRenderComponent, isMenuLine, isOverlayBackground, isGlossary, isPowerup } from '../../utils/Guards'
+import { isRenderComponent, isMenuLine, isPowerup } from '../../utils/Guards'
 import { MenuLine } from '../menuEntities/MenuLine';
 import { OverlayBackground } from '../menuOverlays/OverlayBackground';
 import { GlossaryTexts } from '../menuOverlays/GlossaryTexts';
@@ -48,8 +48,6 @@ update(entities: Entity[], delta: FrameData): void {
 			this.animateBallButton(delta, entity as BallButton);
 		} else if (isMenuLine(entity)) {
 			this.animateMenuLine(delta, entitiesToRemove, entity);
-		} else if (isOverlayBackground(entity)) {
-			this.animateOverlayBackground(delta, entity as OverlayBackground);
 		} else if (isPowerup(entity)) {
 			if (!this.menu.config.classicMode) {
 				this.animatePowerup(entity)

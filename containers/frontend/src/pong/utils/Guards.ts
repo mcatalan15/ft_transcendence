@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:27:17 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:21:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,8 @@ import { MenuLine } from '../menu/menuEntities/MenuLine';
 import { MenuButton } from '../menu/menuButtons/MenuButton';
 import { MenuHalfButton } from '../menu/menuButtons/MenuHalfButton';
 import { MenuXButton } from '../menu/menuButtons/MenuXButton';
-import { BallButton } from '../menu/menuButtons/BallButton';
 import { MenuOrnament } from '../menu/menuEntities/MenuOrnaments';
-import { OverlayBackground } from '../menu/OverlayBackground';
-import { GlossaryTexts } from '../menu/GlossaryTexts';
+import { MenuTournamentOverlayButton } from '../menu/menuButtons/MenuTournamentOverlayButton';
 
 export function isMenu(entity: any): entity is Menu {
 	return entity instanceof Menu;
@@ -117,16 +115,12 @@ export function isMenuHalfButton(entity: Entity): entity is MenuHalfButton {
 	return entity instanceof MenuHalfButton;
 }
 
+export function isOverlayButton(entity: Entity): entity is MenuTournamentOverlayButton {
+	return entity instanceof MenuTournamentOverlayButton;
+}
+
 export function isMenuOrnament(entity: Entity): entity is MenuOrnament {
 	return entity instanceof MenuOrnament;
-}
-
-export function isOverlayBackground(entity: Entity): entity is OverlayBackground {
-    return entity.id === 'overlay_background';
-}
-
-export function isGlossary(entity: Entity): entity is GlossaryTexts {
-    return entity.id === 'glossary';
 }
 
 export function isMenuLine(entity: Entity): entity is MenuLine {

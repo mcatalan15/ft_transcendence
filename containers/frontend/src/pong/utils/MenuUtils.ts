@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 19:38:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:12:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Container, Text, Application } from 'pixi.js';
+import { Graphics, Container, Text, Application, ColorMatrixFilter } from 'pixi.js';
 
 import { Menu } from '../menu/Menu';
 
@@ -173,12 +173,49 @@ export function getReadyButtonPoints(menu: Menu, button: MenuReadyButton): numbe
 }
 
 export function getTournamentOverlayButtonPoints(menu: Menu, button: MenuTournamentOverlayButton): number[] | undefined {
-	if (!button.getIsClicked()) {
-		return [
-			0, 0,
-			menu.tournamentOverlayButtonWidth, 0,
-			menu.tournamentOverlayButtonWidth , menu.tournamentOverlayButtonHeight,
-			0, menu.tournamentOverlayButtonHeight 
-		];
-	}
+	return [
+		0, 0,
+		menu.tournamentOverlayButtonWidth, 0,
+		menu.tournamentOverlayButtonWidth , menu.tournamentOverlayButtonHeight,
+		0, menu.tournamentOverlayButtonHeight 
+	];
+}
+export function createAdaptiveDuotoneFilter(menu: Menu): ColorMatrixFilter {
+    const filter = new ColorMatrixFilter();
+    
+    // Convert to grayscale first
+    filter.desaturate();
+    
+    let darkColor: number;
+    let lightColor: number;
+    
+    if (menu.config.classicMode) {
+        // In classic mode, use your game's black and white
+        darkColor = GAME_COLORS.black;   // 0x171717
+        lightColor = GAME_COLORS.white;  // 0xfff8e3
+    } else {
+        // In modern mode, you could use a different color scheme
+        // or still use your game's colors
+        darkColor = GAME_COLORS.black;   // 0x171717
+        lightColor = GAME_COLORS.white;  // 0xfff8e3
+    }
+    
+    // Extract RGB components
+    const darkR = (darkColor >> 16) & 0xFF;
+    const darkG = (darkColor >> 8) & 0xFF;
+    const darkB = darkColor & 0xFF;
+    
+    const lightR = (lightColor >> 16) & 0xFF;
+    const lightG = (lightColor >> 8) & 0xFF;
+    const lightB = lightColor & 0xFF;
+    
+    // Create the gradient mapping matrix
+    filter.matrix = [
+        (lightR - darkR) / 255, 0, 0, 0, darkR / 255,
+        0, (lightG - darkG) / 255, 0, 0, darkG / 255,
+        0, 0, (lightB - darkB) / 255, 0, darkB / 255,
+        0, 0, 0, 1, 0
+    ];
+    
+    return filter;
 }

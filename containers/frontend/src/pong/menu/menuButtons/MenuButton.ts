@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 18:55:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:33:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ export class MenuButton extends BaseButton {
             
             if (!this.isClickable) {
                 textAlpha = 0.3;
-            } else if (isToggleButton && this.isClicked) {
+            } else if (isToggleButton && this.isClicked || (this.id.includes('tournamentOverlayButton') && this.isClicked)) {
                 textAlpha = 0.3;
             } else {
                 textAlpha = 1;

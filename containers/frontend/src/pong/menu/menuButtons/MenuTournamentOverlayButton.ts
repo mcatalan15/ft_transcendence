@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 19:36:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:00:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:39:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ export class MenuTournamentOverlayButton extends MenuButton {
                 target: this.buttonContainer,
                 buttonName: 'tournamentOverlayTauntButton'
             });
-        } else if (this.id.includes('filters')) {
+        } else if (this.id.includes('crt')) {
             this.menu.eventQueue.push({
                 type: 'FILTERS_CLICK',
                 target: this.buttonContainer,
@@ -93,9 +93,16 @@ export class MenuTournamentOverlayButton extends MenuButton {
             getThemeColors(this.menu.config.classicMode).white : 
             this.config.color;
         
+            let alpha: number;
+            if (this.isClicked) {
+                alpha = 0.3;
+            } else {
+                alpha = 1;
+            }
+
         return {
             color: themeColor,
-            alpha: this.getEffectiveAlpha()
+            alpha: alpha,
         };
     }
     
@@ -109,11 +116,11 @@ export class MenuTournamentOverlayButton extends MenuButton {
     }
 
     protected getEffectiveAlpha(): number {
-        const isToggleButton = this.config.text === 'ABOUT' || this.config.text === 'GLOSSARY';
-        
         if (!this.isClickable) {
             return 0.3; 
-        } else if (isToggleButton && this.isClicked) {
+        } else if (this.buttonId === 'FILTERS' && this.isClicked) {
+            return 0.3;
+        } else if (this.buttonId === 'CHAT' && this.isClicked) {
             return 0.3;
         } else {
             return 1;
@@ -146,5 +153,33 @@ export class MenuTournamentOverlayButton extends MenuButton {
         }
         
         this.resetButton();
+    }
+
+    public resetButton(): void {
+        this.isStateChanging = true;
+        this.isHovered = false;
+        this.resetTournamentButtonState();
+        this.isStateChanging = false;
+    }
+    
+    protected resetTournamentButtonState(): void {
+        this.buttonGraphic.clear();
+        const points = this.getButtonPoints();
+        this.buttonGraphic.poly(points);
+        
+        const strokeColor = this.getStrokeColor();
+        
+        this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
+        this.buttonGraphic.stroke(strokeColor);
+        
+        if (this.buttonText) {
+            const themeColor = this.menu.config.classicMode ? 
+                getThemeColors(this.menu.config.classicMode).white : 
+                this.config.color;
+            
+            const textAlpha = this.getEffectiveAlpha();
+            
+            this.buttonText.style.fill = { color: themeColor, alpha: textAlpha };
+        }
     }
 }

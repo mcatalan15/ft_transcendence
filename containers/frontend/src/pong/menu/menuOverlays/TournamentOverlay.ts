@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 20:23:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 09:54:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ export class TournamentOverlay extends Overlay {
     }
 
     protected initializeContent(): void {      
-        /* this.tournamentTexts = new TournamentTexts(this.menu, 'tournamentTexts', 'overlays');
-        this.addContent(this.tournamentTexts, 'overlays'); */
-
         this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'tournament');
         this.addContent(this.header, 'overlays');
 
