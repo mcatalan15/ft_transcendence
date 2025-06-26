@@ -1,8 +1,5 @@
 WEBSOCKETS:
-	- After the game session is successfully created, the paddle input of each player should be sent to backend to update the paddle position.
-	- Backend updates ball position as well as paddle positions every frame (60FPS).
-	- CLEAN THE CODE!! Remove all unnecessary console.log()
-	- Refactor main.js: gameSession.js, gameServer.js, etc.
+	- Move the generation of obstacles and power-ups to the server side instead of the client side.
 
 <!-- class TournamentManager {
   constructor(gameManager, redisService) {

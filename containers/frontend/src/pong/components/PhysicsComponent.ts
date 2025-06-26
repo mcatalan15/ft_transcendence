@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsComponent.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:54:45 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 11:38:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/11 14:12:05 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ type PhysicsBehaviour = 'bounce' | 'block' | 'trigger' | 'none';
 export class PhysicsComponent implements Component {
 	type = 'physics';
 	instanceId?: string;
+	enabled: boolean = true;
 
 	x: number;
 	y: number;

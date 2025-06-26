@@ -22,10 +22,16 @@ function handleUpgrade(wss, gameWss, server) {
         const segments = pathname.split('/');
         const gameId = segments.length >= 5 ? segments[4] : undefined;
         console.log(`Game websocket connection with ID: ${gameId}`);
-        gameWss.emit('connection', ws, request, gameId);
+        
+        // Store gameId in the WebSocket instance for later access
+        ws.gameId = gameId;
+        
+        // Emit connection with gameId as third parameter
+        gameWss.emit('connection', ws, request, { gameId });
       });
     }
     else {
+      console.log('Unknown WebSocket path:', pathname);
       socket.destroy();
     }
   });

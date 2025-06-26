@@ -5,67 +5,141 @@ export class PongNetworkManager {
   private wsManager: WebSocketManager;
   private game: PongGame;
   private playerNumber: number = 0;
-  private lastUpdateTime: number = 0;
+  private isHost: boolean = false;
+  private hostName: string = '';
+  private guestName: string = '';
+  private gameId: string = '';
   
   constructor(game: PongGame, gameId: string) {
-  this.game = game;
-  
-  // Create a new WebSocketManager instance specifically for this game
-  // Don't use getInstance() - create a dedicated instance for the game
-  this.wsManager = new WebSocketManager(
-    sessionStorage.getItem('username') ?? 'undefined',
-    `ws://localhost:3100/ws/socket/game` // Base URL, gameId will be appended
-  );
+    this.game = game;
+    this.gameId = gameId;
+    
+    // Create a new WebSocketManager instance specifically for this game
+    this.wsManager = new WebSocketManager(
+      sessionStorage.getItem('username') ?? 'undefined',
+      `ws://localhost:3100/ws/socket/game` // Base URL, gameId will be appended
+    );
 
-  // Set reference in game for bidirectional communication
-  this.game.networkManager = this;
-
-  // Register handlers
-  this.setupHandlers();
-  
-  // Connect to game
-  this.connect(gameId);
-}
+    this.game.networkManager = this;
+    this.setupHandlers();
+    this.connect(gameId);
+  }
   
   private setupHandlers() {
-    this.wsManager.registerHandler('GAME_START', () => {
-      console.log('Game started by server!');
-      this.game.start();
+    this.wsManager.registerHandler('CONNECTION_SUCCESS', (message) => {
+      console.log('Connected to game WebSocket:', message);
+      
+      // Validate that we have the gameId
+      const gameIdToUse = message.gameId || this.gameId;
+      if (!gameIdToUse) {
+        console.error('No gameId available for identification');
+        return;
+      }
+      
+      // Send identification after successful connection
+      this.wsManager.send({
+        type: 'IDENTIFY',
+        playerId: sessionStorage.getItem('username'),
+        gameId: gameIdToUse
+      });
     });
-    
+
+    this.wsManager.registerHandler('IDENTIFY_SUCCESS', (message) => {
+      console.log('Identification successful:', message);
+      // The backend will automatically trigger JOIN_GAME after IDENTIFY
+    });
+
+    this.wsManager.registerHandler('JOIN_SUCCESS', (message) => {
+      console.log('Successfully joined game:', message);
+      this.playerNumber = message.playerNumber;
+      this.isHost = message.playerNumber === 1;
+      this.hostName = message.hostName;
+      this.guestName = message.guestName;
+      
+      // Update game UI with player names
+      this.updatePlayerNames();
+      this.setupInputHandlers();
+      
+      // Send ready signal
+      this.wsManager.send({
+        type: 'PLAYER_READY',
+        gameId: this.gameId,
+        playerId: sessionStorage.getItem('username')
+      });
+    });
+
+    this.wsManager.registerHandler('JOIN_FAILURE', (message) => {
+      console.error('Failed to join game:', message.reason);
+      
+      // Show error in UI instead of throwing
+      this.showConnectionStatus(`Failed to join game: ${message.reason}`);
+      
+      // Update connection status div to show error
+      const statusDiv = document.getElementById('connection-status');
+      if (statusDiv) {
+        statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+      }
+    });
+
     this.wsManager.registerHandler('PLAYER_ASSIGNED', (message) => {
       this.playerNumber = message.playerNumber;
+      this.isHost = message.isHost;
       this.game.localPlayerNumber = message.playerNumber;
-      console.log('Server assigned player number:', this.playerNumber);
       
-      // Show player assignment in UI
+      console.log('Player assignment:', {
+        playerNumber: this.playerNumber,
+        isHost: this.isHost,
+        role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
+      });
+      
       this.showPlayerAssignment();
     });
     
     this.wsManager.registerHandler('PLAYER_CONNECTED', (message) => {
       console.log('Player connected:', message);
-      // Show opponent connection status
+      this.showConnectionStatus(`Player ${message.playerId} connected (${message.playersConnected}/2)`);
     });
     
-    this.wsManager.registerHandler('PLAYER_DISCONNECTED', () => {
-      console.log('Other player disconnected');
-      // Show disconnection message in game
-      this.showDisconnectionMessage();
+    this.wsManager.registerHandler('GAME_READY', (message) => {
+      console.log('Both players connected, game is ready');
+      this.hostName = message.hostName;
+      this.guestName = message.guestName;
+      this.updatePlayerNames();
+      this.showConnectionStatus('Both players connected! Game starting...');
+    });
+
+    this.wsManager.registerHandler('GAME_START', (message) => {
+      console.log('Game started!');
+      this.game.start();
+      this.game.updateFromServer(message.gameState);
+      this.showConnectionStatus('Game in progress');
     });
     
     this.wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
-      this.lastUpdateTime = Date.now();
-      
-      // Extract game state and update the game
-      const gameState = message.data || message;
-      if (gameState) {
-        this.game.updateFromServer(gameState);
+      // Update game state from server
+      if (message.gameState) {
+        this.game.updateFromServer(message.gameState);
       }
     });
-    
-    this.wsManager.registerHandler('GAME_READY', () => {
-      console.log('Both players connected, game is ready to start');
-      // Hide loading UI, show ready state
+
+    this.wsManager.registerHandler('PLAYER_DISCONNECTED', (message) => {
+      console.log('Player disconnected:', message.playerId);
+      this.showDisconnectionMessage();
+    });
+
+    this.wsManager.registerHandler('GAME_END', (message) => {
+      console.log('Game ended:', message);
+      this.handleGameEnd(message);
+    });
+
+    // Add error handler for WebSocket errors
+    this.wsManager.registerHandler('ERROR', (message) => {
+      console.error('WebSocket error:', message);
+      this.showConnectionStatus(`Connection error: ${message.message || 'Unknown error'}`);
+      const statusDiv = document.getElementById('connection-status');
+      if (statusDiv) {
+        statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+      }
     });
   }
   
@@ -73,106 +147,191 @@ export class PongNetworkManager {
     try {
       console.log('Connecting to game session:', gameId);
       
-      // Use WebSocketManager to join the game
-      const success = await this.wsManager.joinGame(gameId);
+      // Connect to WebSocket - the backend will send CONNECTION_SUCCESS
+      await this.wsManager.connect(gameId);
       
-      if (success) {
-        console.log('Successfully joined game session');
-        // Setup input handlers after successful connection
-        this.setupInputHandlers();
-      } else {
-        throw new Error('Failed to join game session');
-      }
+      console.log('WebSocket connection established, waiting for join confirmation...');
       
     } catch (error) {
       console.error('Failed to connect to game:', error);
+      
+      // Show connection error in UI
+      this.showConnectionStatus(`Connection failed: ${error.message}`);
+      const statusDiv = document.getElementById('connection-status');
+      if (statusDiv) {
+        statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+      }
+      
       throw error;
     }
   }
 
+  private updatePlayerNames() {
+    // Update the game UI to show player names
+    const playerNamesDiv = document.getElementById('player-names');
+    if (playerNamesDiv) {
+      playerNamesDiv.innerHTML = `
+        <div class="flex justify-between text-white text-lg font-semibold">
+          <div>🏓 ${this.hostName} (Host)</div>
+          <div class="text-gray-400">VS</div>
+          <div>${this.guestName} (Guest) 🏓</div>
+        </div>
+      `;
+    }
+  }
+
+  private showConnectionStatus(message: string) {
+    const statusDiv = document.getElementById('connection-status');
+    if (statusDiv) {
+      statusDiv.textContent = message;
+      // Only change to green if it's a success message
+      if (message.includes('connected') || message.includes('ready') || message.includes('progress')) {
+        statusDiv.className = 'text-center text-green-400 text-lg mb-4';
+      }
+      // Red class is set by individual handlers for errors
+    }
+  }
+
   private showPlayerAssignment() {
-    const playerText = this.playerNumber === 1 ? 'Left Paddle (Player 1)' : 'Right Paddle (Player 2)';
-    console.log(`You are: ${playerText}`);
-    // TODO: Show this in the game UI
+    const role = this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)';
+    const controls = this.isHost ? 'W/S keys' : '↑/↓ arrow keys';
+    const playerText = `You are: ${role}`;
+    
+    const assignmentDiv = document.getElementById('player-assignment');
+    if (assignmentDiv) {
+      assignmentDiv.innerHTML = `
+        <div class="text-center text-blue-400 text-lg mb-2">
+          ${playerText}
+        </div>
+        <div class="text-center text-gray-400 text-sm mb-2">
+          Controls: ${controls}
+        </div>
+      `;
+    }
   }
   
   private showDisconnectionMessage() {
-    console.log('Opponent disconnected from the game');
-    // TODO: Show disconnection overlay in game
+    const statusDiv = document.getElementById('connection-status');
+    if (statusDiv) {
+      statusDiv.textContent = 'Opponent disconnected from the game';
+      statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+    }
   }
-  
+
+  private handleGameEnd(message: any) {
+    const { winner, finalScore } = message;
+    const winnerName = winner === 1 ? this.hostName : this.guestName;
+    
+    // Clean up input handlers since game is over
+    this.cleanupInputHandlers();
+    
+    // Show game end screen
+    const statusDiv = document.getElementById('connection-status');
+    if (statusDiv) {
+      statusDiv.innerHTML = `
+        <div class="text-center text-yellow-400 text-xl mb-4">
+          🎉 Game Over! 🎉
+        </div>
+        <div class="text-center text-white text-lg mb-2">
+          Winner: ${winnerName}
+        </div>
+        <div class="text-center text-gray-400 text-md">
+          Final Score: ${finalScore.player1} - ${finalScore.player2}
+        </div>
+      `;
+    }
+  }
+
+  private setupInputHandlers() {
+    // Remove any existing listeners first
+    this.cleanupInputHandlers();
+    
+    // Add new listeners
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+    
+    console.log('Input handlers set up for player', this.playerNumber, this.isHost ? '(Host)' : '(Guest)');
+  }
+
+  private cleanupInputHandlers() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
+  }
+
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (!this.game.isOnline) return;
+
+    let input = 0;
+    
+    if (this.isHost) {
+      // Host controls left paddle with W/S
+      if (e.key === 'w' || e.key === 'W') {
+        input = -1; // Up
+        e.preventDefault(); // Prevent page scrolling
+      }
+      if (e.key === 's' || e.key === 'S') {
+        input = 1;  // Down
+        e.preventDefault();
+      }
+    } else {
+      // Guest controls right paddle with Arrow keys
+      if (e.key === 'ArrowUp') {
+        input = -1;   // Up
+        e.preventDefault();
+      }
+      if (e.key === 'ArrowDown') {
+        input = 1;  // Down
+        e.preventDefault();
+      }
+    }
+
+    if (input !== 0) {
+      this.sendPaddleInput(input);
+    }
+  };
+
+  private handleKeyUp = (e: KeyboardEvent) => {
+    if (!this.game.isOnline) return;
+
+    let shouldStop = false;
+    
+    if (this.isHost) {
+      if (e.key === 'w' || e.key === 'W' || e.key === 's' || e.key === 'S') {
+        shouldStop = true;
+        e.preventDefault();
+      }
+    } else {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        shouldStop = true;
+        e.preventDefault();
+      }
+    }
+
+    if (shouldStop) {
+      this.sendPaddleInput(0); // Stop movement
+    }
+  };
+
+  private sendPaddleInput(input: number) {
+    this.wsManager.send({
+      type: 'PADDLE_INPUT',
+      gameId: this.gameId,
+      playerId: sessionStorage.getItem('username'),
+      input: input
+    });
+  }
+
   getPlayerNumber(): number {
     return this.playerNumber;
   }
 
-private handleKeyDown = (e: KeyboardEvent) => {
-  if (!this.playerNumber) return;
-  
-  const isPlayer1 = this.playerNumber === 1;
-  const validKeys = isPlayer1 ? ['w', 's'] : ['ArrowUp', 'ArrowDown'];
-  
-  if (validKeys.includes(e.key)) {
-    const isUp = e.key === 'w' || e.key === 'ArrowUp';
-    const dir = isUp ? -1 : 1;
+  disconnect() {
+    // Clean up event listeners
+    this.cleanupInputHandlers();
     
-    // Apply input locally first for responsive controls
-    const paddle = this.game.entities.find(e => 
-      e.id === (isPlayer1 ? 'paddleL' : 'paddleR'));
-    if (paddle) {
-      const input = paddle.getComponent('input');
-      if (input) {
-        // Set the correct properties
-        input.upPressed = dir < 0;
-        input.downPressed = dir > 0;
-        console.log(`Set local input: up=${input.upPressed}, down=${input.downPressed}`);
-      }
+    // Close WebSocket connection
+    if (this.wsManager) {
+      this.wsManager.disconnect();
     }
-    
-    // Then send to server
-    this.wsManager.sendPaddleInput(this.playerNumber, dir);
-  }
-};
-
-private handleKeyUp = (e: KeyboardEvent) => {
-  if (!this.playerNumber) return;
-  
-  const isPlayer1 = this.playerNumber === 1;
-  const validKeys = isPlayer1 ? ['w', 's'] : ['ArrowUp', 'ArrowDown'];
-  
-  if (validKeys.includes(e.key)) {
-    const isUp = e.key === 'w' || e.key === 'ArrowUp';
-    
-    // Apply input locally first
-    const paddle = this.game.entities.find(e => 
-      e.id === (isPlayer1 ? 'paddleL' : 'paddleR'));
-    if (paddle) {
-      const input = paddle.getComponent('input');
-      if (input) {
-        // Only reset the property for the key that was released
-        if (isUp) {
-          input.upPressed = false;
-        } else {
-          input.downPressed = false;
-        }
-      }
-    }
-    
-    // Then send to server
-    this.wsManager.sendPaddleInput(this.playerNumber, 0);
-  }
-};
-
-  setupInputHandlers() {
-    document.addEventListener('keydown', this.handleKeyDown);
-    document.addEventListener('keyup', this.handleKeyUp);
-  }
-
-  destroy() {
-    // Proper cleanup with the correctly bound handlers
-    document.removeEventListener('keydown', this.handleKeyDown);
-    document.removeEventListener('keyup', this.handleKeyUp);
-    
-    // Close connection
-    this.wsManager.close();
   }
 }

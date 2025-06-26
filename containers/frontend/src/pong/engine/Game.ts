@@ -6,16 +6,22 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 12:00:07 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:21:34 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Container, Graphics } from 'pixi.js';
+import { Application, Container, Graphics, Text } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig } from '../menu/GameConfig';
+//import { GameConfig } from '../menu/GameConfig';
+export interface GameConfig {
+	classicMode: boolean;
+	isOnline?: boolean;
+	gameId?: string;
+	opponent?: string;
+}
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -30,6 +36,7 @@ import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
+import { PhysicsComponent } from '../components/PhysicsComponent';
 
 // Import pertinent spawners
 import { ParticleSpawner } from '../spawners/ParticleSpawner';
@@ -54,13 +61,6 @@ import { SoundManager } from '../managers/SoundManager';
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
-export interface GameConfig {
-  classicMode: boolean;
-  isOnline?: boolean;
-  gameId?: string;
-  opponent?: string;
-}
-
 export class PongGame {
 	config: GameConfig;
 	language: string;
@@ -68,11 +68,11 @@ export class PongGame {
 	width: number;
 	height: number;
 	entities: Entity[];
-    systems: System[];
-    eventQueue: GameEvent[];
-    topWallOffset: number;
-    bottomWallOffset: number;
-    wallThickness: number;
+	systems: System[];
+	eventQueue: GameEvent[];
+	topWallOffset: number;
+	bottomWallOffset: number;
+	wallThickness: number;
 	paddleOffset: number;
 	paddleWidth: number;
 	paddleHeight: number;
@@ -102,6 +102,10 @@ export class PongGame {
 	localPlayerNumber?: number;
 	networkManager?: any;
 
+	serverBallPosition: { x: number, y: number } = { x: 0, y: 0 };
+	serverPaddle1Position: number = 0;
+	serverPaddle2Position: number = 0;
+
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
 		this.language = language;
@@ -109,18 +113,18 @@ export class PongGame {
 		this.width = app.screen.width;
 		this.height = app.screen.height;
 		this.entities = [];
-        this.systems = [];
-        this.eventQueue = [];
-        this.topWallOffset = 60;
-        this.bottomWallOffset = 80;
-        this.wallThickness = 20;
+		this.systems = [];
+		this.eventQueue = [];
+		this.topWallOffset = 60;
+		this.bottomWallOffset = 80;
+		this.wallThickness = 20;
 		this.paddleOffset = 60;
 		this.paddleWidth = 10;
 		this.paddleHeight = 80;
 
 		this.isOnline = config.isOnline || false;
 		this.gameId = config.gameId;
-		
+
 		this.renderLayers = {
 			bounding: new Container(),
 			background: new Container(),
@@ -150,37 +154,28 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
 		this.visualRoot.addChild(this.renderLayers.ui);
-		
+
 		if (!this.config.classicMode) {
-		this.initSounds();
-		this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
+			this.initSounds();
+			this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 		}
 	}
 
 	async init(): Promise<void> {
-		console.log(this.config);
-		console.log("Initializing PongGame...");
-		
 		if (!this.app.ticker.started) {
 			this.app.ticker.start();
 		}
-		
+
 		await this.createEntities();
-		console.log('All Entities created');
-	
 		this.initSystems();
-		console.log('All Systems initialized');
-	
 		this.initDust();
-		console.log('Sounds loaded');
-	
 		if (!this.config.classicMode) this.soundManager.startMusic();
-	
+
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};
-		
+
 			this.systems.forEach(system => {
 				system.update(this.entities, frameData);
 			});
@@ -199,9 +194,9 @@ export class PongGame {
 		const powerupSystem = new PowerupSystem(this, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
 		const crossCutSystem = new CrossCutSystem(this);
-		
+
 		this.systems.push(renderSystem);
-		this.systems.push(inputSystem);
+		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		this.systems.push(physicsSystem);
 		if (!this.config.classicMode) this.systems.push(worldSystem);
@@ -224,14 +219,14 @@ export class PongGame {
 				onload: () => console.log('bgm loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('bgm failed to load:', error)
 			}),
-			pong: new Howl({ 
+			pong: new Howl({
 				src: ['/assets/sfx/used/pongFiltered02.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('pong loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('pong failed to load:', error)
 			}),
-			thud: new Howl({ 
+			thud: new Howl({
 				src: ['/assets/sfx/used/thudFiltered01.mp3'],
 				html5: true,
 				preload: true,
@@ -239,7 +234,7 @@ export class PongGame {
 				onload: () => console.log('thud loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('thud failed to load:', error)
 			}),
-			shoot: new Howl({ 
+			shoot: new Howl({
 				src: ['/assets/sfx/used/shotFiltered01.mp3'],
 				html5: true,
 				preload: true,
@@ -247,7 +242,7 @@ export class PongGame {
 				onload: () => console.log('shoot loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('shoot failed to load:', error)
 			}),
-			hit: new Howl({ 
+			hit: new Howl({
 				src: ['/assets/sfx/used/hitFiltered01.mp3'],
 				html5: true,
 				preload: true,
@@ -255,7 +250,7 @@ export class PongGame {
 				onload: () => console.log('hit loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('hit failed to load:', error)
 			}),
-			shieldBreak: new Howl({ 
+			shieldBreak: new Howl({
 				src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
 				html5: true,
 				preload: true,
@@ -263,42 +258,42 @@ export class PongGame {
 				onload: () => console.log('shieldBreak loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('shieldBreak failed to load:', error)
 			}),
-			powerup: new Howl({ 
+			powerup: new Howl({
 				src: ['/assets/sfx/used/powerupFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerup loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('powerup failed to load:', error)
 			}),
-			powerdown: new Howl({ 
+			powerdown: new Howl({
 				src: ['/assets/sfx/used/powerdownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerdown loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('powerdown failed to load:', error)
 			}),
-			ballchange: new Howl({ 
+			ballchange: new Howl({
 				src: ['/assets/sfx/used/ballchangeFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('ballchange loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('ballchange failed to load:', error)
 			}),
-			death: new Howl({ 
+			death: new Howl({
 				src: ['/assets/sfx/used/explosionFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('death loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
 			}),
-			paddleResetUp: new Howl({ 
+			paddleResetUp: new Howl({
 				src: ['/assets/sfx/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetUp loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
-			paddleResetDown: new Howl({ 
+			paddleResetDown: new Howl({
 				src: ['/assets/sfx/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
@@ -309,31 +304,30 @@ export class PongGame {
 	}
 
 	initDust() {
-			ParticleSpawner.setAmbientDustDensity(40, 5);
+		ParticleSpawner.setAmbientDustDensity(40, 5);
 
-			ParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray); 
+		ParticleSpawner.setAmbientDustColor(GAME_COLORS.particleGray);
 
-			ParticleSpawner.setAmbientDustSize(5, 12);
+		ParticleSpawner.setAmbientDustSize(5, 12);
 
-			ParticleSpawner.setAmbientDustLifetime(200, 260);
+		ParticleSpawner.setAmbientDustLifetime(200, 260);
 
-			ParticleSpawner.setAmbientDustAlpha(0.1, 0.3);
+		ParticleSpawner.setAmbientDustAlpha(0.1, 0.3);
 
-			ParticleSpawner.setAmbientDustDriftSpeed(3);
+		ParticleSpawner.setAmbientDustDriftSpeed(3);
 
-			ParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
+		ParticleSpawner.setAmbientDustRotationSpeed(0.001, 0.05);
 	}
 
-	async createEntities(): Promise<void>  {
+	async createEntities(): Promise<void> {
 
+		//TODO: Update to match online game player names consistently
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		this.rightPlayer = { name: "Player 2" };
+		this.rightPlayer = { name: this.config.opponent || "Player 2" };
 
-		console.log(`${this.leftPlayer.name}  vs  ${this.rightPlayer.name}`);
-		
 		// Create Bounding Box
 		this.createBoundingBoxes();
-		
+
 		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
 		const wallTRender = wallT.getComponent('render') as RenderComponent;
@@ -355,7 +349,7 @@ export class PongGame {
 		this.renderLayers.foreground.addChild(paddleLText.getRenderable());
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
-		
+
 		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name);
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
@@ -366,7 +360,6 @@ export class PongGame {
 
 		// Create UI
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
-
 		const uiText = ui.getComponent('text') as TextComponent;
 		if (this.config.classicMode) {
 			this.renderLayers.background.addChild(uiText.getRenderable());
@@ -377,12 +370,11 @@ export class PongGame {
 		if (!this.config.classicMode) {
 			const bars = ui.getComponent('render') as RenderComponent;
 			this.renderLayers.ui.addChild(bars.graphic);
-			
 			this.renderLayers.ui.addChild(uiText.getRenderable());
 		} else {
 			this.createDashedMiddleLine();
 		}
-		
+
 		this.entities.push(ui);
 		console.log("UI created")
 
@@ -402,21 +394,21 @@ export class PongGame {
 	addEntity(entity: Entity): void {
 		this.entities.push(entity);
 		let targetLayer = this.renderLayers.midground;
-	
+
 		if (entity.layer) {
-			switch(entity.layer) {
+			switch (entity.layer) {
 				case 'background': targetLayer = this.renderLayers.background; break;
 				case 'foreground': targetLayer = this.renderLayers.foreground; break;
 				case 'ui': targetLayer = this.renderLayers.ui; break;
 				case 'pp': targetLayer = this.renderLayers.pp; break;
 			}
 		}
-	
+
 		const render = entity.getComponent('render') as RenderComponent;
 		if (render?.graphic) {
 			targetLayer.addChild(render.graphic);
 		}
-		
+
 		const text = entity.getComponent('text') as TextComponent;
 		if (text?.getRenderable) {
 			targetLayer.addChild(text.getRenderable());
@@ -487,27 +479,27 @@ export class PongGame {
 	createBoundingBoxes() {
 		const boundingBoxA = new Graphics();
 		boundingBoxA.rect(0, 0, this.width, this.height);
-		boundingBoxA.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxA.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		const boundingBoxB = new Graphics();
 		boundingBoxB.rect(0, 0, this.width, this.height);
-		boundingBoxB.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxB.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		const boundingBoxC = new Graphics();
 		boundingBoxC.rect(0, 0, this.width, this.height);
-		boundingBoxC.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxC.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		const boundingBoxD = new Graphics();
 		boundingBoxD.rect(0, 0, this.width, this.height);
-		boundingBoxD.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxD.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		const boundingBoxE = new Graphics();
 		boundingBoxE.rect(0, 0, this.width, this.height);
-		boundingBoxE.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxE.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		const boundingBoxF = new Graphics();
 		boundingBoxF.rect(0, 0, this.width, this.height);
-		boundingBoxF.stroke({width: 0.1, color: GAME_COLORS.black});
+		boundingBoxF.stroke({ width: 0.1, color: GAME_COLORS.black });
 
 		this.renderLayers.bounding.addChild(boundingBoxA);
 		this.renderLayers.powerup.addChild(boundingBoxB);
@@ -515,22 +507,138 @@ export class PongGame {
 		this.renderLayers.powerdown.addChild(boundingBoxD);
 		this.renderLayers.ballChange.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
-		
+
 	}
 
+	// Add detailed debugging to the updateFromServer method:
 	updateFromServer(gameState: any) {
-		// This will be called by the network manager when receiving server updates
-		console.log('Updating game state from server:', gameState);
+		if (!this.isOnline || !gameState) return;
 
-		// Update game entities based on server state
-		// This is where we'll handle ball position, paddle positions, etc.
-		// For now, just log the received state
+		console.log('=== UPDATE FROM SERVER ===');
+		console.log('Game state received:', gameState);
+		console.log('Available entities:', this.entities.map(e => ({
+			id: e.id,
+			hasPhysics: !!e.getComponent('physics'),
+			hasRender: !!e.getComponent('render'),
+			physicsPos: e.getComponent('physics') ? { x: e.getComponent('physics').x, y: e.getComponent('physics').y } : null
+		})));
+
+		try {
+			// Find entities by their IDs/types
+			const ballEntity = this.entities.find(e => e.id === 'defaultBall');
+			const paddle1Entity = this.entities.find(e => e.id === 'paddleL');
+			const paddle2Entity = this.entities.find(e => e.id === 'paddleR');
+
+			console.log('Entity search results:', {
+				ballFound: !!ballEntity,
+				paddle1Found: !!paddle1Entity,
+				paddle2Found: !!paddle2Entity
+			});
+
+			// Update ball position using PhysicsComponent
+			if (ballEntity && gameState.ball) {
+				const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+				const ballRender = ballEntity.getComponent('render') as RenderComponent;
+
+				ballPhysics.x = gameState.ball.x;
+				ballPhysics.y = gameState.ball.y;
+				ballPhysics.velocityX = gameState.ball.vx || 0;
+				ballPhysics.velocityY = gameState.ball.vy || 0;
+				ballRender.graphic.x = gameState.ball.x;
+				ballRender.graphic.y = gameState.ball.y;
+
+			} else {
+				console.warn('❌ Ball entity or gameState.ball missing');
+				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
+				if (!gameState.ball) console.warn('  - gameState.ball is missing from server data');
+			}
+
+			// Update paddle positions with similar detailed logging
+			if (paddle1Entity && gameState.paddle1) {
+				const paddle1Physics = paddle1Entity.getComponent('physics') as PhysicsComponent;
+				if (paddle1Physics) {
+					paddle1Physics.x = gameState.paddle1.x;
+					paddle1Physics.y = gameState.paddle1.y;
+
+					const paddle1Render = paddle1Entity.getComponent('render') as RenderComponent;
+					if (paddle1Render && paddle1Render.graphic) {
+						paddle1Render.graphic.x = gameState.paddle1.x;
+						paddle1Render.graphic.y = gameState.paddle1.y;
+					}
+				}
+			}
+
+			if (paddle2Entity && gameState.paddle2) {
+				const paddle2Physics = paddle2Entity.getComponent('physics') as PhysicsComponent;
+				if (paddle2Physics) {
+					paddle2Physics.x = gameState.paddle2.x;
+					paddle2Physics.y = gameState.paddle2.y;
+
+					const paddle2Render = paddle2Entity.getComponent('render') as RenderComponent;
+					if (paddle2Render && paddle2Render.graphic) {
+						paddle2Render.graphic.x = gameState.paddle2.x;
+						paddle2Render.graphic.y = gameState.paddle2.y;
+					}
+				}
+			}
+
+			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
+				this.updateScoreDisplay(gameState.score1 || 0, gameState.score2 || 0);
+			}
+		} catch (error) {
+			console.error('Error updating from server state:', error);
+		}
 	}
 
-	// Add method to start the online game
+	private updateScoreDisplay(score1: number, score2: number): void {
+		// Find the UI entity which contains the score
+		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+
+		if (uiEntity) {
+			if (uiEntity.leftScore !== undefined && uiEntity.rightScore !== undefined) {
+				uiEntity.leftScore = score1;
+				uiEntity.rightScore = score2;
+			}
+
+			const textComponent = uiEntity.getComponent('text') as TextComponent;
+			if (textComponent) {
+				textComponent.setText(`${score1} - ${score2}`);
+			}
+		}
+		console.log(`Score display updated: ${score1} - ${score2}`);
+	}
+
+	private disableLocalGameplayForOnline(): void {
+		console.log('Disabling local gameplay for online mode...');
+
+		let disabledCount = 0;
+
+		this.entities.forEach(entity => {
+			const physics = entity.getComponent('physics') as PhysicsComponent;
+
+			// Mark ball and paddles as server-controlled
+			if (physics && (entity.id === 'defaultBall' || entity.id === 'paddleL' || entity.id === 'paddleR')) {
+				(physics as any).isServerControlled = true;
+				console.log(`Marked entity ${entity.id} as server-controlled`);
+				disabledCount++;
+			}
+
+			// Remove input components from paddles (network manager handles input)
+			if (entity.id === 'paddleL' || entity.id === 'paddleR') {
+				const input = entity.getComponent('input');
+				if (input) {
+					entity.removeComponent('input');
+					console.log(`Removed input component from ${entity.id}`);
+				}
+			}
+		});
+
+		console.log(`Local gameplay disabled for online mode. ${disabledCount} entities marked as server-controlled.`);
+	}
+
 	start() {
+		if (!this.isOnline) return;
 		console.log('Starting online Pong game');
-		// Initialize game loop and start rendering
-		// This will be called when both players are connected
+		this.disableLocalGameplayForOnline();
 	}
 }
