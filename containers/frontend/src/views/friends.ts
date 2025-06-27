@@ -78,7 +78,8 @@ export function showFriends(container: HTMLElement): void {
 }; */
 
 import i18n from '../i18n';
-import { Header } from '../components/header';
+import { HeaderTest } from '../components/testmenu'
+//import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
@@ -118,7 +119,7 @@ export function showFriends(container: HTMLElement): void {
       const arcadeBox = document.createElement('div');
       arcadeBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-white-400
+        mx-auto bg-neutral-900 border-4 border-lime-400
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();
@@ -131,7 +132,7 @@ export function showFriends(container: HTMLElement): void {
 
       const profileTitle = document.createElement('div');
       profileTitle.className = `
-        text-amber-50 text-2xl font-bold tracking-wide break-all text-left w-full mb-6
+        text-lime-400 text-7xl font-anatol tracking-wide break-all text-left w-full mb-6
       `.replace(/\s+/g, ' ').trim();
 
       const avatar = document.createElement('img');
@@ -139,13 +140,13 @@ export function showFriends(container: HTMLElement): void {
       avatar.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
       avatar.alt = 'Profile';
       avatar.className = `
-        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
+        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-lime-400 object-cover
         shadow-xl transition-all duration-300 mt-20
       `.replace(/\s+/g, ' ').trim();
 
       const nicknameSpan = document.createElement('span');
       nicknameSpan.className = `
-        mt-6 text-amber-50 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
+        mt-6 text-lime-400 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
       `.replace(/\s+/g, ' ').trim();
       nicknameSpan.textContent = '...';
 
@@ -154,7 +155,7 @@ export function showFriends(container: HTMLElement): void {
       leftCol.appendChild(nicknameSpan);
 
       const rightCol = document.createElement('div');
-      rightCol.className = `
+      rightCol.className = `overscroll-contain
         w-full md:w-2/3 flex flex-col bg-neutral-900
       `.replace(/\s+/g, ' ').trim();
 
@@ -278,8 +279,13 @@ export function showFriends(container: HTMLElement): void {
       contentWrapper.appendChild(arcadeBox);
       container.appendChild(contentWrapper);
 
-      const headerWrapper = new Header().getElement();
-      headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
+      const headerWrapper = new HeaderTest().getElement();
+      headerWrapper.classList.add(
+        'row-start-1',
+        hasMenu ? 'col-span-2' : 'col-span-1',
+        'w-full',
+        'z-30'
+      );
       container.appendChild(headerWrapper);
 
       fetch('/api/profile', {
