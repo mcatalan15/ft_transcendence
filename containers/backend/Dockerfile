@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 ENV TZ=Europe/Paris
 
-RUN apk add --no-cache sqlite python3
+RUN apk add --no-cache sqlite python3 python3-dev py3-setuptools make g++
 
 WORKDIR /usr/src/app
 
