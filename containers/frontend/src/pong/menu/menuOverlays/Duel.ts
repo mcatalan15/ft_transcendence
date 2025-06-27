@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 14:58:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 16:21:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ export class Duel extends Entity {
 		const legend: Text[] = [];
 		
 		legend.push({
-			text: "⩔⩔⩔⩔⩔\n" ,
+			text: "⩔⩔⩔\n" ,
 			x: 0,
 			y: 0,
 			style: {

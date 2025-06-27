@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 15:59:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 16:20:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,9 +194,9 @@ export class PhysicsSystem implements System {
 
 	rampBallSpeed(physics: PhysicsComponent, delta: FrameData) {
 		if (physics.velocityX > 0) {
-			physics.velocityX += 0.01 * delta.deltaTime;
+			physics.velocityX += 0.005 * delta.deltaTime;
 		} else if (physics.velocityX < 0) {
-			physics.velocityX -= 0.01 * delta.deltaTime;
+			physics.velocityX -= 0.005 * delta.deltaTime;
 		}
 	}
 
