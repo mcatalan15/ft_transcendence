@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 12:21:34 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/27 16:04:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-//import { GameConfig } from '../menu/GameConfig';
-export interface GameConfig {
-	classicMode: boolean;
-	isOnline?: boolean;
-	gameId?: string;
-	opponent?: string;
-}
+import { GameConfig } from '../menu/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';

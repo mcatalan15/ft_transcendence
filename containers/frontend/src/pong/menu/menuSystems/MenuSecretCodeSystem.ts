@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 19:22:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 16:14:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,23 @@ export class SecretCodeSystem implements System {
             sequence: ["KeyQ", "KeyU", "KeyI", "KeyC", "KeyK", "KeyS", "KeyT", "KeyA", "KeyR", "KeyT"],
             timeout: 2000,
             effect: () => {
+                this.menu.eventQueue.push({
+                    type: 'READY_CLICK',
+                    target: this.menu.playButton,
+                    buttonName: 'READY'
+                });
+            },
+        });
+        this.registerCode({
+            name: "classicstart",
+            sequence: ["KeyC", "KeyL", "KeyA", "KeyS", "KeyS", "KeyI", "KeyC", "KeyS", "KeyT", "KeyA", "KeyR", "KeyT"],
+            timeout: 2000,
+            effect: () => {
+                this.menu.eventQueue.push({
+                    type: 'CLASSIC_CLICK',
+                    target: this.menu.playButton,
+                    buttonName: 'CLASSIC'
+                });
                 this.menu.eventQueue.push({
                     type: 'READY_CLICK',
                     target: this.menu.playButton,

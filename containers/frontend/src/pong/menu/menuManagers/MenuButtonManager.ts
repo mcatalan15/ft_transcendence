@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:03:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 10:52:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -453,25 +453,25 @@ export class ButtonManager {
 				config,
 			);
 	
-			let x = menu.width / 2 - 55;
+			let x = menu.width / 2;
 			let y = 660;
 	
 			switch (index) {
 				case (0): {
 					menu.glossaryQuitButton = quitButton;
-					x = menu.width / 2 - 55;
+					x = menu.width / 2;
 					y = 660;
 					break;
 				}
 				case (1): {
 					menu.aboutQuitButton = quitButton;
-					x = menu.width / 2 - 55;
+					x = menu.width / 2 - 45;
 					y = 660;
 					break;
 				}
 				case (2): {
 					menu.playQuitButton = quitButton;
-					x = menu.width / 2 - 55;
+					x = menu.width / 2 - 45;
 					y = 660;
 					break;
 				}

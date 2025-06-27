@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhysicsSystem.ts                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 12:22:18 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/27 15:59:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ export class PhysicsSystem implements System {
 	UI!: UI;
 	width: number;
 	height: number;
+	maxBallXVelocity: number = 100;
 	mustResetBall: boolean = false;
 	ballResetTime: number = 0;
 	private ballCollisionHistory: Map<string, Array<{ time: number, normal: { x: number, y: number } }>> = new Map();
@@ -81,7 +82,7 @@ export class PhysicsSystem implements System {
 		if (isPaddle(entity)) {
 		  this.updatePaddle(entity, entitiesMap);
 		} else if (isBall(entity)) {
-		  this.updateBall(entity, entities, entitiesMap);
+		  this.updateBall(entity, entities, entitiesMap, delta);
 		} else if (isBullet(entity)) {
 		  this.updateBullet(entity, entitiesMap);
 		}
@@ -141,35 +142,62 @@ export class PhysicsSystem implements System {
 		}
 	}
 
-	updateBall(ball: Ball, entities: Entity[], entitiesMap: Map<string, Entity>) {
+	updateBall(ball: Ball, entities: Entity[], entitiesMap: Map<string, Entity>, delta: FrameData) {
 		const physics = ball.getComponent('physics') as PhysicsComponent;
 		const vfx = ball.getComponent('vfx') as VFXComponent;
-
+	
 		if (!physics || !vfx) return;
-
+	
 		ball.applyMagneticForce(this.game, physics, entitiesMap);
 		if (physics.velocityX > 0) {
 			ball.magneticInfluence = 'right';
 		} else {
 			ball.magneticInfluence = 'left';
 		}
-
-		if (!isBurstBall(ball)) {
-			if (physics.velocityX > 10) physics.velocityX = 10;
-			if (physics.velocityY > 10) physics.velocityY = 10;
-		} else {
-			if (physics.velocityX > 17) physics.velocityX = 17;
-			if (physics.velocityY > 17) physics.velocityY = 17;
+	
+		if (!isBurstBall(ball) && !this.game.config.classicMode) {
+			if (Math.abs(physics.velocityX) > 10) {
+				physics.velocityX = physics.velocityX > 0 ? 10 : -10;
+			}
+			if (Math.abs(physics.velocityY) > 10) {
+				physics.velocityY = physics.velocityY > 0 ? 10 : -10;
+			}
+		} else if (this.game.config.classicMode) {
+			if (Math.abs(physics.velocityX) > 20) {
+				physics.velocityX = physics.velocityX > 0 ? 20 : -20;
+			}
+		} else if (isBurstBall(ball)) {
+			if (Math.abs(physics.velocityX) > 17) {
+				physics.velocityX = physics.velocityX > 0 ? 17 : -17;
+			}
+			if (Math.abs(physics.velocityY) > 17) {
+				physics.velocityY = physics.velocityY > 0 ? 17 : -17;
+			}
 		}
+	
+		console.log(`Ball ${ball.id} - Velocity: (${physics.velocityX.toFixed(2)}, ${physics.velocityY.toFixed(2)})`);
+	
+		if (this.game.config.classicMode && Math.abs(physics.velocityX) < this.maxBallXVelocity) {
+			this.rampBallSpeed(physics, delta);
+		}
+	
 		ball.moveBall(physics);
-
+	
 		this.handleBallWallCollisions(physics, entitiesMap, ball);
 		this.handleBallCutCollisions(physics, entitiesMap, ball);
 		this.handleBallShieldCollisions(physics, entitiesMap, ball);
 		this.handleBallPaddleCollisions(physics, entitiesMap, ball);
 		this.handlePowerupCollisions(entities, entitiesMap, ball);
-
+	
 		this.checkBallOutOfBounds(physics, ball);
+	}
+
+	rampBallSpeed(physics: PhysicsComponent, delta: FrameData) {
+		if (physics.velocityX > 0) {
+			physics.velocityX += 0.01 * delta.deltaTime;
+		} else if (physics.velocityX < 0) {
+			physics.velocityX -= 0.01 * delta.deltaTime;
+		}
 	}
 
 	handleBallWallCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {

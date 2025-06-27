@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 18:19:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 12:25:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,17 @@ import { Overlay } from "./Overlay";
 import { PlayTexts } from "./PlayTexts";
 import { OverlayHeader } from "./OverlayHeader";
 import { HeaderBar } from "./HeaderBar";
-import { TournamentNextMatchDisplay } from "./TournamentNextMatchDisplay";
+import { Duel } from "./Duel";
+import { PlayChatDisplay } from "./PlayChatDisplay";
 
 import { GAME_COLORS } from "../../utils/Types"
 
 export class PlayOverlay extends Overlay {
     private playTexts!: PlayTexts;
     header!: OverlayHeader;
+    duel!: Duel;
     playerHeader!: HeaderBar;
-    nextMatchDisplay!: TournamentNextMatchDisplay;
+    nextMatchDisplay!: PlayChatDisplay;
 
     constructor(menu: Menu) {
         super('playOverlay', menu, 'play', 0x151515, GAME_COLORS.menuBlue);
@@ -41,10 +43,15 @@ export class PlayOverlay extends Overlay {
         this.header = new OverlayHeader(this.menu, 'tournamentHeader', 'overlays', 'play');
         this.addContent(this.header, 'overlays');
 
-        this.nextMatchDisplay = new TournamentNextMatchDisplay(this.menu, 'nextMatchDisplay', 'overlays');
+        this.duel = new Duel(this.menu, 'duel', 'overlays');
+        this.addContent(this.duel, 'overlays');
+        
+        this.nextMatchDisplay = new PlayChatDisplay(this.menu, 'nextMatchDisplay', 'overlays');
         this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
+
+        MenuImageManager.createPlayAvatars(this.menu);
     }
 
     public redrawTitles(): void {
@@ -68,8 +75,17 @@ export class PlayOverlay extends Overlay {
     public show(): void {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
-
         super.show();
+
+        MenuImageManager.preparePlayAvatarImages(this.menu);
+
+        this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
+        this.menu.renderLayers.overlays.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
+        
+        this.menu.readyButton.setHidden(false);
+        this.menu.tournamentTauntButton.setHidden(false);
+        this.menu.tournamentFiltersButton.setHidden(false);  
     }
 
     public hide(): void {
@@ -77,12 +93,14 @@ export class PlayOverlay extends Overlay {
     }
 
     protected onHideComplete(): void {
-        if (this.menu.config.classicMode) {
-            MenuImageManager.hideClassicLogosFromAbout(this.menu);
-            MenuImageManager.hideClassicAvatarImagesFromAbout(this.menu);
-        } else {
-            MenuImageManager.hidePinkLogosFromAbout(this.menu);
-            MenuImageManager.hideAvatarImagesFromAbout(this.menu);
-        }
+        this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
+        this.menu.menuHidden.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
+        
+        this.menu.readyButton.setHidden(true);
+        this.menu.tournamentTauntButton.setHidden(true);
+        this.menu.tournamentFiltersButton.setHidden(true);
+
+        MenuImageManager.hidePlayAvatarImages(this.menu);
     }
 }
