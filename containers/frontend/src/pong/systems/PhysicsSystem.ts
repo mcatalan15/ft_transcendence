@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 16:20:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 16:58:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,8 +174,6 @@ export class PhysicsSystem implements System {
 				physics.velocityY = physics.velocityY > 0 ? 17 : -17;
 			}
 		}
-	
-		console.log(`Ball ${ball.id} - Velocity: (${physics.velocityX.toFixed(2)}, ${physics.velocityY.toFixed(2)})`);
 	
 		if (this.game.config.classicMode && Math.abs(physics.velocityX) < this.maxBallXVelocity) {
 			this.rampBallSpeed(physics, delta);

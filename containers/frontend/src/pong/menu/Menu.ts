@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:21:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:13:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,6 +289,8 @@ export class Menu{
 		await this.createPowerups();
 		await this.initSystems();
 		await this.initDust();
+
+		this.playSound('menuBGM');
 
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {

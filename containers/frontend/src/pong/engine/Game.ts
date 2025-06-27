@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 16:04:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:07:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ import { PowerupSystem } from '../systems/PowerupSystem';
 import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 import { CrossCutSystem } from '../systems/CrossCutSystem';
+import { EndingSystem } from '../systems/EndingSystem';
 
 // Import spawners
 import { BallSpawner } from '../spawners/BallSpawner'
@@ -116,6 +117,8 @@ export class PongGame {
 		this.paddleWidth = 10;
 		this.paddleHeight = 80;
 
+		//! MOVIDAS DE CONFIG
+		//TODO FIIIIXXXXX
 		this.isOnline = config.isOnline || false;
 		this.gameId = config.gameId;
 
@@ -188,6 +191,7 @@ export class PongGame {
 		const powerupSystem = new PowerupSystem(this, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
 		const crossCutSystem = new CrossCutSystem(this);
+		const endingSystem = new EndingSystem(this);
 
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
@@ -200,6 +204,7 @@ export class PongGame {
 		this.systems.push(uiSystem);
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
+		this.systems.push(endingSystem);
 	}
 
 	initSounds(): void {
@@ -281,14 +286,14 @@ export class PongGame {
 				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({
-				src: ['/assets/sfx/recoverUpFiltered01.mp3'],
+				src: ['/assets/sfx/used/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetUp loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({
-				src: ['/assets/sfx/recoverDownFiltered01.mp3'],
+				src: ['/assets/sfx/used/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
