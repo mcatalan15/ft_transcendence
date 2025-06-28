@@ -9,7 +9,7 @@ export class HeaderTest {
 <nav class="bg-neutral-900 fixed w-full z-20 top-0 start-0 border-b border-amber-50">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <a href="/home" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="/static/logo/pong.png" class="h-8" alt="Pong Logo">
+      <img src="/logo/pong.png" class="h-8" alt="Pong Logo">
   </a>
   <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <button type="button" class="text-amber-50 bg-neutral-800 hover:bg-neutral-700 font-medium rounded-lg text-sm px-4 py-2 text-center ">Log out</button>
