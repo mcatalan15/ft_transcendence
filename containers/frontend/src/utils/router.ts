@@ -39,10 +39,10 @@ function renderRoute(path: string) {
 			break;
 
 		case '/pong':
-			/* if (!isUserAuthenticated()) {
+			if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
-			} */
+			}
 			views.showPong(app);
 			break;
 
@@ -54,7 +54,7 @@ function renderRoute(path: string) {
 			views.showHome(app);
 			break;
 
-		case '/matches':
+		case '/history':
 			if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
