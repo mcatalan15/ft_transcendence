@@ -6,17 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 12:39:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 10:55:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { PongGame } from '../engine/Game';
 
 import { WallFiguresSpawner } from '../spawners/WallFiguresSpawner';
 
 export class WallFigureManager {
+    private game: PongGame;
     private isSpawningFigures: boolean = false;
     private mustSpawn: boolean = false;
     
-    constructor() {
+    constructor(game: PongGame) {
+        this.game = game;
     }
     
     update(worldSystem: any): void {
@@ -27,31 +31,31 @@ export class WallFigureManager {
 
             switch(idx) {
                 case (1):
-                    console.log('Spawning pyramids obstacle');    
-                    WallFiguresSpawner.buildPyramids(worldSystem, depth);
+                    this.game.data.walls.pyramids++;    
+                WallFiguresSpawner.buildPyramids(worldSystem, depth);
                     break;
                 case (2):
-                    console.log('Spawning parapets obstacle');    
+                    this.game.data.walls.trenches++;
                     WallFiguresSpawner.buildTrenches(worldSystem, depth);
                     break;
 				case (3):
-					console.log('Spawning sawedge obstacle');
+					this.game.data.walls.lightnings++;
                     WallFiguresSpawner.buildLightning(worldSystem, depth);
 					break;
                 case (4):
-                    console.log('Spawning escalator obstacle');
+                    this.game.data.walls.escalators++;
                     WallFiguresSpawner.buildSteps(worldSystem, depth);
                     break;
                 case (5):
-                    console.log('Spawning accelerator obstacle');
+                    this.game.data.walls.hourglasses++;
                     WallFiguresSpawner.buildAccelerator(worldSystem, depth);
                     break;
                 case (6):
-                    console.log('Spawning maw obstacle');
+                    this.game.data.walls.maws++;
                     WallFiguresSpawner.buildMaw(worldSystem, depth);
                     break;
                 default:
-                    console.log('Spawning rakes obstacle');
+                    this.game.data.walls.rakes++;
                     WallFiguresSpawner.buildRakes(worldSystem, depth);
             }
         }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 17:07:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:14:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig } from '../menu/GameConfig';
+import { GameConfig, GameData } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -58,6 +58,7 @@ import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '..
 
 export class PongGame {
 	config: GameConfig;
+	data!: GameData;;
 	language: string;
 	app: Application;
 	width: number;
@@ -121,6 +122,8 @@ export class PongGame {
 		//TODO FIIIIXXXXX
 		this.isOnline = config.isOnline || false;
 		this.gameId = config.gameId;
+
+		this.prepareGameData();
 
 		this.renderLayers = {
 			bounding: new Container(),
@@ -205,6 +208,75 @@ export class PongGame {
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
 		this.systems.push(endingSystem);
+	}
+
+	prepareGameData() {
+		this.data = {
+			gameId: this.gameId || '',
+			config: this.config,
+			createdAt: new Date().toString(),
+			endedaAt: null,
+			generalResult: null,
+			winner: null,
+			finalScore: {
+				leftPlayer: 0,
+				rightPlayer: 0
+			},
+
+			balls: {
+				defaultBalls: 1,
+				curveBalls: 0,
+				multiplyBalls: 0,
+				spinBalls: 0,
+				burstBalls: 0,
+			},
+
+			specialItmes: {
+				bullets: 0,
+				shields: 0
+			},
+
+			walls: {
+				pyramids: 0,
+				escalators: 0,
+				hourglasses: 0,
+				lightnings: 0,
+				maws: 0,
+				rakes: 0,
+				trenches: 0,
+				kites: 0,
+				bowties: 0,
+				honeycombs: 0,
+				snakes: 0,
+				vipers: 0,
+				waystones: 0
+			},
+			
+			leftPlayer: {
+				name: this.leftPlayer.name || 'Player 1',
+				score: 0,
+				result: null,
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPicked: 0,
+				powerdownsPicked: 0,
+				ballchangesPicked: 0
+			},
+			rightPlayer: {
+				name: this.rightPlayer.name || 'Player 2',
+				score: 0,
+				result: null,
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPicked: 0,
+				powerdownsPicked: 0,
+				ballchangesPicked: 0
+			}
+		};
+
+		console.log(this.data.createdAt);
 	}
 
 	initSounds(): void {

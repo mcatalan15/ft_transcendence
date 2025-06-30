@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BallSpawner.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/11 15:17:03 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/06/30 10:46:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ export class BallSpawner {
 
 		game.renderLayers.foreground.addChild(ballRender.graphic);
 		game.entities.push(ball);
+        game.data.balls.defaultBalls++;
 		console.log("DefaultBall spawned")
     }
 
@@ -69,6 +70,7 @@ export class BallSpawner {
         game.renderLayers.foreground.addChild(ballRender.graphic);
         game.entities.push(ball);
     
+        game.data.balls.curveBalls++;
         console.log("CurveBall spawned at", physics.x, physics.y);
         return ball;
     }
@@ -117,6 +119,7 @@ export class BallSpawner {
             console.log(`${isGoodBall ? "REAL" : "FAKE"} MultiplyBall spawned at (${clonePhysics.x}, ${clonePhysics.y})`);
         }
     
+        game.data.balls.multiplyBalls++;
         return clones;
     }
 
@@ -144,6 +147,7 @@ export class BallSpawner {
         game.renderLayers.foreground.addChild(ballRender.graphic);
         game.entities.push(ball);
     
+        game.data.balls.burstBalls++;
         console.log("BurstBall spawned at", physics.x, physics.y);
         return ball;
     }
@@ -172,6 +176,7 @@ export class BallSpawner {
         game.renderLayers.foreground.addChild(ballRender.graphic);
         game.entities.push(ball);
     
+        game.data.balls.spinBalls++;
         console.log("CurveBall spawned at", physics.x, physics.y);
         return ball;
     }
