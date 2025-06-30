@@ -229,10 +229,11 @@ async function updateNicknameHandler(request, reply) {
 			});
 		}
 
-		if (!newNickname || newNickname.length < 3 || newNickname.length > 20) {
+		if (!newNickname || newNickname.length < 3 || newNickname.length > 8 || 
+			!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(newNickname)) {
 			return reply.status(400).send({
 				success: false,
-				message: 'Nickname must be between 3 and 20 characters'
+				message: 'Nickname must be between 3 and 8 characters and can only contain letters, numbers, and a single hyphen.'
 			});
 		}
 
