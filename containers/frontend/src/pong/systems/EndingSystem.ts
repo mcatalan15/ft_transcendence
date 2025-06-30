@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 12:20:43 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/06/27 16:28:116 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/06/110 12:40:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,21 @@ export class EndingSystem implements System {
 	}
 
 	update(entities: Entity[]) {
-		if (this.UI.leftScore == 11 && this.UI.rightScore < 10) {
+		if (this.UI.leftScore >= 11 && this.UI.rightScore < 10) {
 			this.game.data.leftPlayer.result = 'win';
 			this.game.data.rightPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.rightScore == 11 && this.UI.leftScore < 10) {
+		} else if (this.UI.rightScore >= 11 && this.UI.leftScore < 10) {
 			this.game.data.rightPlayer.result = 'win';
 			this.game.data.leftPlayer.result = 'lose';
 			this.ended = true;
 		}
 
-		if (this.UI.leftScore > 11 && this.UI.rightScore < this.UI.leftScore - 2) {
+		if (this.UI.leftScore > 11 && this.UI.rightScore <= this.UI.leftScore - 2) {
 			this.game.data.leftPlayer.result = 'win';
 			this.game.data.rightPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.rightScore > 11 && this.UI.leftScore < this.UI.rightScore - 2) {
+		} else if (this.UI.rightScore > 11 && this.UI.leftScore <= this.UI.rightScore - 2) {
 			this.game.data.rightPlayer.result = 'win';
 			this.game.data.leftPlayer.result = 'lose';
 			this.ended = true;
@@ -74,7 +74,7 @@ export class EndingSystem implements System {
 
 			this.game.data.endedaAt = new Date().toISOString();
 
-			//TODO send data to server?
+			console.log(this.game.data);
 		}
 	}
 }
