@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:09:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:12:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,34 @@ export class HeaderBar extends Entity {
 					case ('next match'): {
 						return ('próximo partido');
 					}
+
+					case ('POWER-UPS'): {
+						return ('POWER-UPS');
+					}
+
+					case ('POWER-DOWNS'): {
+						return ('POWER-DOWNS');
+					}
+
+					case ('BALL-CHANGES'): {
+						return ('CAMBIOS DE PELOTA');
+					}
+
+					case ('AFFECTATIONS'): {
+						return ('AFECTACIONES DE PALAS');
+					}
+
+					case ('WALL FIGURES'): {
+						return ('FIGURAS DE MURO');
+					}
+
+					case ('TEAM'):{
+						return ('EQUIPO');
+					}
+
+					case ('PROJECT'): {
+						return ('PROYECTO');
+					}
 				}
 				break;
 			}
@@ -100,6 +128,34 @@ export class HeaderBar extends Entity {
 					case ('next match'): {
 						return ('prochain match');
 					}
+
+					case ('POWER-UPS'): {
+						return ('POWER-UPS');
+					}
+
+					case ('POWER-DOWNS'): {
+						return ('POWER-DOWNS');
+					}
+
+					case ('BALL-CHANGES'): {
+						return ('CHANGEMENTS DE BALLE');
+					}
+
+					case ('AFFECTATIONS'): {
+						return ('AFFECTATIONS DES RAQUETTES');
+					}
+
+					case ('WALL FIGURES'): {
+						return ('FIGURES DE MUR');
+					}
+
+					case ('TEAM'):{
+						return ('ÉQUIPE');
+					}
+
+					case ('PROJECT'): {
+						return ('PROJET');
+					}
 				}
 				break;
 			}
@@ -112,6 +168,34 @@ export class HeaderBar extends Entity {
 					
 					case ('next match'): {
 						return ('pròxim partit');
+					}
+
+					case ('POWER-UPS'): {
+						return ('POWER-UPS');
+					}
+
+					case ('POWER-DOWNS'): {
+						return ('POWER-DOWNS');
+					}
+
+					case ('BALL-CHANGES'): {
+						return ('CANVIS DE PILOTA');
+					}
+
+					case ('AFFECTATIONS'): {
+						return ('AFECTACIONS DE PALES');
+					}
+
+					case ('WALL FIGURES'): {
+						return ('FIGURES DE PARET');
+					}
+
+					case ('TEAM'):{
+						return ('EQUIP');
+					}
+
+					case ('PROJECT'): {
+						return ('PROJECTE');
 					}
 				}
 				break;

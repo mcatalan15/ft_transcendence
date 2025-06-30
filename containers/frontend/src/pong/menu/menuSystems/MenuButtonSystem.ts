@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:44:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 12:54:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ export class ButtonSystem implements System {
     handlePlayClick(){
         this.menu.playQuitButton.resetButton();
         this.menu.playOverlay.header.redrawOverlayElements();
+        this.menu.playOverlay.duel.redrawDuel();
         this.menu.tournamentOverlay.header.redrawOverlayElements();
         this.menu.tournamentOverlay.bracket.redrawBracket();
         
@@ -511,6 +512,7 @@ export class ButtonSystem implements System {
         this.menu.aboutOverlay.projectBar.redrawBar();
 
         this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+        this.menu.playOverlay.nextMatchDisplay.redrawDisplay();
     }
 
     getUpdatedHalfButtonText(text: string, mode: string): string {

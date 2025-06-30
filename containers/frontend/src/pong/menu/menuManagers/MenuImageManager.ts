@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:46:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 14:59:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ export class MenuImageManager {
     private static avatarImages: Sprite[] = [];
     private static classicAvatarImages: Sprite[] = [];
     private static tournamentAvatars: Sprite[] = [];
+    private static playAvatars: Sprite[] = [];
     private static pinkLogoImages: Sprite[] = [];
     private static classicLogoImages: Sprite[] = [];
     private static isAnimating: boolean = false;
@@ -156,6 +157,22 @@ export class MenuImageManager {
         });
     }
 
+    static createPlayAvatars(menu: Menu): void {
+        this.playAvatars = [];
+    
+        const squareAvatarData = [
+            { name: 'avatarNicoSquare', x: 335, y: 365 },
+            { name: 'avatarEvaSquare', x: 785, y: 365 },
+        ]
+    
+        squareAvatarData.forEach(data => {
+            const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.35);
+            if (squareAvatar) {
+                this.playAvatars.push(squareAvatar);
+            }
+        });
+    }
+
     static createPinkLogos(menu: Menu) {
         this.pinkLogoImages = [];
     
@@ -254,6 +271,18 @@ export class MenuImageManager {
         });
     }
 
+    static preparePlayAvatarImages(menu: Menu): void {
+        this.playAvatars.forEach(squareAvatar => {
+            if (squareAvatar) {
+                squareAvatar.alpha = 0;
+                if (squareAvatar.parent) {
+                    squareAvatar.parent.removeChild(squareAvatar);
+                }
+                menu.renderLayers.overlays.addChild(squareAvatar);
+            }
+        });
+    }
+
     static prepareAvatarImagesForAbout(menu: Menu): void {
         this.avatarImages.forEach(avatarImage => {
             if (avatarImage) {
@@ -340,6 +369,18 @@ export class MenuImageManager {
 
     static hideTournamentAvatarImages(menu: Menu): void {
         this.tournamentAvatars.forEach(squareAvatar => {
+            if (squareAvatar) {
+                if (squareAvatar.parent) {
+                    squareAvatar.parent.removeChild(squareAvatar);
+                }
+                menu.menuHidden.addChild(squareAvatar);
+                squareAvatar.alpha = 0;
+            }
+        });
+    }
+
+    static hidePlayAvatarImages(menu: Menu): void {
+        this.playAvatars.forEach(squareAvatar => {
             if (squareAvatar) {
                 if (squareAvatar.parent) {
                     squareAvatar.parent.removeChild(squareAvatar);
@@ -531,8 +572,12 @@ export class MenuImageManager {
         return this.avatarImages;
     }
 
-    static getAllSquareAvatarImages(): Sprite[] {
+    static getAllTournamentAvatarImages(): Sprite[] {
         return this.tournamentAvatars;
+    }
+
+    static getAllPlayAvatarImages(): Sprite[] {
+        return this.playAvatars;
     }
 
     static getAllClassicAvatarImages(): Sprite[] {

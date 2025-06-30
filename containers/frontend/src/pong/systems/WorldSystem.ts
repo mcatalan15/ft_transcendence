@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 11:11:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:02:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ export class WorldSystem implements System {
 
     private updateUIWorldText(): void {
         this.game.entities.forEach(entity => {
-            if (isUI(entity)) {
+            if (isUI(entity) && !this.game.config.classicMode) {
                 entity.setWorldText(this.game.currentWorld.name);
             }
         });
