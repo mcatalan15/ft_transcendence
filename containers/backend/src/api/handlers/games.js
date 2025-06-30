@@ -1,7 +1,8 @@
 const { saveGameToDatabase,
 	getLatestGame,
 	getAllGames,
-	saveSmartContractToDatabase
+	saveSmartContractToDatabase,
+	getGamesHistory
  } = require('../db/database');
 
 async function saveGameHandler(request, reply) {
@@ -181,73 +182,60 @@ async function deployContractHandler(request, reply) {
     }
 };
 
-const getGamesHistoryHandler = async (request, reply) => {
-  try {
-    const userId = request.user.id;
-    
-    if (!userId) {
-      return reply.code(401).send({
-        success: false,
-        error: 'Authentication required'
-      });
-    }
+async function getGamesHistoryHandler(request, reply) {
+	try {
+		console.log('Entering getGamesHistoryHandler');
+		console.log('Request user:', request.user);
+		const userId = request.user?.id;
+		console.log('User ID:', userId);
+		if (!userId) {
+			console.log('No userId, returning 401');
+			return reply.code(401).send({
+				success: false,
+				error: 'Authentication required',
+			});
+		}
 
-    const { page = 0, limit = 10 } = request.query;
-    const offset = page * limit;
+		console.log('Parsing query parameters...');
+		const { page = 0, limit = 10 } = request.query;
+		console.log('Query params:', { page, limit });
 
-    // If you have promisified your database connection
-    const db = request.server.db;
-    
-    const [totalResult, gamesResult] = await Promise.all([
-      db.get(`SELECT COUNT(*) as total FROM games WHERE player1_id = ? OR player2_id = ?`, [userId, userId]),
-      db.all(`
-        SELECT 
-          id_game,
-          datetime(created_at, 'localtime') as created_at,
-          is_tournament,
-          player1_id,
-          player2_id,
-          winner_id,
-          player1_name,
-          player2_name,
-          player1_score,
-          player2_score,
-          winner_name,
-          player1_is_ai,
-          player2_is_ai,
-          COALESCE(game_mode, 'Classic') as game_mode,
-          smart_contract_link,
-          contract_address
-        FROM games 
-        WHERE player1_id = ? OR player2_id = ?
-        ORDER BY created_at DESC
-        LIMIT ? OFFSET ?
-      `, [userId, userId, limit, offset])
-    ]);
+		console.log('Fetching game history from database...');
+		const result = await getGamesHistory(userId, page, limit);
+		console.log('Game history result:', {
+			total: result.total,
+			gamesCount: result.games.length,
+		});
 
-    const total = totalResult?.total || 0;
-    const games = gamesResult || [];
-
-    reply.send({
-      success: true,
-      games,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      hasNext: (page + 1) * limit < total,
-      hasPrev: page > 0
-    });
-
-  } catch (error) {
-    request.log.error('Error fetching game history:', error);
-    reply.code(500).send({
-      success: false,
-      error: 'Internal server error',
-      message: 'Failed to fetch game history'
-    });
-  }
-};
+		reply.send({
+			success: true,
+			games: result.games,
+			total: result.total,
+			page: result.page,
+			limit: result.limit,
+			totalPages: result.totalPages,
+			hasNext: result.hasNext,
+			hasPrev: result.hasPrev,
+		});
+		console.log('[DB GAMES HISTORY RESPONSE]', result);
+	} catch (error) {
+		console.error('Error in getGamesHistoryHandler:', {
+			message: error.message,
+			stack: error.stack,
+			name: error.name,
+		});
+		request.log.error('Error fetching game history:', {
+			message: error.message,
+			stack: error.stack,
+			name: error.name,
+		});
+		reply.code(500).send({
+			success: false,
+			error: 'Internal server error',
+			message: error.message || 'Failed to fetch game history',
+		});
+	}
+}
 
 module.exports = {
 	saveGameHandler,

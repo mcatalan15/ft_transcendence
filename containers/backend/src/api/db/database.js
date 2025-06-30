@@ -246,6 +246,7 @@ async function saveGameToDatabase(
         });
     });
 }
+
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
@@ -447,6 +448,77 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
     });
 }
 
+async function getGamesHistory(userId, page = 0, limit = 10) {
+	return new Promise((resolve, reject) => {
+		const offset = page * limit;
+
+		// Run both queries in parallel
+		Promise.all([
+			new Promise((res, rej) => {
+				db.get(
+					`SELECT COUNT(*) as total FROM games WHERE player1_id = ? OR player2_id = ?`,
+					[userId, userId],
+					(err, row) => {
+						if (err) {
+							console.error('[DB COUNT ERROR]', err);
+							rej(err);
+						} else {
+							res(row);
+						}
+					}
+				);
+			}),
+			new Promise((res, rej) => {
+				db.all(
+					`SELECT 
+			   id_game,
+			   created_at, -- Temporarily remove datetime for testing
+			   is_tournament,
+			   player1_id,
+			   player2_id,
+			   winner_id,
+			   player1_name,
+			   player2_name,
+			   player1_score,
+			   player2_score,
+			   winner_name,
+			   player1_is_ai,
+			   player2_is_ai,
+			   COALESCE(game_mode, 'Classic') as game_mode,
+			   smart_contract_link,
+			   contract_address
+			 FROM games 
+			 WHERE player1_id = ? OR player2_id = ?
+			 ORDER BY created_at DESC
+			 LIMIT ? OFFSET ?`,
+					[userId, userId, limit, offset],
+					(err, rows) => {
+						if (err) {
+							console.error('[DB GAMES ERROR]', err);
+							rej(err);
+						} else {
+							res(rows || []);
+						}
+					}
+				);
+			}),
+		])
+			.then(([totalResult, gamesResult]) => {
+				const total = totalResult?.total || 0;
+				resolve({
+					games: gamesResult,
+					total,
+					page,
+					limit,
+					totalPages: Math.ceil(total / limit),
+					hasNext: (page + 1) * limit < total,
+					hasPrev: page > 0,
+				});
+			})
+			.catch(reject);
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -467,5 +539,6 @@ module.exports = {
     removeFriend,
     getFriendsList,
     checkFriendship,
-	saveSmartContractToDatabase
+	saveSmartContractToDatabase,
+	getGamesHistory
 };
