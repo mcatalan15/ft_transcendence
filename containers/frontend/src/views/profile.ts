@@ -355,14 +355,11 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 			if (!isOwnProfile) {
 				updateOnlineStatus(data.userId);
 
-				// Optional: Set up periodic status updates
 				const statusInterval = setInterval(() => {
 					updateOnlineStatus(data.userId);
 				}, 30000); // Update every 30 seconds
-				// Clean up interval when navigating away (you might want to add this to a cleanup function)
 				(window as any).profileStatusInterval = statusInterval;
 			} else {
-				// Hide status indicator for own profile
 				const statusIndicator = document.getElementById('online-status-indicator');
 				if (statusIndicator) {
 					statusIndicator.style.display = 'none';
