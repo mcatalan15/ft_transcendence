@@ -116,7 +116,15 @@ function renderRoute(path: string) {
 				return;
 			}
 			views.showSettings(app);
-			return;;
+			return;
+		
+		case '/stats':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			views.showStats(app);
+			return;
 
 		default:
 
