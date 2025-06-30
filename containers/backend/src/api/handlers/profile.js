@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship } = require('../db/database');
+const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship, updateNickname } = require('../db/database');
 const onlineTracker = require('../../utils/onlineTracker');
 
 async function getUserProfile(request, reply) {
@@ -207,9 +207,65 @@ async function getUserOnlineStatus(request, reply) {
     }
 }
 
+async function updateNicknameHandler(request, reply) {
+	try {
+		const sessionUser = request.session.get('user');
+		const newNickname = request.body.nickname;
+
+		console.log('Session user:', sessionUser);
+
+		if (!sessionUser) {
+			return reply.status(401).send({
+				success: false,
+				message: 'User not authenticated'
+			});
+		}
+
+		if (!newNickname || newNickname.length < 3 || newNickname.length > 20) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Nickname must be between 3 and 20 characters'
+			});
+		}
+
+		// Check if the nickname already exists
+		const existingUser = await getUserByUsername(newNickname);
+		if (existingUser && existingUser.id_user !== sessionUser.userId) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Nickname already exists'
+			});
+		}
+		
+		const updatedUser = await updateNickname(sessionUser.userId, newNickname);
+		
+		if (!updatedUser) {
+			return reply.status(500).send({
+				success: false,
+				message: 'Failed to update nickname'
+			});
+		}
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Nickname updated successfully',
+			newNickname: updatedUser.nickname
+		});
+
+	} catch (error) {
+		console.error('Error updating nickname:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to update nickname',
+			error: error.message
+		});
+	}
+}
+
 module.exports = {
 	getUserProfile,
 	avatarUploadHandler,
 	fetchUserAvatar,
-	getUserOnlineStatus
+	getUserOnlineStatus,
+	updateNicknameHandler
 }

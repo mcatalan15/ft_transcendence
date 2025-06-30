@@ -4,6 +4,7 @@ import { HeaderTest } from '../components/testmenu'
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
+import { changeNickname } from '../utils/profile/profileUtils';
 
 function createButton(color: string, text: string, action: () => void) {
   let btn = document.createElement('button');
@@ -231,9 +232,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
       showErrorMessage('Nickname can only contain letters, numbers and a single hyphen');
       return;
     }
-
-    // TODO: Implement nickname change API call
-    showErrorMessage('Nickname change not yet implemented');
+    changeNickname(newNickname);
   });
 
   nicknameForm.appendChild(nicknameTitle);

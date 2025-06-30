@@ -447,6 +447,48 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
     });
 }
 
+async function  updateNickname(userId, newNickname) {
+	return new Promise((resolve, reject) => {
+		const checkQuery = `UPDATE users SET username = ? WHERE id_user = ? AND id_user != ?`;
+		db.run(checkQuery, [newNickname, userId], function (err, row) {
+			if (err) {
+				console.error('[DB UPDATE ERROR] Failed to update nickname:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno,
+					stack: err.stack
+				});
+				reject(err);
+				return;
+			}
+			if (row) {
+				console.warn(`[DB WARN] Nickname '${newNickname}' already exists for user ${row.id_user}`);
+                reject(new Error('Nickname already taken'));
+                return;
+			}
+
+			const updateQuery = `UPDATE users SET username = ? WHERE id_user = ?`;
+            db.run(updateQuery, [newNickname, userId], function (err) {
+                if (err) {
+                    console.error('[DB UPDATE ERROR] Failed to update nickname:', {
+                        message: err.message,
+                        code: err.code,
+                        errno: err.errno,
+                        stack: err.stack
+                    });
+                    reject(err);
+				} else if (this.changes === 0) {
+					console.warn(`[DB WARN] No user found with ID ${userId} to update nickname.`);
+					reject(new Error('User not found'));
+				} else {
+					console.log(`[DB] Successfully updated nickname for user ${userId}`);
+					resolve(true);
+				}
+			});
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -467,5 +509,6 @@ module.exports = {
     removeFriend,
     getFriendsList,
     checkFriendship,
-	saveSmartContractToDatabase
+	saveSmartContractToDatabase,
+	updateNickname,
 };

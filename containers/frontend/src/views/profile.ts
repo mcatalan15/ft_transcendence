@@ -1,4 +1,4 @@
-import { addFriend, removeFriend } from '../utils/profile/friends';
+import { addFriend, removeFriend } from '../utils/profile/profileUtils';
 
 import i18n from '../i18n';
 //import { Header } from '../components/header';
