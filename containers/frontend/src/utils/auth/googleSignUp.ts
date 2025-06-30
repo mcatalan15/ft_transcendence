@@ -44,7 +44,7 @@ export function setupGoogleSignUp(): void {
 					setTimeout(() => {
 						// !Change for production
 						// window.location.href = '/auth';
-						window.location.href = '/home';
+						window.location.href = '/profile';
 					}, 100);
 				} else {
 					alert('Google authentication failed: ' + (data.message || 'Unknown error'));
