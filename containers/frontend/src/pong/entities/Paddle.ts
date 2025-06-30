@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:30:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 15:36:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:44:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ import { Menu } from '../menu/Menu';
 export class Paddle extends Entity {
     game: PongGame | Menu;  
     name: string;
+    isAI: boolean = false;
     isEnlarged: boolean = false;
     wasEnlarged: boolean = false;
     affectedTimer: number = 0;

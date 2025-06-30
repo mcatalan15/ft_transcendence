@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 12:14:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:40:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { EndingSystem } from '../systems/EndingSystem';
+import { AISystem } from '../systems/AISystem';
 
 // Import spawners
 import { BallSpawner } from '../spawners/BallSpawner'
@@ -120,7 +121,7 @@ export class PongGame {
 
 		//! MOVIDAS DE CONFIG
 		//TODO FIIIIXXXXX
-		this.isOnline = config.isOnline || false;
+		this.isOnline = config.mode === 'online' ? true : false;
 		this.gameId = config.gameId;
 
 		this.prepareGameData();
@@ -199,7 +200,6 @@ export class PongGame {
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
-		this.systems.push(physicsSystem);
 		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		if (!this.config.classicMode) this.systems.push(vfxSystem);
@@ -208,6 +208,23 @@ export class PongGame {
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
 		this.systems.push(endingSystem);
+
+		if (this.config.variant == '1vAI') {
+			const rightPaddle = this.entities.find(e => e.id === 'paddleR') as Paddle;
+			if (rightPaddle) {
+				rightPaddle.isAI = true;
+				console.log('Manually set right paddle as AI');
+			}
+
+			setTimeout(() => {
+				const aiSystem = new AISystem(this);
+				aiSystem.setDifficulty('medium');
+				this.systems.push(aiSystem);
+				console.log('AI System added to systems');
+			}, 100);
+		}
+
+		this.systems.push(physicsSystem);
 	}
 
 	prepareGameData() {
@@ -215,7 +232,7 @@ export class PongGame {
 			gameId: this.gameId || '',
 			config: this.config,
 			createdAt: new Date().toString(),
-			endedaAt: null,
+			endedAt: null,
 			generalResult: null,
 			winner: null,
 			finalScore: {
@@ -394,7 +411,11 @@ export class PongGame {
 
 		//TODO: Update to match online game player names consistently
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		this.rightPlayer = { name: this.config.opponent || "Player 2" };
+		if (this.config.variant === '1vAI') {
+			this.rightPlayer = { name: "BOT" };
+		} else {
+			this.rightPlayer = { name: this.config.opponent || "Player 2" };
+		}
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -427,7 +448,12 @@ export class PongGame {
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
 		this.renderLayers.foreground.addChild(paddleRText.getRenderable());
 		this.entities.push(paddleR);
-		console.log("Right paddle created");
+		if (this.config.variant === '1vAI') {
+			paddleR.isAI = true;
+			console.log("Right paddle created as AI BOT");
+		} else {
+			console.log("Right paddle created");
+		}
 
 		// Create UI
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
@@ -711,5 +737,45 @@ export class PongGame {
 		if (!this.isOnline) return;
 		console.log('Starting online Pong game');
 		this.disableLocalGameplayForOnline();
+	}
+
+	async saveGameResults(): Promise<void> {
+		try {
+			console.log('Starting to save game results...');
+			console.log('Game data to send:', this.data);
+			
+			const token = sessionStorage.getItem('token');
+			console.log('Auth token found:', !!token);
+			
+			if (!token) {
+				console.error('No authentication token found');
+				return;
+			}
+	
+			console.log('Making API call to /api/games/results');
+			const response = await fetch('/api/games/results', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					gameData: this.data
+				})
+			});
+	
+			console.log('Response status:', response.status);
+			console.log('Response ok:', response.ok);
+	
+			if (response.ok) {
+				const result = await response.json();
+				console.log('Game results saved successfully:', result);
+			} else {
+				const error = await response.json();
+				console.error('Failed to save game results:', error);
+			}
+		} catch (error) {
+			console.error('Network error saving game results:', error);
+		}
 	}
 }

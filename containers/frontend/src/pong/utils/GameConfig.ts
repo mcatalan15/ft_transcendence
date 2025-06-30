@@ -6,37 +6,39 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 11:58:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 15:17:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export interface GameConfig {
-	mode: 'local' | 'online';
-	variant: '1v1' | '1vAI' | 'tournament';
-	classicMode: boolean;
+    mode: 'local' | 'online';
+    variant: '1v1' | '1vAI' | 'tournament';
+    classicMode: boolean;
+    filters: boolean;
+    
+    players: {
+        id?: string;
+        name: string;
+        type: 'human' | 'ai' | 'remote';
+        side: 'left' | 'right';
+        team?: number;
+    }[];
 
-	filters: boolean;
-
-	players: {
-		id?: string;
-		name: string;
-		type: 'human' | 'ai' | 'remote';
-		side: 'left' | 'right';
-		team?: number;
-	}[];
-
-	network?: {
-		roomId?: string;
-		isHost?: boolean;
-		serverUrl?: string;
-	};
+    player2Id?: string;
+    
+    network?: {
+        roomId?: string;
+        isHost?: boolean;
+        serverUrl?: string;
+    };
 }
 
 export interface GameData {
 	gameId: string;
+	//!change
 	config: GameConfig;
 	createdAt: Date | string | null;
-	endedaAt: Date | string | null;
+	endedAt: Date | string | null;
 	generalResult: 'leftWin' | 'rightWin' | 'draw' | null;
 	winner: string | null;
 	finalScore: {

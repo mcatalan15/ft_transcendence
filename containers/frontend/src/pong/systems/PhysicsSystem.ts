@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 11:59:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:59:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,8 @@ export class PhysicsSystem implements System {
 	  }
 	
 	  for (const entity of entities) {
-		// Check if entity should be server-controlled before processing PHYSICS
 		const physics = entity.getComponent('physics') as PhysicsComponent;
 		if (physics && (physics as any).isServerControlled) {
-		  // For server-controlled entities, skip physics updates but still allow other processing
 		  continue;
 		}
 		
@@ -92,17 +90,17 @@ export class PhysicsSystem implements System {
 	updatePaddle(paddle: Paddle, entitiesMap: Map<string, Entity>) {
 		const input = paddle.getComponent('input') as InputComponent;
 		const physics = paddle.getComponent('physics') as PhysicsComponent;
-
+	
 		if (!input || !physics) return;
-
+	
 		this.applyInputToPaddle(input, physics, paddle);
-
 		this.constrainPaddleToWalls(physics, entitiesMap);
 	}
 
 	applyInputToPaddle(input: InputComponent, physics: PhysicsComponent, paddle: Paddle) {
 		const speed = paddle.isStunned ? 0 : physics.speed || 5;
-
+	
+	
 		if (input.upPressed) {
 			physics.velocityY = -speed * paddle.inversion * paddle.slowness;
 		} else if (input.downPressed) {
@@ -110,12 +108,12 @@ export class PhysicsSystem implements System {
 		} else {
 			physics.velocityY = 0;
 		}
-
+	
+		const oldY = physics.y;
 		physics.y += physics.velocityY;
 	}
 
 	constrainPaddleToWalls(physics: PhysicsComponent, entitiesMap: Map<string, Entity>) {
-		// Top wall collision
 		const wallT = entitiesMap.get('wallT');
 		if (wallT) {
 			const wallPhysics = wallT.getComponent('physics') as PhysicsComponent;
@@ -128,7 +126,6 @@ export class PhysicsSystem implements System {
 			}
 		}
 
-		// Bottom wall collision
 		const wallB = entitiesMap.get('wallB')
 		if (wallB) {
 			const wallPhysics = wallB.getComponent('physics') as PhysicsComponent;

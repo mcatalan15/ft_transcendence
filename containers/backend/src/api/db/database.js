@@ -246,6 +246,7 @@ async function saveGameToDatabase(
         });
     });
 }
+
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
@@ -272,6 +273,31 @@ async function getAllGames() {
             }
         });
 	});
+}
+
+async function saveGameResultsToDatabase(gameId, gameData) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            INSERT INTO game_results (id_game, game_data) 
+            VALUES (?, ?)
+        `;
+        const params = [gameId, JSON.stringify(gameData)];
+        
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB INSERT ERROR] Failed to save game results:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else {
+                console.log(`[DB] Successfully saved detailed game results for game ${gameId}`);
+                resolve(this.lastID);
+            }
+        });
+    });
 }
 
 // ! Needed???? !!!!
@@ -457,6 +483,7 @@ module.exports = {
 	getUserByEmail,
 	getUserById,
 	saveGameToDatabase,
+    saveGameResultsToDatabase,
 	getLatestGame,
 	getAllGames,
 	saveTwoFactorSecret,

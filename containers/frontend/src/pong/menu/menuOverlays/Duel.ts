@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 16:21:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 14:33:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -401,6 +401,18 @@ export class Duel extends Entity {
 		const newVsText = this.createVSText();
 		const vsTextComponent = new TextComponent(newVsText);
 		this.replaceComponent('text', vsTextComponent, 'vsText');
+
+		const newNameTags = this.createNameTags();
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(newNameTags[i]);
+			this.replaceComponent('text', nameTagComponent, `nameTag${i}`);
+		}
+
+		const newStatsTexts = this.createStatsTexts();
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const statsTextComponent = new TextComponent(newStatsTexts[i]);
+			this.replaceComponent('text', statsTextComponent, `statsText${i}`);
+		}
 	}
 
 	getRandomName(index: number): string {
