@@ -489,6 +489,29 @@ async function  updateNickname(userId, newNickname) {
 	});
 }
 
+async function changePassword(userId, newHashedPassword) {
+	return new Promise((resolve, reject) => {
+		const query = `UPDATE users SET password = ? WHERE id_user = ?`;
+		db.run(query, [newHashedPassword, userId], function (err) {
+			if (err) {
+				console.error('[DB UPDATE ERROR] Failed to update password:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno,
+					stack: err.stack
+				});
+				reject(err);
+			} else if (this.changes === 0) {
+				console.warn(`[DB WARN] No user found with ID ${userId} to update password.`);
+				reject(new Error('User not found'));
+			} else {
+				console.log(`[DB] Successfully updated password for user ${userId}`);
+				resolve(true);
+			}
+		});
+	});
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -511,4 +534,5 @@ module.exports = {
     checkFriendship,
 	saveSmartContractToDatabase,
 	updateNickname,
+	changePassword
 };

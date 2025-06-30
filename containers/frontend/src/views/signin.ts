@@ -11,7 +11,7 @@ export function showSignIn(container: HTMLElement): void {
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       	loadGoogleScript();
-	      setupGoogleSignUp()
+	    setupGoogleSignUp()
 
       const wrapper = document.createElement('div');
       wrapper.innerHTML = `
@@ -82,7 +82,7 @@ export function showSignIn(container: HTMLElement): void {
         } else {
           alert(i18n.t('success', { ns: 'signin' }));
           localStorage.setItem('token', result.token);
-          navigate('/home'); 
+          navigate('/profile'); 
         }
       };
 

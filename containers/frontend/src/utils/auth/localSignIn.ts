@@ -24,6 +24,7 @@ export function localSignIn(email: string, password: string, twoFACode?: string)
 				sessionStorage.setItem('userId', data.userId);
 				sessionStorage.setItem('email', data.email);
 				sessionStorage.setItem('token', data.token);
+				sessionStorage.setItem('localAuth', 'true');
 
 				const twoFAValue = data.twoFAEnabled;
 				sessionStorage.setItem('twoFAEnabled', twoFAValue);
@@ -35,7 +36,7 @@ export function localSignIn(email: string, password: string, twoFACode?: string)
 /* 				setTimeout(() => {
 					window.location.href = '/auth';
 				}, 100); */
-				navigate('/home');
+				navigate('/profile');
 			} else {
 				alert('Local sign-in failed: ' + (data.message || 'Unknown error'));
 			}

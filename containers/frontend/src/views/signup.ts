@@ -79,7 +79,7 @@ export function showSignUp(container: HTMLElement): void {
           errorMessageDiv.textContent = i18n.t('errorUsernameLength', { ns: 'signup' });
           return;
         }
-        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+        if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(username)) {
           errorMessageDiv.textContent = i18n.t('errorUsernameChars', { ns: 'signup' });
           return;
         }

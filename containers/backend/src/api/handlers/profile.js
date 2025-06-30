@@ -1,7 +1,15 @@
 const path = require('path');
 const fs = require('fs');
-const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship, updateNickname } = require('../db/database');
+const { updateUserAvatar,
+	getUserById,
+	getUserByUsername,
+	checkFriendship, updateNickname,
+	getHashedPassword,
+	changePassword
+} = require('../db/database');
+
 const onlineTracker = require('../../utils/onlineTracker');
+const bcrypt = require('bcrypt');
 
 async function getUserProfile(request, reply) {
     try {
@@ -236,7 +244,7 @@ async function updateNicknameHandler(request, reply) {
 				message: 'Nickname already exists'
 			});
 		}
-		
+
 		const updatedUser = await updateNickname(sessionUser.userId, newNickname);
 		
 		if (!updatedUser) {
@@ -262,10 +270,73 @@ async function updateNicknameHandler(request, reply) {
 	}
 }
 
+async function changePasswordHandler(request, reply) {
+	try {
+		const sessionUser = request.session.get('user');
+		const { oldPassword, newPassword } = request.body;
+
+		if (!sessionUser) {
+			return reply.status(401).send({
+				success: false,
+				message: 'User not authenticated'
+			});
+		}
+
+		if (!oldPassword || !newPassword || newPassword.length < 6) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Invalid password data'
+			});
+		}
+
+		const user = await getUserById(sessionUser.userId);
+		if (!user) {
+			return reply.status(404).send({
+				success: false,
+				message: 'User not found'
+			});
+		}
+
+		const currentHashedPassword = await getHashedPassword(user.email);
+		const isOldPasswordValid = await bcrypt.compare(oldPassword, currentHashedPassword);
+
+		if (!isOldPasswordValid) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Old password is incorrect'
+			});
+		}
+
+		const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+		const updatedUser = await changePassword(user.id, hashedNewPassword);
+		
+		if (!updatedUser) {
+			return reply.status(500).send({
+				success: false,
+				message: 'Failed to change password'
+			});
+		}
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Password changed successfully'
+		});
+
+	} catch (error) {
+		console.error('Error changing password:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to change password',
+			error: error.message
+		});
+	}
+}
+
 module.exports = {
 	getUserProfile,
 	avatarUploadHandler,
 	fetchUserAvatar,
 	getUserOnlineStatus,
-	updateNicknameHandler
+	updateNicknameHandler,
+	changePasswordHandler,
 }

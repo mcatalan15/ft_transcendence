@@ -109,3 +109,34 @@ export async function changeNickname(newNick: string): Promise<void> {
         alert('Network error occurred while changing nickname.');
     }
 }
+
+export async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
+	try {
+		const response = await fetch('/api/profile/password', {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include',
+			body: JSON.stringify({ oldPassword, newPassword })
+		});
+
+		if (oldPassword === newPassword) {
+			alert('New password cannot be the same as the current password.');
+			return;
+		}
+
+		const result = await response.json();
+		
+		if (result.success) {
+			alert('Password changed successfully!');
+			navigate('/settings');
+		} else {
+			alert('Failed to change password: ' + (result.message || 'Unknown error'));
+		}
+
+	} catch (error) {
+		console.error('Error changing password:', error);
+		alert('Network error occurred while changing password.');
+	}
+}

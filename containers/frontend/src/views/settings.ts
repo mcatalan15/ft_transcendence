@@ -4,7 +4,7 @@ import { HeaderTest } from '../components/testmenu'
 import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
-import { changeNickname } from '../utils/profile/profileUtils';
+import { changeNickname, changePassword } from '../utils/profile/profileUtils';
 
 function createButton(color: string, text: string, action: () => void) {
   let btn = document.createElement('button');
@@ -232,6 +232,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
       showErrorMessage('Nickname can only contain letters, numbers and a single hyphen');
       return;
     }
+
     changeNickname(newNickname);
   });
 
@@ -242,54 +243,59 @@ export async function showSettings(container: HTMLElement): Promise<void> {
   nicknameForm.appendChild(document.createElement('br'));
   nicknameForm.appendChild(nicknameBtn);
 
-  // Password change form
-  const passwordForm = document.createElement('div');
-  passwordForm.className = 'w-full max-w-xs bg-neutral-800 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
-  
-  const passwordTitle = document.createElement('h3');
-  passwordTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
-  passwordTitle.textContent = 'Change Password';
-  
-  const currentPasswordField = createFormField('currentPassword', 'password', 'Current password');
-  const newPasswordField = createFormField('newPassword', 'password', 'New password');
-  const confirmPasswordField = createFormField('confirmPassword', 'password', 'Confirm new password');
-  
-  const passwordBtn = createButton('lime', 'Update Password', async () => {
-    const currentPassword = currentPasswordField.value;
-    const newPassword = newPasswordField.value;
-    const confirmPassword = confirmPasswordField.value;
-    
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      showErrorMessage('All password fields are required');
-      return;
-    }
-    
-    if (newPassword.length < 6 || newPassword.length > 20) {
-      showErrorMessage('Password must be between 6 and 20 characters');
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      showErrorMessage('New passwords do not match');
-      return;
-    }
-
-    // TODO: Implement password change API call
-    showErrorMessage('Password change not yet implemented');
-  });
-
-  passwordForm.appendChild(passwordTitle);
-  passwordForm.appendChild(currentPasswordField);
-  passwordForm.appendChild(document.createElement('br'));
-  passwordForm.appendChild(newPasswordField);
-  passwordForm.appendChild(document.createElement('br'));
-  passwordForm.appendChild(confirmPasswordField);
-  passwordForm.appendChild(document.createElement('br'));
-  passwordForm.appendChild(passwordBtn);
-
   middleCol.appendChild(nicknameForm);
-  middleCol.appendChild(passwordForm);
 
+  if (sessionStorage.getItem('localAuth') === 'true') {
+	const passwordForm = document.createElement('div');
+	passwordForm.className = 'w-full max-w-xs bg-neutral-800 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
+	
+	const passwordTitle = document.createElement('h3');
+	passwordTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
+	passwordTitle.textContent = 'Change Password';
+	
+	const currentPasswordField = createFormField('currentPassword', 'password', 'Current password');
+	const newPasswordField = createFormField('newPassword', 'password', 'New password');
+	const confirmPasswordField = createFormField('confirmPassword', 'password', 'Confirm new password');
+	
+	const passwordBtn = createButton('lime', 'Update Password', async () => {
+		const currentPassword = currentPasswordField.value;
+		const newPassword = newPasswordField.value;
+		const confirmPassword = confirmPasswordField.value;
+		
+		if (!currentPassword || !newPassword || !confirmPassword) {
+			showErrorMessage('All password fields are required');
+			return;
+		}
+		
+		if (newPassword.length < 6 || newPassword.length > 20) {
+			showErrorMessage('Password must be between 6 and 20 characters');
+			return;
+		}
+		
+		if (newPassword !== confirmPassword) {
+			showErrorMessage('New passwords do not match');
+			return;
+		}
+
+		if (currentPassword === newPassword) {
+			showErrorMessage('New password cannot be the same as the current password');
+			return;
+		}
+
+		changePassword(currentPassword, newPassword);
+	});
+
+	passwordForm.appendChild(passwordTitle);
+	passwordForm.appendChild(currentPasswordField);
+	passwordForm.appendChild(document.createElement('br'));
+	passwordForm.appendChild(newPasswordField);
+	passwordForm.appendChild(document.createElement('br'));
+	passwordForm.appendChild(confirmPasswordField);
+	passwordForm.appendChild(document.createElement('br'));
+	passwordForm.appendChild(passwordBtn);
+
+	middleCol.appendChild(passwordForm);
+  }
   // RIGHT COL - Navigation buttons
   const rightCol = document.createElement('div');
   rightCol.className = `
