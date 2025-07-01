@@ -9,6 +9,8 @@ otplib.authenticator.options = {
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const onlineTracker = require('../../utils/onlineTracker');
+
 const qrcode = require('qrcode');
 
 const { saveUserToDatabase, 
@@ -204,7 +206,7 @@ async function logoutHandler(request, reply) {
 	try {
 
         const user = request.session.get('user');
-        
+        console.log('Available server decorators:', Object.keys(request.server));
         if (user) {
             // Remove user from online tracker
             if (user.userId) {

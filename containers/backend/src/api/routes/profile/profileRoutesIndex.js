@@ -4,14 +4,18 @@ const {
 	profileSchema,
 	uploadAvatarSchema,
 	fetchUserAvatarSchema,
-	getUserOnlineStatusSchema
+	getUserOnlineStatusSchema,
+	updateNicknameSchema,
+	updatePasswordSchema
  } = require('../../schemas/profile');
 
  const { 
 	getUserProfile,
 	avatarUploadHandler,
 	fetchUserAvatar,
-	getUserOnlineStatus
+	getUserOnlineStatus,
+	updateNicknameHandler,
+	changePasswordHandler
  } = require('../../handlers/profile');
 
  module.exports = async function (fastify, options) {
@@ -22,5 +26,7 @@ const {
 	fastify.post('/api/profile/avatar', { schema: uploadAvatarSchema, preHandler: verifyToken }, avatarUploadHandler);
 	fastify.get('/api/profile/avatar/:userId', { schema: fetchUserAvatarSchema, preHandler: verifyToken }, fetchUserAvatar)
 	fastify.get('/api/profile/status/:userId', { schema: getUserOnlineStatusSchema,	preHandler: verifyToken }, getUserOnlineStatus);
+	fastify.put('/api/profile/nickname', { schema: updateNicknameSchema, preHandler: verifyToken }, updateNicknameHandler);
+	fastify.put('/api/profile/password', { schema: updatePasswordSchema, preHandler: verifyToken }, changePasswordHandler);
 
 };

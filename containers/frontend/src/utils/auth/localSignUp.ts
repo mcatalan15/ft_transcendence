@@ -30,6 +30,7 @@ export async function localSignUp(username: string, email: string, password: str
 		sessionStorage.setItem('email', data.email);
 		sessionStorage.setItem('token', data.token);
 		sessionStorage.setItem('twoFAEnabled', data.twoFAEnabled);
+		sessionStorage.setItem('localAuth', 'true');
 
 		const result = {
 			success: true,

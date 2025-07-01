@@ -1,3 +1,5 @@
+const { updatePassword } = require("../db/database");
+
 const profileSchema = {
 	description: 'Get non-sensitive data from the user\'s profile.\
 	The user needs to be logged-in prior to accessing the profile.\
@@ -212,9 +214,136 @@ const fetchUserAvatarSchema = {
     }
 };
 
+const updateNicknameSchema = {
+	description: 'Update the user\'s nickname',
+	tags: ['profile'],
+	body: {
+		type: 'object',
+		required: ['nickname'],
+		properties: {
+			nickname: { type: 'string', minLength: 3, maxLength: 20, description: 'New nickname for the user' }
+		}
+	},
+	response: {
+		200: {
+			description: 'Nickname updated successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: true,
+				message: 'Nickname updated successfully'
+			}
+		},
+		400: {
+			description: 'Invalid nickname provided',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Nickname must be between 3 and 20 characters long'
+			}
+		},
+		401: {
+			description: 'User not authenticated',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'User not authenticated'
+			}
+		},
+		500: {
+			description: 'Internal server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Failed to update nickname due to server error'
+			}
+		}
+	}
+};
+
+const updatePasswordSchema = {
+	description: 'Update the user\'s password',
+	tags: ['profile'],
+	body: {
+		type: 'object',
+		required: ['oldPassword', 'newPassword'],
+		properties: {
+			oldPassword: { type: 'string', minLength: 6, description: 'Current password of the user' },
+			newPassword: { type: 'string', minLength: 6, description: 'New password for the user' }
+		}
+	},
+	response: {
+		200: {
+			description: 'Password updated successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: true,
+				message: 'Password updated successfully'
+			}
+		},
+		400: {
+			description: 'Invalid password data provided',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid password data provided'
+			}
+		},
+		401: {
+			description: 'User not authenticated',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'User not authenticated'
+			}
+		},
+		500: {
+			description: 'Internal server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message:'Failed to update password due to server error'
+			}
+		}
+	}
+};
+
 module.exports = {
     profileSchema,
     uploadAvatarSchema,
     fetchUserAvatarSchema,
-    getUserOnlineStatusSchema
+    getUserOnlineStatusSchema,
+	updateNicknameSchema,
+	updatePasswordSchema,
 };

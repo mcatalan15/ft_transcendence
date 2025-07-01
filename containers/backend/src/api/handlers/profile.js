@@ -1,7 +1,16 @@
 const path = require('path');
 const fs = require('fs');
-const { updateUserAvatar, getUserById, getUserByUsername, checkFriendship } = require('../db/database');
+const { updateUserAvatar,
+	getUserById,
+	getUserByUsername,
+	checkFriendship,
+	updateNickname,
+	getHashedPassword,
+	changePassword
+} = require('../db/database');
+
 const onlineTracker = require('../../utils/onlineTracker');
+const bcrypt = require('bcrypt');
 
 async function getUserProfile(request, reply) {
     try {
@@ -207,9 +216,129 @@ async function getUserOnlineStatus(request, reply) {
     }
 }
 
+async function updateNicknameHandler(request, reply) {
+	try {
+		const sessionUser = request.session.get('user');
+		const newNickname = request.body.nickname;
+
+		console.log('Session user:', sessionUser);
+
+		if (!sessionUser) {
+			return reply.status(401).send({
+				success: false,
+				message: 'User not authenticated'
+			});
+		}
+
+		if (!newNickname || newNickname.length < 3 || newNickname.length > 8 || 
+			!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(newNickname)) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Nickname must be between 3 and 8 characters and can only contain letters, numbers, and a single hyphen.'
+			});
+		}
+
+		// Check if the nickname already exists
+		const existingUser = await getUserByUsername(newNickname);
+		if (existingUser && existingUser.id_user !== sessionUser.userId) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Nickname already exists'
+			});
+		}
+
+		const updatedUser = await updateNickname(sessionUser.userId, newNickname);
+		
+		if (!updatedUser) {
+			return reply.status(500).send({
+				success: false,
+				message: 'Failed to update nickname'
+			});
+		}
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Nickname updated successfully',
+			newNickname: updatedUser.nickname
+		});
+
+	} catch (error) {
+		console.error('Error updating nickname:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to update nickname',
+			error: error.message
+		});
+	}
+}
+
+async function changePasswordHandler(request, reply) {
+	try {
+		const sessionUser = request.session.get('user');
+		const { oldPassword, newPassword } = request.body;
+
+		if (!sessionUser) {
+			return reply.status(401).send({
+				success: false,
+				message: 'User not authenticated'
+			});
+		}
+
+		if (!oldPassword || !newPassword || newPassword.length < 6) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Invalid password data'
+			});
+		}
+
+		const user = await getUserById(sessionUser.userId);
+		if (!user) {
+			return reply.status(404).send({
+				success: false,
+				message: 'User not found'
+			});
+		}
+
+		const currentHashedPassword = await getHashedPassword(user.email);
+		const isOldPasswordValid = await bcrypt.compare(oldPassword, currentHashedPassword);
+
+		if (!isOldPasswordValid) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Old password is incorrect'
+			});
+		}
+
+		const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+		const updatedUser = await changePassword(user.id, hashedNewPassword);
+		
+		if (!updatedUser) {
+			return reply.status(500).send({
+				success: false,
+				message: 'Failed to change password'
+			});
+		}
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Password changed successfully'
+		});
+
+	} catch (error) {
+		console.error('Error changing password:', error);
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to change password',
+			error: error.message
+		});
+	}
+}
+
 module.exports = {
 	getUserProfile,
 	avatarUploadHandler,
 	fetchUserAvatar,
-	getUserOnlineStatus
+	getUserOnlineStatus,
+	updateNicknameHandler,
+	changePasswordHandler,
 }

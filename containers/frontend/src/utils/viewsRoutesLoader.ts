@@ -10,6 +10,7 @@ import { showChat } from '../views/chat';
 import { showLobby } from '../views/lobby';
 import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
+import { showStats } from '../views/stats';
 
 const viewsRoutes = {
 	showLanding,
@@ -24,6 +25,7 @@ const viewsRoutes = {
 	showLobby,
 	showAuth,
 	showSettings,
+	showStats
 };
 
 export default viewsRoutes;

@@ -1,5 +1,5 @@
 {
-    "profileTitleOwn": "My profile",
+    "profileTitleOwn": "Profile",
     "profileTitle": "{{username}}'s profile",
     "matchesPlayed": "Matches played",
     "tournamentsPlayed": "Tournaments played",
@@ -9,6 +9,7 @@
     "friends": "Friends",
     "stats": "Stats",
 	"addFriend": "Add Friend",
-	"removeFriend": "Remove Friend"
+	"removeFriend": "Remove Friend",
+	"chat": "Chat"
   }
   
