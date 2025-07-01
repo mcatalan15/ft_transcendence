@@ -28,22 +28,27 @@ export class ObstacleSpawner {
 	static buildPachinko(worldSystem: WorldSystem, depth: number, pattern: number): void {
 		switch (pattern) {
 			case (0):
+				worldSystem.game.data.walls.kites++;
 				this.buildObstacle(worldSystem, depth, 'diamondPachinko', pattern);
 				break;
 			case (1):
+				worldSystem.game.data.walls.honeycombs++;
 				this.buildObstacle(worldSystem, depth, 'honeycombPachinko', pattern);
 				break;
 			default:
+				worldSystem.game.data.walls.bowties++;	
 				this.buildObstacle(worldSystem, depth, 'funnelPachinko', pattern);
 		}
 	}
 
-	static buildWindmills(worldSystem: WorldSystem, depth: number, pattern: number): void {
+	static buildSnakes(worldSystem: WorldSystem, depth: number, pattern: number): void {
 		switch (pattern) {
 			case (0):
+				worldSystem.game.data.walls.snakes++;
 				this.buildObstacle(worldSystem, depth, 'windmills', pattern);
 				break;
 			default:
+				worldSystem.game.data.walls.vipers++;
 				this.buildObstacle(worldSystem, depth, 'giants', pattern);
 		}
 		

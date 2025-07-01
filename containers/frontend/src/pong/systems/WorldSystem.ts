@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 17:02:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 11:17:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ export class WorldSystem implements System {
     constructor(game: PongGame) {
         this.game = game;
         
-        this.wallFigureManager = new WallFigureManager();
-        this.obstacleManager = new ObstacleManager();
+        this.wallFigureManager = new WallFigureManager(game);
+        this.obstacleManager = new ObstacleManager(game);
         this.worldManager = new WorldManager(this.game);
 
         this.initializeWorld();

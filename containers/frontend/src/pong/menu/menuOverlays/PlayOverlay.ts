@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 12:25:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 09:59:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,6 @@ export class PlayOverlay extends Overlay {
         this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
-
-        MenuImageManager.createPlayAvatars(this.menu);
     }
 
     public redrawTitles(): void {
@@ -76,9 +74,9 @@ export class PlayOverlay extends Overlay {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
         super.show();
-
+    
         MenuImageManager.preparePlayAvatarImages(this.menu);
-
+    
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentTauntButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 14:59:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:53:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,12 +142,29 @@ export class MenuImageManager {
     }
 
     static createTournamentAvatars(menu: Menu): void {
+        this.tournamentAvatars.forEach(avatar => {
+            if (avatar && avatar.parent) {
+                avatar.parent.removeChild(avatar);
+            }
+            if (avatar) {
+                avatar.destroy();
+            }
+        });
         this.tournamentAvatars = [];
     
-        const squareAvatarData = [
-            { name: 'avatarNicoSquare', x: 1225.5, y: 340 },
-            { name: 'avatarEvaSquare', x: 1524.5, y: 340 },
-        ]
+        let squareAvatarData: { name: string, x: number, y: number }[];
+
+        if (menu.config.classicMode) {
+            squareAvatarData = [
+                { name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
+                { name: 'avatarUnknownClassic', x: 1524.5, y: 344.5 },
+            ];
+        } else {
+            squareAvatarData = [
+                { name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
+                { name: 'avatarUnknownSquare', x: 1524.5, y: 344.5 },
+            ];
+        }
     
         squareAvatarData.forEach(data => {
             const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.240);
@@ -158,12 +175,49 @@ export class MenuImageManager {
     }
 
     static createPlayAvatars(menu: Menu): void {
+        this.playAvatars.forEach(avatar => {
+            if (avatar && avatar.parent) {
+                avatar.parent.removeChild(avatar);
+            }
+            if (avatar) {
+                avatar.destroy();
+            }
+        });
         this.playAvatars = [];
     
-        const squareAvatarData = [
-            { name: 'avatarNicoSquare', x: 335, y: 365 },
-            { name: 'avatarEvaSquare', x: 785, y: 365 },
-        ]
+        let squareAvatarData: { name: string, x: number, y: number }[];
+    
+        switch (menu.config.variant) {
+            case ('1vAI'): {
+                if (menu.config.classicMode) {
+                    squareAvatarData = [
+                        { name: 'avatarUnknownClassic', x: 335, y: 369.5 },
+                        { name: 'avatarBotClassic', x: 785, y: 365 },
+                    ];
+                } else {
+                    squareAvatarData = [
+                        { name: 'avatarUnknownSquare', x: 335, y: 369.5 },
+                        { name: 'avatarBotSquare', x: 785, y: 365 },
+                    ];
+                }
+                break;
+            }
+    
+            default: {
+                if (menu.config.classicMode) {
+                    squareAvatarData = [
+                        { name: 'avatarUnknownClassic', x: 335, y: 369.5 },
+                        { name: 'avatarUnknownClassic', x: 785, y: 369.5 },
+                    ];
+                } else {
+                    squareAvatarData = [
+                        { name: 'avatarUnknownSquare', x: 335, y: 369.5 },
+                        { name: 'avatarUnknownSquare', x: 785, y: 369.5 },
+                    ];
+                }
+                break;
+            }
+        }
     
         squareAvatarData.forEach(data => {
             const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, 0.35);
@@ -260,25 +314,29 @@ export class MenuImageManager {
     }
 
     static prepareTournamentAvatarImages(menu: Menu): void {
-        this.tournamentAvatars.forEach(squareAvatar => {
-            if (squareAvatar) {
-                squareAvatar.alpha = 0;
-                if (squareAvatar.parent) {
-                    squareAvatar.parent.removeChild(squareAvatar);
+        this.createTournamentAvatars(menu);
+        
+        this.tournamentAvatars.forEach(avatar => {
+            if (avatar) {
+                avatar.alpha = 0;
+                if (avatar.parent) {
+                    avatar.parent.removeChild(avatar);
                 }
-                menu.renderLayers.overlays.addChild(squareAvatar);
+                menu.renderLayers.overlays.addChild(avatar);
             }
         });
     }
 
     static preparePlayAvatarImages(menu: Menu): void {
-        this.playAvatars.forEach(squareAvatar => {
-            if (squareAvatar) {
-                squareAvatar.alpha = 0;
-                if (squareAvatar.parent) {
-                    squareAvatar.parent.removeChild(squareAvatar);
+        this.createPlayAvatars(menu);
+        
+        this.playAvatars.forEach(avatar => {
+            if (avatar) {
+                avatar.alpha = 0;
+                if (avatar.parent) {
+                    avatar.parent.removeChild(avatar);
                 }
-                menu.renderLayers.overlays.addChild(squareAvatar);
+                menu.renderLayers.overlays.addChild(avatar);
             }
         });
     }

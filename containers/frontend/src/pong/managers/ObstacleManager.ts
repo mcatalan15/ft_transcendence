@@ -6,17 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:58:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 11:10:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { PongGame } from '../engine/Game';
 
 import { ObstacleSpawner } from '../spawners/ObstacleSpawner';
 
 export class ObstacleManager {
+    private game: PongGame;
     private isSpawningObstacles: boolean = false;
     private mustSpawn: boolean = false;
     
-    constructor() {
+    constructor(game: PongGame) {
+        this.game = game;
     }
     
     update(worldSystem: any): void {
@@ -27,6 +31,7 @@ export class ObstacleManager {
 
             switch(idx) {
                 case (0):
+                    this.game.data.walls.waystones++;
                     ObstacleSpawner.buildLedge(worldSystem, depth);
                     break;
                 case (1):
@@ -35,7 +40,7 @@ export class ObstacleManager {
                     break;
                 default:
                     const windmillPattern = Math.floor(Math.random() * 2)
-                    ObstacleSpawner.buildWindmills(worldSystem, depth, windmillPattern);
+                    ObstacleSpawner.buildSnakes(worldSystem, depth, windmillPattern);
             }
         }
 

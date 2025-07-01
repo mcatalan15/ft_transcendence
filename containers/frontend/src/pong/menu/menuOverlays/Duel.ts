@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 16:21:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:50:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ export class Duel extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "           002           083             067\n    000      000     000        0.000    000", 
+			text: "           000           000             000\n    000      000     000        0.000    000", 
 			x: 340,
 			y: 600,
 			style: {
@@ -140,9 +140,20 @@ export class Duel extends Entity {
 
 	createNameTags(): Text[] {
 		const nameTags: Text[] = [];
-
+	
+		let leftName = "UNKNOWN";
+		let rightName = "UNKNOWN";
+	
+		if (this.menu.config.variant === '1vAI') {
+			leftName = "PLAYER";
+			rightName = "AI-BOT";
+		} else {
+			leftName = "PLAYER 1";
+			rightName = "PLAYER 2";
+		}
+	
 		nameTags.push({
-			text: "HMUNOZ-G", 
+			text: leftName, 
 			x: 340,
 			y: 570,
 			style: {
@@ -153,9 +164,9 @@ export class Duel extends Entity {
 				fontFamily: '"Roboto Mono", monospace',
 			},
 		} as Text);
-
+	
 		nameTags.push({
-			text: "PSHCHERB", 
+			text: rightName, 
 			x: 785,
 			y: 570,
 			style: {
@@ -166,8 +177,8 @@ export class Duel extends Entity {
 				fontFamily: '"Roboto Mono", monospace',
 			},
 		} as Text);
-
-        return nameTags;
+	
+		return nameTags;
 	}
 
 	createVSText(): Text {
@@ -401,6 +412,18 @@ export class Duel extends Entity {
 		const newVsText = this.createVSText();
 		const vsTextComponent = new TextComponent(newVsText);
 		this.replaceComponent('text', vsTextComponent, 'vsText');
+
+		const newNameTags = this.createNameTags();
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(newNameTags[i]);
+			this.replaceComponent('text', nameTagComponent, `nameTag${i}`);
+		}
+
+		const newStatsTexts = this.createStatsTexts();
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const statsTextComponent = new TextComponent(newStatsTexts[i]);
+			this.replaceComponent('text', statsTextComponent, `statsText${i}`);
+		}
 	}
 
 	getRandomName(index: number): string {

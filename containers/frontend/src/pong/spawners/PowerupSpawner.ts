@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 16:15:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 10:49:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,7 @@ export class PowerupSpawner {
 		
 		game.renderLayers.powerup.addChild(render.graphic);
 		
+		game.data.specialItmes.shields++;
 		console.log(`spawned shield:${shield.x}`);
 	}
 
@@ -269,6 +270,7 @@ export class PowerupSpawner {
 
 		game.renderLayers.powerup.addChild(bulletRender.graphic);
 
+		game.data.specialItmes.bullets++;
 		console.log(`spawned bullet going:${bullet.direction}`);
 	}
 
