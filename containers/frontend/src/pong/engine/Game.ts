@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 10:55:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 12:50:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ export class PongGame {
 		crossCut: Container;
 		ui: Container;
 		pp: Container;
+		hidden: Container;
 	};
 	visualRoot: Container;
 	sounds!: GameSounds;
@@ -137,7 +138,8 @@ export class PongGame {
 			ballChange: new Container(),
 			crossCut: new Container(),
 			ui: new Container(),
-			pp: new Container()
+			pp: new Container(),
+			hidden: new Container(),
 		};
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
