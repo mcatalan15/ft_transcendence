@@ -4,24 +4,41 @@ import { initGame } from '../pong/pong';
 import { PongGame } from '../pong/engine/Game';
 import { GameConfig } from '../pong/utils/GameConfig';
 import { PongNetworkManager } from '../pong/network/PongNetworkManager';
+import { HeaderTest } from '../components/testmenu'
+import { LanguageSelector } from '../components/languageSelector';
+import i18n from '../i18n';
 
 export function showPong(container: HTMLElement): void {
-  // Clear the container
-  container.innerHTML = '';
-  
-  // Check URL parameters to determine game mode
-  const urlParams = new URLSearchParams(window.location.search);
-  const gameId = urlParams.get('gameId');
-  const mode = urlParams.get('mode');
-  const opponent = urlParams.get('opponent');
-  
-  if (mode === 'online' && gameId) {
-    // Initialize online multiplayer game
-    initOnlineGame(container, gameId, opponent);
-  } else {
-    // Initialize local game (existing logic)
-    initGame(container);
-  }
+  i18n
+    .loadNamespaces('history')
+    .then(() => i18n.changeLanguage(i18n.language))
+    .then(() => {
+    // Clear the container
+    container.innerHTML = '';
+    
+    // Header and Menu
+    const headerWrapper = new HeaderTest().getElement();
+    headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
+    container.appendChild(headerWrapper);
+
+    // Language Selector
+    const langSelector = new LanguageSelector(() => showPong(container)).getElement();
+    container.appendChild(langSelector);
+
+    // Check URL parameters to determine game mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('gameId');
+    const mode = urlParams.get('mode');
+    const opponent = urlParams.get('opponent');
+    
+    if (mode === 'online' && gameId) {
+      // Initialize online multiplayer game
+      initOnlineGame(container, gameId, opponent);
+    } else {
+      // Initialize local game (existing logic)
+      initGame(container);
+    }
+  });
 }
 
 async function initOnlineGame(container: HTMLElement, gameId: string, opponent: string | null) {

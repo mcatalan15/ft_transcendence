@@ -40,7 +40,7 @@ export function showFriends(container: HTMLElement): void {
       const arcadeBox = document.createElement('div');
       arcadeBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 border-lime-400
+        mx-auto bg-neutral-900 border-[16px] border-amber-50
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();
@@ -53,7 +53,7 @@ export function showFriends(container: HTMLElement): void {
 
       const profileTitle = document.createElement('div');
       profileTitle.className = `
-        text-lime-400 text-7xl font-anatol tracking-wide break-all text-left w-full mb-6
+        text-amber-50 text-7xl font-anatol tracking-wide break-all text-left w-full mb-6
       `.replace(/\s+/g, ' ').trim();
 
       const avatar = document.createElement('img');
@@ -61,13 +61,13 @@ export function showFriends(container: HTMLElement): void {
       avatar.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
       avatar.alt = 'Profile';
       avatar.className = `
-        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-lime-400 object-cover
+        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
         shadow-xl transition-all duration-300 mt-20
       `.replace(/\s+/g, ' ').trim();
 
       const nicknameSpan = document.createElement('span');
       nicknameSpan.className = `
-        mt-6 text-lime-400 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
+        mt-6 text-amber-50 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
       `.replace(/\s+/g, ' ').trim();
       nicknameSpan.textContent = '...';
 

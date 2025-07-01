@@ -1,7 +1,8 @@
 import { loadGames, GameHistory } from '../utils/matchHistory/gameUtils';
 import { MatchTableComponent } from '../components/profileComponents/history/table';
 import i18n from '../i18n';
-import { Header } from '../components/header';
+import { HeaderTest } from '../components/testmenu'
+//import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
 import { PongBoxComponent } from '../components/profileComponents/pongBox';
@@ -29,7 +30,7 @@ export function showHistory(container: HTMLElement) {
       contentWrapper.appendChild(tableWrapper);
       container.appendChild(contentWrapper);
 
-      const headerWrapper = new Header().getElement();
+      const headerWrapper = new HeaderTest().getElement();
       headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
       container.appendChild(headerWrapper);
 

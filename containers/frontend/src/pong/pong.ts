@@ -24,8 +24,8 @@ export async function initGame(container: HTMLElement) {
     autoDensity: true,
   });
 
-  //const language = localStorage.getItem('i18nextLng') || 'en';
-  const language = 'en';
+  const language = localStorage.getItem('i18nextLng') || 'en';
+  //const language = 'en';
 
   container.appendChild(app.canvas);
   

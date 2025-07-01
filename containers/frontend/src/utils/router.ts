@@ -1,7 +1,7 @@
 import views from './viewsRoutesLoader';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
-import { showHistory } from '../views/matches';
+import { showHistory } from '../views/history';
 
 let app: HTMLElement | null = null;
 

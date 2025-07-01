@@ -13,7 +13,7 @@ type PongBoxOptions = {
       this.pongBox = document.createElement('div');
       this.pongBox.className = `
         w-full max-w-[1800px] h-auto md:h-[750px]
-        mx-auto bg-neutral-900 border-4 
+        mx-auto bg-neutral-900 border-[16px] 
         flex flex-col md:flex-row overflow-hidden shadow-xl
         min-h-[600px]
       `.replace(/\s+/g, ' ').trim();
@@ -34,7 +34,7 @@ type PongBoxOptions = {
       avatar.src = options.avatarUrl;
       avatar.alt = 'Profile';
       avatar.className = `
-        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-neutral-900 object-cover
+        w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
          transition-all duration-300 mt-20
       `.replace(/\s+/g, ' ').trim();
   

@@ -10,23 +10,14 @@ export function showStats(container: HTMLElement) {
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       container.innerHTML = '';
-      const hasMenu = false;
 
       const contentWrapper = document.createElement('div');
-      contentWrapper.className = [
-        'row-start-2',
-        hasMenu ? 'col-start-2' : 'col-start-1',
-        'flex',
-        'items-center',
-        'justify-center',
-        'w-full',
-        'h-full',
-        'bg-neutral-900'
-      ].join(' ');
-
+      contentWrapper.className = 'flex flex-col items-center justify-center w-full h-full bg-neutral-900';
+      container.appendChild(contentWrapper);
+      
       const langSelector = new LanguageSelector(() => showStats(container)).getElement();
       container.appendChild(langSelector);
-
+    
       const pongBox = new PongBoxComponent({
         title: '',
         avatarUrl: '',
@@ -52,8 +43,8 @@ export function showStats(container: HTMLElement) {
             titleEl.textContent = i18n.t('statsTitle', { ns: 'stats', username: data.username });
           if (nicknameEl)
             nicknameEl.textContent = data.username;
-          if (avatarImg && data.avatar)
-            (avatarImg as HTMLImageElement).src = data.avatar;
+          if (avatarImg && data.userId)
+            (avatarImg as HTMLImageElement).src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
         })
         .catch(error => {
           navigate('/home');
