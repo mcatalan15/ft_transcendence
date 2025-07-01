@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:48:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:46:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,6 @@ export class TournamentNextMatchDisplay extends Entity {
 			const statsTextComponent = new TextComponent(this.statsTexts[i]);
 			this.addComponent(statsTextComponent, `statsText${i}`);
 		}
-
-		/* this.statsContainer = this.createStatsContainer();
-		const statsContainerComponent = new RenderComponent(this.statsContainer);
-		this.addComponent(statsContainerComponent, 'statsContainer'); */
 	}
 
 	createStatsTexts(): Text[] {
@@ -80,7 +76,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "           002           083             067\n    000      000     000        0.000    000", 
+			text: "           000           000             000\n    000      000     000        0.000    000", 
 			x: 1225.5,
 			y: 517.5,
 			style: {
@@ -182,7 +178,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: "HMUNOZ-G", 
+			text: "PLAYER 1", 
 			x: 1225,
 			y: 487.5,
 			style: {
@@ -195,7 +191,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: "PSHCHERB", 
+			text: "PLAYER 2", 
 			x: 1525,
 			y: 490,
 			style: {

@@ -1,4 +1,5 @@
 const { saveGameToDatabase,
+    saveGameResultsToDatabase,
 	getLatestGame,
 	getAllGames,
 	saveSmartContractToDatabase
@@ -249,10 +250,75 @@ const getGamesHistoryHandler = async (request, reply) => {
   }
 };
 
+const saveResultsHandler = async (request, reply) => {
+    try {
+        const { gameData } = request.body;
+        const userId = request.user.id;
+
+        const player1_id = userId;
+        let player2_id = null;
+        
+        if (gameData.config.mode === 'online' && gameData.config.player2Id) {
+            player2_id = gameData.config.player2Id;
+        }
+        
+        let winner_id = null;
+        let winner_name = gameData.winner;
+        
+        if (gameData.generalResult === 'leftWin') {
+            winner_id = player1_id;
+        } else if (gameData.generalResult === 'rightWin') {
+            winner_id = player2_id;
+        }
+
+        console.log('Saving game with IDs:', {
+            player1_id,
+            player2_id,
+            winner_id,
+            gameMode: gameData.config.mode,
+            variant: gameData.config.variant
+        });
+
+        const gameId = await saveGameToDatabase(
+            player1_id,
+            player2_id,
+            winner_id,
+            gameData.leftPlayer.name,
+            gameData.rightPlayer.name,
+            gameData.leftPlayer.score,
+            gameData.rightPlayer.score,
+            winner_name,
+            false,
+            gameData.config.variant === '1vAI',
+            gameData.config.mode,
+            gameData.config.variant === 'tournament',
+            null,
+            null
+        );
+
+        await saveGameResultsToDatabase(gameId, gameData);
+
+        reply.status(201).send({
+            success: true,
+            message: 'Game results saved successfully',
+            gameId
+        });
+
+    } catch (error) {
+        console.error('Error saving game results:', error);
+        reply.status(500).send({
+            success: false,
+            message: 'Failed to save game results',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
 	saveGameHandler,
 	retrieveGamesHandler,
 	retrieveLastGameHandler,
 	deployContractHandler,
-	getGamesHistoryHandler
+	getGamesHistoryHandler,
+    saveResultsHandler,
 };

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 11:11:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:57:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ export class WorldSystem implements System {
     constructor(game: PongGame) {
         this.game = game;
         
-        this.wallFigureManager = new WallFigureManager();
-        this.obstacleManager = new ObstacleManager();
+        this.wallFigureManager = new WallFigureManager(game);
+        this.obstacleManager = new ObstacleManager(game);
         this.worldManager = new WorldManager(this.game);
 
         this.initializeWorld();
@@ -65,7 +65,7 @@ export class WorldSystem implements System {
 
     private updateUIWorldText(): void {
         this.game.entities.forEach(entity => {
-            if (isUI(entity)) {
+            if (isUI(entity) && !this.game.config.classicMode) {
                 entity.setWorldText(this.game.currentWorld.name);
             }
         });
@@ -100,6 +100,8 @@ export class WorldSystem implements System {
     }
 
     private handleModeSwitching(): void {
+        if (this.game.hasEnded) return;
+        
         if (this.spawningTimer > 0) return;
 
         if (this.spawningMode === 1) {

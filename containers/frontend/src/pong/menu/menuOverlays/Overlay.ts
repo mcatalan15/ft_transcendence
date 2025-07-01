@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:50:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 11:54:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,9 @@ export abstract class Overlay extends Entity {
         
         if (this.overlayType === 'tournament') {
             this.updateTournamentButtonAlphas(0);
-            this.updateSquareAvatarAlphas(0);
+            this.updateTournamentAvatarAlphas(0);
+        } else if (this.overlayType === 'play') {
+            this.updatePlayAvatarAlphas(0);
         } else if (this.overlayType === 'glossary') {
             this.updatePowerupAlphas(0);
             this.updateWallImageAlphas(0);
@@ -288,7 +290,10 @@ export abstract class Overlay extends Entity {
     
             if (this.overlayType === 'tournament') {
                 this.updateTournamentButtonAlphas(this.currentAlpha);
-                this.updateSquareAvatarAlphas(this.currentAlpha);
+                this.updateTournamentAvatarAlphas(this.currentAlpha);
+            } else if (this.overlayType === 'play') {
+                this.updatePlayAvatarAlphas(this.currentAlpha);
+                this.updateTournamentButtonAlphas(this.currentAlpha);
             } else if (this.overlayType === 'glossary') {
                 this.updatePowerupAlphas(this.currentAlpha);
                 this.updateWallImageAlphas(this.currentAlpha);
@@ -377,8 +382,17 @@ export abstract class Overlay extends Entity {
         });
     }
 
-    private updateSquareAvatarAlphas(alpha: number): void {
-        const squareAvatarImages = MenuImageManager.getAllSquareAvatarImages();
+    private updateTournamentAvatarAlphas(alpha: number): void {
+        const squareAvatarImages = MenuImageManager.getAllTournamentAvatarImages();
+        squareAvatarImages.forEach((avatarImage: any) => {
+            if (avatarImage) {
+                avatarImage.alpha = alpha;
+            }
+        });
+    }
+
+    private updatePlayAvatarAlphas(alpha: number): void {
+        const squareAvatarImages = MenuImageManager.getAllPlayAvatarImages();
         squareAvatarImages.forEach((avatarImage: any) => {
             if (avatarImage) {
                 avatarImage.alpha = alpha;

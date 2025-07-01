@@ -412,10 +412,66 @@ const getGamesHistorySchema = {
     }
 };
 
+const saveResultsSchema = {
+    body: {
+      type: 'object',
+      required: ['gameData'],
+      properties: {
+        gameData: {
+          type: 'object',
+          properties: {
+            gameId: { type: 'string' },
+            config: { type: 'object' },
+            createdAt: { type: 'string' },
+            endedAt: { type: 'string' },
+            generalResult: { type: 'string' },
+            winner: { type: ['string', 'null'] },
+            finalScore: {
+              type: 'object',
+              properties: {
+                leftPlayer: { type: 'number' },
+                rightPlayer: { type: 'number' }
+              }
+            },
+            leftPlayer: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                score: { type: 'number' },
+                result: { type: ['string', 'null'] },
+                hits: { type: 'number' },
+                goalsInFavor: { type: 'number' },
+                goalsAgainst: { type: 'number' },
+                powerupsPicked: { type: 'number' },
+                powerdownsPicked: { type: 'number' },
+                ballchangesPicked: { type: 'number' }
+              }
+            },
+            rightPlayer: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                score: { type: 'number' },
+                result: { type: ['string', 'null'] },
+                hits: { type: 'number' },
+                goalsInFavor: { type: 'number' },
+                goalsAgainst: { type: 'number' },
+                powerupsPicked: { type: 'number' },
+                powerdownsPicked: { type: 'number' },
+                ballchangesPicked: { type: 'number' }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+
 module.exports = {
     saveGameSchema,
     retrieveGamesSchema,
     retrieveLastGameSchema,
     deployContractSchema,
 	getGamesHistorySchema,
+    saveResultsSchema,
 };

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Bracket.ts                                         :+:      :+:    :+:   */
+/*   Duel.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 11:36:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:50:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,36 +22,44 @@ import { TextComponent } from "../../components/TextComponent";
 
 import { GAME_COLORS } from "../../utils/Types";
 
-export class Bracket extends Entity {
+export class Duel extends Entity {
 	menu: Menu;
-	playerAmount: number = 8;
-	nameCells: NameCell[] = [];
-	bracketGraphic: Graphics = new Graphics();
+	duelGraphic: Graphics = new Graphics();
 	roundGraphic: Graphics = new Graphics();
+	avatarFrames: Graphics = new Graphics();
 	upperRoundLegend: Text[] = [];
 	lowerRoundLegend: Text[] = [];
 	dashedLines: Text[] = [];
-	crown: any;
+	vsText: Text = new Text();
+	nameTags: Text[] = [];
+	statsTexts: Text[] = [];
 
-	private readonly CELL_WIDTH = 150;
-	private readonly CELL_HEIGHT = 30;
-	private readonly TIER_SPACING = 224;
-	private readonly LINE_LENGTH = 30;
-	private readonly LINE_GAP = 5;
-	private readonly BASE_X = 152.5;
-	private readonly HORIZONTAL_LINE_EXTENSION = 1.5;
-
-	constructor(menu: Menu, id: string, layer: string, playerAmount: number) {
+	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
 		
 		this.menu = menu;
-		this.playerAmount = playerAmount;
 
-		this.createBracketStructure();
-		this.addNameCellComponents();
-		this.createBracketGraphic();
-		this.createRoundGraphic();
-		this.createCrownElement();
+		this.createDuelGraphic();
+
+		this.createAvatarFrames();
+		const avatarFramesComponent = new RenderComponent(this.avatarFrames);
+		this.addComponent(avatarFramesComponent, 'avatarFrames');
+
+		this.vsText = this.createVSText();
+		const vsTextComponent = new TextComponent(this.vsText);
+		this.addComponent(vsTextComponent, 'vsText');
+
+		this.nameTags = this.createNameTags();
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(this.nameTags[i]);
+			this.addComponent(nameTagComponent, `nameTag${i}`);
+		}
+
+		this.statsTexts = this.createStatsTexts();
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const statsTextComponent = new TextComponent(this.statsTexts[i]);
+			this.addComponent(statsTextComponent, `statsText${i}`);
+		}
 
 		this.dashedLines = this.createDashedLines();
 		this.dashedLines.forEach(element => {
@@ -72,11 +80,138 @@ export class Bracket extends Entity {
 		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
+	createStatsTexts(): Text[] {
+		const statsTexts: Text[] = [];
+
+		statsTexts.push({
+			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
+			x: 340,
+			y: 600,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 8,
+				fontWeight: '900' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+
+		statsTexts.push({
+			text: "           000           000             000\n    000      000     000        0.000    000", 
+			x: 340,
+			y: 600,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
+				fontSize: 8,
+				fontWeight: '900' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+
+		statsTexts.push({
+			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
+			x: 785,
+			y: 600,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 8,
+				fontWeight: '900' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+		
+		statsTexts.push({
+			text: "           000           000             000\n    000      000     000        0.000    000", 
+			x: 785,
+			y: 600,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
+				fontSize: 8,
+				fontWeight: '900' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+
+		return (statsTexts);
+	}
+
+	createNameTags(): Text[] {
+		const nameTags: Text[] = [];
+	
+		let leftName = "UNKNOWN";
+		let rightName = "UNKNOWN";
+	
+		if (this.menu.config.variant === '1vAI') {
+			leftName = "PLAYER";
+			rightName = "AI-BOT";
+		} else {
+			leftName = "PLAYER 1";
+			rightName = "PLAYER 2";
+		}
+	
+		nameTags.push({
+			text: leftName, 
+			x: 340,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+	
+		nameTags.push({
+			text: rightName, 
+			x: 785,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text);
+	
+		return nameTags;
+	}
+
+	createVSText(): Text {
+		const vsText = {
+			text: "vs", 
+			x: 560,
+			y: 360,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 50,
+				fontWeight: 'lighter' as const,
+				align: 'left' as const,
+				fontFamily: 'anatol-mn',
+			},
+		} as Text;
+		return vsText;
+	}
+
+	createAvatarFrames(){
+		this.avatarFrames.rect(155, 185, 360, 360);
+		this.avatarFrames.rect(605, 185, 360, 360);
+		this.avatarFrames.stroke({
+			color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue,
+			width: 2,
+			alpha: 1,
+		});
+	}
+
 	createUpperRoundLegend(): Text[] {
 		const legend: Text[] = [];
 
 		legend.push({
-			text: "⩔⩔⩔⩔⩔\n" ,
+			text: "⩔⩔⩔\n" ,
 			x: 0,
 			y: 0,
 			style: {
@@ -85,16 +220,16 @@ export class Bracket extends Entity {
 				fontWeight: 'bold' as const,
 				align: 'left' as const,
 				fontFamily: 'monospace',
-				letterSpacing: 211,
+				letterSpacing: 435.5,
 			},
 		} as Text);
 
 		legend[0].anchor = { x: 0.5, y: 0.5 };
-		legend[0].x = 562;
+		legend[0].x = 561;
 		legend[0].y = 160;
 
 		legend.push({
-			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
+			text: "選手プロフィール                                        対戦相手プロフィール                    \n",
 			x: 0,
 			y: 0,
 			style: {
@@ -106,7 +241,7 @@ export class Bracket extends Entity {
 			},
 		} as Text);
 
-		legend[1].x = 560;
+		legend[1].x = 650;
 		legend[1].y = 155;
 
 		return (legend);
@@ -116,7 +251,7 @@ export class Bracket extends Entity {
 		const legend: Text[] = [];
 		
 		legend.push({
-			text: "⩔⩔⩔⩔⩔\n" ,
+			text: "⩔⩔⩔\n" ,
 			x: 0,
 			y: 0,
 			style: {
@@ -125,17 +260,17 @@ export class Bracket extends Entity {
 				fontWeight: 'bold' as const,
 				align: 'left' as const,
 				fontFamily: 'monospace',
-				letterSpacing: 211,
+				letterSpacing: 435.5,
 			},
 		} as Text);
 	
 		legend[0].anchor = { x: 0.5, y: 0.5 };
-		legend[0].x = 562;
+		legend[0].x = 561;
 		legend[0].y = 635;
 		legend[0].rotation = Math.PI;
 	
 		legend.push({
-			text: "第一回戦                     第二回戦                     第三回戦                      終わり\n" ,
+			text: "選手プロフィール                                        対戦相手プロフィール                    \n",
 			x: 0,
 			y: 0,
 			style: {
@@ -147,118 +282,19 @@ export class Bracket extends Entity {
 			},
 		} as Text);
 	
-		legend[1].x = 560;
+		legend[1].x = 650;
 		legend[1].y = 655;
 	
 		return (legend);
 	}
 
-	private createBracketStructure() {
-		const bracketCenterY = this.menu.height / 2 + 10;
-
-		this.createTierCells(8, this.BASE_X, bracketCenterY, 55);
-
-		this.createTierCells(4, this.BASE_X + this.TIER_SPACING, bracketCenterY, 110);
-
-		this.createTierCells(2, this.BASE_X + (this.TIER_SPACING * 2), bracketCenterY, 220);
-
-		this.createTierCells(1, this.BASE_X + (this.TIER_SPACING * 3), bracketCenterY, 0);
-	}
-
-	private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
-		const totalHeight = (playerCount - 1) * verticalSpacing;
-		const startY = centerY - (totalHeight / 2);
-		
-		for (let i = 0; i < playerCount; i++) {
-			const x = baseX;
-			const y = startY + (i * verticalSpacing);
-			
-			this.nameCells.push(new NameCell(
-				`nameCell_${this.nameCells.length}`,
-				'bracket',
-				this.menu,
-				this.getRandomName(this.nameCells.length + 1),
-				x,
-				y,
-				this.CELL_WIDTH,
-				this.CELL_HEIGHT
-			));
-		}
-	}
-
-	private addNameCellComponents() {
-		for (let i = 0; i < this.nameCells.length; i++) {
-			const nameCellComponent = this.nameCells[i].getComponent('render') as RenderComponent;
-			const textCellComponent = this.nameCells[i].getComponent('text') as TextComponent;
-			this.addComponent(nameCellComponent, `nameCell_${i}`);
-			this.addComponent(textCellComponent, `nameCellText_${i}`);
-		}
-	}
-
-	private createBracketGraphic() {
-		this.bracketGraphic.clear();
-
-		const tiers = [
-			{ startIndex: 0, count: 8, nextTierIndex: 8 },
-			{ startIndex: 8, count: 4, nextTierIndex: 12 },
-			{ startIndex: 12, count: 2, nextTierIndex: 14 }
-		];
-
-		tiers.forEach(tier => this.drawTierConnections(tier));
-		
-		this.bracketGraphic.stroke({ 
-			color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, 
-			width: 3 
-		});
-
-		const renderComponent = new RenderComponent(this.bracketGraphic);
-		this.addComponent(renderComponent);
-	}
-
-	private drawTierConnections(tier: { startIndex: number, count: number, nextTierIndex: number }) {
-		const horizontalLines: { x: number, y: number }[] = [];
-	
-		for (let i = 0; i < tier.count && (tier.startIndex + i) < this.nameCells.length; i++) {
-			const cellIndex = tier.startIndex + i;
-			const nameCell = this.nameCells[cellIndex];
-			const lineY = nameCell.y + (this.CELL_HEIGHT / 2);
-			const lineStartX = nameCell.x + nameCell.width + this.LINE_GAP;
-			const lineEndX = lineStartX + this.LINE_LENGTH + this.HORIZONTAL_LINE_EXTENSION; // Use the constant
-			
-			this.bracketGraphic.moveTo(lineStartX, lineY);
-			this.bracketGraphic.lineTo(lineEndX, lineY);
-			
-			horizontalLines.push({ x: lineEndX - this.HORIZONTAL_LINE_EXTENSION, y: lineY }); // Use the constant here too
-		}
-	
-		for (let i = 0; i < horizontalLines.length - 1; i += 2) {
-			const line1 = horizontalLines[i];
-			const line2 = horizontalLines[i + 1];
-	
-			this.bracketGraphic.moveTo(line1.x, line1.y);
-			this.bracketGraphic.lineTo(line1.x, line2.y);
-			
-			const nextTierCellIndex = tier.nextTierIndex + Math.floor(i / 2);
-			
-			if (nextTierCellIndex < this.nameCells.length) {
-				const nextCell = this.nameCells[nextTierCellIndex];
-				const nextCellCenterY = nextCell.y + (this.CELL_HEIGHT / 2);
-				const connectionStartX = line1.x;
-				const connectionEndX = nextCell.x - this.LINE_GAP;
-	
-				this.bracketGraphic.moveTo(connectionStartX, nextCellCenterY);
-				this.bracketGraphic.lineTo(connectionEndX, nextCellCenterY);
-			}
-		}
-	}
-
 	createDashedLines(): Text[] {
 		const dashedLines: Text[] = [];
 		
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < 3; i++) {
 			dashedLines.push({
-				text: "----------------------------------------------", 
-				x: 114 + (i * 224),
+				text: i === 1 ? "----------------      -----------------------" : "----------------------------------------------", 
+				x: 114 + (i * 448),
 				y: 397,
 				style: {
 					fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3},
@@ -266,7 +302,7 @@ export class Bracket extends Entity {
 					fontWeight: 'bold' as const,
 					align: 'left' as const,
 					fontFamily: 'monospace',
-					lineHeight: 252,
+					lineHeight: 372,
 				},
 			} as Text);
 			dashedLines[i].rotation = 1.5708;
@@ -275,15 +311,15 @@ export class Bracket extends Entity {
 		return (dashedLines);
 	}
 
-	createRoundGraphic() {
+	createDuelGraphic() {
 		const hOffset = 30;
 		const baseX = 144;
 		const baseY = 160;
 		const bottomY = 615;
 		const groupWidth = 16;
 		const groupHeight = 20;
-		const numGroups = 4;
-		const linesPerGroup = 14;
+		const numGroups = 2;
+		const linesPerGroup = 28;
 		const lineLength = 10;
 
 		// Top section
@@ -345,60 +381,49 @@ export class Bracket extends Entity {
 		const roundComponent = new RenderComponent(this.roundGraphic);
 		this.addComponent(roundComponent, 'roundGraphic');
 	}
-	private createCrownElement() {
-		this.crown = this.createCrown();
-		const crownTextComponent = new TextComponent(this.crown);
-		this.addComponent(crownTextComponent, 'crown');
-	}
 
-	createCrown() {
-		return {
-			text: "♛",
-			x: this.menu.width / 2,
-			y: this.menu.height / 2 - 40,
-			style: {
-				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.3 },
-				fontSize: 75,
-				fontWeight: 'lighter' as const,
-				fontFamily: 'anatol-mn',
-			},
-			anchor: { x: 0.5, y: 0.5 },
-		};
-	}
-
-	redrawBracket(): void {
-		this.bracketGraphic.clear();
-		this.createBracketStructure();
-		this.createBracketGraphic();
-
-		const updatedCrown = this.createCrown();
-		const crownComponent = new TextComponent(updatedCrown);
-		this.replaceComponent('text', crownComponent, 'crown');
-
-		this.nameCells.forEach(element => {
-			element.redrawCell(); 
-		 });
-
+	redrawDuel(): void {
+		this.duelGraphic.clear();
+	
 		this.roundGraphic.clear();
-		this.createRoundGraphic();
-
+		this.createDuelGraphic();
+	
+		this.avatarFrames.clear();
+		this.createAvatarFrames();
+	
 		const newDashedLines = this.createDashedLines();
 		for (let i = 0; i < this.dashedLines.length; i++) {
 			const dashedLinesComponent = new TextComponent(newDashedLines[i]);
 			this.replaceComponent('text', dashedLinesComponent, `dashedLines${i}`);
 		};
-
+	
 		const newUpperRoundLegend = this.createUpperRoundLegend();
 		const upperRoundLegendComponent = new TextComponent(newUpperRoundLegend[0]);
 		this.replaceComponent('text', upperRoundLegendComponent, 'upperRoundLegend');
 		const upperRoundLegendTextComponent = new TextComponent(newUpperRoundLegend[1]);
 		this.replaceComponent('text', upperRoundLegendTextComponent, 'upperRoundLegendText');
-
+	
 		const newLowerRoundLegend = this.createLowerRoundLegend();
 		const lowerRoundLegendComponent = new TextComponent(newLowerRoundLegend[0]);
 		this.replaceComponent('text', lowerRoundLegendComponent, 'lowerRoundLegend');
 		const lowerRoundLegendTextComponent = new TextComponent(newLowerRoundLegend[1]);
 		this.replaceComponent('text', lowerRoundLegendTextComponent, 'lowerRoundLegendText');
+		
+		const newVsText = this.createVSText();
+		const vsTextComponent = new TextComponent(newVsText);
+		this.replaceComponent('text', vsTextComponent, 'vsText');
+
+		const newNameTags = this.createNameTags();
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(newNameTags[i]);
+			this.replaceComponent('text', nameTagComponent, `nameTag${i}`);
+		}
+
+		const newStatsTexts = this.createStatsTexts();
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const statsTextComponent = new TextComponent(newStatsTexts[i]);
+			this.replaceComponent('text', statsTextComponent, `statsText${i}`);
+		}
 	}
 
 	getRandomName(index: number): string {

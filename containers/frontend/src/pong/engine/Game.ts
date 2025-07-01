@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 17:18:50 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:21:43 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-//import { GameConfig } from '../menu/GameConfig';
-export interface GameConfig {
-	classicMode: boolean;
-	isOnline?: boolean;
-	gameId?: string;
-	opponent?: string;
-}
+import { GameConfig, GameData } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -32,6 +26,7 @@ import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
+import { EndgameOverlay } from '../entities/endGame/endGameOverlay';
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
@@ -53,6 +48,8 @@ import { PowerupSystem } from '../systems/PowerupSystem';
 import { PostProcessingSystem } from '../systems/PostProcessingSystem';
 import { WorldSystem } from '../systems/WorldSystem';
 import { CrossCutSystem } from '../systems/CrossCutSystem';
+import { EndingSystem } from '../systems/EndingSystem';
+import { AISystem } from '../systems/AISystem';
 
 // Import spawners
 import { BallSpawner } from '../spawners/BallSpawner'
@@ -63,6 +60,7 @@ import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '..
 
 export class PongGame {
 	config: GameConfig;
+	data!: GameData;;
 	language: string;
 	app: Application;
 	width: number;
@@ -88,6 +86,10 @@ export class PongGame {
 		crossCut: Container;
 		ui: Container;
 		pp: Container;
+		alphaFade: Container;
+		fireworks: Container;
+		overlays: Container;
+		hidden: Container;
 	};
 	visualRoot: Container;
 	sounds!: GameSounds;
@@ -106,6 +108,10 @@ export class PongGame {
 	serverPaddle1Position: number = 0;
 	serverPaddle2Position: number = 0;
 
+	hasEnded: boolean = false;
+	alphaFade: Graphics = new Graphics();
+	endGameOverlay!: EndgameOverlay;
+
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
 		this.language = language;
@@ -122,8 +128,12 @@ export class PongGame {
 		this.paddleWidth = 10;
 		this.paddleHeight = 80;
 
-		this.isOnline = config.isOnline || false;
+		//! MOVIDAS DE CONFIG
+		//TODO FIIIIXXXXX
+		this.isOnline = config.mode === 'online' ? true : false;
 		this.gameId = config.gameId;
+
+		this.prepareGameData();
 
 		this.renderLayers = {
 			bounding: new Container(),
@@ -136,7 +146,11 @@ export class PongGame {
 			ballChange: new Container(),
 			crossCut: new Container(),
 			ui: new Container(),
-			pp: new Container()
+			pp: new Container(),
+			alphaFade: new Container(),
+			fireworks: new Container(),
+			overlays: new Container(),
+			hidden: new Container(),
 		};
 		this.visualRoot = new Container();
 		this.visualRoot.sortableChildren = true;
@@ -154,6 +168,9 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
 		this.visualRoot.addChild(this.renderLayers.ui);
+		this.visualRoot.addChild(this.renderLayers.alphaFade);
+		this.visualRoot.addChild(this.renderLayers.fireworks);
+		this.visualRoot.addChild(this.renderLayers.overlays);
 
 		if (!this.config.classicMode) {
 			this.initSounds();
@@ -184,9 +201,9 @@ export class PongGame {
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
-		const inputSystem = new InputSystem();
+		const inputSystem = new InputSystem(this);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
-		if (!this.isOnline) {const worldSystem = new WorldSystem(this)};
+		const worldSystem = new WorldSystem(this);
 		const animationSystem = new AnimationSystem(this);
 		const vfxSystem = new VFXSystem();
 		const particleSystem = new ParticleSystem(this);
@@ -194,18 +211,105 @@ export class PongGame {
 		const powerupSystem = new PowerupSystem(this, this.width, this.height);
 		const postProcessingSystem = new PostProcessingSystem();
 		const crossCutSystem = new CrossCutSystem(this);
+		const endingSystem = new EndingSystem(this);
 
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
-		this.systems.push(physicsSystem);
-		if (!this.config.classicMode && !this.isOnline) this.systems.push(worldSystem);
+		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		if (!this.config.classicMode) this.systems.push(vfxSystem);
 		if (!this.config.classicMode) this.systems.push(particleSystem);
 		this.systems.push(uiSystem);
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
+		this.systems.push(endingSystem);
+
+		if (this.config.variant == '1vAI') {
+			const rightPaddle = this.entities.find(e => e.id === 'paddleR') as Paddle;
+			if (rightPaddle) {
+				rightPaddle.isAI = true;
+				console.log('Manually set right paddle as AI');
+			}
+
+			setTimeout(() => {
+				const aiSystem = new AISystem(this);
+				aiSystem.setDifficulty('easy');
+				this.systems.push(aiSystem);
+				console.log('AI System added to systems');
+			}, 100);
+		}
+
+		this.systems.push(physicsSystem);
+	}
+
+	prepareGameData() {
+		this.data = {
+			gameId: this.gameId || '',
+			config: this.config,
+			createdAt: new Date().toString(),
+			endedAt: null,
+			generalResult: null,
+			winner: null,
+			finalScore: {
+				leftPlayer: 0,
+				rightPlayer: 0
+			},
+
+			balls: {
+				defaultBalls: 1,
+				curveBalls: 0,
+				multiplyBalls: 0,
+				spinBalls: 0,
+				burstBalls: 0,
+			},
+
+			specialItmes: {
+				bullets: 0,
+				shields: 0
+			},
+
+			walls: {
+				pyramids: 0,
+				escalators: 0,
+				hourglasses: 0,
+				lightnings: 0,
+				maws: 0,
+				rakes: 0,
+				trenches: 0,
+				kites: 0,
+				bowties: 0,
+				honeycombs: 0,
+				snakes: 0,
+				vipers: 0,
+				waystones: 0
+			},
+			
+			leftPlayer: {
+				name: this.leftPlayer.name || 'Player 1',
+				score: 0,
+				result: null,
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPicked: 0,
+				powerdownsPicked: 0,
+				ballchangesPicked: 0
+			},
+			rightPlayer: {
+				name: this.rightPlayer.name || 'Player 2',
+				score: 0,
+				result: null,
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPicked: 0,
+				powerdownsPicked: 0,
+				ballchangesPicked: 0
+			}
+		};
+
+		console.log(this.data.createdAt);
 	}
 
 	initSounds(): void {
@@ -287,14 +391,14 @@ export class PongGame {
 				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({
-				src: ['/assets/sfx/recoverUpFiltered01.mp3'],
+				src: ['/assets/sfx/used/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetUp loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({
-				src: ['/assets/sfx/recoverDownFiltered01.mp3'],
+				src: ['/assets/sfx/used/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
@@ -323,7 +427,11 @@ export class PongGame {
 
 		//TODO: Update to match online game player names consistently
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		this.rightPlayer = { name: this.config.opponent || "Player 2" };
+		if (this.config.variant === '1vAI') {
+			this.rightPlayer = { name: "AI-BOT" };
+		} else {
+			this.rightPlayer = { name: this.config.opponent || "Player 2" };
+		}
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -356,7 +464,12 @@ export class PongGame {
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
 		this.renderLayers.foreground.addChild(paddleRText.getRenderable());
 		this.entities.push(paddleR);
-		console.log("Right paddle created");
+		if (this.config.variant === '1vAI') {
+			paddleR.isAI = true;
+			console.log("Right paddle created as AI BOT");
+		} else {
+			console.log("Right paddle created");
+		}
 
 		// Create UI
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
@@ -386,6 +499,19 @@ export class PongGame {
 			this.entities.push(postProcessingLayer);
 			console.log("PostProcessing Layer created")
 		}
+
+		// Create endgame alpha fade
+		this.alphaFade.rect(0, 0, this.width, this.height);
+		this.alphaFade.fill({ color: GAME_COLORS.black, alpha: 0.4 });
+		this.renderLayers.hidden.addChild(this.alphaFade);
+
+		// Create endgame overlays
+		this.endGameOverlay = new EndgameOverlay(this, 'endGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
+		const endGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
+		this.renderLayers.hidden.addChild(endGameOverlayRender.graphic);
+
+		const endGameResultTextComponent = this.endGameOverlay.getComponent('text') as TextComponent;
+		this.renderLayers.hidden.addChild(endGameResultTextComponent.getRenderable());
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);
@@ -640,5 +766,45 @@ export class PongGame {
 		if (!this.isOnline) return;
 		console.log('Starting online Pong game');
 		this.disableLocalGameplayForOnline();
+	}
+
+	async saveGameResults(): Promise<void> {
+		try {
+			console.log('Starting to save game results...');
+			console.log('Game data to send:', this.data);
+			
+			const token = sessionStorage.getItem('token');
+			console.log('Auth token found:', !!token);
+			
+			if (!token) {
+				console.error('No authentication token found');
+				return;
+			}
+	
+			console.log('Making API call to /api/games/results');
+			const response = await fetch('/api/games/results', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					gameData: this.data
+				})
+			});
+	
+			console.log('Response status:', response.status);
+			console.log('Response ok:', response.ok);
+	
+			if (response.ok) {
+				const result = await response.json();
+				console.log('Game results saved successfully:', result);
+			} else {
+				const error = await response.json();
+				console.error('Failed to save game results:', error);
+			}
+		} catch (error) {
+			console.error('Network error saving game results:', error);
+		}
 	}
 }

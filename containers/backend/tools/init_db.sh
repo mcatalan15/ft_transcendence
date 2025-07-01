@@ -90,6 +90,13 @@ if [ ! -f "$DB_PATH" ]; then
 		FOREIGN KEY(id_user) REFERENCES users(id_user)
 	);
 
+	CREATE TABLE IF NOT EXISTS game_results (
+    id_game INTEGER PRIMARY KEY,
+    game_data TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(id_game) REFERENCES games(id_game)
+	);
+
 	-- Add more initialization logic as needed
 EOF
 

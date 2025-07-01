@@ -6,11 +6,9 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 09:54:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:53:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-import { Text } from "pixi.js";
 
 import { Menu } from "../Menu";
 
@@ -25,7 +23,6 @@ import { Bracket } from "./Bracket";
 import { TournamentNextMatchDisplay } from "./TournamentNextMatchDisplay";
 
 import { GAME_COLORS } from "../../utils/Types";
-import { TextComponent } from "../../components/TextComponent";
 
 export class TournamentOverlay extends Overlay {
     tournamentTexts!: TournamentTexts;

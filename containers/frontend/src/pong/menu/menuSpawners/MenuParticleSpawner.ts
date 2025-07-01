@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:04:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 11:13:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ import { GAME_COLORS } from '../../utils/Types';
 
 interface AmbientDustConfig {
 	maxParticles: number;
-	spawnRate: number; // particles per second
+	spawnRate: number;
 	color: number;
 	minSize: number;
 	maxSize: number;
@@ -29,7 +29,7 @@ interface AmbientDustConfig {
 	maxLifetime: number;
 	minAlpha: number;
 	maxAlpha: number;
-	driftSpeed: number; // how fast they drift around
+	driftSpeed: number;
 	minRotationSpeed: number;
 	maxRotationSpeed: number;
 }

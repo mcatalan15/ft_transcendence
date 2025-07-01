@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 12:58:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/27 14:39:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,13 +145,36 @@ export class Entity {
     }
 
     replaceComponent(type: string, newComponent: Component, instanceId: string | null = null): void {
+        console.log('Replacing component:', type, 'with instanceId:', instanceId);
+        
         if (!instanceId) {
             instanceId = newComponent.instanceId || `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
         }
     
-        this.removeComponent(type, instanceId);
-    
-        this.addComponent(newComponent, instanceId);
+        const key = this._formatKey(type, instanceId);
+        
+        if (this.components.has(key)) {
+            this.components.delete(key);
+            
+            const typeComponent = this.components.get(type);
+            if (typeComponent && typeComponent.instanceId === instanceId) {
+                this.components.delete(type);
+            }
+            
+            console.log('Old component removed for key:', key);
+        } else {
+            console.log('Component not found for key:', key, 'Available keys:', Array.from(this.components.keys()));
+        }
+
+        this.components.set(key, newComponent);
+
+        const existingTypeComponents = this.getComponentsByType(type);
+        if (existingTypeComponents.length === 1) {
+            this.components.set(type, newComponent);
+        }
+        
+        newComponent.instanceId = instanceId;
+        console.log('New component added with instanceId:', instanceId);
     }
 
     private _formatKey(type: string, instanceId: string): string {

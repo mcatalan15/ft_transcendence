@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 16:15:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:02:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ import { PhysicsComponent } from "../components/PhysicsComponent";
 
 export class PowerupSpawner {
 	static spawnPowerup(game: PongGame, width: number, height: number, world: string): void {
+		if (game.hasEnded) return;
+		
 		const spawningPoints: Point[] = this.getSpawningPointsInWorld(world, width, height);
 
 		this.redirectSpawn(game, spawningPoints);
@@ -241,6 +243,7 @@ export class PowerupSpawner {
 		
 		game.renderLayers.powerup.addChild(render.graphic);
 		
+		game.data.specialItmes.shields++;
 		console.log(`spawned shield:${shield.x}`);
 	}
 
@@ -269,6 +272,7 @@ export class PowerupSpawner {
 
 		game.renderLayers.powerup.addChild(bulletRender.graphic);
 
+		game.data.specialItmes.bullets++;
 		console.log(`spawned bullet going:${bullet.direction}`);
 	}
 

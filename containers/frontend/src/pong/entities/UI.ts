@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 13:52:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/06/30 14:29:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,19 @@ export class UI extends Entity {
 		const renderComponent = new RenderComponent(bars);
 		this.addComponent(renderComponent, 'render');
 		
-		const scoreText = this.setUpScoreText();
-		const scoreTextComponent = new TextComponent(scoreText);
-		this.addComponent(scoreTextComponent, "scoreText");
+		if (this.game.config.classicMode) {
+			const classicScoreTextLeft = this.setUpClassicScoreTextLeft();
+			const classicScoreTextLeftComponent = new TextComponent(classicScoreTextLeft);
+			this.addComponent(classicScoreTextLeftComponent, "classicScoreTextLeft");
+			const classicScoreTextRight = this.setUpClassicScoreTextRight();
+			const classicScoreTextRightComponent = new TextComponent(classicScoreTextRight);
+			this.addComponent(classicScoreTextRightComponent, "classicScoreTextRight");
+		} else {
+			const scoreText = this.setUpScoreText();
+			const scoreTextComponent = new TextComponent(scoreText);
+			this.addComponent(scoreTextComponent, "scoreText");
+		}
+		
 
 		if (!this.game.config.classicMode) {
 			const timerText = this.setUpTimerText();
@@ -109,33 +119,48 @@ export class UI extends Entity {
     }
 
 	private setUpScoreText(): TextData {
-		if (this.game.config.classicMode) {
-			return {
-				tag: 'score',
-				text: '0          0',
-				x: 0,
-				y: 0,
-				style: {
-					fill: { color: GAME_COLORS.white, alpha: 1 },
-					fontSize: 200,
-					fontFamily: 'anatol-mn',
-				} as TextStyle,
-				anchor: { x: 0.5, y: 0.5 },
-			};
-		} else {
-			return {
-				tag: 'score',
-				text: '0 - 0',
-				x: 0,
-				y: 0,
-				style: {
-					fill: GAME_COLORS.white,
-					fontSize: 20,
-					fontWeight: 'bold',
-				} as TextStyle,
-				anchor: { x: 0.5, y: 0.5 },
-			};
-		}
+		return {
+			tag: 'score',
+			text: '0 - 0',
+			x: 0,
+			y: 0,
+			style: {
+				fill: GAME_COLORS.white,
+				fontSize: 20,
+				fontWeight: 'bold',
+			} as TextStyle,
+			anchor: { x: 0.5, y: 0.5 },
+		};
+	}
+
+	private setUpClassicScoreTextLeft(): TextData {
+		return {
+			tag: 'classicScoreLeft',
+			text: '0',
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: GAME_COLORS.white, alpha: 1 },
+				fontSize: 200,
+				fontFamily: 'anatol-mn',
+			} as TextStyle,
+			anchor: { x: 0.5, y: 0.5 },
+		};
+	}
+
+	private setUpClassicScoreTextRight(): TextData {
+		return {
+			tag: 'classicScoreRight',
+			text: '0',
+			x: 0,
+			y: 0,
+			style: {
+				fill: { color: GAME_COLORS.white, alpha: 1 },
+				fontSize: 200,
+				fontFamily: 'anatol-mn',
+			} as TextStyle,
+			anchor: { x: 0.5, y: 0.5 },
+		};
 	}
 
 	private setUpTimerText(): TextData {
@@ -202,6 +227,26 @@ export class UI extends Entity {
 			textComponent.setText(newScore);
 		} else {
 			console.error("Score text component not found");
+		}
+	}
+
+	setClassicScoreText(newScore: string, side: string): void {
+		if (side === 'left') {
+			const textComponent = this.getComponent('text', 'classicScoreTextLeft') as TextComponent;
+			if (textComponent) {
+				textComponent.text = newScore;
+				textComponent.setText(newScore);
+			} else {
+				console.error("Classic score left text component not found");
+			}
+		} else if (side === 'right') {
+			const textComponent = this.getComponent('text', 'classicScoreTextRight') as TextComponent;
+			if (textComponent) {
+				textComponent.text = newScore;
+				textComponent.setText(newScore);
+			} else {
+				console.error("Classic score right text component not found");
+			}
 		}
 	}
 
