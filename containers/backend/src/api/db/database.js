@@ -19,32 +19,76 @@ function connectToDatabase(retries = 5, delay = 2000) {
 	return db;
 }
 
+// async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
+// 	return new Promise((resolve, reject) => {
+// 		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
+// 		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
+
+// 		db.run(query, params, function (err) {
+// 			if (err) {
+// 				console.error('[DB INSERT ERROR] Full error:', {
+// 					message: err.message,
+// 					code: err.code,
+// 					errno: err.errno,
+// 					stack: err.stack
+// 				});
+
+// 				if (err.message.includes('UNIQUE constraint failed')) {
+// 					const customError = new Error('Username or email already exists');
+// 					customError.code = 'SQLITE_CONSTRAINT';
+// 					reject(customError);
+// 				} else {
+// 					reject(err);
+// 				}
+// 			} else {
+// 				resolve(this.lastID);
+// 			}
+// 		});
+// 	});
+// }
+
 async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
-	return new Promise((resolve, reject) => {
-		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
-		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
+    return new Promise((resolve, reject) => {
+        const userQuery = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
+        const userParams = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
 
-		db.run(query, params, function (err) {
-			if (err) {
-				console.error('[DB INSERT ERROR] Full error:', {
-					message: err.message,
-					code: err.code,
-					errno: err.errno,
-					stack: err.stack
-				});
+        db.run(userQuery, userParams, function (err) {
+            if (err) {
+                console.error('[DB INSERT ERROR] Full error:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
 
-				if (err.message.includes('UNIQUE constraint failed')) {
-					const customError = new Error('Username or email already exists');
-					customError.code = 'SQLITE_CONSTRAINT';
-					reject(customError);
-				} else {
-					reject(err);
-				}
-			} else {
-				resolve(this.lastID);
-			}
-		});
-	});
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    const customError = new Error('Username or email already exists');
+                    customError.code = 'SQLITE_CONSTRAINT';
+                    reject(customError);
+                } else {
+                    reject(err);
+                }
+            } else {
+                const userId = this.lastID;
+                const statsQuery = `INSERT INTO user_stats (id_user, total_games, wins, losses, win_rate, vs_ai_games, tournaments_won) VALUES (?, 0, 0, 0, 0.0, 0, 0)`;
+                const statsParams = [userId];
+
+                db.run(statsQuery, statsParams, function (statsErr) {
+                    if (statsErr) {
+                        console.error('[DB USER_STATS INSERT ERROR] Full error:', {
+                            message: statsErr.message,
+                            code: statsErr.code,
+                            errno: statsErr.errno,
+                            stack: statsErr.stack
+                        });
+                        reject(statsErr);
+                    } else {
+                        resolve(userId);
+                    }
+                });
+            }
+        });
+    });
 }
 
 async function updateUserAvatar(userId, filename, type) {

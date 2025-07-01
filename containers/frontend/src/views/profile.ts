@@ -8,6 +8,53 @@ import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
 
 // Add this function before the showProfile function
+async function fetchUserStats(username?: string): Promise<any> {
+    try {
+        const statsEndpoint = username ? `/api/stats/${username}` : '/api/stats';
+        const response = await fetch(statsEndpoint, {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.warn(`Stats API returned ${response.status}, using default values`);
+            return {
+                matchesPlayed: 0,
+                tournamentsPlayed: 0,
+                victories: 0,
+                losses: 0,
+                winRate: 0.0,
+                draws: 0
+            };
+        }
+
+        const data = await response.json();
+        
+        // Ensure all values exist and default to 0 if missing
+        return {
+            matchesPlayed: data.total_games || 0,
+            tournamentsPlayed: data.tournaments_won || 0, // You might need to adjust this based on your DB schema
+            victories: data.wins || 0,
+            losses: data.losses || 0,
+            winRate: data.win_rate || 0.0,
+            draws: data.draws || 0
+        };
+    } catch (error) {
+        console.error('Error fetching user stats:', error);
+        // Return default values on error
+        return {
+            matchesPlayed: 0,
+            tournamentsPlayed: 0,
+            victories: 0,
+            losses: 0
+        };
+    }
+	console.log('fetchUserStats called with username:', username);
+	console.log('fetchUserStats returning:', Response);
+}
+
 async function updateOnlineStatus(userId: string): Promise<void> {
     try {
         const response = await fetch(`/api/profile/status/${userId}`, {
