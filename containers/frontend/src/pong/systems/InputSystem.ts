@@ -6,9 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:52:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 17:35:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:01:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { PongGame } from '../engine/Game';
 
 import { Entity } from '../engine/Entity';
 import type { System } from '../engine/System'
@@ -18,9 +20,12 @@ import { isPaddle } from '../utils/Guards';
 import { Paddle } from '../entities/Paddle';
 
 export class InputSystem implements System {
+	private game: PongGame;
 	private keysDown: Set<string> = new Set();
 
-	constructor() {
+	constructor(game: PongGame) {
+		this.game = game;
+
 		window.addEventListener('keydown', (e) => {
 			this.keysDown.add(e.key);
 		});
@@ -31,12 +36,12 @@ export class InputSystem implements System {
 	}
 
 	update(entities: Entity[]): void {
+		if (this.game.hasEnded) return;
 		for (const entity of entities) {
 			if (isPaddle(entity)) {
 				const paddle = entity as Paddle;
 			
 				if (paddle.isAI) {
-					console.log(`⏭️ InputSystem skipping AI paddle: ${paddle.id}`);
 					continue;
 				}
 

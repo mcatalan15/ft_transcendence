@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 15:17:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:25:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@ export interface GameConfig {
         isHost?: boolean;
         serverUrl?: string;
     };
+}
+
+export interface Preconfiguration {
+	
 }
 
 export interface GameData {

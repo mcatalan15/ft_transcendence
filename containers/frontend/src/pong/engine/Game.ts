@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 12:50:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:19:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
+import { EndgameOverlay } from '../entities/endGame/endGameOverlay';
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
@@ -85,6 +86,7 @@ export class PongGame {
 		crossCut: Container;
 		ui: Container;
 		pp: Container;
+		overlays: Container;
 		hidden: Container;
 	};
 	visualRoot: Container;
@@ -103,6 +105,8 @@ export class PongGame {
 	serverBallPosition: { x: number, y: number } = { x: 0, y: 0 };
 	serverPaddle1Position: number = 0;
 	serverPaddle2Position: number = 0;
+
+	hasEnded: boolean = false;
 
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
@@ -139,6 +143,7 @@ export class PongGame {
 			crossCut: new Container(),
 			ui: new Container(),
 			pp: new Container(),
+			overlays: new Container(),
 			hidden: new Container(),
 		};
 		this.visualRoot = new Container();
@@ -157,6 +162,7 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
 		this.visualRoot.addChild(this.renderLayers.ui);
+		this.visualRoot.addChild(this.renderLayers.overlays);
 
 		if (!this.config.classicMode) {
 			this.initSounds();
@@ -187,7 +193,7 @@ export class PongGame {
 
 	initSystems(): void {
 		const renderSystem = new RenderSystem();
-		const inputSystem = new InputSystem();
+		const inputSystem = new InputSystem(this);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const worldSystem = new WorldSystem(this);
 		const animationSystem = new AnimationSystem(this);
@@ -485,6 +491,9 @@ export class PongGame {
 			this.entities.push(postProcessingLayer);
 			console.log("PostProcessing Layer created")
 		}
+
+		// Create endgame overlays
+
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);

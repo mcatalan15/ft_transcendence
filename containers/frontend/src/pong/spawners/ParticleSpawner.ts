@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 12:57:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:54:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -368,23 +368,23 @@ export class ParticleSpawner {
 	}
 
 	static spawnPaddleExplosion(game: PongGame, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, isLeftPaddle: boolean, playerName: string): void {
-		const particleCount = 45; // Increased from 25
+		const particleCount = 100;
 		const explosionDirection = isLeftPaddle ? 1 : -1;
+
+		this.spawnNameExplosion(game, paddleX, paddleY, paddleWidth, paddleHeight, isLeftPaddle, playerName, explosionDirection);
 		
-		// PHASE 1: Initial paddle body explosion
 		for (let i = 0; i < particleCount; i++) {
 			const startX = paddleX + (Math.random() - 0.5) * paddleWidth;
 			const startY = paddleY + (Math.random() - 0.5) * paddleHeight;
 			
-			// More dramatic velocity ranges
-			const baseVelocityX = explosionDirection * (Math.random() * 12 + 6); // Increased speed
-			const velocityY = (Math.random() - 0.5) * 15; // Increased vertical spread
+			const baseVelocityX = explosionDirection * (Math.random() * 12 + 6);
+			const velocityY = (Math.random() - 0.5) * 15;
 			
 			const velocityX = baseVelocityX + (Math.random() - 0.5) * 4;
 			
-			const size = Math.random() * 8 + 4; // Larger particles
-			const lifetime = Math.random() * 60 + 40; // Longer lasting
-			const alpha = Math.random() * 0.8 + 0.6; // Brighter particles
+			const size = Math.random() * 8 + 4;
+			const lifetime = Math.random() * 60 + 40;
+			const alpha = Math.random() * 0.8 + 0.6;
 			
 			const particle = new Particle(
 				`paddleExplosion-${Date.now()}-${i}`, 
@@ -392,7 +392,7 @@ export class ParticleSpawner {
 				startX, 
 				startY, 
 				{
-					type: Math.random() > 0.7 ? 'triangle' : 'square', // Mix of shapes
+					type: 'square',
 					velocityX: velocityX,
 					velocityY: velocityY,
 					lifetime: lifetime,
@@ -412,9 +412,8 @@ export class ParticleSpawner {
 			const particleRender = particle.getComponent('render') as RenderComponent;
 			game.renderLayers.foreground.addChild(particleRender.graphic);
 		}
-	
-		// PHASE 2: Large impact chunks
-		for (let i = 0; i < 15; i++) { // Increased from 8
+
+		for (let i = 0; i < 15; i++) {
 			const impactX = paddleX + (Math.random() - 0.5) * paddleWidth * 2;
 			const impactY = paddleY + (Math.random() - 0.5) * paddleHeight * 2;
 			
@@ -431,7 +430,7 @@ export class ParticleSpawner {
 					velocityX: impactVelocityX,
 					velocityY: impactVelocityY,
 					lifetime: Math.random() * 40 + 25,
-					size: Math.random() * 12 + 8, // Even larger chunks
+					size: Math.random() * 12 + 8,
 					shrink: true,
 					rotate: true,
 					rotationSpeed: (Math.random() - 0.5) * 0.2,
@@ -448,34 +447,26 @@ export class ParticleSpawner {
 			game.renderLayers.foreground.addChild(impactRender.graphic);
 		}
 	
-		// PHASE 3: Name explosion particles
-		this.spawnNameExplosion(game, paddleX, paddleY, paddleWidth, paddleHeight, isLeftPaddle, playerName, explosionDirection);
-	
-		// PHASE 4: Secondary explosion waves (delayed)
 		setTimeout(() => {
 			this.spawnSecondaryPaddleExplosion(game, paddleX, paddleY, paddleWidth, paddleHeight, explosionDirection);
-		}, 200);
+		}, 100);
 	
 		setTimeout(() => {
 			this.spawnTertiaryPaddleExplosion(game, paddleX, paddleY, paddleWidth, paddleHeight, explosionDirection);
-		}, 400);
+		}, 200);
 	}
 	
-	// NEW: Name explosion effect
 	static spawnNameExplosion(game: PongGame, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, isLeftPaddle: boolean, playerName: string, explosionDirection: number): void {
-		// Calculate name position (where the text would be on the paddle)
-		const nameX = paddleX;
-		const nameY = paddleY; // Text is usually centered on paddle
+		const nameX = isLeftPaddle ? paddleX - 40 : paddleX + 40;
+		const nameY = paddleY;
 		
-		// Create particles for each character in the name
 		const nameLength = playerName.length;
-		const letterSpacing = Math.min(paddleHeight / nameLength, 8); // Adapt to paddle height
+		const letterSpacing = Math.min(paddleHeight / nameLength, 8);
 		
 		for (let i = 0; i < nameLength; i++) {
 			const charY = nameY - (paddleHeight / 2) + (i * letterSpacing) + (letterSpacing / 2);
-			
-			// Create multiple particles per character for more dramatic effect
-			for (let j = 0; j < 3; j++) {
+
+			for (let j = 0; j < 4; j++) {
 				const startX = nameX + (Math.random() - 0.5) * paddleWidth * 0.8;
 				const startY = charY + (Math.random() - 0.5) * letterSpacing;
 				
@@ -488,14 +479,14 @@ export class ParticleSpawner {
 					startX, 
 					startY, 
 					{
-						type: 'triangle', // Different shape for name particles
+						type: 'square',
 						velocityX: velocityX,
 						velocityY: velocityY,
 						lifetime: Math.random() * 50 + 30,
-						size: Math.random() * 4 + 2,
+						size: Math.random() * 5 + 2,
 						shrink: true,
 						rotate: true,
-						rotationSpeed: (Math.random() - 0.5) * 0.25, // Faster rotation
+						rotationSpeed: (Math.random() - 0.5) * 0.25,
 						color: GAME_COLORS.white,
 						alpha: Math.random() * 0.7 + 0.5,
 						alphaDecay: 0.02,
@@ -510,8 +501,7 @@ export class ParticleSpawner {
 			}
 		}
 	}
-	
-	// NEW: Secondary explosion wave
+
 	static spawnSecondaryPaddleExplosion(game: PongGame, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, explosionDirection: number): void {
 		const secondaryCount = 20;
 		
@@ -528,14 +518,15 @@ export class ParticleSpawner {
 				startX, 
 				startY, 
 				{
-					type: 'circle', // Different shape for variety
+					type: 'square',
 					velocityX: velocityX,
 					velocityY: velocityY,
 					lifetime: Math.random() * 35 + 20,
 					size: Math.random() * 6 + 3,
 					shrink: true,
-					rotate: false,
-					color: this.lightenColor(GAME_COLORS.white, 0.2),
+					rotate: true,
+					rotationSpeed: (Math.random() - 0.5) * 0.1,
+					color: GAME_COLORS.white,
 					alpha: 0.6,
 					alphaDecay: 0.025,
 					fadeOut: true,
@@ -549,7 +540,6 @@ export class ParticleSpawner {
 		}
 	}
 	
-	// NEW: Tertiary explosion wave (smallest particles)
 	static spawnTertiaryPaddleExplosion(game: PongGame, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, explosionDirection: number): void {
 		const tertiaryCount = 15;
 		
@@ -566,15 +556,15 @@ export class ParticleSpawner {
 				startX, 
 				startY, 
 				{
-					type: 'triangle',
+					type: 'square',
 					velocityX: velocityX,
 					velocityY: velocityY,
 					lifetime: Math.random() * 25 + 15,
-					size: Math.random() * 3 + 1,
+					size: Math.random() * 4 + 1,
 					shrink: true,
 					rotate: true,
 					rotationSpeed: (Math.random() - 0.5) * 0.3,
-					color: this.darkenColor(GAME_COLORS.white, 0.3),
+					color: GAME_COLORS.white,
 					alpha: 0.4,
 					alphaDecay: 0.03,
 					fadeOut: true,

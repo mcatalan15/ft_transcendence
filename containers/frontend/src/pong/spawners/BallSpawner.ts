@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 10:46:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:00:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ import { GAME_COLORS } from '../utils/Types';
 
 export class BallSpawner {
 	static spawnDefaultBall(game: PongGame): void {
-		const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2, true);
+		if (game.hasEnded) return;
+
+        const ball = new DefaultBall('defaultBall', 'foreground', game.width / 2, game.height / 2, true);
 		const ballRender = ball.getComponent('render') as RenderComponent;
         const ballPhysics = ball.getComponent('physics') as PhysicsComponent;
 

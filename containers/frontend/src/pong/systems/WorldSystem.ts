@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 11:17:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:57:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ export class WorldSystem implements System {
     }
 
     private handleModeSwitching(): void {
+        if (this.game.hasEnded) return;
+        
         if (this.spawningTimer > 0) return;
 
         if (this.spawningMode === 1) {

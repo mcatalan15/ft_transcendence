@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 12:57:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:56:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ export class EndingSystem implements System {
             this.triggerLosingPaddleExplosion();
             
             this.game.saveGameResults();
+            this.game.hasEnded = true;
         }
     }
 
@@ -129,7 +130,6 @@ export class EndingSystem implements System {
 		const paddleHeight = paddlePhysics.height;
 		const isLeftPaddle = losingPaddleId === 'paddleL';
 		
-		console.log(`Exploding ${isLeftPaddle ? 'left' : 'right'} paddle (${playerName}) at (${paddleX}, ${paddleY})`);
 	
 		// Pass the player name to the explosion
 		ParticleSpawner.spawnPaddleExplosion(

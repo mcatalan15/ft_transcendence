@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 10:11:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:31:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { GameConfig } from '../utils/GameConfig';
+import { GameConfig, Preconfiguration } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -59,7 +59,6 @@ import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
 import { MenuLineSystem } from './menuSystems/MenuLineSystem';
 import { ButtonSystem } from './menuSystems/MenuButtonSystem';
 
-
 import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
@@ -72,6 +71,8 @@ import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 
 export class Menu{
 	config: GameConfig;
+	preconfig!: Preconfiguration;
+	hasPreconfig: boolean = false;
 	language: string;
 	app: Application;
 	width: number;
@@ -208,7 +209,7 @@ export class Menu{
 	wallBowtie!: Sprite;
 	wallHoneycomb!: Sprite;
 
-	constructor(app: Application, language: string) {
+	constructor(app: Application, language: string, hasPreConfiguration: boolean = false, preconfig?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
@@ -269,6 +270,11 @@ export class Menu{
 				{ name: 'Player 2', type: 'human', side: 'right' }
 			]
 		};
+
+		if (hasPreConfiguration) {
+			this.hasPreconfig = true;
+			this.preconfig = preconfig!;
+		}
 	}
 
 	async init(): Promise<void> {
@@ -291,6 +297,11 @@ export class Menu{
 		await this.initDust();
 
 		this.playSound('menuBGM');
+
+		//! Preconfig
+		if (this.hasPreconfig) {
+			// PROCESS PRECONFIGURATION
+		}
 
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
