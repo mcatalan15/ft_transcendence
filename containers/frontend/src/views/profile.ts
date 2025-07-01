@@ -189,7 +189,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	avatarContainer.appendChild(avatar);
 
 	if (!isOwnProfile) {
-		updateOnlineStatus(username);
+		//updateOnlineStatus(username);
 		statusIndicator.appendChild(statusDot);
 		avatarContainer.appendChild(statusIndicator);
 	}
@@ -287,7 +287,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 			action: () => navigate('/settings'),
 			color: 'amber'
 		}] : [{
-			label: () => i18n.t('chat', { ns: 'profile' }) || 'Ajustes',
+			label: () => i18n.t('chat', { ns: 'profile' }) || 'Chat',
 			action: () => navigate('/chat'),
 			color: 'amber'
 		}]
@@ -378,7 +378,6 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 			}
 
 			if (!isOwnProfile) {
-				console.log(data.isFriend);
 				const friendButtonContainer = document.getElementById('friendButtonContainer');
 				if (friendButtonContainer) {
 					friendButtonContainer.innerHTML = '';

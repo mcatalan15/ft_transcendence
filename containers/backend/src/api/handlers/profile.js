@@ -3,7 +3,8 @@ const fs = require('fs');
 const { updateUserAvatar,
 	getUserById,
 	getUserByUsername,
-	checkFriendship, updateNickname,
+	checkFriendship,
+	updateNickname,
 	getHashedPassword,
 	changePassword
 } = require('../db/database');
