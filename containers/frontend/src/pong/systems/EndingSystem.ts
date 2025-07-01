@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 14:56:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:16:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ import { isUI } from '../utils/Guards';
 import { getRandomGameColor } from '../utils/MenuUtils';
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
+import { GAME_COLORS } from '../utils/Types';
 
 export class EndingSystem implements System {
     private game: PongGame;
@@ -87,9 +88,21 @@ export class EndingSystem implements System {
             this.endingProcessed = true;
             
             this.triggerLosingPaddleExplosion();
+
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * this.game.width;
+                    const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
+                    const color = GAME_COLORS.red; //! COLOR DEPENDS ON ENDING: WON GREEN, LOST RED
+                    
+                    ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
+                }, i * 300);
+            }
             
             this.game.saveGameResults();
             this.game.hasEnded = true;
+
+            this.displayResults();
         }
     }
 
@@ -142,4 +155,14 @@ export class EndingSystem implements System {
 			playerName // Add player name parameter
 		);
 	}
+
+    displayResults(): void {
+        this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);
+
+        const endgameRenderComponent = this.game.endGameOverlay.getComponent('render') as RenderComponent;
+        this.game.renderLayers.overlays.addChild(endgameRenderComponent.graphic);
+
+        const endgameTextComponent = this.game.endGameOverlay.getComponent('text') as TextComponent;
+        this.game.renderLayers.overlays.addChild(endgameTextComponent.getRenderable());
+    }
 }

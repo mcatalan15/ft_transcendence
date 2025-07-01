@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:19:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:16:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ export class PongGame {
 		crossCut: Container;
 		ui: Container;
 		pp: Container;
+		alphaFade: Container;
+		fireworks: Container;
 		overlays: Container;
 		hidden: Container;
 	};
@@ -107,6 +109,8 @@ export class PongGame {
 	serverPaddle2Position: number = 0;
 
 	hasEnded: boolean = false;
+	alphaFade: Graphics = new Graphics();
+	endGameOverlay!: EndgameOverlay;
 
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
@@ -143,6 +147,8 @@ export class PongGame {
 			crossCut: new Container(),
 			ui: new Container(),
 			pp: new Container(),
+			alphaFade: new Container(),
+			fireworks: new Container(),
 			overlays: new Container(),
 			hidden: new Container(),
 		};
@@ -162,6 +168,8 @@ export class PongGame {
 		this.visualRoot.addChild(this.renderLayers.foreground);
 		this.visualRoot.addChild(this.renderLayers.pp);
 		this.visualRoot.addChild(this.renderLayers.ui);
+		this.visualRoot.addChild(this.renderLayers.alphaFade);
+		this.visualRoot.addChild(this.renderLayers.fireworks);
 		this.visualRoot.addChild(this.renderLayers.overlays);
 
 		if (!this.config.classicMode) {
@@ -492,8 +500,18 @@ export class PongGame {
 			console.log("PostProcessing Layer created")
 		}
 
-		// Create endgame overlays
+		// Create endgame alpha fade
+		this.alphaFade.rect(0, 0, this.width, this.height);
+		this.alphaFade.fill({ color: GAME_COLORS.black, alpha: 0.4 });
+		this.renderLayers.hidden.addChild(this.alphaFade);
 
+		// Create endgame overlays
+		this.endGameOverlay = new EndgameOverlay(this, 'endGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
+		const endGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
+		this.renderLayers.hidden.addChild(endGameOverlayRender.graphic);
+
+		const endGameResultTextComponent = this.endGameOverlay.getComponent('text') as TextComponent;
+		this.renderLayers.hidden.addChild(endGameResultTextComponent.getRenderable());
 
 		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);

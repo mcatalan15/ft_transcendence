@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 14:54:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 15:53:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,6 @@ export class ParticleSpawner {
 	}
 
 	// ending particles
-
 	static spawnFireworksExplosion(game: PongGame, x: number, y: number, color: number, intensity: number = 1.0): void {
 		const particleCount = Math.floor(15 * intensity);
 		const burstRadius = 80 * intensity;
@@ -246,7 +245,7 @@ export class ParticleSpawner {
 
 			game.addEntity(mainParticle);
 			const mainParticleRender = mainParticle.getComponent('render') as RenderComponent;
-			game.renderLayers.background.addChild(mainParticleRender.graphic);
+			game.renderLayers.fireworks.addChild(mainParticleRender.graphic);
 
 			setTimeout(() => {
 				this.spawnTrailingSparkles(game, startX + velocityX * 10, startY + velocityY * 10, color, intensity * 0.5);
@@ -270,7 +269,7 @@ export class ParticleSpawner {
 		
 		game.addEntity(flashParticle);
 		const flashParticleRender = flashParticle.getComponent('render') as RenderComponent;
-    	game.renderLayers.background.addChild(flashParticleRender.graphic);
+    	game.renderLayers.fireworks.addChild(flashParticleRender.graphic);
 
 		setTimeout(() => {
 			this.spawnSecondaryBursts(game, x, y, color, intensity * 0.7);
@@ -304,7 +303,7 @@ export class ParticleSpawner {
 			
 			game.addEntity(sparkle);
 			const sparkleRender = sparkle.getComponent('render') as RenderComponent;
-        	game.renderLayers.background.addChild(sparkleRender.graphic);
+        	game.renderLayers.fireworks.addChild(sparkleRender.graphic);
 		}
 	}
 	
@@ -338,7 +337,7 @@ export class ParticleSpawner {
 				
 				game.addEntity(secondaryParticle);
 				const secondaryRender = secondaryParticle.getComponent('render') as RenderComponent;
-				game.renderLayers.background.addChild(secondaryRender.graphic);
+				game.renderLayers.fireworks.addChild(secondaryRender.graphic);
 			}
 		}
 	}
