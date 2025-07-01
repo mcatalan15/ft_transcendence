@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 17:40:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:55:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ export class PongGame {
 
 			setTimeout(() => {
 				const aiSystem = new AISystem(this);
-				aiSystem.setDifficulty('medium');
+				aiSystem.setDifficulty('easy');
 				this.systems.push(aiSystem);
 				console.log('AI System added to systems');
 			}, 100);
@@ -412,7 +412,7 @@ export class PongGame {
 		//TODO: Update to match online game player names consistently
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 		if (this.config.variant === '1vAI') {
-			this.rightPlayer = { name: "BOT" };
+			this.rightPlayer = { name: "AI-BOT" };
 		} else {
 			this.rightPlayer = { name: this.config.opponent || "Player 2" };
 		}

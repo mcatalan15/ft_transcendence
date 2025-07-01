@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:27:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 18:08:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:55:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ export class AISystem implements System {
     private lastUpdateTime: number = 0;
     private UPDATE_INTERVAL: number = 1000;
 
-    private aiSpeed: number = 8;
+    private aiSpeed: number = 30;
     private accuracy: number = 0.85;
-    private reactionDeadZone: number = 15;
+    private reactionDeadZone: number = 50;
     
     // AI decision state
     private targetPosition: number = 0;
@@ -201,7 +201,7 @@ export class AISystem implements System {
 	public setDifficulty(difficulty: 'easy' | 'medium' | 'hard'): void {
 		switch (difficulty) {
 			case 'easy':
-				this.aiSpeed = 6;
+				this.aiSpeed = 10;
 				this.accuracy = 0.7;
 				this.reactionDeadZone = 25;
 				break;

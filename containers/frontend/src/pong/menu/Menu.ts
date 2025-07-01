@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 10:13:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 10:11:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -676,8 +676,11 @@ export class Menu{
 			{ name: 'avatarMarcSquare', url: '/avatars/square/square2.png' },
 			{ name: 'avatarNicoSquare', url: '/avatars/square/square3.png' },
 			{ name: 'avatarHugoSquare', url: '/avatars/square/square4.png' },
+			{ name: 'avatarBotSquare', url: '/avatars/square/squareBot.png' },
+			{ name: 'avatarBotClassic', url: '/avatars/squareClassic/squareBotClassic.png' },
+			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
+			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
 			
-
 			// About pink logos
 			{ name: 'typescriptPink', url: '/logos/pink/logo_typescript.png' },
 			{ name: 'pixiPink', url: '/logos/pink/logo_pixi.png' },
