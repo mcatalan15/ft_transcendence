@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 13:02:27 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:45:19 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,9 @@ export class PongGame {
 	serverBallPosition: { x: number, y: number } = { x: 0, y: 0 };
 	serverPaddle1Position: number = 0;
 	serverPaddle2Position: number = 0;
+
+	//TODO: Add the world system to handle the world pool and current world
+	//TODO: As well as the powerups and powerdowns
 
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;

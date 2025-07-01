@@ -2,6 +2,7 @@ import { Application, Graphics, Text } from 'pixi.js';
 import { WebSocketManager } from '../utils/network/WebSocketManager';
 import { initGame } from '../pong/pong';
 import { PongGame } from '../pong/engine/Game';
+import { GameConfig } from '../pong/utils/GameConfig';
 import { PongNetworkManager } from '../pong/network/PongNetworkManager';
 
 export function showPong(container: HTMLElement): void {
@@ -96,17 +97,40 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
     });
     
     // Create game configuration for online mode
-    const gameConfig = {
-      classicMode: false,
-      isOnline: true,
-      gameId: gameId,
-      opponent: opponent
-    };
+    const config = (): GameConfig => ({
+	  mode: 'online',
+	  variant: '1v1',
+	  classicMode: true,
+	  filters: true,
+	  players: [
+		{
+		  id: localStorage.getItem('playerId') || 'player1',
+		  name: localStorage.getItem('playerName') || 'Player 1',
+		  type: 'remote',
+		  side: 'left',
+		  team: 0,
+		},
+		{
+		  id: opponent || 'player2',
+		  name: opponent || 'Player 2',
+		  type: 'remote',
+		  side: 'right',
+		  team: 1,
+		},
+	  ],
+	  player2Id: opponent || null,
+	  network: {
+		roomId: gameId,
+		isHost: false, // Assume this client is not the host
+		serverUrl: WebSocketManager.getServerUrl(),
+	  },		
+	});
     
-    console.log('Creating PongGame with config:', gameConfig);
-    
+    console.log('Creating PongGame with default config:', config);
+	const language = localStorage.getItem('language') || 'en';
+
     // Initialize the PongGame with online configuration
-    const pongGame = new PongGame(app, gameConfig);
+    const pongGame = new PongGame(app, config, language);
     await pongGame.init();
     
     // Initialize network manager for this game

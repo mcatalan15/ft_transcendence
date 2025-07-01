@@ -6,15 +6,15 @@ import { localSignIn } from '../utils/auth/localSignIn';
 import { navigate } from '../utils/router';
 
 export function showSignIn(container: HTMLElement): void {
-  i18n
-    .loadNamespaces('signin')
-    .then(() => i18n.changeLanguage(i18n.language))
-    .then(() => {
-      	loadGoogleScript();
-	    setupGoogleSignUp()
+	i18n
+		.loadNamespaces('signin')
+		.then(() => i18n.changeLanguage(i18n.language))
+		.then(() => {
+			loadGoogleScript();
+			setupGoogleSignUp()
 
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
+			const wrapper = document.createElement('div');
+			wrapper.innerHTML = `
         <div class="h-screen flex items-center justify-center bg-neutral-900">
           <div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6 relative">
             <h2 class="text-2xl font-semibold text-center">${i18n.t('title', { ns: 'signin' })}</h2>
@@ -60,57 +60,59 @@ export function showSignIn(container: HTMLElement): void {
         </div>
       `;
 
-      container.appendChild(wrapper);
+			container.appendChild(wrapper);
 
-      const form = wrapper.querySelector('#login-form') as HTMLFormElement;
-      const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
+			const form = wrapper.querySelector('#login-form') as HTMLFormElement;
+			const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
 
-      form.onsubmit = async (e) => {
-        e.preventDefault();
-        const email = (wrapper.querySelector('#email') as HTMLInputElement).value;
-        const password = (wrapper.querySelector('#password') as HTMLInputElement).value;
-        errorMessageDiv.textContent = '';
+			form.onsubmit = async (e) => {
+				e.preventDefault();
+				const email = (wrapper.querySelector('#email') as HTMLInputElement).value;
+				const password = (wrapper.querySelector('#password') as HTMLInputElement).value;
+				errorMessageDiv.textContent = '';
 
-        if (!email || !password) {
-          errorMessageDiv.textContent = i18n.t('errorAllFields', { ns: 'signin' });
-          return;
-        }
+				if (!email || !password) {
+					errorMessageDiv.textContent = i18n.t('errorAllFields', { ns: 'signin' });
+					return;
+				}
 
-        const result = await localSignIn(email, password);
-        if (!result.success) {
-          errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
-        } else {
-          alert(i18n.t('success', { ns: 'signin' }));
-          localStorage.setItem('token', result.token);
-          navigate('/profile'); 
-        }
-      };
+				const result = await localSignIn(email, password);
+				if (!result.success) {
+					errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
+				} else {
+					alert(i18n.t('success', { ns: 'signin' }));
+					if (result.token) {
+						localStorage.setItem('token', result.token);
+					}
+					navigate('/profile');
+				}
+			};
 
-      // SPA link to signup
-      const signUpLink = wrapper.querySelector('a[href="/signup"]');
-      signUpLink?.addEventListener('click', (e) => {
-        e.preventDefault();
-        navigate('/signup');
-      });
+			// SPA link to signup
+			const signUpLink = wrapper.querySelector('a[href="/signup"]');
+			signUpLink?.addEventListener('click', (e) => {
+				e.preventDefault();
+				navigate('/signup');
+			});
 
 
-      const langSelector = new LanguageSelector(() => {
-        const emailInput = wrapper.querySelector('#email') as HTMLInputElement;
-        const passwordInput = wrapper.querySelector('#password') as HTMLInputElement;
-        const btn = wrapper.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const title = wrapper.querySelector('h2')!;
-        const link = wrapper.querySelector('a');
+			const langSelector = new LanguageSelector(() => {
+				const emailInput = wrapper.querySelector('#email') as HTMLInputElement;
+				const passwordInput = wrapper.querySelector('#password') as HTMLInputElement;
+				const btn = wrapper.querySelector('button[type="submit"]') as HTMLButtonElement;
+				const title = wrapper.querySelector('h2')!;
+				const link = wrapper.querySelector('a');
 
-        emailInput.placeholder = i18n.t('email', { ns: 'signin' });
-        passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
-        btn.textContent = i18n.t('signIn', { ns: 'signin' });
-        title.textContent = i18n.t('title', { ns: 'signin' });
-        link!.textContent = i18n.t('signUp', { ns: 'signin' });
-      });
+				emailInput.placeholder = i18n.t('email', { ns: 'signin' });
+				passwordInput.placeholder = i18n.t('password', { ns: 'signin' });
+				btn.textContent = i18n.t('signIn', { ns: 'signin' });
+				title.textContent = i18n.t('title', { ns: 'signin' });
+				link!.textContent = i18n.t('signUp', { ns: 'signin' });
+			});
 
-      const selectorWrapper = document.createElement('div');
-      selectorWrapper.className = 'absolute bottom-4 w-full flex justify-center z-30';
-      selectorWrapper.appendChild(langSelector.getElement());
-      document.body.appendChild(selectorWrapper);
-    });
+			const selectorWrapper = document.createElement('div');
+			selectorWrapper.className = 'absolute bottom-4 w-full flex justify-center z-30';
+			selectorWrapper.appendChild(langSelector.getElement());
+			document.body.appendChild(selectorWrapper);
+		});
 }
