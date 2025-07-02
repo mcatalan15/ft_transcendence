@@ -538,7 +538,7 @@ export class ChatManager {
           console.error('No gameId received in game_invite_accepted:', data);
           this.addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
         }
-        return;
+        return; // Important: return here to prevent creating a ChatMessage
       }
       
       if (data.type === 'game_session_created') {
@@ -553,34 +553,39 @@ export class ChatManager {
           console.error('No gameId received in game_session_created:', data);
           this.addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
         }
-        return;
+        return; // Important: return here to prevent creating a ChatMessage
       }
       
       if (data.type === 'game_invite_declined') {
         this.addSystemMessage(`${data.username} declined your game invitation.`, MessageType.GAME);
-        return;
+        return; // Important: return here to prevent creating a ChatMessage
       }
       
-      const message: ChatMessage = {
-        id: data.id || Date.now().toString(),
-        type: data.type as MessageType,
-        username: data.username,
-        content: data.content,
-        timestamp: new Date(data.timestamp),
-        channel: data.channel,
-        targetUser: data.targetUser,
-        inviteId: data.inviteId,
-        gameRoomId: data.gameRoomId
-      };
-      
-      if (message.type === MessageType.GAME_INVITE) {
-        const currentUser = sessionStorage.getItem('username');
-        if (message.targetUser !== currentUser) {
-          return;
-        }
-      }
+      // Only create ChatMessage for actual chat messages, not system responses
+      if (data.type && Object.values(MessageType).includes(data.type)) {
+        const message: ChatMessage = {
+          id: data.id || Date.now().toString(),
+          type: data.type as MessageType,
+          username: data.username,
+          content: data.content,
+          timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
+          channel: data.channel,
+          targetUser: data.targetUser,
+          inviteId: data.inviteId,
+          gameRoomId: data.gameRoomId
+        };
         
-      this.addMessage(message);
+        if (message.type === MessageType.GAME_INVITE) {
+          const currentUser = sessionStorage.getItem('username');
+          if (message.targetUser !== currentUser) {
+            return;
+          }
+        }
+          
+        this.addMessage(message);
+      } else {
+        console.log('Received non-chat message type:', data.type);
+      }
     } catch (e) {
       console.error('Error parsing message:', e, 'Raw data:', event.data);
     }
