@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 16:07:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/25 11:30:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:38:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ export class NameCell extends Entity {
 	width: number;
 	height: number;
 	cell: Graphics = new Graphics();
+	index: number;
 
-	constructor(id: string, layer: string, menu: Menu, name: string, x: number, y: number, width: number, height: number) {
+	constructor(id: string, layer: string, menu: Menu, name: string, x: number, y: number, width: number, height: number, index: number) {
 		super(id, layer);
 
 		this.menu = menu;
@@ -41,6 +42,7 @@ export class NameCell extends Entity {
 		this.width = width;
 		this.height = height;
 		this.nameString = name;
+		this.index = index;
 
 		this.createCell();
 		const renderComponent = new RenderComponent(this.cell);
@@ -48,7 +50,7 @@ export class NameCell extends Entity {
 
 		this.cellName = this.createName(name, x, y);
 		const nameComponent = new TextComponent(this.cellName);
-		this.addComponent(nameComponent, 'cellName');
+		this.addComponent(nameComponent, `cellName${this.index}`);
 	}
 
 	private createCell() {
@@ -79,9 +81,9 @@ export class NameCell extends Entity {
 	redrawCell() {
 		this.cell.clear();
 		this.createCell();
-
+	
 		const updatedName = this.createName(this.nameString, this.x, this.y);
 		const updatedComponent = new TextComponent(updatedName);
-		this.replaceComponent('text', updatedComponent, 'nameCell');
+		this.replaceComponent('text', updatedComponent, `cellName${this.index}`);
 	}
 }

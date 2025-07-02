@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 12:54:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 15:46:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -512,6 +512,7 @@ export class ButtonSystem implements System {
         this.menu.aboutOverlay.projectBar.redrawBar();
 
         this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+        this.menu.tournamentOverlay.bracket.redrawBracket();
         this.menu.playOverlay.nextMatchDisplay.redrawDisplay();
     }
 

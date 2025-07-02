@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 16:17:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:01:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,28 +22,38 @@ import { GAME_COLORS } from "../../utils/Types";
 
 export class EndgameOverlay extends Entity {
 	game: PongGame;
-	frame: Graphics = new Graphics();
+	overlayGraphics: Graphics = new Graphics();
 	resultText: any;
 	
 	constructor (game: PongGame, id: string, layer: string, x: number, y: number, width: number = 1000, height: number = 400) {
 		super(id, layer);
 		this.game = game;
 
-		this.frame = this.createOverlayFrame(game, x, y, width, height);
-		const renderComponent = new RenderComponent(this.frame);
-		this.addComponent(renderComponent, 'render');
+		this.overlayGraphics = this.createOverlayGraphics(game, x, y, width, height, 20);
+		const headerRenderComponent = new RenderComponent(this.overlayGraphics);
+		this.addComponent(headerRenderComponent, 'headerGraphic');
 
 		this.resultText = this.getResultText();
 		const textComponent = new TextComponent(this.resultText);
-		this.addComponent(textComponent, 'text');
+		this.addComponent(textComponent, 'resultText');
 	}
 
-	private createOverlayFrame(game: PongGame, x: number, y: number, width: number, height: number): Graphics {
+	private createOverlayGraphics(game: PongGame, x: number, y: number, width: number, height: number, headerHeight: number): Graphics {
+		const container = new Graphics();
+
 		const frame = new Graphics();
-		frame.rect(x, y, width, height);
+		frame.rect(x, y + 40, width, height - 40);
 		frame.stroke ( { color: GAME_COLORS.orange, width: 10 } )
 		frame.fill ( { color: GAME_COLORS.black } );
-		return frame;
+		container.addChild(frame);
+
+		const header = new Graphics();
+		header.rect(x, y, width, headerHeight);
+		header.fill ( { color: game.config.classicMode ? GAME_COLORS.black : GAME_COLORS.orange } );
+		header.stroke ( { color: game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, width: 10 } );
+		container.addChild(header);
+
+		return (container);
 	}
 
 	getResultText(): any {

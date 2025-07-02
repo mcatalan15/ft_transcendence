@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 11:54:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 13:55:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -468,6 +468,16 @@ export abstract class Overlay extends Entity {
         this.background.stroke({ color: color, width: 3 });
         this.background.alpha = this.currentAlpha;
     } */
+
+    // New svg header stuff
+    private updateHeaderImageAlphas(alpha: number): void {
+        const headerImages = MenuImageManager.getAllHeaderImages();
+        headerImages.forEach((headerImage: any) => {
+            if (headerImage) {
+                headerImage.alpha = alpha;
+            }
+        });
+    }
 
     // Cleanup
     public cleanup(): void {

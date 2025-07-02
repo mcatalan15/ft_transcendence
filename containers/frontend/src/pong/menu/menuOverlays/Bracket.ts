@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 11:36:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:44:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ export class Bracket extends Entity {
 		this.playerAmount = playerAmount;
 
 		this.createBracketStructure();
-		this.addNameCellComponents();
 		this.createBracketGraphic();
 		this.createRoundGraphic();
 		this.createCrownElement();
@@ -181,17 +180,9 @@ export class Bracket extends Entity {
 				x,
 				y,
 				this.CELL_WIDTH,
-				this.CELL_HEIGHT
+				this.CELL_HEIGHT,
+				i,
 			));
-		}
-	}
-
-	private addNameCellComponents() {
-		for (let i = 0; i < this.nameCells.length; i++) {
-			const nameCellComponent = this.nameCells[i].getComponent('render') as RenderComponent;
-			const textCellComponent = this.nameCells[i].getComponent('text') as TextComponent;
-			this.addComponent(nameCellComponent, `nameCell_${i}`);
-			this.addComponent(textCellComponent, `nameCellText_${i}`);
 		}
 	}
 
@@ -375,9 +366,9 @@ export class Bracket extends Entity {
 		const crownComponent = new TextComponent(updatedCrown);
 		this.replaceComponent('text', crownComponent, 'crown');
 
-		this.nameCells.forEach(element => {
-			element.redrawCell(); 
-		 });
+		this.nameCells.forEach((nameCell) => {
+			nameCell.redrawCell();
+		});
 
 		this.roundGraphic.clear();
 		this.createRoundGraphic();

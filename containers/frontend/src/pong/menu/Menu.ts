@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:31:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 13:42:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,6 +295,7 @@ export class Menu{
 		await this.createPowerups();
 		await this.initSystems();
 		await this.initDust();
+		await MenuImageManager.createHeaderImages(this);
 
 		this.playSound('menuBGM');
 
@@ -717,6 +718,12 @@ export class Menu{
 			{ name: 'grafanaClassic', url: '/logos/classic/logo_grafana_classic.png' },
 			{ name: 'avalancheClassic', url: '/logos/classic/logo_avalanche_classic.png' },
 			{ name: 'solidityClassic', url: '/logos/classic/logo_solidity_classic.png' },
+
+			// Menu headers
+			{ name: 'pongHeaderWhite', url: '/headers/headers_pong_white.svg' },
+			{ name: 'pongHeaderBlue', url: '/headers/headers_pong_blue.svg' },
+			{ name: 'pongHeaderOrange', url: '/headers/headers_pong_orange.svg' },
+			{ name: 'pongHeaderPink', url: '/headers/headers_pong_pink.svg' },
         ]);
 	}
 

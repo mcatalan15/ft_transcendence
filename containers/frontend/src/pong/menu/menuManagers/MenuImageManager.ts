@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 10:53:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 13:57:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,25 @@ export class MenuImageManager {
     private static playAvatars: Sprite[] = [];
     private static pinkLogoImages: Sprite[] = [];
     private static classicLogoImages: Sprite[] = [];
+    private static headerImages: Sprite[] = [];
     private static isAnimating: boolean = false;
     
     static async loadAssets(assetList: Array<{name: string, url: string}>): Promise<void> {
         const promises = assetList.map(async (asset) => {
             try {
-                const texture = await Assets.load(asset.url);
+                let texture;
+                if (asset.url.endsWith('.svg')) {
+                    texture = await Assets.load({
+                        src: asset.url,
+                        data: {
+                            resolution: 2, // Match your app's resolution
+                            width: 1397 * 1.1725, // Scale up the SVG dimensions
+                            height: 74 * 1.1725   // to match the resolution
+                        }
+                    });
+                } else {
+                    texture = await Assets.load(asset.url);
+                }
                 this.assets.set(asset.name, texture);
             } catch (error) {
                 console.error(`Failed to load asset ${asset.name} from ${asset.url}:`, error);
@@ -747,6 +760,83 @@ export class MenuImageManager {
         
         menu.menuHidden.addChild(avatar);
         return avatar;
+    }
+
+    static createHeaderImages(menu: Menu): void {
+        this.headerImages.forEach(header => {
+            if (header && header.parent) {
+                header.parent.removeChild(header);
+            }
+            if (header) {
+                header.destroy();
+            }
+        });
+        this.headerImages = [];
+    }
+    
+    static createHeaderSprite(headerType: string, menu: Menu): Sprite | null {
+        let assetName: string;
+        
+        if (menu.config.classicMode) {
+            assetName = 'pongHeaderWhite';
+        } else {
+            switch (headerType) {
+                case 'tournament':
+                case 'play':
+                    assetName = 'pongHeaderBlue';
+                    break;
+                case 'info':
+                    assetName = 'pongHeaderPink';
+                    break;
+                case 'glossary':
+                    assetName = 'pongHeaderOrange';
+                    break;
+                default:
+                    assetName = 'pongHeaderWhite';
+            }
+        }
+        
+        const headerSprite = this.createSprite(assetName);
+        if (!headerSprite) {
+            console.warn(`Failed to create header sprite for asset: ${assetName}`);
+            return null;
+        }
+        
+        headerSprite.anchor.set(0, 0);
+        headerSprite.x = 73.5;
+        headerSprite.y = 63;
+        headerSprite.alpha = 0;
+        
+        headerSprite.scale.set(1, 1);
+        
+        this.headerImages.push(headerSprite);
+        menu.menuHidden.addChild(headerSprite);
+        
+        return headerSprite;
+    }
+    
+    static getAllHeaderImages(): Sprite[] {
+        return this.headerImages;
+    }
+    
+    static prepareHeaderForOverlay(headerSprite: Sprite, menu: Menu): void {
+        if (headerSprite) {
+            headerSprite.alpha = 0;
+            if (headerSprite.parent) {
+                headerSprite.parent.removeChild(headerSprite);
+            }
+            menu.renderLayers.overlays.addChild(headerSprite);
+        }
+    }
+    
+    static hideHeaderFromOverlay(headerSprite: Sprite, menu: Menu): void {
+        if (headerSprite) {
+            if (headerSprite.parent) {
+                headerSprite.parent.removeChild(headerSprite);
+            }
+            menu.menuHidden.addChild(headerSprite);
+            headerSprite.alpha = 0;
+        }
     }
 
     // Cleanup

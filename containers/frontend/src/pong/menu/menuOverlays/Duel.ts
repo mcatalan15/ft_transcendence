@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 10:50:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 14:58:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ export class Duel extends Entity {
 		} as Text);
 		
 		statsTexts.push({
-			text: "           000           000             000\n    000      000     000        0.000    000", 
+			text: this.menu.config.variant === "1vAI" ? "           ???           ???             ???\n    ???      ???     ???        ?????    ???" : "           000           000             000\n    000      000     000        0.000    000" , 
 			x: 785,
 			y: 600,
 			style: {
@@ -229,7 +229,7 @@ export class Duel extends Entity {
 		legend[0].y = 160;
 
 		legend.push({
-			text: "選手プロフィール                                        対戦相手プロフィール                    \n",
+			text: "プレイヤー情報                                            プレイヤー情報                       \n",
 			x: 0,
 			y: 0,
 			style: {
@@ -241,7 +241,7 @@ export class Duel extends Entity {
 			},
 		} as Text);
 
-		legend[1].x = 650;
+		legend[1].x = 645;
 		legend[1].y = 155;
 
 		return (legend);
@@ -270,7 +270,7 @@ export class Duel extends Entity {
 		legend[0].rotation = Math.PI;
 	
 		legend.push({
-			text: "選手プロフィール                                        対戦相手プロフィール                    \n",
+			text: "プレイヤー情報                                            プレイヤー情報                       \n",
 			x: 0,
 			y: 0,
 			style: {
@@ -282,7 +282,7 @@ export class Duel extends Entity {
 			},
 		} as Text);
 	
-		legend[1].x = 650;
+		legend[1].x = 645;
 		legend[1].y = 655;
 	
 		return (legend);

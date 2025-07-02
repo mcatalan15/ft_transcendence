@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 16:23:34 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:56:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,6 @@ export class PongGame {
 	alphaFade: Graphics = new Graphics();
 	endGameOverlay!: EndgameOverlay;
 
-	//TODO: Add the world system to handle the world pool and current world
-	//TODO: As well as the powerups and powerdowns
-
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
 		this.language = language;
@@ -215,10 +212,10 @@ export class PongGame {
 		const postProcessingSystem = new PostProcessingSystem();
 		const crossCutSystem = new CrossCutSystem(this);
 		const endingSystem = new EndingSystem(this);
+
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
-
 		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		if (!this.config.classicMode) this.systems.push(vfxSystem);

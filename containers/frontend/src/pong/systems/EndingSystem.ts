@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 16:16:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 15:08:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,16 +87,18 @@ export class EndingSystem implements System {
             this.game.data.endedAt = new Date().toISOString();
             this.endingProcessed = true;
             
-            this.triggerLosingPaddleExplosion();
+            if (!this.game.config.classicMode) {
+                this.triggerLosingPaddleExplosion();
 
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * this.game.width;
-                    const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
-                    const color = GAME_COLORS.red; //! COLOR DEPENDS ON ENDING: WON GREEN, LOST RED
-                    
-                    ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
-                }, i * 300);
+                for (let i = 0; i < 75; i++) {
+                    setTimeout(() => {
+                        const x = Math.random() * this.game.width;
+                        const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
+                        const color = GAME_COLORS.green; //! COLOR DEPENDS ON ENDING: WON GREEN, LOST RED
+                        
+                        ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
+                    }, i * 300);
+                }
             }
             
             this.game.saveGameResults();
