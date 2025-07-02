@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:12:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,16 +142,15 @@ export class MenuParticleSystem implements System {
 	}
 
 	cleanup(): void {
-        // Remove all particles from the menu
-        const particlesToRemove: string[] = [];
-        for (const entity of this.menu.entities) {
-            if (isParticle(entity)) {
-                particlesToRemove.push(entity.id);
-            }
-        }
-        
-        for (const entityId of particlesToRemove) {
-            this.menu.removeEntity(entityId);
-        }
-    }
+		const particlesToRemove: string[] = [];
+		for (const entity of this.menu.entities) {
+			if (isParticle(entity)) {
+				particlesToRemove.push(entity.id);
+			}
+		}
+		
+		for (const entityId of particlesToRemove) {
+			this.menu.removeEntity(entityId);
+		}
+	}
 }

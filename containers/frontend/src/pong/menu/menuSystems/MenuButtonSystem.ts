@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 15:46:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:15:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -685,6 +685,7 @@ export class ButtonSystem implements System {
         if (this.menu.startXButton) this.menu.startXButton.resetButton();
         if (this.menu.optionsXButton) this.menu.optionsXButton.resetButton();
         if (this.menu.ballButton) this.menu.ballButton.resetButton();
+        if (this.menu.startButton) this.menu.startButton.resetButton();
     }
 
     protected setFinalConfig() {

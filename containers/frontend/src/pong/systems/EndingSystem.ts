@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 15:08:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 18:48:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,16 @@ export class EndingSystem implements System {
             if (!this.game.config.classicMode) {
                 this.triggerLosingPaddleExplosion();
 
-                for (let i = 0; i < 75; i++) {
-                    setTimeout(() => {
-                        const x = Math.random() * this.game.width;
-                        const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
-                        const color = GAME_COLORS.green; //! COLOR DEPENDS ON ENDING: WON GREEN, LOST RED
-                        
-                        ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
-                    }, i * 300);
+                if (this.game.endGameOverlay.isPlayerWinner()) {
+                    for (let i = 0; i < 75; i++) {
+                        setTimeout(() => {
+                            const x = Math.random() * this.game.width;
+                            const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
+                            const color = GAME_COLORS.orange;
+                            
+                            ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
+                        }, i * 300);
+                    }
                 }
             }
             
@@ -146,7 +148,6 @@ export class EndingSystem implements System {
 		const isLeftPaddle = losingPaddleId === 'paddleL';
 		
 	
-		// Pass the player name to the explosion
 		ParticleSpawner.spawnPaddleExplosion(
 			this.game,
 			paddleX,
@@ -154,17 +155,52 @@ export class EndingSystem implements System {
 			paddleWidth,
 			paddleHeight,
 			isLeftPaddle,
-			playerName // Add player name parameter
+			playerName
 		);
 	}
 
     displayResults(): void {
+        this.game.endGameOverlay.redraw();
+        
         this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);
-
-        const endgameRenderComponent = this.game.endGameOverlay.getComponent('render') as RenderComponent;
+    
+        // Get the main overlay graphics
+        const endgameRenderComponent = this.game.endGameOverlay.getComponent('render', 'headerGraphic') as RenderComponent;
         this.game.renderLayers.overlays.addChild(endgameRenderComponent.graphic);
+    
+        // Get the text component
+        const endgameTextComponent = this.game.endGameOverlay.getComponent('text', 'resultText') as TextComponent;
+        if (endgameTextComponent) {
+            this.game.renderLayers.overlays.addChild(endgameTextComponent.getRenderable());
+        }
+    
+        // Get the header sprite component - add debugging
+        const headerRenderComponent = this.game.endGameOverlay.getComponent('render', 'headerSprite') as RenderComponent;
+        console.log('In displayResults - headerRenderComponent:', headerRenderComponent);
+        
+        if (headerRenderComponent?.graphic) {
+            console.log('Adding header sprite to overlays');
+            this.game.renderLayers.overlays.addChild(headerRenderComponent.graphic);
+            
+            headerRenderComponent.graphic.alpha = 0;
+            this.animateHeaderFadeIn(headerRenderComponent.graphic);
+        } else {
+            console.warn('Header sprite component not found or has no graphic');
+            // List all components for debugging
+            console.log('Available components:', this.game.endGameOverlay.components);
+        }
+    }
 
-        const endgameTextComponent = this.game.endGameOverlay.getComponent('text') as TextComponent;
-        this.game.renderLayers.overlays.addChild(endgameTextComponent.getRenderable());
+    private animateHeaderFadeIn(headerSprite: any): void {
+        const fadeSpeed = 0.02;
+        const animate = () => {
+            headerSprite.alpha += fadeSpeed;
+            if (headerSprite.alpha < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                headerSprite.alpha = 1;
+            }
+        };
+        animate();
     }
 }

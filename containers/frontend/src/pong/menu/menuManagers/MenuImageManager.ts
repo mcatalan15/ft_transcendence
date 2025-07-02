@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 13:57:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:15:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -841,12 +841,39 @@ export class MenuImageManager {
 
     // Cleanup
     static cleanup(): void {
-        this.wallImages.forEach(wallImage => {
-            if (wallImage.parent) {
-                wallImage.parent.removeChild(wallImage);
-            }
-            wallImage.destroy();
+        const imageArrays = [
+            this.wallImages,
+            this.avatarImages, 
+            this.classicAvatarImages,
+            this.tournamentAvatars,
+            this.playAvatars,
+            this.pinkLogoImages,
+            this.classicLogoImages,
+            this.headerImages
+        ];
+        
+        imageArrays.forEach(imageArray => {
+            imageArray.forEach(image => {
+                if (image?.parent) {
+                    image.parent.removeChild(image);
+                }
+                if (image) {
+                    image.destroy();
+                }
+            });
         });
+        
         this.wallImages = [];
+        this.avatarImages = [];
+        this.classicAvatarImages = [];
+        this.tournamentAvatars = [];
+        this.playAvatars = [];
+        this.pinkLogoImages = [];
+        this.classicLogoImages = [];
+        this.headerImages = [];
+        
+        this.isAnimating = false;
+        
+        this.assets.clear();
     }
 }
