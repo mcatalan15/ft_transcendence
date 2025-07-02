@@ -14,6 +14,10 @@ export class WebSocketManager {
     // Remove singleton pattern for game instances, or make it optional
     private static instance: WebSocketManager | null = null;
 
+    getGameWebSocketUrl(): string {
+        return this.gameWebSocketUrl;
+    }
+
     setPlayerRole(role: 'host' | 'guest') {
         this.playerRole = role;
         console.log('Player role set to:', this.playerRole);

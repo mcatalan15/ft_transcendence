@@ -9,18 +9,34 @@ export function showPong(container: HTMLElement): void {
   // Clear the container
   container.innerHTML = '';
   
+  // Clean up any existing game instances first
+  if ((window as any).currentPongGame) {
+    (window as any).currentPongGame.destroy?.();
+    (window as any).currentPongGame = null;
+  }
+  if ((window as any).currentNetworkManager) {
+    (window as any).currentNetworkManager.disconnect?.();
+    (window as any).currentNetworkManager = null;
+  }
+  
   // Check URL parameters to determine game mode
   const urlParams = new URLSearchParams(window.location.search);
   const gameId = urlParams.get('gameId');
   const mode = urlParams.get('mode');
   const opponent = urlParams.get('opponent');
   
-  if (mode === 'online' && gameId) {
-    // Initialize online multiplayer game
+  console.log('URL params:', { gameId, mode, opponent });
+  
+  if (mode === 'online' && gameId && opponent) {
+    console.log('Initializing ONLINE game');
+    // Initialize online multiplayer game ONLY
     initOnlineGame(container, gameId, opponent);
+    return;
   } else {
-    // Initialize local game (existing logic)
+    console.log('Initializing LOCAL game with menu');
+    // Initialize local game (existing logic) ONLY
     initGame(container);
+    return;
   }
 }
 
@@ -97,7 +113,7 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
     });
     
     // Create game configuration for online mode
-    const config = (): GameConfig => ({
+    const config: GameConfig = {
 	  mode: 'online',
 	  variant: '1v1',
 	  classicMode: true,
@@ -121,10 +137,10 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
 	  player2Id: opponent || null,
 	  network: {
 		roomId: gameId,
-		isHost: false, // Assume this client is not the host
-		serverUrl: WebSocketManager.getServerUrl(),
+		isHost: false,
+		serverUrl: WebSocketManager.getInstance().getGameWebSocketUrl() || 'ws://localhost:3000/game',
 	  },		
-	});
+	};
     
     console.log('Creating PongGame with default config:', config);
 	const language = localStorage.getItem('language') || 'en';

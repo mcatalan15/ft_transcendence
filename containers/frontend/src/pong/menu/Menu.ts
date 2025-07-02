@@ -274,6 +274,16 @@ export class Menu{
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
 			this.preconfig = preconfig!;
+			this.config = {
+				mode: preconfig!.mode,
+				variant: preconfig!.variant,
+				classicMode: preconfig!.classicMode || false,
+				filters: true,
+				players: [
+					{ name: 'Player 1', type: 'human', side: 'left' },
+					{ name: 'Player 2', type: 'human', side: 'right' }
+				]
+			}
 		}
 	}
 
@@ -297,11 +307,6 @@ export class Menu{
 		await this.initDust();
 
 		this.playSound('menuBGM');
-
-		//! Preconfig
-		if (this.hasPreconfig) {
-			// PROCESS PRECONFIGURATION
-		}
 
 		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {

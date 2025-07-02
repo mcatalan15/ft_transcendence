@@ -34,7 +34,9 @@ export interface GameConfig {
 }
 
 export interface Preconfiguration {
-	
+	mode: 'local' | 'online';
+	variant: '1v1' | '1vAI' | 'tournament';
+	classicMode?: boolean;
 }
 
 export interface GameData {
