@@ -32,9 +32,11 @@ export class EndingSystem implements System {
     private UI!: UI;
     private ended: boolean = false;
     private endingProcessed: boolean = false;
+    private isOnlineGame: boolean = false;
 
     constructor(game: PongGame) {
         this.game = game;
+        this.isOnlineGame = game.config.mode === 'online';
         
         for (const entity of this.game.entities) {
             if (isUI(entity)) this.UI = entity;
@@ -43,66 +45,133 @@ export class EndingSystem implements System {
 
     update(entities: Entity[]) {
         if (!this.endingProcessed) {
-            if (this.UI.leftScore >= 2 && this.UI.rightScore < 1) {
-                this.game.data.leftPlayer.result = 'win';
-                this.game.data.rightPlayer.result = 'lose';
-                this.ended = true;
-            } else if (this.UI.rightScore >= 2 && this.UI.leftScore < 1) {
-                this.game.data.rightPlayer.result = 'win';
-                this.game.data.leftPlayer.result = 'lose';
-                this.ended = true;
-            }
-        
-            if (this.UI.leftScore > 5 && this.UI.rightScore < this.UI.leftScore - 2) {
-                this.game.data.leftPlayer.result = 'win';
-                this.game.data.rightPlayer.result = 'lose';
-                this.ended = true;
-            } else if (this.UI.rightScore > 5 && this.UI.leftScore < this.UI.rightScore - 2) {
-                this.game.data.rightPlayer.result = 'win';
-                this.game.data.leftPlayer.result = 'lose';
-                this.ended = true;
-            }
-        
-            if (this.UI.leftScore >= 20 && this.UI.rightScore >= 20) {
-                this.game.data.rightPlayer.result = 'draw';
-                this.game.data.leftPlayer.result = 'draw';
-                this.ended = true;
+            // For online games, don't check win conditions - backend handles this
+            if (this.isOnlineGame) {
+                // Only process if backend has sent game end signal
+                if (this.game.hasReceivedGameEnd) {
+                    this.ended = true;
+                }
+            } else {
+                // Local game logic - use proper win conditions
+                this.checkLocalGameWinConditions();
             }
         }
     
         if (this.ended && !this.endingProcessed) {
-            this.game.data.winner = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : this.game.data.rightPlayer.name;
-            
-            this.game.data.finalScore = {
-                leftPlayer: this.UI.leftScore,
-                rightPlayer: this.UI.rightScore
-            };
-    
-            if (this.game.data.winner === null) {
+            this.processGameEnd();
+        }
+    }
+
+    private checkLocalGameWinConditions() {
+        const winScore = 11; // Proper pong winning score
+        
+        // Standard win condition: first to 11 points
+        if (this.UI.leftScore >= winScore && this.UI.rightScore < winScore - 1) {
+            this.game.data.leftPlayer.result = 'win';
+            this.game.data.rightPlayer.result = 'lose';
+            this.ended = true;
+        } else if (this.UI.rightScore >= winScore && this.UI.leftScore < winScore - 1) {
+            this.game.data.rightPlayer.result = 'win';
+            this.game.data.leftPlayer.result = 'lose';
+            this.ended = true;
+        }
+        
+        // Deuce situation: need 2-point lead after 10-10
+        else if (this.UI.leftScore >= 10 && this.UI.rightScore >= 10) {
+            if (Math.abs(this.UI.leftScore - this.UI.rightScore) >= 2) {
+                if (this.UI.leftScore > this.UI.rightScore) {
+                    this.game.data.leftPlayer.result = 'win';
+                    this.game.data.rightPlayer.result = 'lose';
+                } else {
+                    this.game.data.rightPlayer.result = 'win';
+                    this.game.data.leftPlayer.result = 'lose';
+                }
+                this.ended = true;
+            }
+        }
+        
+        // Maximum score limit (prevent infinite games)
+        if (this.UI.leftScore >= 25 || this.UI.rightScore >= 25) {
+            if (this.UI.leftScore > this.UI.rightScore) {
+                this.game.data.leftPlayer.result = 'win';
+                this.game.data.rightPlayer.result = 'lose';
+            } else if (this.UI.rightScore > this.UI.leftScore) {
+                this.game.data.rightPlayer.result = 'win';
+                this.game.data.leftPlayer.result = 'lose';
+            } else {
+                this.game.data.leftPlayer.result = 'draw';
+                this.game.data.rightPlayer.result = 'draw';
+            }
+            this.ended = true;
+        }
+    }
+
+    // Method called by network manager when backend sends game end
+    public processOnlineGameEnd(gameEndData: any) {
+        if (!this.isOnlineGame) return;
+        
+        // Update scores from backend
+        this.UI.leftScore = gameEndData.finalScore.leftPlayer;
+        this.UI.rightScore = gameEndData.finalScore.rightPlayer;
+        
+        // Update game results from backend
+        this.game.data.leftPlayer.result = gameEndData.leftPlayer.result;
+        this.game.data.rightPlayer.result = gameEndData.rightPlayer.result;
+        this.game.data.winner = gameEndData.winner;
+        this.game.data.generalResult = gameEndData.generalResult;
+        
+        // Signal that backend has determined game end
+        this.game.hasReceivedGameEnd = true;
+        this.ended = true;
+    }
+
+    private processGameEnd() {
+        // Common game end processing for both local and online
+        this.game.data.finalScore = {
+            leftPlayer: this.UI.leftScore,
+            rightPlayer: this.UI.rightScore
+        };
+
+        if (!this.game.data.winner) {
+            this.game.data.winner = this.game.data.leftPlayer.result === 'win' 
+                ? this.game.data.leftPlayer.name 
+                : this.game.data.rightPlayer.name;
+        }
+
+        if (!this.game.data.generalResult) {
+            if (this.game.data.leftPlayer.result === 'draw') {
                 this.game.data.generalResult = 'draw';
             } else {
                 this.game.data.generalResult = this.game.data.leftPlayer.result === 'win' ? 'leftWin' : 'rightWin';
             }
-    
-            this.game.data.endedAt = new Date().toISOString();
-            this.endingProcessed = true;
-            
-            this.triggerLosingPaddleExplosion();
+        }
 
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * this.game.width;
-                    const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
-                    const color = GAME_COLORS.red; //! COLOR DEPENDS ON ENDING: WON GREEN, LOST RED
-                    
-                    ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
-                }, i * 300);
-            }
-            
+        this.game.data.endedAt = new Date().toISOString();
+        this.endingProcessed = true;
+        
+        this.triggerLosingPaddleExplosion();
+        this.createFireworks();
+        
+        // Only save results for local games (online games are saved by backend)
+        if (!this.isOnlineGame) {
             this.game.saveGameResults();
-            this.game.hasEnded = true;
+        }
+        
+        this.game.hasEnded = true;
+        this.displayResults();
+    }
 
-            this.displayResults();
+    private createFireworks() {
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const x = Math.random() * this.game.width;
+                const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
+                const color = this.game.data.generalResult === 'draw' 
+                    ? GAME_COLORS.blue 
+                    : GAME_COLORS.red; // You can make this dynamic based on winner
+                
+                ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
+            }, i * 300);
         }
     }
 
