@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 18:48:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:33:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,21 +43,21 @@ export class EndingSystem implements System {
 
     update(entities: Entity[]) {
         if (!this.endingProcessed) {
-            if (this.UI.leftScore >= 2 && this.UI.rightScore < 1) {
+            if (this.UI.leftScore >= 1 && this.UI.rightScore < 1) {
                 this.game.data.leftPlayer.result = 'win';
                 this.game.data.rightPlayer.result = 'lose';
                 this.ended = true;
-            } else if (this.UI.rightScore >= 2 && this.UI.leftScore < 1) {
+            } else if (this.UI.rightScore >= 1 && this.UI.leftScore < 1) {
                 this.game.data.rightPlayer.result = 'win';
                 this.game.data.leftPlayer.result = 'lose';
                 this.ended = true;
             }
         
-            if (this.UI.leftScore > 5 && this.UI.rightScore < this.UI.leftScore - 2) {
+            if (this.UI.leftScore > 2 && this.UI.rightScore < this.UI.leftScore - 2) {
                 this.game.data.leftPlayer.result = 'win';
                 this.game.data.rightPlayer.result = 'lose';
                 this.ended = true;
-            } else if (this.UI.rightScore > 5 && this.UI.leftScore < this.UI.rightScore - 2) {
+            } else if (this.UI.rightScore > 2 && this.UI.leftScore < this.UI.rightScore - 2) {
                 this.game.data.rightPlayer.result = 'win';
                 this.game.data.leftPlayer.result = 'lose';
                 this.ended = true;
@@ -164,43 +164,252 @@ export class EndingSystem implements System {
         
         this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);
     
-        // Get the main overlay graphics
         const endgameRenderComponent = this.game.endGameOverlay.getComponent('render', 'headerGraphic') as RenderComponent;
         this.game.renderLayers.overlays.addChild(endgameRenderComponent.graphic);
-    
-        // Get the text component
+        endgameRenderComponent.graphic.alpha = 0;
+
+        const endgameOrnamentRenderComponent = this.game.endGameOverlay.getComponent('render', 'ornamentGraphic') as RenderComponent;
+        if (endgameOrnamentRenderComponent?.graphic) {
+            this.game.renderLayers.overlays.addChild(endgameOrnamentRenderComponent.graphic);
+            endgameOrnamentRenderComponent.graphic.alpha = 0;
+        }
+
+        const dashedLineComponents: TextComponent[] = [];
+        for (let i = 0; i < 5; i++) {
+            const dashedLineComponent = this.game.endGameOverlay.getComponent('text', `dashedLines${i}`) as TextComponent;
+            if (dashedLineComponent) {
+                this.game.renderLayers.overlays.addChild(dashedLineComponent.getRenderable());
+                dashedLineComponent.getRenderable().alpha = 0;
+                dashedLineComponents.push(dashedLineComponent);
+            }
+        }
+
         const endgameTextComponent = this.game.endGameOverlay.getComponent('text', 'resultText') as TextComponent;
         if (endgameTextComponent) {
             this.game.renderLayers.overlays.addChild(endgameTextComponent.getRenderable());
+            endgameTextComponent.getRenderable().alpha = 0;
         }
     
-        // Get the header sprite component - add debugging
         const headerRenderComponent = this.game.endGameOverlay.getComponent('render', 'headerSprite') as RenderComponent;
-        console.log('In displayResults - headerRenderComponent:', headerRenderComponent);
-        
         if (headerRenderComponent?.graphic) {
-            console.log('Adding header sprite to overlays');
             this.game.renderLayers.overlays.addChild(headerRenderComponent.graphic);
-            
             headerRenderComponent.graphic.alpha = 0;
-            this.animateHeaderFadeIn(headerRenderComponent.graphic);
-        } else {
-            console.warn('Header sprite component not found or has no graphic');
-            // List all components for debugging
-            console.log('Available components:', this.game.endGameOverlay.components);
         }
+    
+        const headerTextComponent = this.game.endGameOverlay.getComponent('text', 'headerText') as TextComponent;
+        if (headerTextComponent) {
+            this.game.renderLayers.overlays.addChild(headerTextComponent.getRenderable());
+            headerTextComponent.getRenderable().alpha = 0;
+        }
+    
+        const leftAvatarComponent = this.game.endGameOverlay.getComponent('render', 'leftAvatar') as RenderComponent;
+        if (leftAvatarComponent?.graphic) {
+            this.game.renderLayers.overlays.addChild(leftAvatarComponent.graphic);
+            leftAvatarComponent.graphic.alpha = 0;
+        }
+    
+        const rightAvatarComponent = this.game.endGameOverlay.getComponent('render', 'rightAvatar') as RenderComponent;
+        if (rightAvatarComponent?.graphic) {
+            this.game.renderLayers.overlays.addChild(rightAvatarComponent.graphic);
+            rightAvatarComponent.graphic.alpha = 0;
+        }
+
+        const leftPlayerTextComponent = this.game.endGameOverlay.getComponent('text', 'leftPlayerName') as TextComponent;
+        if (leftPlayerTextComponent) {
+            this.game.renderLayers.overlays.addChild(leftPlayerTextComponent.getRenderable());
+            leftPlayerTextComponent.getRenderable().alpha = 0;
+        }
+
+        const rightPlayerTextComponent = this.game.endGameOverlay.getComponent('text', 'rightPlayerName') as TextComponent;
+        if (rightPlayerTextComponent) {
+            this.game.renderLayers.overlays.addChild(rightPlayerTextComponent.getRenderable());
+            rightPlayerTextComponent.getRenderable().alpha = 0;
+        }
+
+        const upperLegendComponent = this.game.endGameOverlay.getComponent('text', 'upperLegend') as TextComponent;
+        if (upperLegendComponent) {
+            this.game.renderLayers.overlays.addChild(upperLegendComponent.getRenderable());
+            upperLegendComponent.getRenderable().alpha = 0;
+        }
+
+        const upperLegendTextComponent = this.game.endGameOverlay.getComponent('text', 'upperLegendText') as TextComponent;
+        if (upperLegendTextComponent) {
+            this.game.renderLayers.overlays.addChild(upperLegendTextComponent.getRenderable());
+            upperLegendTextComponent.getRenderable().alpha = 0;
+        }
+
+        const lowerLegendComponent = this.game.endGameOverlay.getComponent('text', 'lowerLegend') as TextComponent;
+        if (lowerLegendComponent) {
+            this.game.renderLayers.overlays.addChild(lowerLegendComponent.getRenderable());
+            lowerLegendComponent.getRenderable().alpha = 0;
+        }
+
+        const lowerLegendTextComponent = this.game.endGameOverlay.getComponent('text', 'lowerLegendText') as TextComponent;
+        if (lowerLegendTextComponent) {
+            this.game.renderLayers.overlays.addChild(lowerLegendTextComponent.getRenderable());
+            lowerLegendTextComponent.getRenderable().alpha = 0;
+        }
+
+        const statsLegendComponent = this.game.endGameOverlay.getComponent('text', 'statsLegend') as TextComponent;
+        if (statsLegendComponent) {
+            this.game.renderLayers.overlays.addChild(statsLegendComponent.getRenderable());
+            statsLegendComponent.getRenderable().alpha = 0;
+        }
+
+        const playerStatComponents: TextComponent[] = [];
+        for (let i = 0; i < this.game.endGameOverlay.playerStats.length; i++) {
+            const playerStatComponent = this.game.endGameOverlay.getComponent('text', `playerStat${i}`) as TextComponent;
+            if (playerStatComponent) {
+                this.game.renderLayers.overlays.addChild(playerStatComponent.getRenderable());
+                playerStatComponent.getRenderable().alpha = 0;
+                playerStatComponents.push(playerStatComponent);
+            }
+        }
+
+        this.animateAllElementsFadeIn(
+            endgameRenderComponent,
+            endgameOrnamentRenderComponent,
+            endgameTextComponent, 
+            headerRenderComponent, 
+            headerTextComponent,
+            leftAvatarComponent,
+            rightAvatarComponent,
+            leftPlayerTextComponent,
+            rightPlayerTextComponent,
+            dashedLineComponents,
+            upperLegendComponent,
+            upperLegendTextComponent,
+            lowerLegendComponent,
+            lowerLegendTextComponent,
+            statsLegendComponent,
+            playerStatComponents
+        );
     }
 
-    private animateHeaderFadeIn(headerSprite: any): void {
+    private animateAllElementsFadeIn(
+        overlayGraphicsComponent: RenderComponent,
+        overlayOrnamentComponent: RenderComponent | null,
+        resultTextComponent: TextComponent | null, 
+        headerSpriteComponent: RenderComponent | null, 
+        headerTextComponent: TextComponent | null,
+        leftAvatarComponent: RenderComponent | null,
+        rightAvatarComponent: RenderComponent | null,
+        leftPlayerTextComponent: TextComponent | null,
+        rightPlayerTextComponent: TextComponent | null,
+        dashedLineComponents: TextComponent[],
+        upperLegendComponent: TextComponent | null,
+        upperLegendTextComponent: TextComponent | null,
+        lowerLegendComponent: TextComponent | null,
+        lowerLegendTextComponent: TextComponent | null,
+        statsLegendComponent: TextComponent | null,
+        playerStatComponents: TextComponent[]
+    ): void {
         const fadeSpeed = 0.02;
+        
         const animate = () => {
-            headerSprite.alpha += fadeSpeed;
-            if (headerSprite.alpha < 1) {
+            let allComplete = true;
+    
+            if (overlayGraphicsComponent.graphic.alpha < 1) {
+                overlayGraphicsComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (overlayOrnamentComponent?.graphic && overlayOrnamentComponent.graphic.alpha < 1) {
+                overlayOrnamentComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            dashedLineComponents.forEach(dashedLineComponent => {
+                if (dashedLineComponent && dashedLineComponent.getRenderable().alpha < 1) {
+                    dashedLineComponent.getRenderable().alpha += fadeSpeed;
+                    allComplete = false;
+                }
+            });
+
+            if (overlayGraphicsComponent.graphic.alpha < 1) {
+                overlayGraphicsComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
+            if (resultTextComponent && resultTextComponent.getRenderable().alpha < 1) {
+                resultTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
+            if (headerSpriteComponent?.graphic && headerSpriteComponent.graphic.alpha < 1) {
+                headerSpriteComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
+            if (headerTextComponent && headerTextComponent.getRenderable().alpha < 1) {
+                headerTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (leftPlayerTextComponent && leftPlayerTextComponent.getRenderable().alpha < 1) {
+                leftPlayerTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (rightPlayerTextComponent && rightPlayerTextComponent.getRenderable().alpha < 1) {
+                rightPlayerTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
+            if (leftAvatarComponent?.graphic && leftAvatarComponent.graphic.alpha < 1) {
+                leftAvatarComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
+            if (rightAvatarComponent?.graphic && rightAvatarComponent.graphic.alpha < 1) {
+                rightAvatarComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (upperLegendComponent && upperLegendComponent.getRenderable().alpha < 1) {
+                upperLegendComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (upperLegendTextComponent && upperLegendTextComponent.getRenderable().alpha < 1) {
+                upperLegendTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (lowerLegendComponent && lowerLegendComponent.getRenderable().alpha < 1) {
+                lowerLegendComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (lowerLegendTextComponent && lowerLegendTextComponent.getRenderable().alpha < 1) {
+                lowerLegendTextComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            if (statsLegendComponent && statsLegendComponent.getRenderable().alpha < 1) {
+                statsLegendComponent.getRenderable().alpha += fadeSpeed;
+                allComplete = false;
+            }
+
+            playerStatComponents.forEach(playerStatComponent => {
+                if (playerStatComponent && playerStatComponent.getRenderable().alpha < 1) {
+                    playerStatComponent.getRenderable().alpha += fadeSpeed;
+                    allComplete = false;
+                }
+            });
+    
+            if (!allComplete) {
                 requestAnimationFrame(animate);
             } else {
-                headerSprite.alpha = 1;
+                overlayGraphicsComponent.graphic.alpha = 1;
+                if (resultTextComponent) resultTextComponent.getRenderable().alpha = 1;
+                if (headerSpriteComponent?.graphic) headerSpriteComponent.graphic.alpha = 1;
+                if (headerTextComponent) headerTextComponent.getRenderable().alpha = 1;
+                if (leftAvatarComponent?.graphic) leftAvatarComponent.graphic.alpha = 1;
+                if (rightAvatarComponent?.graphic) rightAvatarComponent.graphic.alpha = 1;
             }
         };
+        
         animate();
     }
 }

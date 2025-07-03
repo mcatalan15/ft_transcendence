@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 10:52:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/03 12:01:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -724,7 +724,7 @@ export class ButtonManager {
 				switch (menu.language) {
 					case ('en'): return 'READY';
 					case ('es'): return 'LISTO';
-					case ('fr'): return 'PRÊT';
+					case ('fr'): return 'PRET';
 					case ('cat'): return 'LLEST';
 					default: return 'READY';
 				}

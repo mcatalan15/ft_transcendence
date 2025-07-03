@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 18:12:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/03 12:00:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,10 @@ export class HeaderBar extends Entity {
 					case ('PROJECT'): {
 						return ('PROYECTO');
 					}
+
+					case ('chat'): {
+						return ('chat');
+					}
 				}
 				break;
 			}
@@ -155,6 +159,10 @@ export class HeaderBar extends Entity {
 
 					case ('PROJECT'): {
 						return ('PROJET');
+					}
+
+					case ('chat'): {
+						return ('chat');
 					}
 				}
 				break;
@@ -197,6 +205,10 @@ export class HeaderBar extends Entity {
 					case ('PROJECT'): {
 						return ('PROJECTE');
 					}
+
+					case ('chat'): {
+						return ('xat');
+					}
 				}
 				break;
 			}
@@ -218,7 +230,7 @@ export class HeaderBar extends Entity {
 			tag: overlay,
 			text: overlay.toUpperCase(),
 			x: x + 10,
-			y: y + 2,
+			y: y + 1,
 			style: {
 				fill: GAME_COLORS.black,
 				fontSize: 15,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 18:22:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/03 13:00:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -642,6 +642,7 @@ export class PongGame {
 
 	async loadImages() {
 		await ImageManager.loadAssets([
+			// Headers
 			{ name: 'victoryHeaderENWhite', url: '/headers/headers_victory_en_white.svg' },
 			{ name: 'victoryHeaderESWhite', url: '/headers/headers_victory_es_white.svg' },
 			{ name: 'victoryHeaderFRWhite', url: '/headers/headers_victory_fr_white.svg' },
@@ -671,6 +672,10 @@ export class PongGame {
 			{ name: 'defeatHeaderESRed', url: '/headers/headers_defeat_es_red.svg' },
 			{ name: 'defeatHeaderFRRed', url: '/headers/headers_defeat_fr_red.svg' },
 			{ name: 'defeatHeaderCATRed', url: '/headers/headers_defeat_cat_red.svg' },
+
+			// Placeholding avatars
+			{ name: 'avatarUnknownSquare', url: '/avatars/square/square4.png' },
+			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareClassic4.png' },
 		]);
 	}
 
