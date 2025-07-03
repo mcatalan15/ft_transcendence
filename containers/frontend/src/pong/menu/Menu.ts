@@ -263,8 +263,8 @@ export class Menu{
 		this.config = {
 			mode: 'local',
 			variant: '1v1',
-			classicMode: false,
-			filters: true,
+			classicMode: true,
+			filters: false,
 			players: [
 				{ name: 'Player 1', type: 'human', side: 'left' },
 				{ name: 'Player 2', type: 'human', side: 'right' }
@@ -277,8 +277,8 @@ export class Menu{
 			this.config = {
 				mode: preconfig!.mode,
 				variant: preconfig!.variant,
-				classicMode: preconfig!.classicMode || false,
-				filters: true,
+				classicMode: preconfig!.classicMode || true,
+				filters: false,
 				players: [
 					{ name: 'Player 1', type: 'human', side: 'left' },
 					{ name: 'Player 2', type: 'human', side: 'right' }
