@@ -225,7 +225,7 @@ async function getUserByUsername(username) {
 }
 
 async function saveGameToDatabase(
-    game_id,
+    // game_id,
     player1_id,
     player2_id,
     winner_id,
@@ -244,7 +244,6 @@ async function saveGameToDatabase(
     return new Promise((resolve, reject) => {
         const query = `
             INSERT INTO games (
-                game_id,
                 player1_id,
                 player2_id,
                 winner_id,
@@ -259,10 +258,10 @@ async function saveGameToDatabase(
                 is_tournament,
                 smart_contract_link,
                 contract_address
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const params = [
-            game_id,
+            // game_id,
             player1_id,
             player2_id,
             winner_id,
