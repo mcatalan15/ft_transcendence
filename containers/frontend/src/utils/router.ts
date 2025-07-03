@@ -125,12 +125,12 @@ function renderRoute(path: string) {
 			views.showStats(app);
 			return;
 		
-		case '/error404':
+		case '/404':
 			if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
 			}
-			views.showError404(app);
+			views.show404(app);
 			return;
 
 		default:
@@ -158,10 +158,10 @@ function renderRoute(path: string) {
 					views.showPong(app);
 				return;
 			}
-
-			app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
+			navigate('/404');
+			/*app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>
 	  <button onclick="navigate('/')">Back home</button>
-	  `;
+	  `;*/
 	}
 }

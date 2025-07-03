@@ -1,343 +1,173 @@
 import i18n from '../i18n';
-//import { Header } from '../components/header';
-import { HeaderTest } from '../components/generalComponents/testmenu'
+import { HeaderTest } from '../components/generalComponents/testmenu';
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
-import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
-import { changeNickname, changePassword } from '../utils/profile/profileUtils';
+import { PongBoxComponent } from '../components/profileComponents/pongBoxComponents/pongBox';
+import { HeadersComponent } from '../components/profileComponents/pongBoxComponents/headersComponent';
 
-function createButton(color: string, text: string, action: () => void) {
-  let btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = `
-    bg-${color}-950 text-${color}-400 border border-${color}-400 border-b-4
-    font-medium overflow-hidden relative px-8 py-3 rounded-md
-    hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75
-    outline-none duration-300 group w-full max-w-xs text-base md:text-xl
-  `.replace(/\s+/g, ' ').trim();
+export function showSettings(container: HTMLElement): void {
+    i18n
+        .loadNamespaces('settings')
+        .then(() => i18n.changeLanguage(i18n.language))
+        .then(() => {
+            container.innerHTML = '';
 
-  btn.innerHTML = `
-    <span class="bg-${color}-400 shadow-${color}-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
-    ${text}
-  `;
-  btn.onclick = action;
-  return btn;
-}
+            const topBar = document.createElement('div');
+            topBar.className = 'w-full flex flex-row justify-between items-center px-8 pt-4';
+        // Language selector
+            const langSelector = new LanguageSelector(() => showSettings(container)).getElement();
+        // Testmenu
+            const testMenu = new HeaderTest().getElement();
+            topBar.appendChild(langSelector);
+            topBar.appendChild(testMenu);
 
-function createFormField(id: string, type: string, placeholder: string, required: boolean = true) {
-  const input = document.createElement('input');
-  input.type = type;
-  input.id = id;
-  input.placeholder = placeholder;
-  input.required = required;
-  input.className = `
-    w-full border border-gray-300 px-4 py-3 rounded-lg
-    focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-    bg-white text-gray-900
-  `.replace(/\s+/g, ' ').trim();
-  return input;
-}
+            const lang = i18n.language || 'en';
+            const svgHeader = new HeadersComponent({
+                type: 'settings',
+                lang,
+                className: 'absolute left-1/2 -translate-x-1/2 top-0 z-30 w-full max-w-[1800px] h-auto pointer-events-none select-none',
+                style: {
+                    marginTop: '0',
+                    top: '0',
+                    transform: 'translateX(-50%)',
+                    position: 'absolute',
+                    width: '100%',
+                    maxWidth: '1800px',
+                    height: 'auto',
+                    zIndex: '30',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                    bottom: 'unset',
+                    left: '50%',
+                    right: 'unset',
+                    display: 'block',
+                    marginBottom: '0',
+                    marginLeft: '0',
+                    marginRight: '0',
+                }
+            }).getElement();
 
-export async function showSettings(container: HTMLElement): Promise<void> {
-  await i18n.loadNamespaces('profile');
-  container.innerHTML = '';
-  
-  const hasMenu = false;
-  
-  if (hasMenu) {
-    container.className = [
-      'grid',
-      'grid-rows-[auto_1fr]',
-      'grid-cols-[200px_1fr]',
-      'h-screen',
-      'overflow-hidden'
-    ].join(' ');
-  } else {
-    container.className = [
-      'grid',
-      'grid-rows-[auto_1fr]',
-      'h-screen',
-      'overflow-hidden'
-    ].join(' ');
-  }
+            const borderMobile = 8;
+            const borderDesktop = 16;
+            function updateSvgMargin() {
+                const isMobile = window.innerWidth < 768;
+                svgHeader.style.marginTop = `-${isMobile ? borderMobile * 3.2 : borderDesktop * 3.4}px`;
+            }
+            updateSvgMargin();
+            window.addEventListener('resize', updateSvgMargin);
 
-  // Header
-  const headerWrapper = new HeaderTest().getElement();
-  headerWrapper.classList.add(
-    'row-start-1',
-    hasMenu ? 'col-span-2' : 'col-span-1',
-    'w-full',
-    'z-30'
-  );
-  container.appendChild(headerWrapper);
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'flex flex-col items-center justify-center w-full h-full bg-neutral-900';
 
-  // Language selector
-  const langSelector = new LanguageSelector(() => showSettings(container)).getElement();
-  langSelector.classList.add(
-    'row-start-1',
-    hasMenu ? 'col-start-2' : 'col-start-1',
-    'justify-self-end',
-    'p-4',
-    'z-40'
-  );
-  container.appendChild(langSelector);
+            const pongBoxContent = document.createElement('div');
+            pongBoxContent.className = 'flex flex-col w-full';
 
-  // Menu (if needed)
-  if (hasMenu) {
-    const menuWrapper = new Menu().getElement();
-    menuWrapper.classList.add(
-      'row-start-2',
-      'col-start-1',
-      'h-full',
-      'overflow-auto',
-      'bg-gray-50',
-      'border-r',
-      'z-20'
-    );
-    container.appendChild(menuWrapper);
-  }
+            const pongBox = new PongBoxComponent({
+              avatarUrl: '',
+              nickname: '',
+              mainContent: pongBoxContent,
+              onArrowClick: () => {
+                // Navega a tu perfil (ajusta la ruta si es necesario)
+                navigate('/profile');
+              }
+            });
+            const pongBoxElement = pongBox.getElement();
+            pongBoxElement.style.marginTop = '-16px';
 
-  // Content wrapper
-  const contentWrapper = document.createElement('div');
-  contentWrapper.className = [
-    'row-start-2',
-    hasMenu ? 'col-start-2' : 'col-start-1',
-    'flex',
-    'items-center',
-    'justify-center',
-    'w-full',
-    'h-full',
-    'bg-neutral-900'
-  ].join(' ');
+            const mainColumn = document.createElement('div');
+            mainColumn.className = 'flex flex-col items-center w-full';
+            const headerPongBoxWrapper = document.createElement('div');
+            headerPongBoxWrapper.className = 'relative flex flex-col items-center w-full';
+            headerPongBoxWrapper.appendChild(svgHeader);
+            headerPongBoxWrapper.appendChild(pongBoxElement);
+            mainColumn.appendChild(headerPongBoxWrapper);
 
-  // Main ping pong box (reusing profile design)
-  const pingpongBox = document.createElement('div');
-  pingpongBox.className = `
-    w-full max-w-[1800px] h-auto md:h-[750px]
-    mx-auto bg-neutral-900 border-4 border-amber-400
-    flex flex-col md:flex-row overflow-hidden shadow-xl
-    min-h-[600px]
-  `.replace(/\s+/g, ' ').trim();
+            contentWrapper.appendChild(topBar);
+            contentWrapper.appendChild(mainColumn);
+            container.appendChild(contentWrapper);
 
-  // LEFT COL - Avatar section
-  const leftCol = document.createElement('div');
-  leftCol.className = `
-    w-full md:w-1/3 flex flex-col justify-items-start
-    bg-neutral-900 pt-6 pb-10 px-4 h-full relative
-  `.replace(/\s+/g, ' ').trim();
+                    fetch('/api/profile', {
+                      credentials: 'include',
+                      headers: { 'Content-Type': 'application/json' },
+                    })
+                      .then(response => response.json())
+                      .then(data => {
+                        const nicknameEl = pongBoxElement.querySelector('span.text-amber-50');
+                        const avatarImg = pongBoxElement.querySelector('img');
+                        const userId = sessionStorage.getItem('userId') || 'defaultUserId';
 
-  const settingsTitle = document.createElement('div');
-  settingsTitle.className = `
-    text-amber-400 text-7xl font-anatol tracking-wide break-all text-left w-full mb-5
-  `.replace(/\s+/g, ' ').trim();
-  settingsTitle.textContent = i18n.t('settings', { ns: 'profile' }) || 'Ajustes';
+                        if (nicknameEl)
+                          nicknameEl.textContent = data.username;
+                        if (avatarImg) {
+                          (avatarImg as HTMLImageElement).src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
 
-  const centerCol = document.createElement('div');
-  centerCol.className = "flex flex-col place-items-center gap-4 w-full mt-32";
+                          const avatarWrapper = document.createElement('div');
+                          avatarWrapper.className = 'relative inline-block';
+                          avatarImg.parentNode?.insertBefore(avatarWrapper, avatarImg);
+                          avatarWrapper.appendChild(avatarImg);
+                          const fileInput = document.createElement('input');
+                          fileInput.type = 'file';
+                          fileInput.accept = 'image/jpeg,image/png,image/gif';
+                          fileInput.style.display = 'none';
+                          const statusBtn = document.createElement('button');
+                          statusBtn.type = 'button';
+                          statusBtn.className = 'absolute bottom-0 right-0 w-20 h-20 bg-amber-50 border-2 border-amber-50 rounded-full flex items-center justify-center p-0 focus:outline-none transition group overflow-hidden';
+                          statusBtn.innerHTML = `
+                            <svg class="transition-transform duration-200 ease-in-out group-hover:scale-125" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="32" height="32">
+                              <rect x="3" y="7" width="18" height="14" rx="3" fill="#171717" stroke="#171717" stroke-width="2"/>
+                              <circle cx="12" cy="14" r="4" fill="#fff" stroke="#171717" stroke-width="2"/>
+                              <rect x="8" y="3" width="8" height="4" rx="2" fill="#171717"/>
+                            </svg>
+                          `;
+                          statusBtn.onclick = () => fileInput.click();
+                          avatarWrapper.appendChild(statusBtn);
+                          fileInput.onchange = async (e) => {
+                            const target = e.target as HTMLInputElement;
+                            const file = target.files?.[0];
+                            if (!file) return;
+                            // Validar tamaño (por ejemplo, 2MB)
+                            const maxSize = 2 * 1024 * 1024; // 2MB
+                            if (file.size > maxSize) {
+                              showErrorMessage('Image too large (max 2MB)');
+                              // Limpiar el valor del input para permitir volver a seleccionar el mismo archivo
+                              fileInput.value = '';
+                              return;
+                            }
+                            const formData = new FormData();
+                            formData.append('avatar', file);
+                            try {
+                              const response = await fetch('/api/profile/avatar', {
+                                method: 'POST',
+                                credentials: 'include',
+                                body: formData
+                              });
+                              if (response.ok) {
+                                avatarImg.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+                                showSuccessMessage('Avatar updated successfully!');
+                              } else {
+                                showErrorMessage('Failed to update avatar');
+                              }
+                            } catch (error) {
+                              console.error('Avatar upload error:', error);
+                              showErrorMessage('Error uploading avatar');
+                            }
+                          };
+                        }
+                      })
+                      .catch(error => {
+                        navigate('/home');
+                        console.error('Error fetching profile:', error);
+                      });
+    });
 
-  // Avatar section
-  const avatar = document.createElement('img');
-  avatar.alt = 'Profile';
-  avatar.className = `
-    w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-400 object-cover
-    shadow-xl transition-all duration-300 cursor-pointer hover:opacity-80
-  `.replace(/\s+/g, ' ').trim();
-
-  const currentUser = sessionStorage.getItem('username');
-  const currentUserId = sessionStorage.getItem('userId');
-  avatar.src = `/api/profile/avatar/${currentUserId}?t=${Date.now()}`;
-
-  // Avatar upload functionality
-  const fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = 'image/jpeg,image/png,image/gif';
-  fileInput.style.display = 'none';
-
-  const avatarLabel = document.createElement('span');
-  avatarLabel.className = `
-    mt-2 text-amber-400 text-sm text-center cursor-pointer hover:text-amber-500
-  `.replace(/\s+/g, ' ').trim();
-  avatarLabel.textContent = 'Click here to change avatar';
-
-  avatarLabel.onclick = () => fileInput.click();
-  
-  fileInput.onchange = async (e) => {
-    const target = e.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    try {
-      const response = await fetch('/api/profile/avatar', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData
-      });
-
-      if (response.ok) {
-        // Refresh avatar
-        avatar.src = `/api/profile/avatar/${currentUserId}?t=${Date.now()}`;
-        showSuccessMessage('Avatar updated successfully!');
-      } else {
-        showErrorMessage('Failed to update avatar');
-      }
-    } catch (error) {
-      console.error('Avatar upload error:', error);
-      showErrorMessage('Error uploading avatar');
+    // Crear el contenedor de mensajes solo si no existe ya
+    let messageContainer = document.getElementById('messageContainer');
+    if (!messageContainer) {
+      messageContainer = document.createElement('div');
+      messageContainer.id = 'messageContainer';
+      messageContainer.className = 'fixed top-20 right-4 z-50';
+      container.appendChild(messageContainer);
     }
-  };
-
-  centerCol.appendChild(avatar);
-  centerCol.appendChild(avatarLabel);
-  centerCol.appendChild(fileInput);
-  leftCol.appendChild(settingsTitle);
-  leftCol.appendChild(centerCol);
-
-  // MIDDLE COL - Forms
-  const middleCol = document.createElement('div');
-  middleCol.className = `
-    w-full md:w-1/3 flex flex-col place-items-center mt-12 md:mt-24
-    bg-neutral-900 gap-6 px-6 py-8
-  `.replace(/\s+/g, ' ').trim();
-
-  // Nickname change form
-  const nicknameForm = document.createElement('div');
-  nicknameForm.className = 'w-full max-w-xs bg-neutral-900 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
-  
-  const nicknameTitle = document.createElement('h3');
-  nicknameTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
-  nicknameTitle.textContent = 'Change Nickname';
-  
-  const currentNicknameField = createFormField('currentNickname', 'text', 'Current nickname', false);
-  currentNicknameField.value = currentUser || '';
-  currentNicknameField.disabled = true;
-  currentNicknameField.className += ' bg-gray-100';
-  
-  const newNicknameField = createFormField('newNickname', 'text', 'New nickname');
-  const nicknameBtn = createButton('cyan', 'Update Nickname', async () => {
-    const newNickname = newNicknameField.value.trim();
-    if (!newNickname) {
-      showErrorMessage('Please enter a new nickname');
-      return;
-    }
-    
-    if (newNickname.length < 3 || newNickname.length > 8) {
-      showErrorMessage('Nickname must be between 3 and 8 characters');
-      return;
-    }
-    
-    if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(newNickname)) {
-      showErrorMessage('Nickname can only contain letters, numbers and a single hyphen');
-      return;
-    }
-
-    changeNickname(newNickname);
-  });
-
-  nicknameForm.appendChild(nicknameTitle);
-  nicknameForm.appendChild(currentNicknameField);
-  nicknameForm.appendChild(document.createElement('br'));
-  nicknameForm.appendChild(newNicknameField);
-  nicknameForm.appendChild(document.createElement('br'));
-  nicknameForm.appendChild(nicknameBtn);
-
-  middleCol.appendChild(nicknameForm);
-
-  if (sessionStorage.getItem('localAuth') === 'true') {
-	const passwordForm = document.createElement('div');
-	passwordForm.className = 'w-full max-w-xs bg-neutral-800 border-2 border-amber-400 p-6 rounded-lg shadow-lg';
-	
-	const passwordTitle = document.createElement('h3');
-	passwordTitle.className = 'text-xl font-bold text-amber-400 mb-4 text-center';
-	passwordTitle.textContent = 'Change Password';
-	
-	const currentPasswordField = createFormField('currentPassword', 'password', 'Current password');
-	const newPasswordField = createFormField('newPassword', 'password', 'New password');
-	const confirmPasswordField = createFormField('confirmPassword', 'password', 'Confirm new password');
-	
-	const passwordBtn = createButton('lime', 'Update Password', async () => {
-		const currentPassword = currentPasswordField.value;
-		const newPassword = newPasswordField.value;
-		const confirmPassword = confirmPasswordField.value;
-		
-		if (!currentPassword || !newPassword || !confirmPassword) {
-			showErrorMessage('All password fields are required');
-			return;
-		}
-		
-		if (newPassword.length < 6 || newPassword.length > 20) {
-			showErrorMessage('Password must be between 6 and 20 characters');
-			return;
-		}
-		
-		if (newPassword !== confirmPassword) {
-			showErrorMessage('New passwords do not match');
-			return;
-		}
-
-		if (currentPassword === newPassword) {
-			showErrorMessage('New password cannot be the same as the current password');
-			return;
-		}
-
-		changePassword(currentPassword, newPassword);
-	});
-
-	passwordForm.appendChild(passwordTitle);
-	passwordForm.appendChild(currentPasswordField);
-	passwordForm.appendChild(document.createElement('br'));
-	passwordForm.appendChild(newPasswordField);
-	passwordForm.appendChild(document.createElement('br'));
-	passwordForm.appendChild(confirmPasswordField);
-	passwordForm.appendChild(document.createElement('br'));
-	passwordForm.appendChild(passwordBtn);
-
-	middleCol.appendChild(passwordForm);
-  }
-  // RIGHT COL - Navigation buttons
-  const rightCol = document.createElement('div');
-  rightCol.className = `
-    w-full md:w-1/3 flex flex-col justify-items-end-safe py-48 px-12 pr-24
-    bg-neutral-900
-  `.replace(/\s+/g, ' ').trim();
-
-  const btnGrid = document.createElement('div');
-  btnGrid.className = 'grid grid-cols-1 gap-5 md:gap-10 w-full max-w-xs ml-auto';
-
-  const buttons = [
-    {
-      label: 'Back to Profile',
-      action: () => navigate('/profile'),
-      color: 'amber'
-    },
-    {
-      label: 'Dashboard',
-      action: () => navigate('/dashboard'),
-      color: 'pink'
-    }
-  ];
-
-  buttons.forEach(({ color, label, action }) => {
-    const btn = createButton(color, label, action);
-    btnGrid.appendChild(btn);
-  });
-
-  rightCol.appendChild(btnGrid);
-
-  // Message container for success/error messages
-  const messageContainer = document.createElement('div');
-  messageContainer.id = 'messageContainer';
-  messageContainer.className = 'fixed top-20 right-4 z-50';
-
-  // Assemble the layout
-  pingpongBox.appendChild(leftCol);
-  pingpongBox.appendChild(middleCol);
-  pingpongBox.appendChild(rightCol);
-  contentWrapper.appendChild(pingpongBox);
-  container.appendChild(contentWrapper);
-  container.appendChild(messageContainer);
 }
 
 function showSuccessMessage(message: string) {
@@ -349,12 +179,21 @@ function showErrorMessage(message: string) {
 }
 
 function showMessage(message: string, type: 'success' | 'error') {
-  const messageContainer = document.getElementById('messageContainer');
-  if (!messageContainer) return;
+  // Buscar el avatarWrapper si existe
+  let avatarWrapper = document.querySelector('.relative.inline-block');
+  let messageContainer = document.getElementById('messageContainer');
+
+  if (!messageContainer) {
+    messageContainer = document.createElement('div');
+    messageContainer.id = 'messageContainer';
+    // Siempre en el centro de la pantalla
+    messageContainer.className = 'fixed inset-0 flex items-center justify-center z-50 pointer-events-none';
+    document.body.appendChild(messageContainer);
+  }
 
   const messageDiv = document.createElement('div');
   messageDiv.className = `
-    px-4 py-3 rounded-lg shadow-lg mb-2 max-w-sm
+    px-4 py-3 rounded-lg shadow-lg max-w-xs pointer-events-auto text-center
     ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}
   `.replace(/\s+/g, ' ').trim();
   messageDiv.textContent = message;
@@ -365,6 +204,10 @@ function showMessage(message: string, type: 'success' | 'error') {
   setTimeout(() => {
     if (messageDiv.parentNode) {
       messageDiv.parentNode.removeChild(messageDiv);
+    }
+    // Si el contenedor queda vacío, lo eliminamos
+    if (messageContainer && messageContainer.childElementCount === 0) {
+      messageContainer.remove();
     }
   }, 3000);
 }

@@ -2,7 +2,7 @@
 import { navigate } from '../utils/router';
 import { bounceBall } from '../components/generalComponents/ballComponent/bounceBall';
 
-export function showError404(container: HTMLElement): void {
+export function show404(container: HTMLElement): void {
   container.innerHTML = `
     <section class="bg-neutral-900 dark:bg-gray-900 min-h-screen flex items-center justify-center">
       <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">

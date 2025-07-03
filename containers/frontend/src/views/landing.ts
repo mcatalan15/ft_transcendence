@@ -25,7 +25,7 @@ export function showLanding(container: HTMLElement): void {
               </button>
             </div>
             <div class="flex-grow flex items-center justify-center">
-              <div class="text-8xl md:text-9xl font-anatol flex items-center space-x-4 z-10">
+              <div class="text-9xl md:text-9xl font-anatol flex items-center space-x-4 z-10">
                 <span>P</span>
                 <button id="bounce-button" class="w-12 h-12 md:w-16 md:h-16 bg-amber-400 rounded-full animate-bounce shadow-lg hover:scale-110 transition duration-300 cursor-pointer z-10"></button>
                 <span>NG</span>

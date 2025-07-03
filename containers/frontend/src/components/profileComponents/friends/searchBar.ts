@@ -1,17 +1,17 @@
 export class MatchTableComponent {
     private searchBar: HTMLTableElement;
   
-    constructor(data) {
+    constructor(data: any) {
       this.data = data;
       this.searchBar = document.createElement('searchBar');
-      this.searchBar.className = 'flex w-full justify-end items-end mt-8 -ml-8';
+      this.searchBar.className = 'flex w-full justify-end items-end mt-4 -ml-4';
       this.render();
     }
   
     private render() {
       this.searchBar.innerHTML = `
       <div
-      class="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-lime-400 shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center transition-all duration-300"
+      class="p-4 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-lime-400 shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center transition-all duration-300"
       >
         <div class="flex items-center justify-items-end-safe fill-white">
           <svg
