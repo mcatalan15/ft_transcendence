@@ -1,7 +1,7 @@
 import i18n from '../i18n';
 //import { Header } from '../components/header';
-import { HeaderTest } from '../components/testmenu'
-import { LanguageSelector } from '../components/languageSelector';
+import { HeaderTest } from '../components/generalComponents/testmenu'
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
 import { changeNickname, changePassword } from '../utils/profile/profileUtils';

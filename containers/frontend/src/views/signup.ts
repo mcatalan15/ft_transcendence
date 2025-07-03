@@ -1,7 +1,7 @@
 import { localSignUp } from "../utils/auth/localSignUp";
 import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
 import i18n from '../i18n';
-import { LanguageSelector } from '../components/languageSelector';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 
 export function showSignUp(container: HTMLElement): void {

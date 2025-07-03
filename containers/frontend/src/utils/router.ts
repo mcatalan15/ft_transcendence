@@ -1,7 +1,6 @@
 import views from './viewsRoutesLoader';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
-import { showHistory } from '../views/history';
 
 let app: HTMLElement | null = null;
 
@@ -59,7 +58,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showHistory(app);
+			views.showHistory(app);
 			break;
 
 		case '/profile':
@@ -124,6 +123,14 @@ function renderRoute(path: string) {
 				return;
 			}
 			views.showStats(app);
+			return;
+		
+		case '/error404':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			views.showError404(app);
 			return;
 
 		default:

@@ -1,6 +1,6 @@
 import i18n from '../i18n';
-import { HeaderTest } from '../components/testmenu';
-import { LanguageSelector } from '../components/languageSelector';
+import { HeaderTest } from '../components/generalComponents/testmenu';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 import { ChatMessage, MessageType } from '../types/chat.types';
 import { MessageRenderer } from '../components/chat/MessageRenderer';

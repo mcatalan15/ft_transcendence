@@ -1,5 +1,5 @@
-import i18n from "../i18n";
-import { translateDOM } from "../utils/translateDOM";
+import i18n from "../../i18n";
+import { translateDOM } from "../../utils/translateDOM";
 
 export class LanguageSelector {
   private container: HTMLElement;

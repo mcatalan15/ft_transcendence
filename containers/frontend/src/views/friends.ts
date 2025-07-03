@@ -1,7 +1,7 @@
 import i18n from '../i18n';
-import { HeaderTest } from '../components/testmenu'
+import { HeaderTest } from '../components/generalComponents/testmenu'
 //import { Header } from '../components/header';
-import { LanguageSelector } from '../components/languageSelector';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';

@@ -4,8 +4,8 @@ import { initGame } from '../pong/pong';
 import { PongGame } from '../pong/engine/Game';
 import { GameConfig } from '../pong/utils/GameConfig';
 import { PongNetworkManager } from '../pong/network/PongNetworkManager';
-import { HeaderTest } from '../components/testmenu'
-import { LanguageSelector } from '../components/languageSelector';
+import { HeaderTest } from '../components/generalComponents/testmenu'
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import i18n from '../i18n';
 
 export function showPong(container: HTMLElement): void {

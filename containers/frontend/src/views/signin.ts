@@ -1,7 +1,7 @@
 import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
 
 import i18n from '../i18n';
-import { LanguageSelector } from '../components/languageSelector';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { localSignIn } from '../utils/auth/localSignIn';
 import { navigate } from '../utils/router';
 

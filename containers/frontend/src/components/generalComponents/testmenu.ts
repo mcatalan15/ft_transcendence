@@ -1,4 +1,4 @@
-import { navigate } from '../utils/router';
+import { navigate } from '../../utils/router';
 
 export class HeaderTest {
     private element: HTMLElement;
