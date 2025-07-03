@@ -1,4 +1,5 @@
 import i18n from '../i18n';
+import { getApiUrl } from '../config/api';
 
 // Define interfaces for API responses
 interface TwoFaSetupResponse {
@@ -88,7 +89,7 @@ export function showAuth(container: HTMLElement): void {
 				verifyBtn.disabled = true;
 				verificationStatus.textContent = i18n.t('Verifying...');
 				verificationStatus.className = 'text-sm text-center text-gray-500';
-				const response = await fetch('/api/auth/verify', {
+				const response = await fetch(getApiUrl('/auth/verify'), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),
@@ -183,7 +184,7 @@ export function showAuth(container: HTMLElement): void {
 			}
 
 			try {
-				const response = await fetch('/api/auth/setup', {
+				const response = await fetch(getApiUrl('/auth/setup'), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ username: actualUsername, userId: actualUserId, email: actualEmail }),
@@ -223,7 +224,7 @@ export function showAuth(container: HTMLElement): void {
 			}
 
 			try {
-				const response = await fetch('/api/auth/verify', {
+				const response = await fetch(getApiUrl('/auth/verify'), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),

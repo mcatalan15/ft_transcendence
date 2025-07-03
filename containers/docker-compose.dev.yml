@@ -2,7 +2,12 @@
 
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        - NODE_ENV=development
+    environment:
+      - NODE_ENV=development
     container_name: frontend
     volumes:
       - ./frontend:/app
@@ -10,9 +15,6 @@ services:
     ports:
       - "5173:5173"
     restart: on-failure
-    environment:
-      - VITE_DEV=true
-    command: npm run dev -- --host
     networks:
       - transcendence
 

@@ -1,8 +1,10 @@
+import { getApiUrl } from '../../config/api';
+
 export async function logUserOut(): Promise<{success: boolean, message: string}> {
 	try {
 		const user = sessionStorage.getItem('user');
-		
-		const response = await fetch('/api/auth/logout', {
+
+		const response = await fetch(getApiUrl('/auth/logout'), {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

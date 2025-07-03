@@ -9,13 +9,6 @@ function setupChatWebSocket(wss, redisService, gameManager) {
     let userId = null;
     let username = null;
 
-    // Send welcome message
-    ws.send(JSON.stringify({
-      type: 'server',
-      content: 'Connected to Transcendence Chat Server',
-      timestamp: new Date().toISOString()
-    }));
-
     ws.on('message', async (message) => {
       try {
         const data = JSON.parse(message.toString());

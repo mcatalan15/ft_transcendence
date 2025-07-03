@@ -7,6 +7,7 @@ const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
 const path = require('path');
 const fs = require('fs');
+const cors = require('@fastify/cors');
 
 function buildApp() {
   const fastify = Fastify({
@@ -33,12 +34,13 @@ function buildApp() {
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
     cookieName: 'sessionId',
-    //! Update secret for prod
-    secret: 'a-secret-key-that-should-be-in-env-file',
+    secret: process.env.SESSION_SECRET || 'a-secret-key-that-should-be-in-env-file',
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // true in production
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      domain: process.env.NODE_ENV === 'production' ? '.mrlouf.studio' : undefined
     }
   });
 
@@ -60,8 +62,8 @@ function buildApp() {
 		',
         version: '1.0.0'
       },
-      host: 'localhost:3100',
-      schemes: ['http'],
+      host: process.env.NODE_ENV === 'production' ? 'mrlouf.studio' : 'localhost:3100',
+      schemes: process.env.NODE_ENV === 'production' ? ['https'] : ['http'],
       consumes: ['application/json'],
       produces: ['application/json']
     }
@@ -85,9 +87,14 @@ function buildApp() {
       headerPairs: 2000
     }
   });
-
+  fastify.register(cors, {
+    origin: true,  // Allow all origins for testing
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Origin', 'X-Requested-With', 'Accept']
+  });
   // Register custom plugins
-  fastify.register(require('../plugins/setupCors'));
+  //fastify.register(require('../plugins/setupCors'));
   fastify.register(require('../plugins/healthCheck'));
   fastify.register(require('../plugins/prometheusMetrics'));
 

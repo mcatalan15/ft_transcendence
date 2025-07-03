@@ -4,6 +4,7 @@ import { initGame } from '../pong/pong';
 import { PongGame } from '../pong/engine/Game';
 import { GameConfig } from '../pong/utils/GameConfig';
 import { PongNetworkManager } from '../pong/network/PongNetworkManager';
+import { getWsUrl } from '../config/api';
 
 export function showPong(container: HTMLElement): void {
   // Clear the container
@@ -138,8 +139,8 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
 	  network: {
 		roomId: gameId,
 		isHost: false,
-		serverUrl: WebSocketManager.getInstance().getGameWebSocketUrl() || 'ws://localhost:3000/game',
-	  },		
+		serverUrl: WebSocketManager.getInstance().getGameWebSocketUrl() || getWsUrl('/game'),
+	  },
 	};
     
     console.log('Creating PongGame with default config:', config);

@@ -8,6 +8,7 @@ services:
     restart: always
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - DOMAIN_NAME=${DOMAIN_NAME}
     networks:
       - transcendence
 
@@ -15,14 +16,60 @@ services:
     ports:
       - "127.0.0.1:3100:3100"
     restart: always
+    environment:
+      - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    env_file:
+      - .env
     networks:
       - transcendence
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        - NODE_ENV=production
     container_name: frontend
     volumes:
       - public:/app/public
+    environment:
+      - NODE_ENV=production
     networks:
       - transcendence
 
+  blockchain:
+    environment:
+      - NODE_ENV=production
+      - AVALANCHE_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+      - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+      - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+    networks:
+      - transcendence
+
+  redis:
+    environment:
+      - NODE_ENV=production
+    networks:
+      - transcendence
+
+  adminer:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:1090:1090"
+    networks:
+      - transcendence
+
+  prometheus:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - transcendence
+
+  grafana:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - transcendence

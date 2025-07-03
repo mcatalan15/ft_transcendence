@@ -2,31 +2,30 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-root: "src",
-publicDir: "../static",
-build: {
-	outDir: "../public",
-	emptyOutDir: true,
-},
-server: {
-	host: '0.0.0.0',
-	port: 5173,
-	open: false,
-	strictPort: true,
-	watch: {
-	  usePolling: true, // this helps with Docker sometimes
-	},
-	hmr: process.env.NODE_ENV === 'development' ? {  // Enable HMR only in dev
-		protocol: 'ws',
-		host: 'localhost',
-		port: 5173,
-		overlay: false,
-	} : false,  // Disable HMR in production
-	proxy: {
-		'/api': {
-		  target: 'http://backend:3100',
-		  changeOrigin: true
-		}
-	}
-},
+  root: "src",
+  publicDir: "../static",
+  build: {
+    outDir: "../public",
+    emptyOutDir: true,
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    open: false,
+    strictPort: true,
+    watch: {
+      usePolling: true,
+    },
+    // Keep HMR enabled for development
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+      overlay: false,
+    }
+  },
+  define: {
+    __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
+    __PROD__: JSON.stringify(process.env.NODE_ENV === 'production'),
+  }
 });

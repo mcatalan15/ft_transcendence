@@ -58,6 +58,8 @@ import { SoundManager } from '../managers/SoundManager';
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
 
+import { getApiUrl } from '../../config/api';
+
 export class PongGame {
 	config: GameConfig;
 	data!: GameData;;
@@ -785,7 +787,7 @@ export class PongGame {
 			}
 	
 			console.log('Making API call to /api/games/results');
-			const response = await fetch('/api/games/results', {
+			const response = await fetch(getApiUrl('/games/results'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

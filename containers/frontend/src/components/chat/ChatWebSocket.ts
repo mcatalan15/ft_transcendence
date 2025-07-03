@@ -1,5 +1,6 @@
 import { ChatMessage, MessageType } from '../../types/chat.types';
 import { navigate } from '../../utils/router';
+import { getWsUrl } from '../../config/api';
 
 export class ChatWebSocket {
   private socket: WebSocket;
@@ -10,14 +11,14 @@ export class ChatWebSocket {
   constructor(onMessage: (message: ChatMessage) => void, addSystemMessage: (content: string, type: MessageType) => void) {
     this.onMessage = onMessage;
     this.addSystemMessage = addSystemMessage;
-    this.socket = new WebSocket('ws://localhost:3100/ws');
+    this.socket = new WebSocket(getWsUrl(''));
     this.setupEventListeners();
   }
 
   private setupEventListeners() {
     this.socket.addEventListener('open', () => {
       console.log('WebSocket connected');
-      this.addSystemMessage('Connected to chat server');
+      this.addSystemMessage('Connected to chat server', MessageType.SYSTEM);
       this.addSystemMessage('Type /help for available commands', MessageType.SYSTEM);
 
       const username = sessionStorage.getItem('username') || 'Anonymous';

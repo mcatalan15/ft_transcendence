@@ -5,6 +5,7 @@ import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
+import { getApiUrl } from '../config/api';
 
 export function showFriends(container: HTMLElement): void {
   console.log('showFriends ejecutado', container);
@@ -58,7 +59,7 @@ export function showFriends(container: HTMLElement): void {
 
       const avatar = document.createElement('img');
       const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-      avatar.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+      avatar.src = getApiUrl(`/profile/avatar/${userId}?t=${Date.now()}`);
       avatar.alt = 'Profile';
       avatar.className = `
         w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-lime-400 object-cover
@@ -140,7 +141,7 @@ export function showFriends(container: HTMLElement): void {
           });
 
           const friendAvatar = document.createElement('img');
-          friendAvatar.src = `/api/profile/avatar/${friend.id_user}?t=${Date.now()}`;
+          friendAvatar.src = getApiUrl(`/profile/avatar/${friend.id_user}?t=${Date.now()}`);
           friendAvatar.alt = friend.username;
           friendAvatar.className = 'w-16 h-16 md:w-24 md:h-24 rounded-full border-4 border-lime-400 object-cover shadow transition duration-200 hover:scale-105';
 
@@ -156,7 +157,7 @@ export function showFriends(container: HTMLElement): void {
       }
 
       // Fetch friends from API
-      fetch('/api/friends', {
+      fetch(getApiUrl('/friends'), {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
@@ -209,7 +210,7 @@ export function showFriends(container: HTMLElement): void {
       );
       container.appendChild(headerWrapper);
 
-      fetch('/api/profile', {
+      fetch(getApiUrl('/profile'), {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })

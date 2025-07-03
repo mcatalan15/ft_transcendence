@@ -1,3 +1,5 @@
+import { getWsUrl } from '../../config/api';
+
 export class WebSocketManager {
     private socket: WebSocket | null = null;
     private gameWebSocketUrl: string; // Add this property
@@ -46,7 +48,7 @@ export class WebSocketManager {
     constructor(hostId: string, customUrl?: string) {
         this.hostId = hostId;
         this.localPlayerId = hostId; // Set localPlayerId
-        this.gameWebSocketUrl = customUrl || 'ws://localhost:3100/ws/socket/game';
+        this.gameWebSocketUrl = customUrl || getWsUrl('/socket/game');
     }
 
     connect(gameId: string | null): Promise<void> {

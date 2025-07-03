@@ -4,6 +4,7 @@ import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
 import { MatchTableComponent } from '../components/profileComponents/history/table';
 import { PongBoxComponent } from '../components/profileComponents/pongBox';
+import { getApiUrl } from '../config/api';
 
 export function showHistory(container: HTMLElement) {
   
@@ -55,7 +56,7 @@ export function showHistory(container: HTMLElement) {
       headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
       container.appendChild(headerWrapper);
 
-      fetch('/api/profile', {
+      fetch(getApiUrl('/profile'), {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })

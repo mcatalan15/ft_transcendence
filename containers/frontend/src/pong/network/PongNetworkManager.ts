@@ -1,5 +1,6 @@
 import { WebSocketManager } from '../../utils/network/WebSocketManager';
 import { PongGame } from '../engine/Game';
+import { getWsUrl } from '../../config/api';
 
 export class PongNetworkManager {
   private wsManager: WebSocketManager;
@@ -17,7 +18,7 @@ export class PongNetworkManager {
     // Create a new WebSocketManager instance specifically for this game
     this.wsManager = new WebSocketManager(
       sessionStorage.getItem('username') ?? 'undefined',
-      `ws://localhost:3100/ws/socket/game` // Base URL, gameId will be appended
+      getWsUrl('/socket/game') // Base URL, gameId will be appended
     );
 
     this.game.networkManager = this;

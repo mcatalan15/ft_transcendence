@@ -1,4 +1,5 @@
 import { navigate } from '../router';
+import { getWsUrl } from '../../config/api';
 
 export enum MessageType {
   GENERAL = 'general',
@@ -482,7 +483,7 @@ export class ChatManager {
     });
   }
 
-  public connectWebSocket(url: string = 'ws://localhost:3100/ws'): void {
+  public connectWebSocket(url: string = getWsUrl('')): void {
     this.socket = new WebSocket(url);
 
     this.socket.addEventListener('open', () => {

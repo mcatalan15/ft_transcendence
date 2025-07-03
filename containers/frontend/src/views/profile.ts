@@ -7,6 +7,7 @@ import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
+import { getApiUrl } from '../config/api';
 
 // async function fetchUserStats(username?: string): Promise<any> {
 //     try {
@@ -57,7 +58,7 @@ import { navigate } from '../utils/router';
 
 async function updateOnlineStatus(userId: string): Promise<void> {
 	try {
-		const response = await fetch(`/api/profile/status/${userId}`, {
+		const response = await fetch(getApiUrl(`/profile/status/${userId}`), {
 			credentials: 'include'
 		});
 
@@ -109,7 +110,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	const currentUser = sessionStorage.getItem('username');
 	const isOwnProfile = !username || username === currentUser;
 
-	const apiEndpoint = username ? `/api/profile/${username}` : '/api/profile';
+	const apiEndpoint = username ? getApiUrl(`/profile/${username}`) : getApiUrl('/profile');
 
 	await i18n.loadNamespaces('profile');
 
@@ -397,7 +398,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 			}
 
 			nicknameSpan.textContent = username;
-			avatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
+			avatar.src = getApiUrl(`/profile/avatar/${data.userId}?t=${Date.now()}`);
 
 			if (!isOwnProfile) {
 				updateOnlineStatus(data.userId);

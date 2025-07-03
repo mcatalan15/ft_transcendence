@@ -5,6 +5,7 @@ import { LanguageSelector } from '../components/languageSelector';
 import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
 import { changeNickname, changePassword } from '../utils/profile/profileUtils';
+import { getApiUrl } from '../config/api';
 
 function createButton(color: string, text: string, action: () => void) {
   let btn = document.createElement('button');
@@ -145,7 +146,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   const currentUser = sessionStorage.getItem('username');
   const currentUserId = sessionStorage.getItem('userId');
-  avatar.src = `/api/profile/avatar/${currentUserId}?t=${Date.now()}`;
+  avatar.src = getApiUrl(`/profile/avatar/${currentUserId}?t=${Date.now()}`);
 
   // Avatar upload functionality
   const fileInput = document.createElement('input');
@@ -170,7 +171,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
     formData.append('avatar', file);
 
     try {
-      const response = await fetch('/api/profile/avatar', {
+      const response = await fetch(getApiUrl('/profile/avatar'), {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -178,7 +179,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
       if (response.ok) {
         // Refresh avatar
-        avatar.src = `/api/profile/avatar/${currentUserId}?t=${Date.now()}`;
+        avatar.src = getApiUrl(`/profile/avatar/${currentUserId}?t=${Date.now()}`);
         showSuccessMessage('Avatar updated successfully!');
       } else {
         showErrorMessage('Failed to update avatar');

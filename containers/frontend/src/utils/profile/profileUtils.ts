@@ -1,8 +1,9 @@
 import { navigate } from "../router";
+import { getApiUrl } from "../../config/api";
 
 export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
-        const response = await fetch('/api/friends/add', {
+        const response = await fetch(getApiUrl('/friends/add'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -30,7 +31,7 @@ export async function addFriend(username: string, onSuccess?: () => void): Promi
 
 export async function removeFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
-        const response = await fetch('/api/friends/remove', {
+        const response = await fetch(getApiUrl('/friends/remove'), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -58,7 +59,7 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
 
 export async function statusFriend(username: string): Promise<boolean> {
 	try {
-		const response = await fetch(`/api/friends/status/${username}`, {
+		const response = await fetch(getApiUrl(`/friends/status/${username}`), {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
@@ -80,7 +81,7 @@ export async function statusFriend(username: string): Promise<boolean> {
 
 export async function changeNickname(newNick: string): Promise<void> {
 	try {
-		const response = await fetch('/api/profile/nickname', {
+		const response = await fetch(getApiUrl('/profile/nickname'), {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
@@ -112,7 +113,7 @@ export async function changeNickname(newNick: string): Promise<void> {
 
 export async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
 	try {
-		const response = await fetch('/api/profile/password', {
+		const response = await fetch(getApiUrl('/profile/password'), {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'

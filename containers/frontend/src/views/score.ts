@@ -3,6 +3,7 @@ import { Header } from '../components/header';
 import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
 import { PongBoxComponent } from '../components/profileComponents/pongBox';
+import { getApiUrl } from '../config/api';
 
 export function showScore(container: HTMLElement) {
   i18n
@@ -38,7 +39,7 @@ export function showScore(container: HTMLElement) {
       contentWrapper.appendChild(pongBoxElement);
       container.appendChild(contentWrapper);
 
-      fetch('/api/profile', {
+      fetch(getApiUrl('/profile'), {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })

@@ -137,6 +137,7 @@
 // *********************************************************************************************************
 // *********************************************************************************************************
 // *********************************************************************************************************
+import { getApiUrl } from "../config/api";
 
 export function showBlockchain(container: HTMLElement): void {
 	const blockchainDiv = document.createElement('div');
@@ -270,7 +271,7 @@ export function showBlockchain(container: HTMLElement): void {
 
 			try {
 				// Save game data
-				const response = await fetch('/api/games', {
+				const response = await fetch(getApiUrl('/games'), {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

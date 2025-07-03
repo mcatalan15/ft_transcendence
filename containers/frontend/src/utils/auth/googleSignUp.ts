@@ -1,3 +1,5 @@
+import { getApiUrl } from '../../config/api';
+
 export function loadGoogleScript(): void {
 	if (document.getElementById('google-script')) return;
 
@@ -14,7 +16,7 @@ export function setupGoogleSignUp(): void {
 		const credential = response.credential;
 		console.log('Google sign-in successful, processing token...');
 
-		fetch('/api/auth/google', {
+		fetch(getApiUrl('/auth/google'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

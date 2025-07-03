@@ -1,8 +1,9 @@
+import { getApiUrl } from '../../config/api';
+
 export async function localSignUp(username: string, email: string, password: string): Promise<{success: boolean, message: string, userId?: number, username?: string, email?: string, token?: string}> {
 	try {
-		console.log('[localSignUp] Making request to /api/auth/signup');
 
-		const response = await fetch('/api/auth/signup', {
+		const response = await fetch(getApiUrl('/auth/signup'), {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, email, password }),

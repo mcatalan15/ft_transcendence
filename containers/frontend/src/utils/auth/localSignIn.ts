@@ -1,3 +1,5 @@
+import { getApiUrl } from '../../config/api';
+
 export async function localSignIn(
     email: string, 
     password: string, 
@@ -9,7 +11,7 @@ export async function localSignIn(
             requestBody.twoFACode = twoFACode;
         }
 
-        const response = await fetch('/api/auth/signin', {
+        const response = await fetch(getApiUrl('/auth/signin'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
