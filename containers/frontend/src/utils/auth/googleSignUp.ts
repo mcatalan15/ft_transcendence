@@ -1,7 +1,11 @@
 import { getApiUrl } from '../../config/api';
+import { navigate } from '../router';
 
 export function loadGoogleScript(): void {
-	if (document.getElementById('google-script')) return;
+	if (document.getElementById('google-script')) {
+		const script = document.getElementById('google-script') as HTMLScriptElement;
+		document.head.removeChild(script);
+	}
 
 	const script = document.createElement('script');
 	script.src = 'https://accounts.google.com/gsi/client';
@@ -46,7 +50,7 @@ export function setupGoogleSignUp(): void {
 					setTimeout(() => {
 						// !Change for production
 						// window.location.href = '/auth';
-						window.location.href = '/profile';
+						navigate('/profile');
 					}, 100);
 				} else {
 					alert('Google authentication failed: ' + (data.message || 'Unknown error'));
