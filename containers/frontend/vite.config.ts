@@ -1,28 +1,30 @@
 import { defineConfig } from "vite";
 
-// https://vite.dev/config/
 export default defineConfig({
   root: "src",
-  publicDir: "../static",
+  publicDir: '../public',
   build: {
-    outDir: "../public",
+    outDir: '../dist',
     emptyOutDir: true,
+    copyPublicDir: true
   },
   server: {
     host: '0.0.0.0',
     port: 5173,
     open: false,
     strictPort: true,
+    allowedHosts: true,
     watch: {
       usePolling: true,
     },
-    // Keep HMR enabled for development
     hmr: {
       protocol: 'ws',
       host: 'localhost',
       port: 5173,
       overlay: false,
-    }
+    },
+    // Add origin handling for tunneling
+    origin: 'http://localhost:5173'
   },
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),

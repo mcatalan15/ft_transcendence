@@ -32,7 +32,7 @@ function buildApp() {
   });
 
   fastify.register(fastifyCookie);
-  fastify.register(fastifySession, {
+/*   fastify.register(fastifySession, {
     cookieName: 'sessionId',
     secret: process.env.SESSION_SECRET || 'a-secret-key-that-should-be-in-env-file',
     cookie: {
@@ -42,6 +42,17 @@ function buildApp() {
       sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       domain: process.env.NODE_ENV === 'production' ? '.mrlouf.studio' : undefined
     }
+  }); */
+  fastify.register(require('@fastify/session'), {
+      secret: process.env.SESSION_SECRET,
+      cookie: {
+          secure: false,        // Allow HTTP for tunneling
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24, // 24 hours
+          sameSite: 'lax'      // CHANGED: Was probably 'strict'
+      },
+      saveUninitialized: false,
+      resave: false
   });
 
   // Register Swagger for API documentation

@@ -13,8 +13,8 @@ function getApiConfig(): ApiConfig {
     };
   } else {
     return {
-      baseUrl: 'https://mrlouf.studio/api',
-      wsUrl: 'wss://mrlouf.studio'
+      baseUrl: '/api',
+      wsUrl: `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
     };
   }
 }

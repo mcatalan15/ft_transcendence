@@ -58,7 +58,7 @@ async function signupHandler(request, reply) {
 		const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
 		
 		// Create JWT token for new user (2FA is disabled by default for new users)
-		const twoFAEnabled = 1;
+		const twoFAEnabled = 0;
 		const authToken = jwt.sign({
 			id: newUserId,
 			twoFAEnabled: twoFAEnabled,
@@ -103,6 +103,8 @@ async function signupHandler(request, reply) {
 
 async function signinHandler(request, reply) {
 	const { email, password, twoFACode } = request.body;
+
+	console.log(password);
 
 	if (!email || !password) {
 		return reply.status(400).send({ 

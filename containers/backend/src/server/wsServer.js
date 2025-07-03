@@ -9,7 +9,15 @@ function setupWebSocketServers() {
 
 function handleUpgrade(wss, gameWss, server) {
   server.on('upgrade', (request, socket, head) => {
-    const { pathname } = new URL(request.url, 'http://localhost');
+    // Use the actual host from the request headers
+    const host = request.headers.host || 'localhost';
+    const protocol = request.headers['x-forwarded-proto'] || 'http';
+    const fullUrl = `${protocol}://${host}${request.url}`;
+    
+    console.log(`WebSocket upgrade request URL: ${request.url}`);
+    console.log(`Full URL constructed: ${fullUrl}`);
+    
+    const { pathname } = new URL(fullUrl);
     console.log(`WebSocket upgrade request for: ${pathname}`);
 
     if (pathname === '/ws') {

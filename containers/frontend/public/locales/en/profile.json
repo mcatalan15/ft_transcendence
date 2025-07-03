@@ -1,0 +1,15 @@
+{
+    "profileTitleOwn": "Profile",
+    "profileTitle": "{{username}}'s profile",
+    "matchesPlayed": "Matches played",
+    "tournamentsPlayed": "Tournaments played",
+    "victories": "Victories",
+    "settings": "Settings",
+    "matches": "Matches",
+    "friends": "Friends",
+    "stats": "Stats",
+	"addFriend": "Add Friend",
+	"removeFriend": "Remove Friend",
+	"chat": "Chat"
+  }
+  
