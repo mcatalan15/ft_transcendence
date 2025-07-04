@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 12:53:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ export class Menu{
 	aboutQuitButton!: MenuButton;
 	playQuitButton!: MenuButton;
 	readyButton!: MenuButton;
-	tournamentTauntButton!: MenuButton;
+	tournamentGlossaryButton!: MenuButton;
 	tournamentFiltersButton!: MenuButton;
 
 	// Ornaments
@@ -279,6 +279,8 @@ export class Menu{
 
 	async init(): Promise<void> {
 		console.log(this.language);
+
+		await this.clearConflictingAssets();
 		await this.loadImages();
 
 		await ButtonManager.createMainButtons(this);
@@ -875,6 +877,24 @@ export class Menu{
 					this.sounds[soundKey].play();
 				}
 			});
+		}
+	}
+
+	private async clearConflictingAssets(): Promise<void> {
+		const conflictingAssets = [
+			'avatarUnknownSquare',
+			'avatarUnknownClassic',
+			// ... other shared assets
+		];
+		
+		for (const assetName of conflictingAssets) {
+			try {
+				if (Assets.cache.has(assetName)) {
+					await Assets.unload(assetName);
+				}
+			} catch (error) {
+				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
+			}
 		}
 	}
 }

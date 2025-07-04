@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 14:58:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:33:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@ import { Graphics, Text } from "pixi.js";
 import { Menu } from "../Menu";
 
 import { Entity } from "../../engine/Entity";
-import { NameCell } from "./NameCell";
 
 import { RenderComponent } from "../../components/RenderComponent";
 import { TextComponent } from "../../components/TextComponent";

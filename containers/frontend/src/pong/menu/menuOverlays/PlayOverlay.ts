@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 09:59:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,11 @@ export class PlayOverlay extends Overlay {
         MenuImageManager.preparePlayAvatarImages(this.menu);
     
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
-        this.menu.renderLayers.overlays.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(false);
-        this.menu.tournamentTauntButton.setHidden(false);
+        this.menu.tournamentGlossaryButton.setHidden(false);
         this.menu.tournamentFiltersButton.setHidden(false);  
     }
 
@@ -92,11 +92,11 @@ export class PlayOverlay extends Overlay {
 
     protected onHideComplete(): void {
         this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
-        this.menu.menuHidden.addChild(this.menu.tournamentTauntButton.getContainer());
+        this.menu.menuHidden.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(true);
-        this.menu.tournamentTauntButton.setHidden(true);
+        this.menu.tournamentGlossaryButton.setHidden(true);
         this.menu.tournamentFiltersButton.setHidden(true);
 
         MenuImageManager.hidePlayAvatarImages(this.menu);

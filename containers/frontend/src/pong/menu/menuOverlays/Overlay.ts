@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 18:32:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,8 +324,8 @@ export abstract class Overlay extends Entity {
         if (this.menu.readyButton) {
             this.menu.readyButton.getContainer().alpha = alpha;
         }
-        if (this.menu.tournamentTauntButton) {
-            this.menu.tournamentTauntButton.getContainer().alpha = alpha;
+        if (this.menu.tournamentGlossaryButton) {
+            this.menu.tournamentGlossaryButton.getContainer().alpha = alpha;
         }
         if (this.menu.tournamentFiltersButton) {
             this.menu.tournamentFiltersButton.getContainer().alpha = alpha;
@@ -444,7 +444,6 @@ export abstract class Overlay extends Entity {
         this.background.x = 75;
         this.background.y = 65;
         this.background.fill({ color: 0x151515, alpha: 1 });
-        this.background.endFill();
         this.background.moveTo(0, 57.2);
         this.background.lineTo(0, 610);
         this.background.lineTo(1635, 610);

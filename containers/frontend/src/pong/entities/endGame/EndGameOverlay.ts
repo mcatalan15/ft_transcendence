@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:27:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:18:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Sprite, Text } from "pixi.js";
+import { Container, Graphics, Sprite, Text } from "pixi.js";
 
 import { PongGame } from "../../engine/Game";
 
@@ -27,7 +27,7 @@ import { isPlayerWinner } from "../../utils/Utils";
 
 export class EndgameOverlay extends Entity {
     game: PongGame;
-    overlayGraphics: Graphics = new Graphics();
+    overlayGraphics: Container = new Container();
     resultText: any;
     headerText: any;
     leftPlayerName: any;
@@ -35,7 +35,7 @@ export class EndgameOverlay extends Entity {
     headerSprite!: Sprite;
     leftAvatarSprite!: Sprite;
     rightAvatarSprite!: Sprite;
-    ornamentGraphic: Graphics = new Graphics();
+    ornamentGraphic: Container = new Container();
     dashedLines: Text[] = [];
     upperLegend: Text[] = [];
     lowerLegend: Text[] = [];
@@ -152,10 +152,10 @@ export class EndgameOverlay extends Entity {
         this.replaceComponent('text', updatedRightPlayerTextComponent, 'rightPlayerName');
         this.rightPlayerName = updatedRightPlayerName;
 
-        this.overlayGraphics.clear();
+        this.overlayGraphics.removeChildren();
         this.createOverlayGraphics(this.game, this.originalX, this.originalY, this.originalWidth, this.originalHeight, 20);
 
-        this.ornamentGraphic.clear();
+        this.ornamentGraphic.removeChildren();
         this.createOrnamentGraphic();
 
         const updatedDashedLines = this.createDashedLines();
@@ -237,7 +237,7 @@ export class EndgameOverlay extends Entity {
     }
     
 	private createOverlayGraphics(game: PongGame, x: number, y: number, width: number, height: number, headerHeight: number){
-        const container = new Graphics();
+        this.overlayGraphics.removeChildren();
     
         const background = new Graphics();
         
@@ -250,7 +250,7 @@ export class EndgameOverlay extends Entity {
         background.closePath();
         
         background.fill({ color: GAME_COLORS.black });
-        container.addChild(background);
+        this.overlayGraphics.addChild(background);
     
         let frameColor;
         if (game.config.classicMode) {
@@ -267,13 +267,20 @@ export class EndgameOverlay extends Entity {
         frame.lineTo(x + width, y + height + 20);
         frame.lineTo(x + width, y + 25);
         frame.stroke({ color: frameColor, width: 5 });
-        container.addChild(frame);
+        this.overlayGraphics.addChild(frame);
 
         const leftAvatarFrame = new Graphics();
         leftAvatarFrame.rect(462.5, 267.5, 235, 235);
         leftAvatarFrame.rect(1102.5, 267.5, 235, 235);
         leftAvatarFrame.stroke({ color: frameColor, width: 2 });
-        container.addChild(leftAvatarFrame);
+        this.overlayGraphics.addChild(leftAvatarFrame);
+
+        let statsColor = GAME_COLORS.orange;
+        if (game.config.classicMode) {
+            statsColor = GAME_COLORS.white;
+        } else {
+            statsColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+        }
 
         const statsUnderlines = new Graphics();
         statsUnderlines.moveTo(750, 330);
@@ -289,9 +296,7 @@ export class EndgameOverlay extends Entity {
         statsUnderlines.moveTo(750, 505);
         statsUnderlines.lineTo(1050, 505);
         statsUnderlines.stroke({ color: frameColor, width: 1 });
-        container.addChild(statsUnderlines);
-    
-        this.overlayGraphics = container;
+        this.overlayGraphics.addChild(statsUnderlines);
     }
 
     getHeaderText(): any {
@@ -672,74 +677,79 @@ export class EndgameOverlay extends Entity {
     }
 
     createOrnamentGraphic() {
-		const hOffset = 30;
-		const baseX = 450;
-		const baseY = 245;
-		const bottomY = 530;
-		const groupWidth = 16;
-		const groupHeight = 20;
-		const numGroups = 3;
-		const linesPerGroup = 20;
-		const lineLength = 10;
+        this.ornamentGraphic.removeChildren();
+        
+        const graphics = new Graphics();
+        const hOffset = 30;
+        const baseX = 450;
+        const baseY = 245;
+        const bottomY = 530;
+        const groupWidth = 16;
+        const groupHeight = 20;
+        const numGroups = 3;
+        const linesPerGroup = 20;
+        const lineLength = 10;
 
-        const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red ;
+        const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
 
-		// Top section
-		for (let group = 0; group < numGroups + 1; group++) {
-			const groupX = baseX + group * (linesPerGroup * groupWidth);
+        // Top section
+        for (let group = 0; group < numGroups + 1; group++) {
+            const groupX = baseX + group * (linesPerGroup * groupWidth);
 
-			this.ornamentGraphic.moveTo(groupX - hOffset, baseY);
-			this.ornamentGraphic.lineTo(groupX - hOffset, baseY + groupHeight);
-			this.ornamentGraphic.stroke({
-				color: this.game.config.classicMode ? GAME_COLORS.white : color,
-				width: 2.5,
-				alpha: 0.5,
-			});
+            graphics.moveTo(groupX - hOffset, baseY);
+            graphics.lineTo(groupX - hOffset, baseY + groupHeight);
+            graphics.stroke({
+                color: this.game.config.classicMode ? GAME_COLORS.white : color,
+                width: 2.5,
+                alpha: 0.5,
+            });
 
-			if (group === numGroups) break;
-			
-			for (let line = 0; line < linesPerGroup; line++) {
-				if (line === 0) continue;
-				const lineX = groupX + line * groupWidth;
-				this.ornamentGraphic.moveTo(lineX - hOffset, baseY);
-				this.ornamentGraphic.lineTo(lineX - hOffset, baseY + lineLength);
-			}
+            if (group === numGroups) break;
+            
+            for (let line = 0; line < linesPerGroup; line++) {
+                if (line === 0) continue;
+                const lineX = groupX + line * groupWidth;
+                graphics.moveTo(lineX - hOffset, baseY);
+                graphics.lineTo(lineX - hOffset, baseY + lineLength);
+            }
 
-			this.ornamentGraphic.stroke({
-				color: this.game.config.classicMode ? GAME_COLORS.white : color,
-				width: 1.25,
-				alpha: 0.5,
-			});
-		}
+            graphics.stroke({
+                color: this.game.config.classicMode ? GAME_COLORS.white : color,
+                width: 1.25,
+                alpha: 0.5,
+            });
+        }
 
-		// Bottom section
-		for (let group = 0; group < numGroups + 1; group++) {
-			const groupX = baseX + group * (linesPerGroup * groupWidth);
-		
-			this.ornamentGraphic.moveTo(groupX - hOffset, bottomY);
-			this.ornamentGraphic.lineTo(groupX - hOffset, bottomY + groupHeight);
-			this.ornamentGraphic.stroke({
-				color: this.game.config.classicMode ? GAME_COLORS.white : color,
-				width: 2.5,
-				alpha: 0.5,
-			});
-		
-			if (group === numGroups) break;
-			
-			for (let line = 0; line < linesPerGroup; line++) {
-				if (line === 0) continue;
-				const lineX = groupX + line * groupWidth;
-				this.ornamentGraphic.moveTo(lineX - hOffset, bottomY + lineLength);
-				this.ornamentGraphic.lineTo(lineX - hOffset, bottomY + (2 * lineLength));
-			}
-		
-			this.ornamentGraphic.stroke({
-				color: this.game.config.classicMode ? GAME_COLORS.white : color,
-				width: 1.25,
-				alpha: 0.5,
-			});
-		}
-	}
+        // Bottom section
+        for (let group = 0; group < numGroups + 1; group++) {
+            const groupX = baseX + group * (linesPerGroup * groupWidth);
+        
+            graphics.moveTo(groupX - hOffset, bottomY);
+            graphics.lineTo(groupX - hOffset, bottomY + groupHeight);
+            graphics.stroke({
+                color: this.game.config.classicMode ? GAME_COLORS.white : color,
+                width: 2.5,
+                alpha: 0.5,
+            });
+        
+            if (group === numGroups) break;
+            
+            for (let line = 0; line < linesPerGroup; line++) {
+                if (line === 0) continue;
+                const lineX = groupX + line * groupWidth;
+                graphics.moveTo(lineX - hOffset, bottomY + lineLength);
+                graphics.lineTo(lineX - hOffset, bottomY + (2 * lineLength));
+            }
+        
+            graphics.stroke({
+                color: this.game.config.classicMode ? GAME_COLORS.white : color,
+                width: 1.25,
+                alpha: 0.5,
+            });
+        }
+        
+        this.ornamentGraphic.addChild(graphics);
+    }
 
     createDashedLines(): Text[] {
 		const dashedLines: Text[] = [];
@@ -872,6 +882,7 @@ export class EndgameOverlay extends Entity {
     }
 
     createStatsLegend(): Text {		
+        const preText = this.getStatsLegendText();
         let text;
         let color;
 
@@ -882,7 +893,7 @@ export class EndgameOverlay extends Entity {
         }
 
         text = {
-            text: "Goals scored\nBalls returned\nReturn rate\nPower-ups picked\nPower-downs picked\nBall changes picked\n",
+            text: preText,
 			x: 0,
 			y: 0,
 			style: {
@@ -900,6 +911,18 @@ export class EndgameOverlay extends Entity {
         text.y = 300;
 
         return (text);
+    }
+
+    getStatsLegendText(): string {
+        if (this.game.language === 'en') {
+            return ("Goals scored\nBalls returned\nReturn rate\nPower-ups\nPower-downs\nBall changes\n");
+        } else if (this.game.language === 'es') {
+            return ("Goles marcados\nPelotas devueltas\nTasa de retorno\nPower-ups\nPower-downs\nCambios de pelota\n");
+        } else if (this.game.language === 'fr') {
+            return ("Buts marqués\nBallons renvoyés\nTaux de retour\nPower-ups\nPower-downs\nChangements de ballon\n");
+        } else {
+            return ("Gols marcats\nPilotes retornades\nTaxa de retorn\nPower-ups\nPower-downs\nCanvis de pilota\n");
+        }
     }
 
     createPlayerStats(): Text[] {
@@ -1033,6 +1056,20 @@ export class EndgameOverlay extends Entity {
                 this.overlayGraphics.parent.removeChild(this.overlayGraphics);
             }
             this.overlayGraphics.destroy();
+        }
+
+        if (this.overlayGraphics) {
+            if (this.overlayGraphics.parent) {
+                this.overlayGraphics.parent.removeChild(this.overlayGraphics);
+            }
+            this.overlayGraphics.destroy({ children: true });
+        }
+        
+        if (this.ornamentGraphic) {
+            if (this.ornamentGraphic.parent) {
+                this.ornamentGraphic.parent.removeChild(this.ornamentGraphic);
+            }
+            this.ornamentGraphic.destroy({ children: true });
         }
     }
 }

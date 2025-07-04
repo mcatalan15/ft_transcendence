@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:06:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:20:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -856,14 +856,7 @@ export class PongGame {
 
 	// In Game.ts
 	async cleanup(): Promise<void> {
-		try {
-			//! 1. Stop the ticker
-			/* if (this.app.ticker.started) {
-				this.app.ticker.stop();
-			} */
-			
-			//this.app.ticker.removeAllListeners();
-			
+		try {			
 			if (this.sounds) {
 				Object.values(this.sounds).forEach(sound => {
 					if (sound) {

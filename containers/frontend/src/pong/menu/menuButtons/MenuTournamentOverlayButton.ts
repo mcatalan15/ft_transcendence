@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 19:36:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:39:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:15:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,12 @@ export class MenuTournamentOverlayButton extends MenuButton {
 
 	protected onButtonClick(): void {
         console.log("Tournament overlay button clicked");
-        if (this.id.includes('taunt')) {
+        console.log(`Button ID: ${this.id}`);
+        if (this.id.includes('glossary') || this.id.includes('glosario') || this.id.includes('glossaire') || this.id.includes('glossari')) {
             this.menu.eventQueue.push({
-                type: 'TOURNAMENT_TAUNT_CLICK',
+                type: 'GLOSSARY_CLICK',
                 target: this.buttonContainer,
-                buttonName: 'tournamentOverlayTauntButton'
+                buttonName: 'tournamentOverlayGlossaryButton'
             });
         } else if (this.id.includes('crt')) {
             this.menu.eventQueue.push({
@@ -153,6 +154,23 @@ export class MenuTournamentOverlayButton extends MenuButton {
         }
         
         this.resetButton();
+    }
+
+    protected highlightOrnament(button: MenuButton): void {
+        if (this.buttonId === 'GLOSSARY' || this.config.text?.toLowerCase().includes('glossar')) {
+            return;
+        }
+        
+        super.highlightOrnament(button);
+    }
+    
+    protected resetOrnamentColor(): void {
+
+        if (this.buttonId === 'GLOSSARY' || this.config.text?.toLowerCase().includes('glossar')) {
+            return;
+        }
+        
+        super.resetOrnamentColor();
     }
 
     public resetButton(): void {

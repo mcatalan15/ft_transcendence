@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:06:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:58:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:05:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,11 +144,6 @@ export class ImageManager {
         });
         this.headerImages = [];
         
-        this.assets.forEach((texture, name) => {
-            if (texture && typeof texture.destroy === 'function') {
-                texture.destroy(true);
-            }
-        });
         this.assets.clear();
         
         console.log('ImageManager cleanup completed');

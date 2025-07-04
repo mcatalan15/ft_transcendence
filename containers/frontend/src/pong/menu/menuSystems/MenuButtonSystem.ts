@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 12:53:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:07:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 
 export class MenuButtonSystem implements System {
     private menu: Menu;
+    private overlayStack: string[] = [];
+    private glossaryOpenedBy: 'main' | 'overlay' | null = null;
 
     constructor(menu: Menu) {
         this.menu = menu;
@@ -122,10 +124,12 @@ export class MenuButtonSystem implements System {
         if (this.menu.config.variant === 'tournament') {
             this.menu.playButton.setClicked(true);
             this.menu.tournamentOverlay.show();
+            this.overlayStack.push('tournament');
             this.setButtonsClickability(false);
         } else {
             this.menu.playButton.setClicked(true);
             this.menu.playOverlay.show();
+            this.overlayStack.push('play');
             this.setButtonsClickability(false);
         }
     }
@@ -163,7 +167,24 @@ export class MenuButtonSystem implements System {
         this.menu.glossaryOverlay.header.redrawOverlayElements();
         this.menu.glossaryButton.setClicked(true);
         this.menu.glossaryOverlay.show();
+        this.overlayStack.push('glossary');
         this.setButtonsClickability(false);
+        this.glossaryOpenedBy = 'main';
+    }
+
+    handleOverlayGlossaryClick() {
+        this.menu.glossaryQuitButton.resetButton();
+        this.menu.glossaryOverlay.header.redrawOverlayElements();
+        this.menu.glossaryOverlay.show();
+        this.overlayStack.push('glossary');
+        this.glossaryOpenedBy = 'overlay';
+    }
+
+    handleTournamentGlossaryClick() {
+        this.menu.glossaryQuitButton.resetButton();
+        this.menu.glossaryOverlay.header.redrawOverlayElements();
+        this.menu.glossaryOverlay.show();
+        this.overlayStack.push('glossary');
     }
 
     handleAboutClick() {
@@ -224,13 +245,20 @@ export class MenuButtonSystem implements System {
             this.menu.optionsButton.resetButton();
             this.menu.optionsXButton.resetButton();
         } else if (event.type.includes('GLOSSARY')) {
-            this.setButtonsClickability(true)
+            const index = this.overlayStack.indexOf('glossary');
+            if (index > -1) {
+                this.overlayStack.splice(index, 1);
+            }
+            
+            this.setButtonsClickability(this.overlayStack.length === 0);
 
-            this.menu.glossaryButton.setClicked(false);
-
-            this.menu.glossaryButton.resetButton();
+            if (this.glossaryOpenedBy === 'main') {
+                this.menu.glossaryButton.setClicked(false);
+                this.menu.glossaryButton.resetButton();
+            }
             
             this.menu.glossaryOverlay.hide();
+            this.glossaryOpenedBy = null;
         } else if (event.type.includes('ABOUT')) {
             this.setButtonsClickability(true);
             
@@ -242,9 +270,15 @@ export class MenuButtonSystem implements System {
 
             this.setButtonsClickability(true);
         } else if (event.type.includes('PLAY')) {
-            this.setButtonsClickability(true);
+            const playIndex = this.overlayStack.indexOf('play');
+            const tournamentIndex = this.overlayStack.indexOf('tournament');
+            if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
+            if (tournamentIndex > -1) this.overlayStack.splice(tournamentIndex, 1);
+            
+            this.setButtonsClickability(this.overlayStack.length === 0);
             this.menu.playButton.setClicked(false);
             this.menu.playButton.resetButton();
+            this.menu.glossaryButton.resetButton();
             if (this.menu.config.variant === 'tournament') {
                 this.menu.tournamentOverlay.hide();
             } else {
@@ -609,7 +643,7 @@ export class MenuButtonSystem implements System {
         this.menu.aboutQuitButton.resetButton();
         this.menu.playQuitButton.resetButton();
         this.menu.readyButton.resetButton();
-        this.menu.tournamentTauntButton.resetButton();
+        this.menu.tournamentGlossaryButton.resetButton();
         this.menu.tournamentFiltersButton.resetButton();
         
         this.menu.playOrnament.resetOrnament();

@@ -25,7 +25,6 @@
       
       // Add loading class immediately
       h.className += " wf-loading";
-      console.log('Font loading started');
       
       tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
       tk.async = true;
@@ -42,7 +41,6 @@
             scriptTimeout: config.scriptTimeout,
             active: function() {
               h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-active";
-              console.log('Fonts loaded successfully');
             },
             inactive: function() {
               h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
