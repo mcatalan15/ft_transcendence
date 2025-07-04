@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 17:15:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 12:53:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ import { SpinBallPowerup } from "../../entities/powerups/SpinBallPowerup";
 import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
 import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
 
-export class ButtonSystem implements System {
+export class MenuButtonSystem implements System {
     private menu: Menu;
 
     constructor(menu: Menu) {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 15:21:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:46:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -520,4 +520,43 @@ export class AnimationSystem implements System {
 			this.game.eventQueue.push(spawnPowerupEvent);
 		}
     }
+
+	cleanup(): void {
+		this.frameCounter = 0;
+		this.lastCutId = null;
+		this.isDespawningCrossCut = false;
+		
+		// Reset all animation states
+		for (const entity of this.game.entities) {
+			if (entity.hasComponent('animation')) {
+				const animation = entity.getComponent('animation') as AnimationComponent;
+				if (animation) {
+					animation.initialized = false;
+					animation.despawnStarted = false;
+					animation.options = {};
+				}
+			}
+			
+			if (isPaddle(entity)) {
+				entity.targetHeight = 0;
+				entity.enlargeProgress = 0;
+				entity.overshootPhase = '';
+				entity.originalHeight = entity.baseHeight;
+				entity.overshootTarget = 0;
+				entity.wasEnlarged = false;
+				entity.wasShrinked = false;
+			}
+		}
+		
+		if (this.UI) {
+			this.UI.leftAffectationFullTime = 0;
+			this.UI.leftAffectationTime = 0;
+			this.UI.rightAffectationFullTime = 0;
+			this.UI.rightAffectationTime = 0;
+			this.UI.hasLeftSideActivated = false;
+			this.UI.hasRightSideActivated = false;
+		}
+		
+		console.log('AnimationSystem cleanup completed');
+	}
 }

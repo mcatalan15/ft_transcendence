@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/03 15:33:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:47:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { ParticleSpawner } from '../spawners/ParticleSpawner';
 
 import { isUI } from '../utils/Guards';
-import { getRandomGameColor } from '../utils/MenuUtils';
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 import { GAME_COLORS } from '../utils/Types';
+import { isPlayerWinner } from '../utils/Utils';
 
 export class EndingSystem implements System {
     private game: PongGame;
@@ -77,6 +77,9 @@ export class EndingSystem implements System {
                 leftPlayer: this.UI.leftScore,
                 rightPlayer: this.UI.rightScore
             };
+
+            this.game.data.leftPlayer.score = this.UI.leftScore;
+            this.game.data.rightPlayer.score = this.UI.rightScore;
     
             if (this.game.data.winner === null) {
                 this.game.data.generalResult = 'draw';
@@ -90,7 +93,7 @@ export class EndingSystem implements System {
             if (!this.game.config.classicMode) {
                 this.triggerLosingPaddleExplosion();
 
-                if (this.game.endGameOverlay.isPlayerWinner()) {
+                if (isPlayerWinner(this.game)) {
                     for (let i = 0; i < 75; i++) {
                         setTimeout(() => {
                             const x = Math.random() * this.game.width;
@@ -160,6 +163,8 @@ export class EndingSystem implements System {
 	}
 
     displayResults(): void {
+        console.log(this.game.data);
+        
         this.game.endGameOverlay.redraw();
         
         this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);
@@ -266,6 +271,12 @@ export class EndingSystem implements System {
             }
         }
 
+        const gameQuitButtonComponent = this.game.endGameOverlay.getComponent('render', 'gameQuitButton') as RenderComponent;
+        if (gameQuitButtonComponent?.graphic) {
+            this.game.renderLayers.overlays.addChild(gameQuitButtonComponent.graphic);
+            gameQuitButtonComponent.graphic.alpha = 0;
+        }
+
         this.animateAllElementsFadeIn(
             endgameRenderComponent,
             endgameOrnamentRenderComponent,
@@ -282,7 +293,8 @@ export class EndingSystem implements System {
             lowerLegendComponent,
             lowerLegendTextComponent,
             statsLegendComponent,
-            playerStatComponents
+            playerStatComponents,
+            gameQuitButtonComponent
         );
     }
 
@@ -302,7 +314,8 @@ export class EndingSystem implements System {
         lowerLegendComponent: TextComponent | null,
         lowerLegendTextComponent: TextComponent | null,
         statsLegendComponent: TextComponent | null,
-        playerStatComponents: TextComponent[]
+        playerStatComponents: TextComponent[],
+        gameQuitButtonComponent: RenderComponent | null
     ): void {
         const fadeSpeed = 0.02;
         
@@ -313,23 +326,18 @@ export class EndingSystem implements System {
                 overlayGraphicsComponent.graphic.alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (overlayOrnamentComponent?.graphic && overlayOrnamentComponent.graphic.alpha < 1) {
                 overlayOrnamentComponent.graphic.alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             dashedLineComponents.forEach(dashedLineComponent => {
                 if (dashedLineComponent && dashedLineComponent.getRenderable().alpha < 1) {
                     dashedLineComponent.getRenderable().alpha += fadeSpeed;
                     allComplete = false;
                 }
             });
-
-            if (overlayGraphicsComponent.graphic.alpha < 1) {
-                overlayGraphicsComponent.graphic.alpha += fadeSpeed;
-                allComplete = false;
-            }
     
             if (resultTextComponent && resultTextComponent.getRenderable().alpha < 1) {
                 resultTextComponent.getRenderable().alpha += fadeSpeed;
@@ -345,12 +353,12 @@ export class EndingSystem implements System {
                 headerTextComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (leftPlayerTextComponent && leftPlayerTextComponent.getRenderable().alpha < 1) {
                 leftPlayerTextComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (rightPlayerTextComponent && rightPlayerTextComponent.getRenderable().alpha < 1) {
                 rightPlayerTextComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
@@ -365,32 +373,32 @@ export class EndingSystem implements System {
                 rightAvatarComponent.graphic.alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (upperLegendComponent && upperLegendComponent.getRenderable().alpha < 1) {
                 upperLegendComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (upperLegendTextComponent && upperLegendTextComponent.getRenderable().alpha < 1) {
                 upperLegendTextComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (lowerLegendComponent && lowerLegendComponent.getRenderable().alpha < 1) {
                 lowerLegendComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (lowerLegendTextComponent && lowerLegendTextComponent.getRenderable().alpha < 1) {
                 lowerLegendTextComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             if (statsLegendComponent && statsLegendComponent.getRenderable().alpha < 1) {
                 statsLegendComponent.getRenderable().alpha += fadeSpeed;
                 allComplete = false;
             }
-
+    
             playerStatComponents.forEach(playerStatComponent => {
                 if (playerStatComponent && playerStatComponent.getRenderable().alpha < 1) {
                     playerStatComponent.getRenderable().alpha += fadeSpeed;
@@ -398,18 +406,54 @@ export class EndingSystem implements System {
                 }
             });
     
+            if (gameQuitButtonComponent?.graphic && gameQuitButtonComponent.graphic.alpha < 1) {
+                gameQuitButtonComponent.graphic.alpha += fadeSpeed;
+                allComplete = false;
+            }
+    
             if (!allComplete) {
                 requestAnimationFrame(animate);
             } else {
                 overlayGraphicsComponent.graphic.alpha = 1;
+                if (overlayOrnamentComponent?.graphic) overlayOrnamentComponent.graphic.alpha = 1;
                 if (resultTextComponent) resultTextComponent.getRenderable().alpha = 1;
                 if (headerSpriteComponent?.graphic) headerSpriteComponent.graphic.alpha = 1;
                 if (headerTextComponent) headerTextComponent.getRenderable().alpha = 1;
                 if (leftAvatarComponent?.graphic) leftAvatarComponent.graphic.alpha = 1;
                 if (rightAvatarComponent?.graphic) rightAvatarComponent.graphic.alpha = 1;
+                if (leftPlayerTextComponent) leftPlayerTextComponent.getRenderable().alpha = 1;
+                if (rightPlayerTextComponent) rightPlayerTextComponent.getRenderable().alpha = 1;
+                
+                dashedLineComponents.forEach(dashedLineComponent => {
+                    if (dashedLineComponent) dashedLineComponent.getRenderable().alpha = 1;
+                });
+    
+                if (upperLegendComponent) upperLegendComponent.getRenderable().alpha = 1;
+                if (upperLegendTextComponent) upperLegendTextComponent.getRenderable().alpha = 1;
+                if (lowerLegendComponent) lowerLegendComponent.getRenderable().alpha = 1;
+                if (lowerLegendTextComponent) lowerLegendTextComponent.getRenderable().alpha = 1;
+                if (statsLegendComponent) statsLegendComponent.getRenderable().alpha = 1;
+                
+                playerStatComponents.forEach(playerStatComponent => {
+                    if (playerStatComponent) playerStatComponent.getRenderable().alpha = 1;
+                });
+    
+                if (gameQuitButtonComponent?.graphic) gameQuitButtonComponent.graphic.alpha = 1;
             }
         };
         
         animate();
+    }
+
+    cleanup(): void {
+        this.ended = false;
+        this.endingProcessed = false;
+        
+        if (this.UI) {
+            this.UI.leftScore = 0;
+            this.UI.rightScore = 0;
+        }
+        
+        console.log('EndingSystem cleanup completed');
     }
 }

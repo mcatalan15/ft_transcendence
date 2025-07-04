@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/03 13:00:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:06:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
-import { EndgameOverlay } from '../entities/endGame/endGameOverlay';
+import { EndgameOverlay } from '../entities/endGame/EndGameOverlay';
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
@@ -50,6 +50,7 @@ import { WorldSystem } from '../systems/WorldSystem';
 import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { EndingSystem } from '../systems/EndingSystem';
 import { AISystem } from '../systems/AISystem';
+import { ButtonSystem } from '../systems/ButtonSystem';
 
 // Import spawners and managers
 import { BallSpawner } from '../spawners/BallSpawner'
@@ -202,18 +203,19 @@ export class PongGame {
 	}
 
 	initSystems(): void {
-		const renderSystem = new RenderSystem();
+		const renderSystem = new RenderSystem(this);
 		const inputSystem = new InputSystem(this);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const worldSystem = new WorldSystem(this);
 		const animationSystem = new AnimationSystem(this);
-		const vfxSystem = new VFXSystem();
+		const vfxSystem = new VFXSystem(this);
 		const particleSystem = new ParticleSystem(this);
 		const uiSystem = new UISystem(this);
 		const powerupSystem = new PowerupSystem(this, this.width, this.height);
-		const postProcessingSystem = new PostProcessingSystem();
+		const postProcessingSystem = new PostProcessingSystem(this);
 		const crossCutSystem = new CrossCutSystem(this);
 		const endingSystem = new EndingSystem(this);
+		const buttonSystem = new ButtonSystem(this);
 
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
@@ -226,6 +228,7 @@ export class PongGame {
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
 		this.systems.push(endingSystem);
+		this.systems.push(buttonSystem);
 
 		if (this.config.variant == '1vAI') {
 			const rightPaddle = this.entities.find(e => e.id === 'paddleR') as Paddle;
@@ -511,9 +514,9 @@ export class PongGame {
 		this.renderLayers.hidden.addChild(this.alphaFade);
 
 		// Create endgame overlays
-		this.endGameOverlay = new EndgameOverlay(this, 'endGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
-		const endGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
-		this.renderLayers.hidden.addChild(endGameOverlayRender.graphic);
+		this.endGameOverlay = new EndgameOverlay(this, 'EndGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
+		const EndGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
+		this.renderLayers.hidden.addChild(EndGameOverlayRender.graphic);
 
 		const endGameResultTextComponent = this.endGameOverlay.getComponent('text') as TextComponent;
 		this.renderLayers.hidden.addChild(endGameResultTextComponent.getRenderable());
@@ -848,6 +851,102 @@ export class PongGame {
 			}
 		} catch (error) {
 			console.error('Network error saving game results:', error);
+		}
+	}
+
+	// In Game.ts
+	async cleanup(): Promise<void> {
+		try {
+			//! 1. Stop the ticker
+			/* if (this.app.ticker.started) {
+				this.app.ticker.stop();
+			} */
+			
+			//this.app.ticker.removeAllListeners();
+			
+			if (this.sounds) {
+				Object.values(this.sounds).forEach(sound => {
+					if (sound) {
+						sound.stop();
+						sound.unload();
+					}
+				});
+			}
+			
+			this.systems.forEach(system => {
+				if (system && typeof (system as any).cleanup === 'function') {
+					(system as any).cleanup();
+				}
+			});
+			this.systems = [];
+			
+			this.entities.forEach(entity => {
+				if (entity && typeof entity.cleanup === 'function') {
+					entity.cleanup();
+				}
+			});
+			this.entities = [];
+
+			if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
+				(ParticleSpawner as any).cleanup();
+			}
+			
+			if (ImageManager && typeof (ImageManager as any).cleanup === 'function') {
+				(ImageManager as any).cleanup();
+			}
+
+			if (this.soundManager && typeof this.soundManager.cleanup === 'function') {
+				this.soundManager.cleanup();
+			}
+			
+			const worldSystem = this.systems.find(s => s instanceof WorldSystem) as WorldSystem;
+			if (worldSystem) {
+				if (worldSystem.wallFigureManager && typeof worldSystem.wallFigureManager.cleanup === 'function') {
+					worldSystem.wallFigureManager.cleanup();
+				}
+				if (worldSystem.obstacleManager && typeof worldSystem.obstacleManager.cleanup === 'function') {
+					worldSystem.obstacleManager.cleanup();
+				}
+				if (worldSystem.worldManager && typeof worldSystem.worldManager.cleanup === 'function') {
+					worldSystem.worldManager.cleanup();
+				}
+    
+				worldSystem.figureQueue = [];
+				worldSystem.obstacleQueue = [];
+			}
+			
+			Object.values(this.renderLayers).forEach(layer => {
+				if (layer && layer.removeChildren) {
+					layer.removeChildren();
+					if (layer.parent) {
+						layer.parent.removeChild(layer);
+					}
+				}
+			});
+			
+			if (this.visualRoot) {
+				this.visualRoot.removeChildren();
+				if (this.visualRoot.parent) {
+					this.visualRoot.parent.removeChild(this.visualRoot);
+				}
+			}
+			
+			if (this.app.stage) {
+				this.app.stage.removeChildren();
+			}
+
+			this.eventQueue = [];
+			
+			if (this.endGameOverlay && typeof this.endGameOverlay.cleanup === 'function') {
+				this.endGameOverlay.cleanup();
+			}
+
+			this.worldPool = [];
+			
+			this.hasEnded = false;
+			
+		} catch (error) {
+			console.error('Error during game cleanup:', error);
 		}
 	}
 }

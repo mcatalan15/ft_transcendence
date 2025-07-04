@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   endGameOverlay.ts                                  :+:      :+:    :+:   */
+/*   EndGameOverlay.ts                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/03 15:34:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:27:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Graphics, Sprite, Text } from "pixi.js";
 
 import { PongGame } from "../../engine/Game";
+
+import { GameQuitButton } from "./GameQuitButton";
 
 import { RenderComponent } from "../../components/RenderComponent";
 import { TextComponent } from "../../components/TextComponent";
@@ -21,6 +23,7 @@ import { ImageManager } from "../../managers/ImageManager";
 
 import { Entity } from "../../engine/Entity";
 import { GAME_COLORS } from "../../utils/Types";
+import { isPlayerWinner } from "../../utils/Utils";
 
 export class EndgameOverlay extends Entity {
     game: PongGame;
@@ -38,6 +41,7 @@ export class EndgameOverlay extends Entity {
     lowerLegend: Text[] = [];
     statsLegend: Text = new Text;
     playerStats: Text[] = [];
+    gameQuitButton: GameQuitButton;
     
     private originalX: number;
     private originalY: number;
@@ -107,6 +111,15 @@ export class EndgameOverlay extends Entity {
         this.rightPlayerName = this.getPlayerName('right');
         const rightPlayerTextComponent = new TextComponent(this.rightPlayerName);
         this.addComponent(rightPlayerTextComponent, 'rightPlayerName');
+
+        this.gameQuitButton = new GameQuitButton(
+            this.game, 
+            'gameQuitButton', 
+            'overlays',
+        );
+        
+        const quitButtonComponent = new RenderComponent(this.gameQuitButton.getContainer());
+        this.addComponent(quitButtonComponent, 'gameQuitButton');
     }
 
     redraw(): void {
@@ -180,6 +193,8 @@ export class EndgameOverlay extends Entity {
         
         const updatedGraphicsComponent = new RenderComponent(this.overlayGraphics);
         this.replaceComponent('render', updatedGraphicsComponent, 'headerGraphic');
+
+        this.updateQuitButton();
     }
 
     private createHeaderSprite(): void {
@@ -192,7 +207,7 @@ export class EndgameOverlay extends Entity {
     }
 
     private getHeaderSprite(): Sprite | null {
-        const isWinner = this.isPlayerWinner();
+        const isWinner = isPlayerWinner(this.game);
         const language = this.game.language || 'en';
         
         let assetName: string;
@@ -211,7 +226,7 @@ export class EndgameOverlay extends Entity {
         if (headerSprite) {
             headerSprite.anchor.set(0.5, 0.5);
             headerSprite.x = this.game.width / 2;
-            headerSprite.y = this.game.height / 2 - 175;
+            headerSprite.y = this.game.height / 2 - 190;
             headerSprite.alpha = 0;
             
             return headerSprite;
@@ -220,25 +235,7 @@ export class EndgameOverlay extends Entity {
         console.warn(`Failed to create header sprite for asset: ${assetName}`);
         return null;
     }
-	
-	isPlayerWinner(): boolean {
-		const username = sessionStorage.getItem('username') || "Player 1";
-		
-		if (this.game.data.winner === username) {
-			return true;
-		}
-		
-		const trimmedUsername = username.trim();
-		
-		if (this.game.data.leftPlayer.name.trim() === trimmedUsername) {
-			return this.game.data.leftPlayer.result === 'win';
-		} else if (this.game.data.rightPlayer.name.trim() === trimmedUsername) {
-			return this.game.data.rightPlayer.result === 'win';
-		}
-		
-		console.warn(`Player ${username} not found in game data.`);
-		return false;
-	}
+    
 	private createOverlayGraphics(game: PongGame, x: number, y: number, width: number, height: number, headerHeight: number){
         const container = new Graphics();
     
@@ -259,14 +256,16 @@ export class EndgameOverlay extends Entity {
         if (game.config.classicMode) {
             frameColor = GAME_COLORS.white;
         } else {
-            frameColor = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            frameColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
         
         const frame = new Graphics();
-        frame.moveTo(x, y + 40);
-        frame.lineTo(x, y + height);
-        frame.lineTo(x + width, y + height);
-        frame.lineTo(x + width, y + 40);
+        frame.moveTo(x, y + 25);
+        frame.lineTo(x, y + height + 20);
+        frame.lineTo(x + width / 2 - 75, y + height + 20);
+        frame.moveTo(x + width / 2 + 75, y + height + 20);
+        frame.lineTo(x + width, y + height + 20);
+        frame.lineTo(x + width, y + 25);
         frame.stroke({ color: frameColor, width: 5 });
         container.addChild(frame);
 
@@ -323,7 +322,7 @@ export class EndgameOverlay extends Entity {
         return {
             text: text,
             x: 405,
-            y: 205,
+            y: 190,
             style: {
                 fill: { color: GAME_COLORS.black },
                 fontSize: 12,
@@ -336,7 +335,7 @@ export class EndgameOverlay extends Entity {
     }
 
 	getResultText(): any {
-		const isWinner = this.isPlayerWinner();
+		const isWinner = isPlayerWinner(this.game);
 		const isDraw = this.game.data.generalResult === 'draw';
 		console.log(`isWinner: ${isWinner}, isDraw: ${isDraw}`);
 		
@@ -446,7 +445,7 @@ export class EndgameOverlay extends Entity {
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            if (this.isPlayerWinner()) {
+            if (isPlayerWinner(this.game)) {
                 color = GAME_COLORS.green;
             } else {
                 color = GAME_COLORS.red;
@@ -478,111 +477,113 @@ export class EndgameOverlay extends Entity {
     }
 
     private getBackgroundPoints(x: number, y: number, width: number, height: number): { x: number, y: number }[] {
-        const isWinner = this.isPlayerWinner();
+        const isWinner = isPlayerWinner(this.game);
         const language = this.game.language || 'en';
+        const upperOffset = 15;
+        const lowerOffset = 20;
         
         const victoryENPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 158.3, y: y + 7.45 },
-            { x: x + width + 2.2 - 158.3, y: y },
-            { x: x + width + 2.2 - 170, y: y },
-            { x: x + width + 2.2 - 170, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 158.3, y: y - 6 },
+            { x: x + width + 2.2 - 158.3, y: y - 15 },
+            { x: x + width + 2.2 - 170, y: y - 15 },
+            { x: x + width + 2.2 - 170, y: y - 6 }
         ];
 
         const victoryESPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 175.5, y: y + 7.45 },
-            { x: x + width + 2.2 - 175.5, y: y },
-            { x: x + width + 2.2 - 187, y: y },
-            { x: x + width + 2.2 - 187, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 175.5, y: y - 6 },
+            { x: x + width + 2.2 - 175.5, y: y - 15 },
+            { x: x + width + 2.2 - 187, y: y - 15 },
+            { x: x + width + 2.2 - 187, y: y - 6 }
         ];
 
         const victoryFRPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 171.5, y: y + 7.45 },
-            { x: x + width + 2.2 - 171.5, y: y },
-            { x: x + width + 2.2 - 183, y: y },
-            { x: x + width + 2.2 - 183, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 171.5, y: y - 6 },
+            { x: x + width + 2.2 - 171.5, y: y - 15 },
+            { x: x + width + 2.2 - 183, y: y - 15 },
+            { x: x + width + 2.2 - 183, y: y - 6 }
         ];
 
         const victoryCATPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 175.5, y: y + 7.45 },
-            { x: x + width + 2.2 - 175.5, y: y },
-            { x: x + width + 2.2 - 187, y: y },
-            { x: x + width + 2.2 - 187, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 175.5, y: y - 6 },
+            { x: x + width + 2.2 - 175.5, y: y - 15 },
+            { x: x + width + 2.2 - 187, y: y - 15 },
+            { x: x + width + 2.2 - 187, y: y - 6 }
         ];
 
         const defeatENPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 63.3, y: y + 7.45 },
-            { x: x + width + 2.2 - 63.3, y: y },
-            { x: x + width + 2.2 - 73, y: y },
-            { x: x + width + 2.2 - 73, y: y + 7.45 },
-            { x: x + width + 2.2 - 211, y: y + 7.45 },
-            { x: x + width + 2.2 - 211, y: y },
-            { x: x + width + 2.2 - 222, y: y },
-            { x: x + width + 2.2 - 222, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 63.3, y: y - 6 },
+            { x: x + width + 2.2 - 63.3, y: y - 15 },
+            { x: x + width + 2.2 - 73, y: y - 15 },
+            { x: x + width + 2.2 - 73, y: y - 6 },
+            { x: x + width + 2.2 - 211, y: y - 6 },
+            { x: x + width + 2.2 - 211, y: y - 15 },
+            { x: x + width + 2.2 - 222, y: y - 15 },
+            { x: x + width + 2.2 - 222, y: y - 6 }
         ];
 
         const defeatESPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 100.3, y: y + 7.45 },
-            { x: x + width + 2.2 - 100.3, y: y },
-            { x: x + width + 2.2 - 110, y: y },
-            { x: x + width + 2.2 - 110, y: y + 7.45 },
-            { x: x + width + 2.2 - 236, y: y + 7.45 },
-            { x: x + width + 2.2 - 236, y: y },
-            { x: x + width + 2.2 - 247, y: y },
-            { x: x + width + 2.2 - 247, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 100.3, y: y - 6 },
+            { x: x + width + 2.2 - 100.3, y: y - 15 },
+            { x: x + width + 2.2 - 110, y: y - 15 },
+            { x: x + width + 2.2 - 110, y: y - 6 },
+            { x: x + width + 2.2 - 236, y: y - 6 },
+            { x: x + width + 2.2 - 236, y: y - 15 },
+            { x: x + width + 2.2 - 247, y: y - 15 },
+            { x: x + width + 2.2 - 247, y: y - 6 }
         ];
 
         const defeatFRPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 96.3, y: y + 7.45 },
-            { x: x + width + 2.2 - 96.3, y: y },
-            { x: x + width + 2.2 - 107, y: y },
-            { x: x + width + 2.2 - 107, y: y + 7.45 },
-            { x: x + width + 2.2 - 228, y: y + 7.45 },
-            { x: x + width + 2.2 - 228, y: y },
-            { x: x + width + 2.2 - 239, y: y },
-            { x: x + width + 2.2 - 239, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 96.3, y: y - 6 },
+            { x: x + width + 2.2 - 96.3, y: y - 15 },
+            { x: x + width + 2.2 - 107, y: y - 15 },
+            { x: x + width + 2.2 - 107, y: y - 6 },
+            { x: x + width + 2.2 - 228, y: y - 6 },
+            { x: x + width + 2.2 - 228, y: y - 15 },
+            { x: x + width + 2.2 - 239, y: y - 15 },
+            { x: x + width + 2.2 - 239, y: y - 6 }
         ];
 
         const defeatCATPoints = [
-            { x: x - 2.2, y: y + 7.45 },
-            { x: x - 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + height },
-            { x: x + width + 2.2, y: y + 7.45 },
-            { x: x + width + 2.2 - 100.3, y: y + 7.45 },
-            { x: x + width + 2.2 - 100.3, y: y },
-            { x: x + width + 2.2 - 110, y: y },
-            { x: x + width + 2.2 - 110, y: y + 7.45 },
-            { x: x + width + 2.2 - 236, y: y + 7.45 },
-            { x: x + width + 2.2 - 236, y: y },
-            { x: x + width + 2.2 - 247, y: y },
-            { x: x + width + 2.2 - 247, y: y + 7.45 }
+            { x: x - 2.2, y: y - 6 },
+            { x: x - 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y + height + lowerOffset },
+            { x: x + width + 2.2, y: y - 6 },
+            { x: x + width + 2.2 - 100.3, y: y - 6 },
+            { x: x + width + 2.2 - 100.3, y: y - 15 },
+            { x: x + width + 2.2 - 110, y: y - 15 },
+            { x: x + width + 2.2 - 110, y: y - 6 },
+            { x: x + width + 2.2 - 236, y: y - 6 },
+            { x: x + width + 2.2 - 236, y: y - 15 },
+            { x: x + width + 2.2 - 247, y: y - 15 },
+            { x: x + width + 2.2 - 247, y: y - 6 }
         ];
     
         if (isWinner) {
@@ -681,7 +682,7 @@ export class EndgameOverlay extends Entity {
 		const linesPerGroup = 20;
 		const lineLength = 10;
 
-        const color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red ;
+        const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red ;
 
 		// Top section
 		for (let group = 0; group < numGroups + 1; group++) {
@@ -748,7 +749,7 @@ export class EndgameOverlay extends Entity {
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
 		
 		for (let i = 0; i < 4; i++) {
@@ -779,7 +780,7 @@ export class EndgameOverlay extends Entity {
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
 
 		legend.push({
@@ -815,7 +816,7 @@ export class EndgameOverlay extends Entity {
 
 		legend[1].anchor = { x: 0, y: 0.5 };
         legend[1].x = 535;
-		legend[1].y = 245;
+		legend[1].y = 242;
 
 		return (legend);
     }
@@ -828,7 +829,7 @@ export class EndgameOverlay extends Entity {
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
 
 		legend.push({
@@ -865,7 +866,7 @@ export class EndgameOverlay extends Entity {
 
 		legend[1].anchor = { x: 0, y: 0.5 };
         legend[1].x = 535;
-		legend[1].y = 565;
+		legend[1].y = 568;
 	
 		return (legend);
     }
@@ -877,11 +878,11 @@ export class EndgameOverlay extends Entity {
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
 
         text = {
-            text: "Goals in favor\nGoals against\nHits\nPower-ups picked\nPower-downs picked\nBall changes picked\n" ,
+            text: "Goals scored\nBalls returned\nReturn rate\nPower-ups picked\nPower-downs picked\nBall changes picked\n",
 			x: 0,
 			y: 0,
 			style: {
@@ -903,52 +904,106 @@ export class EndgameOverlay extends Entity {
 
     createPlayerStats(): Text[] {
         const stats: Text[] = [];
-
+    
         let color;
-
         if (this.game.config.classicMode) {
             color = GAME_COLORS.white;
         } else {
-            color = this.isPlayerWinner() ? GAME_COLORS.green : GAME_COLORS.red;
+            color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         }
-
+    
+        const leftPlayerStats: number[] = this.getPlayerStats('left');
+    
         stats.push({
-            text: "00\n00\n00\n00\n00\n00\n" ,
-			x: 0,
-			y: 0,
-			style: {
-				fill: { color: color, alpha: 1},
-				fontSize: 12,
-				fontWeight: 'bolder' as const,
-				align: 'left' as const,
-				fontFamily: 'monospace',
+            text: `${leftPlayerStats[0]}\n${leftPlayerStats[1]}\n${leftPlayerStats[2].toFixed(1)}\n${leftPlayerStats[3]}\n${leftPlayerStats[4]}\n${leftPlayerStats[5]}\n`,
+            x: 0,
+            y: 0,
+            style: {
+                fill: { color: color, alpha: 1},
+                fontSize: 12,
+                fontWeight: 'bolder' as const,
+                align: 'left' as const,
+                fontFamily: 'monospace',
                 lineHeight: 35,
-			},
+            },
         } as Text);
-
+    
         stats[0].anchor = { x: 0.5, y: 0 };
-        stats[0].x = 760;
+        stats[0].x = this.game.data.leftPlayer.goalsAgainst === 0 ? 775 : 770;
         stats[0].y = 300;
-
+    
+        const rightPlayerStats: number[] = this.getPlayerStats('right');
+    
         stats.push({
-            text: "00\n00\n00\n00\n00\n00\n" ,
-			x: 0,
-			y: 0,
-			style: {
-				fill: { color: color, alpha: 1},
-				fontSize: 12,
-				fontWeight: 'bolder' as const,
-				align: 'right' as const,
-				fontFamily: 'monospace',
+            text: `${rightPlayerStats[0]}\n${rightPlayerStats[1]}\n${rightPlayerStats[2].toFixed(1)}\n${rightPlayerStats[3]}\n${rightPlayerStats[4]}\n${rightPlayerStats[5]}\n`,
+            x: 0,
+            y: 0,
+            style: {
+                fill: { color: color, alpha: 1},
+                fontSize: 12,
+                fontWeight: 'bolder' as const,
+                align: 'right' as const,
+                fontFamily: 'monospace',
                 lineHeight: 35,
-			},
+            },
         } as Text);
-
+    
         stats[1].anchor = { x: 0.5, y: 0 };
-        stats[1].x = 1040;
+        stats[1].x = this.game.data.rightPlayer.goalsAgainst == 0 ? 1025 : 1030;
         stats[1].y = 300;
-
+    
         return (stats);
+    }
+
+    getPlayerStats(side: string): number[] {
+        const stats: number[] = [];
+    
+        if (side === 'left') {
+            stats.push(this.game.data.leftPlayer.goalsInFavor || 0);
+            stats.push(this.game.data.leftPlayer.hits || 0);
+            
+            const hits = this.game.data.leftPlayer.hits || 0;
+            const goalsAgainst = this.game.data.leftPlayer.goalsAgainst || 0;
+            const totalBalls = hits + goalsAgainst;
+            const returnRate = totalBalls > 0 ? (hits / totalBalls) * 100 : 0;
+            
+            stats.push(parseFloat(returnRate.toFixed(1)));
+            
+            stats.push(this.game.data.leftPlayer.powerupsPicked || 0);
+            stats.push(this.game.data.leftPlayer.powerdownsPicked || 0);
+            stats.push(this.game.data.leftPlayer.ballchangesPicked || 0);
+        } else if (side === 'right') {
+            stats.push(this.game.data.rightPlayer.goalsInFavor || 0);
+            stats.push(this.game.data.rightPlayer.hits || 0);
+            
+            const hits = this.game.data.rightPlayer.hits || 0;
+            const goalsAgainst = this.game.data.rightPlayer.goalsAgainst || 0;
+            const totalBalls = hits + goalsAgainst;
+            const returnRate = totalBalls > 0 ? (hits / totalBalls) * 100 : 0;
+            
+            stats.push(parseFloat(returnRate.toFixed(1)));
+            
+            stats.push(this.game.data.rightPlayer.powerupsPicked || 0);
+            stats.push(this.game.data.rightPlayer.powerdownsPicked || 0);
+            stats.push(this.game.data.rightPlayer.ballchangesPicked || 0);
+        } else {
+            console.warn(`Invalid side: ${side}. Defaulting to left player.`);
+            stats.push(0, 0, 0.0, 0, 0, 0);
+        }
+    
+        return (stats);
+    }
+
+    private updateQuitButton(): void {
+        this.gameQuitButton.cleanup();
+        this.gameQuitButton = new GameQuitButton(
+            this.game, 
+            'gameQuitButton', 
+            'overlays', 
+        );
+        
+        const updatedQuitButtonComponent = new RenderComponent(this.gameQuitButton.getContainer());
+        this.replaceComponent('render', updatedQuitButtonComponent, 'gameQuitButton');
     }
 
 	cleanup(): void {

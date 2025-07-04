@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 12:25:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:50:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ import { BallSpawner } from '../spawners/BallSpawner';
 
 import { FrameData, GameEvent  } from '../utils/Types'
 import { removePaddleFromLayer } from '../utils/Utils';
-import { isPaddle, isBall, isPowerup, isShield, isUI } from '../utils/Guards'
+import { isPaddle, isBall, isPowerup, isShield, isUI, isBullet } from '../utils/Guards'
 
 export class PowerupSystem implements System {
 	game: PongGame;
@@ -511,5 +511,53 @@ export class PowerupSystem implements System {
 				}
 			}
 		}
+	}
+
+	cleanup(): void {
+		// Reset timers and flags
+		this.powerupTimer = 0;
+		this.isSpawningPowerups = false;
+		this.isSpawningBullets = false;
+		this.bulletSpawnInterval = 10;
+		this.bulletQuantity = 3;
+		this.bulletEvent = undefined;
+		
+		// Remove all powerups, shields, and bullets
+		const itemsToRemove: string[] = [];
+		for (const entity of this.game.entities) {
+			if (entity.id.includes('power') || 
+				entity.id.includes('ballChange') || 
+				isShield(entity) || 
+				isBullet(entity)) {
+				itemsToRemove.push(entity.id);
+			}
+		}
+		
+		for (const entityId of itemsToRemove) {
+			this.game.removeEntity(entityId);
+		}
+		
+		for (const entity of this.game.entities) {
+			if (isPaddle(entity)) {
+				entity.isEnlarged = false;
+				entity.isShrinked = false;
+				entity.isInverted = false;
+				entity.isSlowed = false;
+				entity.isFlat = false;
+				entity.isMagnetized = false;
+				entity.isStunned = false;
+				entity.affectedTimer = 0;
+				entity.inversion = 1;
+				entity.slowness = 1;
+				
+				const physics = entity.getComponent('physics') as PhysicsComponent;
+				if (physics) {
+					physics.height = entity.baseHeight;
+					physics.width = entity.baseWidth;
+				}
+			}
+		}
+		
+		console.log('PowerupSystem cleanup completed');
 	}
 }

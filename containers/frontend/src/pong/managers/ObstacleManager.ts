@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 11:10:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:59:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,16 @@ export class ObstacleManager {
         const oddNumberCount = Math.floor((max - min) / 2) + 1;
         
         return min + 2 * Math.floor(Math.random() * oddNumberCount);
+    }
+
+    cleanup(): void {
+        this.isSpawningObstacles = false;
+        this.mustSpawn = false;
+        
+        if (this.game.data && this.game.data.walls) {
+            this.game.data.walls.waystones = 0;
+        }
+        
+        console.log('ObstacleManager cleanup completed');
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:27:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 10:55:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:46:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,4 +224,25 @@ export class AISystem implements System {
 			}
 		}
 	}
+
+    cleanup(): void {
+        this.aiPaddle = null as any;
+        this.targetBall = null;
+        this.lastUpdateTime = 0;
+        this.targetPosition = this.game.height / 2;
+        this.currentDecision = 'stop';
+        
+        for (const entity of this.game.entities) {
+            if (entity instanceof Paddle && entity.isAI) {
+                entity.isAI = false;
+                const inputComponent = entity.getComponent('input') as InputComponent;
+                if (inputComponent) {
+                    inputComponent.upPressed = false;
+                    inputComponent.downPressed = false;
+                }
+            }
+        }
+        
+        console.log('AISystem cleanup completed');
+    }
 }

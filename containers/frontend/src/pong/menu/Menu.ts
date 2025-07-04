@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 13:42:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 12:53:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
 import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
 import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
 import { MenuLineSystem } from './menuSystems/MenuLineSystem';
-import { ButtonSystem } from './menuSystems/MenuButtonSystem';
+import { MenuButtonSystem } from './menuSystems/MenuButtonSystem';
 
 import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
@@ -383,7 +383,7 @@ export class Menu{
 	}
 
 	initSystems(): void {
-		const buttonSystem = new ButtonSystem(this);
+		const buttonSystem = new MenuButtonSystem(this);
 		const VFXSystem = new MenuVFXSystem();
 		const animationSystem = new MenuAnimationSystem(this);
 		const renderSystem = new MenuRenderSystem();
