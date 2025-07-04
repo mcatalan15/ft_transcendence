@@ -10,6 +10,9 @@
 #                                                                              #
 # **************************************************************************** #
 
+# Para usar Cloudflared tunnel
+#  cloudflared tunnel --url http://localhost:80 --http-host-header localhost
+
 prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
