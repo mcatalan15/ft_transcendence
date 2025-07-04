@@ -208,7 +208,7 @@ async function logoutHandler(request, reply) {
 	try {
 
         const user = request.session.get('user');
-        console.log('Available server decorators:', Object.keys(request.server));
+		console.log('Logging out user:', user);
         if (user) {
             // Remove user from online tracker
             if (user.userId) {

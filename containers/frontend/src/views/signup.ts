@@ -1,5 +1,5 @@
 import { localSignUp } from "../utils/auth/localSignUp";
-import { loadGoogleScript, setupGoogleSignUp } from "../utils/auth/googleSignUp";
+import { loadGoogleScript, setupGoogleSignUp, initializeGoogleButton } from "../utils/auth/googleSignUp";
 import i18n from '../i18n';
 import { LanguageSelector } from '../components/languageSelector';
 import { navigate } from '../utils/router';
@@ -9,9 +9,6 @@ export function showSignUp(container: HTMLElement): void {
     .loadNamespaces('signup')
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
-      loadGoogleScript();
-      setupGoogleSignUp();;
-
       const wrapper = document.createElement('div');
       wrapper.innerHTML = `
         <div class="h-screen flex items-center justify-center bg-neutral-900">
@@ -38,20 +35,7 @@ export function showSignUp(container: HTMLElement): void {
               <hr class="flex-1 border-gray-300" />
             </div>
             <div>
-              <div id="g_id_onload"
-                data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
-                data-login_uri="http://localhost:5173"
-              data-callback="handleGoogleSignUp"
-                data-auto_prompt="false">
-              </div>
-              <div class="g_id_signin"
-                data-type="standard"
-                data-size="large"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-shape="rectangular"
-                data-logo_alignment="left">
-              </div>
+              <div id="google-signin-button"></div>
             </div>
             <div id="errorMessage" class="text-red-500 text-sm"></div>
           </div>
@@ -59,6 +43,16 @@ export function showSignUp(container: HTMLElement): void {
       `;
 
       container.appendChild(wrapper);
+
+      (async (): Promise<void> => {
+        try {
+          await loadGoogleScript();
+          setupGoogleSignUp();
+          initializeGoogleButton('google-signin-button');
+        } catch (error) {
+          console.error('Failed to initialize Google Sign-In:', error);
+        }
+      })();
 
       const form = wrapper.querySelector('#signup-form') as HTMLFormElement;
       const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
