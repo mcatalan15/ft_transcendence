@@ -18,6 +18,7 @@ RUN curl -LO https://github.com/prometheus/prometheus/releases/download/v${PROME
 RUN mkdir -p /etc/prometheus /prometheus
 
 COPY config/prometheus.yml /etc/prometheus/prometheus.yml
+COPY config/rules.yml /etc/prometheus/rules.yml
 
 EXPOSE 9090
 

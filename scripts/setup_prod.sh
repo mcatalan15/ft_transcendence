@@ -2,6 +2,7 @@
 
 JWT_SECRET=$(openssl rand -hex 32)
 SESSION_SECRET=$(openssl rand -hex 32)
+GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 16)
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'
@@ -23,6 +24,8 @@ AVALANCHE_RPC_URL=https://api.avax-test.network/ext/c/C/rpc
 REDIS_URL=redis://redis:6379
 
 SESSION_SECRET='${SESSION_SECRET}'
+
+GRAFANA_ADMIN_PASSWORD='${GRAFANA_ADMIN_PASSWORD}'
 EOF
 
 echo ".env file created with secure defaults"

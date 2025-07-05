@@ -11,8 +11,8 @@ export class GameCore {
   paddleHeight: number = 100;
   paddleWidth: number = 20;
   ballRadius: number = 10;
-  width: number = 1500;
-  height: number = 500;
+  width: number = 1800;
+  height: number = 800;
   score1: number = 0;
   score2: number = 0;
 

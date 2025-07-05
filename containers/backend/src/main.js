@@ -1,21 +1,17 @@
 const serverConfig = require('./config/serverConfiguration');
 const { buildApp } = require('./config/app');
 const { db } = require('./api/db/database');
-
 const { setupWebSocketServers, handleUpgrade } = require('./server/wsServer');
 const { setupChatWebSocket } = require('./websocket/chatSocket');
 const { setupGameWebSocket } = require('./websocket/gameSocket');
 const RedisService = require('./redis/redisService');
 const GameManager = require('./game/gameManager');
-
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
-
 const onlineTracker = require('./utils/onlineTracker');
 const { trackUserActivity } = require('./config/middleware/activityTracker');
 
 async function startServer() {
   const app = buildApp();
-  
   const redisService = new RedisService(redisUrl);
   const redisConnected = await redisService.connect();
   if (!redisConnected) {
@@ -23,17 +19,14 @@ async function startServer() {
   }
   
   const gameManager = new GameManager();
-  
   const { wss, gameWss } = setupWebSocketServers();
   
   onlineTracker.start();
   app.addHook('preHandler', trackUserActivity);
-
   await app.listen({ host: serverConfig.ADDRESS, port: serverConfig.PORT });
   const nodeServer = app.server;
   
   handleUpgrade(wss, gameWss, nodeServer);
-  
   setupChatWebSocket(wss, redisService, gameManager);
   setupGameWebSocket(gameWss, redisService, gameManager);
   

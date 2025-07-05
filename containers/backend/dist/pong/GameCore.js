@@ -10,8 +10,8 @@ class GameCore {
         this.paddleHeight = 100;
         this.paddleWidth = 20;
         this.ballRadius = 10;
-        this.width = 1500;
-        this.height = 500;
+        this.width = 1800;
+        this.height = 800;
         this.score1 = 0;
         this.score2 = 0;
     }
