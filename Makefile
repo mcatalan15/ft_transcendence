@@ -10,9 +10,6 @@
 #                                                                              #
 # **************************************************************************** #
 
-# Para usar Cloudflared tunnel
-#  cloudflared tunnel --url http://localhost:80 --http-host-header localhost
-
 prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
@@ -22,6 +19,24 @@ dev:
 	@bash ./scripts/setup_dev.sh
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
 #	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up --build
+
+tunnel:
+	@if ! command -v cloudflared >/dev/null 2>&1; then \
+		echo "cloudflared not found. Downloading..."; \
+		ARCH=$$(uname -m); \
+		if [ "$$ARCH" = "x86_64" ]; then \
+			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"; \
+		elif [ "$$ARCH" = "aarch64" ]; then \
+			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"; \
+		else \
+			echo "Unsupported architecture: $$ARCH"; exit 1; \
+		fi; \
+		curl -L "$$URL" -o ./cloudflared && chmod +x ./cloudflared; \
+		export PATH="$$PWD:$$PATH"; \
+		alias cloudflared="$$PWD/cloudflared"; \
+		echo "cloudflared installed locally."; \
+	fi
+	cloudflared tunnel --url http://localhost:80 --http-host-header localhost
 
 re:
 	$(MAKE) stop

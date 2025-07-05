@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:31:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
 import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
 import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
 import { MenuLineSystem } from './menuSystems/MenuLineSystem';
-import { ButtonSystem } from './menuSystems/MenuButtonSystem';
+import { MenuButtonSystem } from './menuSystems/MenuButtonSystem';
 
 import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
@@ -154,7 +154,7 @@ export class Menu{
 	aboutQuitButton!: MenuButton;
 	playQuitButton!: MenuButton;
 	readyButton!: MenuButton;
-	tournamentTauntButton!: MenuButton;
+	tournamentGlossaryButton!: MenuButton;
 	tournamentFiltersButton!: MenuButton;
 
 	// Ornaments
@@ -289,6 +289,8 @@ export class Menu{
 
 	async init(): Promise<void> {
 		console.log(this.language);
+
+		await this.clearConflictingAssets();
 		await this.loadImages();
 
 		await ButtonManager.createMainButtons(this);
@@ -305,6 +307,7 @@ export class Menu{
 		await this.createPowerups();
 		await this.initSystems();
 		await this.initDust();
+		await MenuImageManager.createHeaderImages(this);
 
 		this.playSound('menuBGM');
 
@@ -387,7 +390,7 @@ export class Menu{
 	}
 
 	initSystems(): void {
-		const buttonSystem = new ButtonSystem(this);
+		const buttonSystem = new MenuButtonSystem(this);
 		const VFXSystem = new MenuVFXSystem();
 		const animationSystem = new MenuAnimationSystem(this);
 		const renderSystem = new MenuRenderSystem();
@@ -722,6 +725,12 @@ export class Menu{
 			{ name: 'grafanaClassic', url: '/logos/classic/logo_grafana_classic.png' },
 			{ name: 'avalancheClassic', url: '/logos/classic/logo_avalanche_classic.png' },
 			{ name: 'solidityClassic', url: '/logos/classic/logo_solidity_classic.png' },
+
+			// Menu headers
+			{ name: 'pongHeaderWhite', url: '/headers/headers_pong_white.svg' },
+			{ name: 'pongHeaderBlue', url: '/headers/headers_pong_blue.svg' },
+			{ name: 'pongHeaderOrange', url: '/headers/headers_pong_orange.svg' },
+			{ name: 'pongHeaderPink', url: '/headers/headers_pong_pink.svg' },
         ]);
 	}
 
@@ -873,6 +882,24 @@ export class Menu{
 					this.sounds[soundKey].play();
 				}
 			});
+		}
+	}
+
+	private async clearConflictingAssets(): Promise<void> {
+		const conflictingAssets = [
+			'avatarUnknownSquare',
+			'avatarUnknownClassic',
+			// ... other shared assets
+		];
+		
+		for (const assetName of conflictingAssets) {
+			try {
+				if (Assets.cache.has(assetName)) {
+					await Assets.unload(assetName);
+				}
+			} catch (error) {
+				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
+			}
 		}
 	}
 }

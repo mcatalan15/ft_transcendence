@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/23 14:08:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:48:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,5 +132,24 @@ export class ParticleSystem implements System {
 
 	private easeInCubic(t: number): number {
 		return t * t * t;
+	}
+
+	cleanup(): void {
+		const particlesToRemove: string[] = [];
+		for (const entity of this.game.entities) {
+			if (isParticle(entity)) {
+				particlesToRemove.push(entity.id);
+			}
+		}
+		
+		for (const entityId of particlesToRemove) {
+			this.game.removeEntity(entityId);
+		}
+		
+		if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
+			(ParticleSpawner as any).cleanup();
+		}
+		
+		console.log('ParticleSystem cleanup completed');
 	}
 }

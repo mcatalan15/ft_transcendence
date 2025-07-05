@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 16:23:34 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:20:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
-import { EndgameOverlay } from '../entities/endGame/endGameOverlay';
+import { EndgameOverlay } from '../entities/endGame/EndGameOverlay';
 
 // Import built components
 import { RenderComponent } from '../components/RenderComponent';
@@ -50,9 +50,11 @@ import { WorldSystem } from '../systems/WorldSystem';
 import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { EndingSystem } from '../systems/EndingSystem';
 import { AISystem } from '../systems/AISystem';
+import { ButtonSystem } from '../systems/ButtonSystem';
 
-// Import spawners
+// Import spawners and managers
 import { BallSpawner } from '../spawners/BallSpawner'
+import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
 
 // Import exported types and utils
@@ -113,9 +115,6 @@ export class PongGame {
 	hasEnded: boolean = false;
 	alphaFade: Graphics = new Graphics();
 	endGameOverlay!: EndgameOverlay;
-
-	//TODO: Add the world system to handle the world pool and current world
-	//TODO: As well as the powerups and powerdowns
 
 	constructor(app: Application, config: GameConfig, language: string) {
 		this.config = config;
@@ -188,9 +187,10 @@ export class PongGame {
 			this.app.ticker.start();
 		}
 
+		await this.loadImages();
 		await this.createEntities();
-		this.initSystems();
-		this.initDust();
+		await this.initSystems();
+		await this.initDust();
 		if (!this.config.classicMode) this.soundManager.startMusic();
 
 		this.app.ticker.add((ticker) => {
@@ -205,22 +205,23 @@ export class PongGame {
 	}
 
 	initSystems(): void {
-		const renderSystem = new RenderSystem();
+		const renderSystem = new RenderSystem(this);
 		const inputSystem = new InputSystem(this);
 		const physicsSystem = new PhysicsSystem(this, this.width, this.height);
 		const worldSystem = new WorldSystem(this);
 		const animationSystem = new AnimationSystem(this);
-		const vfxSystem = new VFXSystem();
+		const vfxSystem = new VFXSystem(this);
 		const particleSystem = new ParticleSystem(this);
 		const uiSystem = new UISystem(this);
 		const powerupSystem = new PowerupSystem(this, this.width, this.height);
-		const postProcessingSystem = new PostProcessingSystem();
+		const postProcessingSystem = new PostProcessingSystem(this);
 		const crossCutSystem = new CrossCutSystem(this);
 		const endingSystem = new EndingSystem(this);
+		const buttonSystem = new ButtonSystem(this);
+
 		this.systems.push(renderSystem);
 		if (!this.isOnline) this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
-
 		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
 		if (!this.config.classicMode) this.systems.push(vfxSystem);
@@ -229,6 +230,7 @@ export class PongGame {
 		if (!this.config.classicMode) this.systems.push(powerupSystem);
 		this.systems.push(postProcessingSystem);
 		this.systems.push(endingSystem);
+		this.systems.push(buttonSystem);
 
 		if (this.config.variant == '1vAI') {
 			const rightPaddle = this.entities.find(e => e.id === 'paddleR') as Paddle;
@@ -438,6 +440,9 @@ export class PongGame {
 			this.rightPlayer = { name: this.config.opponent || "Player 2" };
 		}
 
+		this.data.leftPlayer.name = this.leftPlayer.name;
+    	this.data.rightPlayer.name = this.rightPlayer.name;
+
 		// Create Bounding Box
 		this.createBoundingBoxes();
 
@@ -511,9 +516,9 @@ export class PongGame {
 		this.renderLayers.hidden.addChild(this.alphaFade);
 
 		// Create endgame overlays
-		this.endGameOverlay = new EndgameOverlay(this, 'endGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
-		const endGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
-		this.renderLayers.hidden.addChild(endGameOverlayRender.graphic);
+		this.endGameOverlay = new EndgameOverlay(this, 'EndGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
+		const EndGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
+		this.renderLayers.hidden.addChild(EndGameOverlayRender.graphic);
 
 		const endGameResultTextComponent = this.endGameOverlay.getComponent('text') as TextComponent;
 		this.renderLayers.hidden.addChild(endGameResultTextComponent.getRenderable());
@@ -638,7 +643,45 @@ export class PongGame {
 		this.renderLayers.powerdown.addChild(boundingBoxD);
 		this.renderLayers.ballChange.addChild(boundingBoxE);
 		this.renderLayers.pp.addChild(boundingBoxF);
+	}
 
+	async loadImages() {
+		await ImageManager.loadAssets([
+			// Headers
+			{ name: 'victoryHeaderENWhite', url: '/headers/headers_victory_en_white.svg' },
+			{ name: 'victoryHeaderESWhite', url: '/headers/headers_victory_es_white.svg' },
+			{ name: 'victoryHeaderFRWhite', url: '/headers/headers_victory_fr_white.svg' },
+			{ name: 'victoryHeaderCATWhite', url: '/headers/headers_victory_cat_white.svg' },
+
+			{ name: 'victoryHeaderENYellow', url: '/headers/headers_victory_en_yellow.svg' },
+			{ name: 'victoryHeaderESYellow', url: '/headers/headers_victory_es_yellow.svg' },
+			{ name: 'victoryHeaderFRYellow', url: '/headers/headers_victory_fr_yellow.svg' },
+			{ name: 'victoryHeaderCATYellow', url: '/headers/headers_victory_cat_yellow.svg' },
+
+			{ name: 'victoryHeaderENGreen', url: '/headers/headers_victory_en_green.svg' },
+			{ name: 'victoryHeaderESGreen', url: '/headers/headers_victory_es_green.svg' },
+			{ name: 'victoryHeaderFRGreen', url: '/headers/headers_victory_fr_green.svg' },
+			{ name: 'victoryHeaderCATGreen', url: '/headers/headers_victory_cat_green.svg' },
+
+			{ name: 'defeatHeaderENWhite', url: '/headers/headers_defeat_en_white.svg' },
+			{ name: 'defeatHeaderESWhite', url: '/headers/headers_defeat_es_white.svg' },
+			{ name: 'defeatHeaderFRWhite', url: '/headers/headers_defeat_fr_white.svg' },
+			{ name: 'defeatHeaderCATWhite', url: '/headers/headers_defeat_cat_white.svg' },
+
+			{ name: 'defeatHeaderENYellow', url: '/headers/headers_defeat_en_yellow.svg' },
+			{ name: 'defeatHeaderESYellow', url: '/headers/headers_defeat_es_yellow.svg' },
+			{ name: 'defeatHeaderFRYellow', url: '/headers/headers_defeat_fr_yellow.svg' },
+			{ name: 'defeatHeaderCATYellow', url: '/headers/headers_defeat_cat_yellow.svg' },
+
+			{ name: 'defeatHeaderENRed', url: '/headers/headers_defeat_en_red.svg' },
+			{ name: 'defeatHeaderESRed', url: '/headers/headers_defeat_es_red.svg' },
+			{ name: 'defeatHeaderFRRed', url: '/headers/headers_defeat_fr_red.svg' },
+			{ name: 'defeatHeaderCATRed', url: '/headers/headers_defeat_cat_red.svg' },
+
+			// Placeholding avatars
+			{ name: 'avatarUnknownSquare', url: '/avatars/square/square4.png' },
+			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareClassic4.png' },
+		]);
 	}
 
 	// Add detailed debugging to the updateFromServer method:
@@ -679,7 +722,7 @@ export class PongGame {
 				ballRender.graphic.y = gameState.ball.y;
 
 			} else {
-				console.warn('❌ Ball entity or gameState.ball missing');
+				console.warn('Ball entity or gameState.ball missing');
 				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
 				if (!gameState.ball) console.warn('  - gameState.ball is missing from server data');
 			}
@@ -810,6 +853,95 @@ export class PongGame {
 			}
 		} catch (error) {
 			console.error('Network error saving game results:', error);
+		}
+	}
+
+	// In Game.ts
+	async cleanup(): Promise<void> {
+		try {			
+			if (this.sounds) {
+				Object.values(this.sounds).forEach(sound => {
+					if (sound) {
+						sound.stop();
+						sound.unload();
+					}
+				});
+			}
+			
+			this.systems.forEach(system => {
+				if (system && typeof (system as any).cleanup === 'function') {
+					(system as any).cleanup();
+				}
+			});
+			this.systems = [];
+			
+			this.entities.forEach(entity => {
+				if (entity && typeof entity.cleanup === 'function') {
+					entity.cleanup();
+				}
+			});
+			this.entities = [];
+
+			if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
+				(ParticleSpawner as any).cleanup();
+			}
+			
+			if (ImageManager && typeof (ImageManager as any).cleanup === 'function') {
+				(ImageManager as any).cleanup();
+			}
+
+			if (this.soundManager && typeof this.soundManager.cleanup === 'function') {
+				this.soundManager.cleanup();
+			}
+			
+			const worldSystem = this.systems.find(s => s instanceof WorldSystem) as WorldSystem;
+			if (worldSystem) {
+				if (worldSystem.wallFigureManager && typeof worldSystem.wallFigureManager.cleanup === 'function') {
+					worldSystem.wallFigureManager.cleanup();
+				}
+				if (worldSystem.obstacleManager && typeof worldSystem.obstacleManager.cleanup === 'function') {
+					worldSystem.obstacleManager.cleanup();
+				}
+				if (worldSystem.worldManager && typeof worldSystem.worldManager.cleanup === 'function') {
+					worldSystem.worldManager.cleanup();
+				}
+    
+				worldSystem.figureQueue = [];
+				worldSystem.obstacleQueue = [];
+			}
+			
+			Object.values(this.renderLayers).forEach(layer => {
+				if (layer && layer.removeChildren) {
+					layer.removeChildren();
+					if (layer.parent) {
+						layer.parent.removeChild(layer);
+					}
+				}
+			});
+			
+			if (this.visualRoot) {
+				this.visualRoot.removeChildren();
+				if (this.visualRoot.parent) {
+					this.visualRoot.parent.removeChild(this.visualRoot);
+				}
+			}
+			
+			if (this.app.stage) {
+				this.app.stage.removeChildren();
+			}
+
+			this.eventQueue = [];
+			
+			if (this.endGameOverlay && typeof this.endGameOverlay.cleanup === 'function') {
+				this.endGameOverlay.cleanup();
+			}
+
+			this.worldPool = [];
+			
+			this.hasEnded = false;
+			
+		} catch (error) {
+			console.error('Error during game cleanup:', error);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/22 09:45:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:47:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,11 @@ export class CrossCutSystem implements System {
             position,
             event.points as Point[]
         );
+    }
+
+    cleanup(): void {
+        CrossCutFactory.despawnAllCrossCuts(this.game);
+        
+        console.log('CrossCutSystem cleanup completed');
     }
 }

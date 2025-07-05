@@ -45,4 +45,25 @@ export class SoundManager {
 		this.musicPlaying = false;
 		this.startMusic();
 	}
+
+	cleanup(): void {
+		Object.keys(this.sounds).forEach(soundName => {
+			const sound = this.sounds[soundName];
+			if (sound) {
+				sound.stop();
+				sound.unload();
+			}
+		});
+		
+		if (this.music) {
+			this.music.stop();
+			this.music.unload();
+			this.music = null;
+		}
+		
+		this.musicPlaying = false;
+		this.sounds = {};
+		
+		console.log('SoundManager cleanup completed');
+	}
 }

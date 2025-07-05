@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:31:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:11:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ export abstract class BaseButton extends Entity {
         this.menu = menu;
         this.config = config;
         this.isClicked = config.isClicked || false;
-        this.isClickable == false;
+        this.isClickable = true;
     
         this.initializeContainer();
         this.initializeGraphics();

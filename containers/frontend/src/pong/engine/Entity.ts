@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 14:39:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:55:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,6 @@ export class Entity {
     }
 
     replaceComponent(type: string, newComponent: Component, instanceId: string | null = null): void {
-        console.log('Replacing component:', type, 'with instanceId:', instanceId);
-        
         if (!instanceId) {
             instanceId = newComponent.instanceId || `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
         }
@@ -160,8 +158,6 @@ export class Entity {
             if (typeComponent && typeComponent.instanceId === instanceId) {
                 this.components.delete(type);
             }
-            
-            console.log('Old component removed for key:', key);
         } else {
             console.log('Component not found for key:', key, 'Available keys:', Array.from(this.components.keys()));
         }
@@ -174,10 +170,31 @@ export class Entity {
         }
         
         newComponent.instanceId = instanceId;
-        console.log('New component added with instanceId:', instanceId);
     }
 
     private _formatKey(type: string, instanceId: string): string {
         return `${type}:${instanceId}`;
+    }
+
+    cleanup(): void {
+        const renderables = this.getAllRenderables();
+        renderables.forEach(renderable => {
+            if (renderable && renderable.parent) {
+                renderable.parent.removeChild(renderable);
+            }
+            if (renderable && typeof renderable.destroy === 'function') {
+                renderable.destroy({ children: true });
+            }
+        });
+    
+        for (const component of this.components.values()) {
+            if (component && typeof (component as any).cleanup === 'function') {
+                (component as any).cleanup();
+            }
+        }
+    
+        this.components.clear();
+        
+        console.log(`Entity ${this.id} cleanup completed`);
     }
 }

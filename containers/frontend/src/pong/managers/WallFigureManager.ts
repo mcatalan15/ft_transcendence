@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 10:55:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:59:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,22 @@ export class WallFigureManager {
         const oddNumberCount = Math.floor((max - min) / 2) + 1;
         
         return min + 2 * Math.floor(Math.random() * oddNumberCount);
+    }
+
+    cleanup(): void {
+        this.isSpawningFigures = false;
+        this.mustSpawn = false;
+        
+        if (this.game.data && this.game.data.walls) {
+            this.game.data.walls.pyramids = 0;
+            this.game.data.walls.trenches = 0;
+            this.game.data.walls.lightnings = 0;
+            this.game.data.walls.escalators = 0;
+            this.game.data.walls.hourglasses = 0;
+            this.game.data.walls.maws = 0;
+            this.game.data.walls.rakes = 0;
+        }
+        
+        console.log('WallFigureManager cleanup completed');
     }
 }

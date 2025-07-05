@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 14:57:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:01:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ import { WorldManager } from '../managers/WorldManager';
 import { FigureFactory } from '../factories/FigureFactory';
 
 import { DepthLineBehavior, FrameData, GameEvent, World } from '../utils/Types';
-import { isUI, isDepthLine } from '../utils/Guards';
+import { isUI, isDepthLine, isObstacle } from '../utils/Guards';
 import { Obstacle } from '../entities/obstacles/Obstacle';
 
 export class WorldSystem implements System {
@@ -39,9 +39,9 @@ export class WorldSystem implements System {
     figureQueue: DepthLine[] = [];
     obstacleQueue: Obstacle[] = [];
         
-    private wallFigureManager: WallFigureManager;
-    private obstacleManager: ObstacleManager;
-    private worldManager: WorldManager;
+    wallFigureManager: WallFigureManager;
+    obstacleManager: ObstacleManager;
+    worldManager: WorldManager;
 
     private spawningMode: number = 1;
     private spawningTimer: number = WorldSystem.SPAWNING_TIMER;
@@ -230,5 +230,37 @@ export class WorldSystem implements System {
                     }
                 }
             });
+    }
+
+    cleanup(): void {
+        this.figureQueue = [];
+        this.obstacleQueue = [];
+        this.depthLineCooldown = 10;
+        this.lastLineSpawnTime = 0;
+        this.spawningMode = 1;
+        this.spawningTimer = WorldSystem.SPAWNING_TIMER;
+        
+        if (this.wallFigureManager && typeof this.wallFigureManager.cleanup === 'function') {
+            this.wallFigureManager.cleanup();
+        }
+        if (this.obstacleManager && typeof this.obstacleManager.cleanup === 'function') {
+            this.obstacleManager.cleanup();
+        }
+        if (this.worldManager && typeof this.worldManager.cleanup === 'function') {
+            this.worldManager.cleanup();
+        }
+        
+        const entitiesToRemove: string[] = [];
+        for (const entity of this.game.entities) {
+            if (isDepthLine(entity) || isObstacle(entity)) {
+                entitiesToRemove.push(entity.id);
+            }
+        }
+        
+        for (const entityId of entitiesToRemove) {
+            this.game.removeEntity(entityId);
+        }
+        
+        console.log('WorldSystem cleanup completed');
     }
 }

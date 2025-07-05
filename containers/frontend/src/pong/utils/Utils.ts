@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 11:27:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 12:43:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -403,22 +403,37 @@ export function easeOut(t: number): number {
     return 1 - Math.pow(1 - t, 3);
 }
 
-// Easing function for smoother animation (ease-in-out)
 export function easeInOut(t: number): number {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-// Accelerating easing function (ease-in with stronger acceleration)
 export function easeInStrong(t: number): number {
-    return t * t * t * t; // Quartic ease-in for stronger acceleration
+    return t * t * t * t;
 }
 
-// Even stronger acceleration (quintic)
 export function easeInVeryStrong(t: number): number {
-    return t * t * t * t * t; // Quintic ease-in for very strong acceleration
+    return t * t * t * t * t;
 }
 
-// Custom exponential acceleration
 export function easeInExponential(t: number): number {
     return t === 0 ? 0 : Math.pow(2, 10 * (t - 1));
+}
+
+export function isPlayerWinner(game: PongGame): boolean {
+    const username = sessionStorage.getItem('username') || "Player 1";
+    
+    if (game.data.winner === username) {
+        return true;
+    }
+    
+    const trimmedUsername = username.trim();
+    
+    if (game.data.leftPlayer.name.trim() === trimmedUsername) {
+        return game.data.leftPlayer.result === 'win';
+    } else if (game.data.rightPlayer.name.trim() === trimmedUsername) {
+        return game.data.rightPlayer.result === 'win';
+    }
+    
+    console.warn(`Player ${username} not found in game data.`);
+    return false;
 }

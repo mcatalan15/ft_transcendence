@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:24:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:14:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,18 +194,24 @@ update(entities: Entity[], delta: FrameData): void {
 	}
 
 	cleanup(): void {
-        this.lastCutId = null;
-        this.isDespawningCrossCut = false;
-        
-        const entitiesToRemove: string[] = [];
-        for (const entity of this.menu.entities) {
-            if (isMenuLine(entity)) {
-                entitiesToRemove.push(entity.id);
-            }
-        }
-        
-        for (const entityId of entitiesToRemove) {
-            this.menu.removeEntity(entityId);
-        }
-    }
+		this.lastCutId = null;
+		this.isDespawningCrossCut = false;
+		
+		const entitiesToRemove: string[] = [];
+		for (const entity of this.menu.entities) {
+			if (isMenuLine(entity)) {
+				entitiesToRemove.push(entity.id);
+			}
+			if (entity.hasComponent('animation')) {
+				const animComponent = entity.getComponent('animation') as AnimationComponent;
+				if (animComponent?.options) {
+					animComponent.options.initialized = false;
+				}
+			}
+		}
+		
+		for (const entityId of entitiesToRemove) {
+			this.menu.removeEntity(entityId);
+		}
+	}
 }

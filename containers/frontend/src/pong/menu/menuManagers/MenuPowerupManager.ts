@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:35:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:12:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,6 +335,22 @@ export class MenuPowerupManager {
     }
 
     static cleanup(): void {
+        this.powerupEntities.forEach(powerup => {
+            if (powerup && typeof powerup.cleanup === 'function') {
+                powerup.cleanup();
+            }
+            const renderComponent = powerup.getComponent('render') as RenderComponent;
+            const textComponent = powerup.getComponent('text') as TextComponent;
+            
+            if (renderComponent?.graphic?.parent) {
+                renderComponent.graphic.parent.removeChild(renderComponent.graphic);
+            }
+            if (textComponent?.getRenderable()?.parent) {
+                textComponent.getRenderable().parent.removeChild(textComponent.getRenderable());
+            }
+        });
+        
         this.powerupEntities = [];
+        this.isAnimating = false;
     }
 }

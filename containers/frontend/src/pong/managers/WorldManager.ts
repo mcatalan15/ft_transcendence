@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 11:27:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:58:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,5 +186,35 @@ export class WorldManager {
 			target: nextWorld,
 		};
 		game.eventQueue.push(changeWorldEvent);
+	}
+
+	cleanup(): void {
+		this.worldColor = GAME_COLORS.marine;
+		this.worldTags = [];
+		this.worldNames = [];
+		
+		this.worldTags = [
+			'initialWorld',
+			'flatWorld',
+			'pyramidWorld',
+			'trenchesFlippedWorld',
+			'trenchesWorld',
+			'lightningWorld',
+			'lightningFlippedWorld',
+			'stepsWorld',
+			'hourglassWorld',
+			'mawWorld',
+			'rakesWorld',
+			'cairnsWorld',
+			'kiteWorld',
+			'honeycombWorld',
+			'bowtieWorld',
+			'snakesWorld',
+			'vipersWorld',
+		];
+		
+		this.worldNames = this.createWorldNames();
+		
+		console.log('WorldManager cleanup completed');
 	}
 }

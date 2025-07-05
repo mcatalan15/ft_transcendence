@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 10:52:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:55:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -459,7 +459,7 @@ export class ButtonManager {
 			switch (index) {
 				case (0): {
 					menu.glossaryQuitButton = quitButton;
-					x = menu.width / 2;
+					x = menu.width / 2 - 45;
 					y = 660;
 					break;
 				}
@@ -537,9 +537,9 @@ export class ButtonManager {
 		const tournamentOverlayButtonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
 				isClicked: false,
-				text: this.getButtonTexts(menu, 'taunt'),
+				text: this.getButtonTexts(menu, 'glossary'),
 				onClick: () => {
-					console.log('Tournament Taunt button clicked');
+					console.log('Tournament Glossary button clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -557,7 +557,7 @@ export class ButtonManager {
 			}
 		];
 	
-		const buttonIds: string[] = ['CHAT', 'FILTERS'];
+		const buttonIds: string[] = ['GLOSSARY', 'FILTERS'];
 	
 		tournamentOverlayButtonConfigs.forEach((config, index) => {
 			const tournamentOverlayButton = new MenuTournamentOverlayButton(
@@ -581,7 +581,7 @@ export class ButtonManager {
 			menu.menuHidden.addChild(tournamentOverlayButton.getContainer());
 	
 			if (index === 0) {
-				menu.tournamentTauntButton = tournamentOverlayButton;
+				menu.tournamentGlossaryButton = tournamentOverlayButton;
 			} else if (index === 1) {
 				menu.tournamentFiltersButton = tournamentOverlayButton;
 			}
@@ -724,7 +724,7 @@ export class ButtonManager {
 				switch (menu.language) {
 					case ('en'): return 'READY';
 					case ('es'): return 'LISTO';
-					case ('fr'): return 'PRÊT';
+					case ('fr'): return 'PRET';
 					case ('cat'): return 'LLEST';
 					default: return 'READY';
 				}

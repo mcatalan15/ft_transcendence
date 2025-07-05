@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 17:59:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:48:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -684,7 +684,7 @@ export class PhysicsSystem implements System {
 						if (entity.id.includes('Up')) {
 							this.game.data.leftPlayer.powerupsPicked++;
 						} else if (entity.id.includes('Down')) {
-							this.game.data.leftPlayer.powerupsPicked--;
+							this.game.data.leftPlayer.powerdownsPicked++;
 						} else if (entity.id.includes('ballChange')) {
 							this.game.data.leftPlayer.ballchangesPicked++;
 						}
@@ -692,7 +692,7 @@ export class PhysicsSystem implements System {
 						if (entity.id.includes('Up')) {
 							this.game.data.rightPlayer.powerupsPicked++;
 						} else if (entity.id.includes('Down')) {
-							this.game.data.rightPlayer.powerupsPicked--;
+							this.game.data.rightPlayer.powerdownsPicked++;
 						} else if (entity.id.includes('ballChange')) {
 							this.game.data.rightPlayer.ballchangesPicked++;
 						}
@@ -737,8 +737,8 @@ export class PhysicsSystem implements System {
 				this.mustResetBall = true;
 				this.ballResetTime = 200;
 
-				this.game.data.leftPlayer.goalsInFavor++;
 				this.game.data.leftPlayer.score++;
+				this.game.data.leftPlayer.goalsInFavor++;
 				this.game.data.rightPlayer.goalsAgainst++;
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
@@ -769,8 +769,8 @@ export class PhysicsSystem implements System {
 				this.mustResetBall = true;
 				this.ballResetTime = 200;
 
-				this.game.data.rightPlayer.goalsInFavor++;
 				this.game.data.rightPlayer.score++;
+				this.game.data.rightPlayer.goalsInFavor++;
 				this.game.data.leftPlayer.goalsAgainst++;
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
@@ -1010,5 +1010,26 @@ export class PhysicsSystem implements System {
 		}
 
 		return isRapid && oppositeCount >= 2;
+	}
+
+	cleanup(): void {
+		this.ballCollisionHistory.clear();
+		
+		this.mustResetBall = false;
+		this.ballResetTime = 0;
+		
+		for (const entity of this.game.entities) {
+			if (entity.hasComponent('physics')) {
+				const physics = entity.getComponent('physics') as PhysicsComponent;
+				if (physics) {
+					physics.velocityX = 0;
+					physics.velocityY = 0;
+					
+					(physics as any).isServerControlled = false;
+				}
+			}
+		}
+		
+		console.log('PhysicsSystem cleanup completed');
 	}
 }

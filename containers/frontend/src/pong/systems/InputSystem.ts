@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:52:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:01:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:48:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@ import { Paddle } from '../entities/Paddle';
 export class InputSystem implements System {
 	private game: PongGame;
 	private keysDown: Set<string> = new Set();
+	private handleKeyDown!: (e: KeyboardEvent) => void;
+	private handleKeyUp!: (e: KeyboardEvent) => void;
 
 	constructor(game: PongGame) {
 		this.game = game;
-
-		window.addEventListener('keydown', (e) => {
-			this.keysDown.add(e.key);
-		});
-
-		window.addEventListener('keyup', (e) => {
-			this.keysDown.delete(e.key);
-		});
+		
+		this.handleKeyDown = (e) => this.keysDown.add(e.key);
+		this.handleKeyUp = (e) => this.keysDown.delete(e.key);
+		
+		window.addEventListener('keydown', this.handleKeyDown);
+		window.addEventListener('keyup', this.handleKeyUp);
 	}
 
 	update(entities: Entity[]): void {
@@ -51,5 +51,25 @@ export class InputSystem implements System {
 				input.downPressed = input.keys.down.some((key: string) => this.keysDown.has(key));
 			}
 		}
+	}
+
+	cleanup(): void {
+		this.keysDown.clear();
+		
+		window.removeEventListener('keydown', this.handleKeyDown);
+		window.removeEventListener('keyup', this.handleKeyUp);
+		
+		// Reset all input states
+		for (const entity of this.game.entities) {
+			if (isPaddle(entity)) {
+				const input = entity.getComponent('input') as InputComponent;
+				if (input) {
+					input.upPressed = false;
+					input.downPressed = false;
+				}
+			}
+		}
+		
+		console.log('InputSystem cleanup completed');
 	}
 }

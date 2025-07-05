@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 14:31:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:52:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,5 +121,31 @@ export class UISystem implements System {
 			this.renderedTextComponents.add(textComponent);
 		}
 		textObject.visible = true;
+	}
+
+	cleanup(): void {
+		this.renderedTextComponents.clear();
+		
+		for (const entity of this.game.entities) {
+			if (isUI(entity)) {
+				entity.leftScore = 0;
+				entity.rightScore = 0;
+				entity.elapsedTime = 0;
+				
+				// Reset all text components
+				const textComponents = entity.getComponentsByType('text') as TextComponent[];
+				textComponents.forEach(textComponent => {
+					const textObject = textComponent.getRenderable();
+					textObject.visible = false;
+					
+					// Remove from UI layer
+					if (textObject.parent === this.uiLayer) {
+						this.uiLayer.removeChild(textObject);
+					}
+				});
+			}
+		}
+		
+		console.log('UISystem cleanup completed');
 	}
 }

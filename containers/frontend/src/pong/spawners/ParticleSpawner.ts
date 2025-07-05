@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:53:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/04 15:04:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ export class ParticleSpawner {
 		for (let i = 0; i < 5; i++) {
 			const angle = Math.random() * Math.PI * 2;
 			const speed = Math.random() * 5 + 3;
-
+	
 			const startX = x + (Math.random() * 6 - 3);
 			const startY = y + (Math.random() * 6 - 3);
-
+	
 			const alpha = Math.random() * 0.8 + 0.2;
-
+	
 			const particle = new Particle(`explosionParticle-${Date.now()}-${i}`, 'foreground', startX, startY, {
 				type: 'square',
 				velocityX: Math.cos(angle) * speed,
@@ -73,10 +73,23 @@ export class ParticleSpawner {
 				alphaDecay: alpha / 50,
 				fadeOut: true,
 			});
-
+	
 			game.addEntity(particle);
+			
 			const particleRender = particle.getComponent('render') as RenderComponent;
-			game.renderLayers.foreground.addChild(particleRender.graphic);
+			if (particleRender && particleRender.graphic) {
+				particleRender.graphic.x = startX;
+				particleRender.graphic.y = startY;
+				particleRender.graphic.alpha = 0;
+				
+				game.renderLayers.foreground.addChild(particleRender.graphic);
+
+				requestAnimationFrame(() => {
+					if (particleRender.graphic) {
+						particleRender.graphic.alpha = alpha;
+					}
+				});
+			}
 		}
 	}
 
@@ -575,5 +588,45 @@ export class ParticleSpawner {
 			const particleRender = particle.getComponent('render') as RenderComponent;
 			game.renderLayers.foreground.addChild(particleRender.graphic);
 		}
+	}
+
+	static cleanup(game?: PongGame): void {
+		this.ambientDustConfig = {
+			maxParticles: 20,
+			spawnRate: 2,
+			color: GAME_COLORS.white,
+			minSize: 2,
+			maxSize: 4,
+			minLifetime: 80,
+			maxLifetime: 120,
+			minAlpha: 0.1,
+			maxAlpha: 0.3,
+			driftSpeed: 0.5,
+			minRotationSpeed: 0.005,
+			maxRotationSpeed: 0.02
+		};
+		
+		this.lastAmbientSpawn = 0;
+		this.ambientParticleCount = 0;
+		
+		if (game) {
+			const particlesToRemove: string[] = [];
+			for (const entity of game.entities) {
+				if (entity.id.includes('particle') || 
+					entity.id.includes('ambientDust') || 
+					entity.id.includes('firework') || 
+					entity.id.includes('explosion') || 
+					entity.id.includes('burst') || 
+					entity.id.includes('paddle')) {
+					particlesToRemove.push(entity.id);
+				}
+			}
+			
+			for (const entityId of particlesToRemove) {
+				game.removeEntity(entityId);
+			}
+		}
+		
+		console.log('ParticleSpawner cleanup completed');
 	}
 }
