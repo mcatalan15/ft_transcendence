@@ -18,18 +18,33 @@ async function startServer() {
     process.exit(1);
   }
   
+  app.decorate('redisService', redisService);
+
   const gameManager = new GameManager();
   const { wss, gameWss } = setupWebSocketServers();
   
   onlineTracker.start();
   app.addHook('preHandler', trackUserActivity);
+
+  app.decorate('notifyMatchmakingSuccess', (gameId, hostId, guestId) => {
+    if (chatWss && chatWss.notifyMatchmakingSuccess) {
+      chatWss.notifyMatchmakingSuccess(gameId, hostId, guestId);
+    }
+  });
+
   await app.listen({ host: serverConfig.ADDRESS, port: serverConfig.PORT });
   const nodeServer = app.server;
   
   handleUpgrade(wss, gameWss, nodeServer);
-  setupChatWebSocket(wss, redisService, gameManager);
+  const chatWss = setupChatWebSocket(wss, redisService, gameManager);
   setupGameWebSocket(gameWss, redisService, gameManager);
-  
+
+  // Set up periodic cleanup of expired games
+  setInterval(() => {
+    redisService.cleanupExpiredGames();
+  }, 60000);
+
+
   ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
     process.on(signal, () => serverConfig.gracefulShutdown(app, db, onlineTracker, signal));
   });

@@ -39,6 +39,69 @@ class RedisService {
     }
   }
 
+  async findWaitingGame(gameType) {
+    try {
+      const gameKeys = await this.publisher.keys('game:*');
+      
+      for (const key of gameKeys) {
+        const gameData = await this.publisher.get(key);
+        if (gameData) {
+          const parsedGame = JSON.parse(gameData);
+          
+          if (parsedGame.status === 'waiting' && 
+              parsedGame.gameType === gameType && 
+              !parsedGame.guestId) {
+            return parsedGame;
+          }
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error finding waiting game:', error);
+      return null;
+    }
+  }
+
+  async setGameAsActive(gameId, hostId, guestId) {
+    try {
+      const gameData = await this.getGame(gameId);
+      if (gameData) {
+        gameData.guestId = guestId;
+        gameData.status = 'active';
+        gameData.matchedAt = new Date().toISOString();
+        await this.updateGame(gameId, gameData);
+        return gameData;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error setting game as active:', error);
+      return null;
+    }
+  }
+
+  async cleanupExpiredGames() {
+    try {
+      const cutoffTime = Date.now() - (5 * 60 * 1000); // 5 minutes
+      const gameKeys = await this.publisher.keys('game:*');
+      
+      for (const key of gameKeys) {
+        const gameData = await this.publisher.get(key);
+        if (gameData) {
+          const parsedGame = JSON.parse(gameData);
+          
+          if (parsedGame.status === 'waiting' && 
+              new Date(parsedGame.createdAt).getTime() < cutoffTime) {
+            await this.publisher.del(key);
+            console.log(`Cleaned up expired game: ${parsedGame.gameId}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning up expired games:', error);
+    }
+  }
+
   async getGame(gameId) {
     const gameData = await this.publisher.get(`game:${gameId}`);
     return gameData ? JSON.parse(gameData) : null;

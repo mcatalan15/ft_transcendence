@@ -6,6 +6,7 @@ module.exports = async function (fastify) {
 	fastify.register(require('./profile/profileRoutesIndex'));
 	fastify.register(require('./games/gameRoutesIndex'));
 	fastify.register(require('./friends/friendsRoutesIndex'));
-
+	fastify.register(require('./matchmaking/matchmakingRoutesIndex'));
+	
 	// Add future routes here
 };

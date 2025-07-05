@@ -20,6 +20,8 @@ function setupChatWebSocket(wss, redisService, gameManager) {
           username = data.username;
           connectedUsers.set(ws, { userId, username, connectedAt: new Date() });
 
+          ws.username = username;
+
           // Broadcast user joined
           const joinMessage = {
             type: 'server',
@@ -128,6 +130,43 @@ function setupChatWebSocket(wss, redisService, gameManager) {
       console.error('Error broadcasting message:', error);
     }
   });
+
+  wss.notifyMatchmakingSuccess = (gameId, hostId, guestId) => {
+    console.log(`Notifying matchmaking success: ${hostId} vs ${guestId} in game ${gameId}`);
+    
+    // Find both players' WebSocket connections
+    let hostWs = null;
+    let guestWs = null;
+    
+    for (const [ws, userInfo] of connectedUsers) {
+      if (userInfo.username === hostId) {
+        hostWs = ws;
+      }
+      if (userInfo.username === guestId) {
+        guestWs = ws;
+      }
+    }
+    
+    // Notify host
+    if (hostWs && hostWs.readyState === 1) { // WebSocket.OPEN
+      hostWs.send(JSON.stringify({
+        type: 'matchmaking_success',
+        gameId: gameId,
+        opponent: guestId,
+        role: 'host'
+      }));
+    }
+    
+    // Notify guest
+    if (guestWs && guestWs.readyState === 1) { // WebSocket.OPEN
+      guestWs.send(JSON.stringify({
+        type: 'matchmaking_success',
+        gameId: gameId,
+        opponent: hostId,
+        role: 'guest'
+      }));
+    }
+  }
 
   // Helper function for private messages
   async function handlePrivateMessage(message, targetUser, wss, redisService, senderWs) {
