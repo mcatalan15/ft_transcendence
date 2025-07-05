@@ -289,6 +289,7 @@ export class Menu{
 
 	async init(): Promise<void> {
 		console.log(this.language);
+		console.log(this.config.filters);
 
 		await this.clearConflictingAssets();
 		await this.loadImages();
@@ -320,6 +321,7 @@ export class Menu{
 				system.update(this.entities, frameData);
 			});
 		});
+		this.handleFiltersClick
 	}
 
 	createTitle(){
@@ -412,6 +414,8 @@ export class Menu{
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();
+			// Deactivate filters by default
+			buttonSystem.handleFiltersClicked();
         }
 	}
 

@@ -118,7 +118,7 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
 	  mode: 'online',
 	  variant: '1v1',
 	  classicMode: true,
-	  filters: true,
+	  filters: false,
 	  players: [
 		{
 		  id: localStorage.getItem('playerId') || 'player1',
