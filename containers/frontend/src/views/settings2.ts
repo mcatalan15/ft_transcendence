@@ -6,6 +6,7 @@ import { navigate } from '../utils/router';
 import { changeNickname, changePassword } from '../utils/profile/profileUtils';
 import { HeadersComponent } from '../components/profileComponents/pongBoxComponents/headersComponent';
 import { PongBoxComponent } from '../components/profileComponents/pongBoxComponents/pongBox';
+import { getApiUrl } from '../config/api';
 
 function createButton(color: string, text: string, action: () => void) {
   let btn = document.createElement('button');
@@ -44,7 +45,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
 
   // Datos de usuario
   const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-  const avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+  const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
   const username = sessionStorage.getItem('username') || '';
   const lang = i18n.language || 'en';
 
@@ -114,13 +115,13 @@ export async function showSettings(container: HTMLElement): Promise<void> {
     const formData = new FormData();
     formData.append('avatar', file);
     try {
-      const response = await fetch('/api/profile/avatar', {
+      const response = await fetch(getApiUrl('/profile/avatar'), {
         method: 'POST',
         credentials: 'include',
         body: formData
       });
       if (response.ok) {
-        avatarImg.src = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+        avatarImg.src = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
         showSuccessMessage('Avatar updated successfully!');
       } else {
         showErrorMessage('Failed to update avatar');

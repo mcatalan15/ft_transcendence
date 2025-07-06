@@ -1,3 +1,5 @@
+import { getApiUrl } from '../../config/api';
+
 export interface GameHistory {
   id_game: number;
   created_at: string;
@@ -17,7 +19,7 @@ export async function loadGames(
   currentPage: number,
   gamesPerPage: number
 ): Promise<{ games: GameHistory[]; totalGames: number }> {
-  const response = await fetch(`/api/games/history?page=${currentPage}&limit=${gamesPerPage}`, {
+  const response = await fetch(getApiUrl(`/games/history?page=${currentPage}&limit=${gamesPerPage}`), {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',

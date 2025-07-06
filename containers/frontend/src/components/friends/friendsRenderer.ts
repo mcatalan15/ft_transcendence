@@ -6,6 +6,7 @@ import { HeadersComponent } from "../profileComponents/pongBoxComponents/headers
 import { CONFIG } from "../../config/settings.config";
 import { setResizeHandler } from "../../views/friends";
 import { FriendsContentRenderer } from "./friendsContentRenderer";
+import { getApiUrl } from "../../config/api";
 
 export class FriendsRenderer {
   private container: HTMLElement;
@@ -60,7 +61,7 @@ export class FriendsRenderer {
   private createPongBox(): HTMLElement {
     const username = sessionStorage.getItem('username') || '';
     const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-    const avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+    const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
 
     const contentRenderer = new FriendsContentRenderer(this.container);
     const friendsContent = contentRenderer.render();

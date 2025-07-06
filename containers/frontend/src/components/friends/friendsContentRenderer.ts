@@ -1,5 +1,6 @@
 import { navigate } from '../../utils/router';
 import i18n from '../../i18n';
+import { getApiUrl } from '../../config/api';
 
 interface Friend {
   id_user: string;
@@ -114,7 +115,7 @@ export class FriendsContentRenderer {
 
   private async loadAndRenderFriends(): Promise<void> {
     try {
-      const response = await fetch('/api/friends', {
+      const response = await fetch(getApiUrl('/friends'), {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
@@ -183,7 +184,7 @@ export class FriendsContentRenderer {
     });
 
     const friendAvatar = document.createElement('img');
-    friendAvatar.src = `/api/profile/avatar/${friend.id_user}?t=${Date.now()}`;
+    friendAvatar.src = `${getApiUrl('/profile/avatar')}/${friend.id_user}?t=${Date.now()}`;
     friendAvatar.alt = friend.username;
     friendAvatar.className = 'w-16 h-16 md:w-24 md:h-24 object-cover shadow transition duration-200 hover:scale-105';
     friendAvatar.style.border = '3px solid #FFFBEB';

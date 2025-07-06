@@ -1,7 +1,9 @@
+import { getApiUrl } from "../config/api";
+
 // Add this function at the top of your profile.ts file, after the imports
 async function fetchUserStats(username?: string): Promise<any> {
     try {
-        const statsEndpoint = username ? `/api/stats/${username}` : '/api/stats';
+        const statsEndpoint = username ? `${getApiUrl('/stats')}/${username}` : getApiUrl('/stats');
         const response = await fetch(statsEndpoint, {
             credentials: 'include',
             headers: {
@@ -81,8 +83,8 @@ middleCol.appendChild(stat4); // Add the new losses stat
     }
   
     nicknameSpan.textContent = username;
-    avatar.src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
-    
+    avatar.src = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
+
     if (!isOwnProfile) {
         updateOnlineStatus(data.userId);
         

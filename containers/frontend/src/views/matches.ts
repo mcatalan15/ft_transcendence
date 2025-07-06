@@ -4,6 +4,7 @@ import { LanguageSelector } from '../components/generalComponents/languageSelect
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
+import { getApiUrl } from '../config/api';
 
 interface GameHistory {
   id_game: number;
@@ -473,7 +474,7 @@ export async function showHistory(container: HTMLElement): Promise<void> {
     if (tableBody) tableBody.innerHTML = '';
 
     try {
-      const response = await fetch(`/api/games/history?page=${currentPage}&limit=${gamesPerPage}`, {
+      const response = await fetch(`${getApiUrl('games/history')}?page=${currentPage}&limit=${gamesPerPage}`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'

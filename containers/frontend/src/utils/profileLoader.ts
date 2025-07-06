@@ -2,6 +2,7 @@ import { navigate } from './router';
 import { MessageManager } from './messageManager';
 import { AvatarUploader } from '../components/avatarUploader';
 import { UserData } from '../types/settings.types';
+import { getApiUrl } from '../config/api';
 
 export class ProfileLoader {
   static async loadUserProfile(pongBoxElement: HTMLElement): Promise<void> {
@@ -17,7 +18,7 @@ export class ProfileLoader {
   }
 
   private static async fetchUserProfile(): Promise<Response> {
-    return fetch('/api/profile', {
+    return fetch(getApiUrl('/profile'), {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
     });

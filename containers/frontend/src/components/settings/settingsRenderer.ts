@@ -6,6 +6,7 @@ import { HeadersComponent } from '../profileComponents/pongBoxComponents/headers
 import { CONFIG } from '../../config/settings.config';
 import { setResizeHandler } from '../../views/settings';
 import { SettingsFormsRenderer } from './settingsFormsRendered';
+import { getApiUrl } from '../../config/api';
 
 export class SettingsRenderer {
   private container: HTMLElement;
@@ -64,7 +65,7 @@ export class SettingsRenderer {
   private createPongBox(): HTMLElement {
     const username = sessionStorage.getItem('username') || '';
     const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-    const avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+    const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
 
     const formsRenderer = new SettingsFormsRenderer(this.container, username, userId);
     const formsContent = formsRenderer.render();

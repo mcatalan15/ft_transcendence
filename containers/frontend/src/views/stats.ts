@@ -45,7 +45,7 @@ export function showStats(container: HTMLElement) {
           if (nicknameEl)
             nicknameEl.textContent = data.username;
           if (avatarImg && data.userId)
-            (avatarImg as HTMLImageElement).src = `/api/profile/avatar/${data.userId}?t=${Date.now()}`;
+            (avatarImg as HTMLImageElement).src = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
         })
         .catch(error => {
           navigate('/home');

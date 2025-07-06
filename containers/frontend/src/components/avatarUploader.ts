@@ -1,6 +1,7 @@
 import { CONFIG } from '../config/settings.config';
 import { AvatarElementBuilder } from './avatarElementBuilder';
 import { AvatarFileHandler } from './avatarFileHandler';
+import { getApiUrl } from '../config/api';
 
 export class AvatarUploader {
   private pongBoxElement: HTMLElement;
@@ -44,7 +45,7 @@ export class AvatarUploader {
 
   // Set avatar image source with cache busting
   private setAvatarSource(avatarImg: HTMLImageElement): void {
-    avatarImg.src = `/api/profile/avatar/${this.userId}?t=${Date.now()}`;
+    avatarImg.src = `${getApiUrl('/profile/avatar')}/${this.userId}?t=${Date.now()}`;
   }
 
   // Setup file upload handler with callbacks

@@ -2,6 +2,7 @@ import { SPINNER_SVG, CAMERA_SVG } from '../config/settings.config';
 import { FileValidator } from '../utils/fileValidator';
 import { MessageManager } from '../utils/messageManager';
 import { ApiError } from '../types/settings.types';
+import { getApiUrl } from '../config/api';
 
 export class AvatarFileHandler {
   private userId: string;
@@ -73,7 +74,7 @@ export class AvatarFileHandler {
 
   // Send HTTP request to upload avatar
   private async sendAvatarRequest(formData: FormData): Promise<Response> {
-    return fetch('/api/profile/avatar', {
+    return fetch(getApiUrl('/profile/avatar'), {
       method: 'POST',
       credentials: 'include',
       body: formData

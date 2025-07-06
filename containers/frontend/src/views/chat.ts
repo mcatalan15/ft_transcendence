@@ -1,6 +1,6 @@
 import i18n from '../i18n';
-import { HeaderTest } from '../components/testmenu';
-import { LanguageSelector } from '../components/languageSelector';
+import { HeaderTest } from '../components/generalComponents/testmenu';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
 
@@ -52,7 +52,7 @@ export function showChat(container: HTMLElement): void {
   addBlockedUserStyles();
 
   // Header
-  const headerWrapper = new Header().getElement();
+  const headerWrapper = new HeaderTest().getElement();
   headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
   container.appendChild(headerWrapper);
 
