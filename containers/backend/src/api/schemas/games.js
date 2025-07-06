@@ -4,6 +4,7 @@ const saveGameSchema = {
     body: {
         type: 'object',
         required: [
+            // 'game_id',
             'player1_id',
             'player2_id',
             'player1_name',
@@ -19,6 +20,7 @@ const saveGameSchema = {
             'contract_address'
         ],
         properties: {
+            // game_id: { type: 'string', description: 'Unique identifier for the game' },
             player1_id: { type: 'number', description: 'ID of player 1' },
             player2_id: { type: 'number', description: 'ID of player 2' },
             winner_id: { type: 'number', description: 'ID of the winning player, 0 for tie' },

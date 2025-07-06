@@ -1,7 +1,6 @@
 import views from './viewsRoutesLoader';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
-import { showHistory } from '../views/matches';
 
 let app: HTMLElement | null = null;
 
@@ -59,7 +58,7 @@ function renderRoute(path: string) {
 				navigate('/');
 				return;
 			}
-			showHistory(app);
+			views.showHistory(app);
 			break;
 
 		case '/profile':
@@ -125,6 +124,14 @@ function renderRoute(path: string) {
 			}
 			views.showStats(app);
 			return;
+		
+		case '/404':
+			if (!isUserAuthenticated()) {
+				navigate('/');
+				return;
+			}
+			views.show404(app);
+			return;
 
 		default:
 
@@ -151,10 +158,10 @@ function renderRoute(path: string) {
 					views.showPong(app);
 				return;
 			}
-
-			app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
+			navigate('/404');
+			/*app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
 	  <span style="display: block; height: 20px;"></span>
 	  <button onclick="navigate('/')">Back home</button>
-	  `;
+	  `;*/
 	}
 }

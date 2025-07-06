@@ -1,6 +1,6 @@
 import i18n from '../i18n';
 import { Header } from '../components/header';
-import { LanguageSelector } from '../components/languageSelector';
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { Menu } from '../components/menu';
 import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
@@ -280,6 +280,12 @@ export async function showHistory(container: HTMLElement): Promise<void> {
   table.appendChild(tableBody);
   tableSection.appendChild(table);
 
+  // Pagination
+  const paginationDiv = document.createElement('div');
+  paginationDiv.id = 'pagination';
+  paginationDiv.className = 'flex justify-center items-center gap-2 mt-6 mb-2';
+  tableSection.appendChild(paginationDiv);
+
   // Loading state
   const loadingDiv = document.createElement('div');
   loadingDiv.id = 'loadingState';
@@ -305,13 +311,156 @@ export async function showHistory(container: HTMLElement): Promise<void> {
   `;
   tableSection.appendChild(emptyDiv);
 
+
   historyBox.appendChild(headerSection);
   historyBox.appendChild(tableSection);
+
+  // Pagination section
+  const paginationSection = document.createElement('div');
+  paginationSection.className = 'flex justify-center items-center gap-2 py-4 bg-neutral-900 border-t border-amber-50/20';
+  paginationSection.id = 'paginationSection';
+  historyBox.appendChild(paginationSection);
+
   contentWrapper.appendChild(historyBox);
   container.appendChild(contentWrapper);
 
   // Load games function
+  function renderPagination() {
+    const paginationSection = document.getElementById('paginationSection');
+    if (!paginationSection) return;
+    paginationSection.innerHTML = '';
+
+    // Classic pagination: Anterior, 1 2 3 ..., Siguiente
+    const totalPages = Math.ceil(totalGames / gamesPerPage);
+    if (totalPages <= 1) return; // No need for pagination
+
+    // Anterior button
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = i18n.t('previous', { ns: 'history' }) || 'Anterior';
+    prevBtn.className = 'px-3 py-1 rounded border border-cyan-400 text-cyan-400 bg-cyan-950 hover:brightness-150 disabled:opacity-50 disabled:cursor-not-allowed';
+    prevBtn.disabled = currentPage === 0;
+    prevBtn.onclick = () => {
+      if (currentPage > 0) {
+        currentPage--;
+        loadGames();
+      }
+    };
+    paginationSection.appendChild(prevBtn);
+
+    // Page numbers
+    let startPage = Math.max(0, currentPage - 1);
+    let endPage = Math.min(totalPages - 1, currentPage + 1);
+    if (currentPage === 0) endPage = Math.min(2, totalPages - 1);
+    if (currentPage === totalPages - 1) startPage = Math.max(0, totalPages - 3);
+
+    if (startPage > 0) {
+      const firstPageBtn = document.createElement('button');
+      firstPageBtn.textContent = '1';
+      firstPageBtn.className = 'px-2 py-1 rounded border border-amber-50 text-amber-50 bg-neutral-800 mx-1' + (currentPage === 0 ? ' font-bold bg-amber-900' : '');
+      firstPageBtn.onclick = () => {
+        currentPage = 0;
+        loadGames();
+      };
+      paginationSection.appendChild(firstPageBtn);
+      if (startPage > 1) {
+        const dots = document.createElement('span');
+        dots.textContent = '...';
+        dots.className = 'text-amber-50 px-1';
+        paginationSection.appendChild(dots);
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      const pageBtn = document.createElement('button');
+      pageBtn.textContent = (i + 1).toString();
+      pageBtn.className = 'px-2 py-1 rounded border border-amber-50 text-amber-50 bg-neutral-800 mx-1' + (i === currentPage ? ' font-bold bg-amber-900' : '');
+      pageBtn.disabled = i === currentPage;
+      pageBtn.onclick = () => {
+        currentPage = i;
+        loadGames();
+      };
+      paginationSection.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPages - 1) {
+      if (endPage < totalPages - 2) {
+        const dots = document.createElement('span');
+        dots.textContent = '...';
+        dots.className = 'text-amber-50 px-1';
+        paginationSection.appendChild(dots);
+      }
+      const lastPageBtn = document.createElement('button');
+      lastPageBtn.textContent = totalPages.toString();
+      lastPageBtn.className = 'px-2 py-1 rounded border border-amber-50 text-amber-50 bg-neutral-800 mx-1' + (currentPage === totalPages - 1 ? ' font-bold bg-amber-900' : '');
+      lastPageBtn.onclick = () => {
+        currentPage = totalPages - 1;
+        loadGames();
+      };
+      paginationSection.appendChild(lastPageBtn);
+    }
+
+    // Siguiente button
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = i18n.t('next', { ns: 'history' }) || 'Siguiente';
+    nextBtn.className = 'px-3 py-1 rounded border border-cyan-400 text-cyan-400 bg-cyan-950 hover:brightness-150 disabled:opacity-50 disabled:cursor-not-allowed';
+    nextBtn.disabled = currentPage >= totalPages - 1;
+    nextBtn.onclick = () => {
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        loadGames();
+      }
+    };
+    paginationSection.appendChild(nextBtn);
+  }
+
   async function loadGames() {
+    // --- PAGINATION ---
+    if (paginationDiv) {
+      paginationDiv.innerHTML = '';
+      const totalPages = Math.ceil(totalGames / gamesPerPage);
+      if (totalPages > 1) {
+        // Botón anterior
+        const prev = document.createElement('button');
+        prev.textContent = 'Anterior';
+        prev.className = 'px-3 py-1 rounded bg-neutral-800 text-amber-50 border border-amber-50 hover:bg-amber-900 disabled:opacity-50';
+        prev.disabled = currentPage === 0;
+        prev.onclick = () => { if (currentPage > 0) { currentPage--; loadGames(); } };
+        paginationDiv.appendChild(prev);
+
+        // Números de página
+        let start = Math.max(0, currentPage - 1);
+        let end = Math.min(totalPages, currentPage + 2);
+        if (currentPage === 0) end = Math.min(3, totalPages);
+        if (currentPage === totalPages - 1) start = Math.max(0, totalPages - 3);
+        for (let i = start; i < end; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.textContent = (i + 1).toString();
+          pageBtn.className = 'px-3 py-1 rounded border mx-1 ' + (i === currentPage ? 'bg-amber-400 text-neutral-900 font-bold border-amber-400' : 'bg-neutral-800 text-amber-50 border-amber-50 hover:bg-amber-900');
+          pageBtn.disabled = i === currentPage;
+          pageBtn.onclick = () => { currentPage = i; loadGames(); };
+          paginationDiv.appendChild(pageBtn);
+        }
+        if (end < totalPages) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.className = 'mx-1 text-amber-200';
+          paginationDiv.appendChild(dots);
+          // Última página
+          const lastBtn = document.createElement('button');
+          lastBtn.textContent = totalPages.toString();
+          lastBtn.className = 'px-3 py-1 rounded border mx-1 bg-neutral-800 text-amber-50 border-amber-50 hover:bg-amber-900';
+          lastBtn.onclick = () => { currentPage = totalPages - 1; loadGames(); };
+          paginationDiv.appendChild(lastBtn);
+        }
+        // Botón siguiente
+        const next = document.createElement('button');
+        next.textContent = 'Siguiente';
+        next.className = 'px-3 py-1 rounded bg-neutral-800 text-amber-50 border border-amber-50 hover:bg-amber-900 disabled:opacity-50';
+        next.disabled = currentPage === totalPages - 1;
+        next.onclick = () => { if (currentPage < totalPages - 1) { currentPage++; loadGames(); } };
+        paginationDiv.appendChild(next);
+      }
+    }
     const loadingState = document.getElementById('loadingState');
     const emptyState = document.getElementById('emptyState');
     const tableBody = document.getElementById('gamesTableBody');
@@ -378,6 +527,9 @@ export async function showHistory(container: HTMLElement): Promise<void> {
           nextBtn.className += ' opacity-50 cursor-not-allowed';
         }
       }
+
+      // Render pagination after loading
+      renderPagination();
 
     } catch (error) {
       console.error('Error loading games:', error);

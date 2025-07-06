@@ -40,7 +40,7 @@ export interface Preconfiguration {
 }
 
 export interface GameData {
-	gameId: string;
+	// gameId: string;
 	//!change
 	config: GameConfig;
 	createdAt: Date | string | null;

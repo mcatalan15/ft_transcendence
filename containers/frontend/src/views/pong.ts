@@ -4,41 +4,41 @@ import { initGame } from '../pong/pong';
 import { PongGame } from '../pong/engine/Game';
 import { GameConfig } from '../pong/utils/GameConfig';
 import { PongNetworkManager } from '../pong/network/PongNetworkManager';
-import { getWsUrl } from '../config/api';
+import { HeaderTest } from '../components/generalComponents/testmenu'
+import { LanguageSelector } from '../components/generalComponents/languageSelector';
+import i18n from '../i18n';
 
 export function showPong(container: HTMLElement): void {
-  // Clear the container
-  container.innerHTML = '';
-  
-  // Clean up any existing game instances first
-  if ((window as any).currentPongGame) {
-    (window as any).currentPongGame.destroy?.();
-    (window as any).currentPongGame = null;
-  }
-  if ((window as any).currentNetworkManager) {
-    (window as any).currentNetworkManager.disconnect?.();
-    (window as any).currentNetworkManager = null;
-  }
-  
-  // Check URL parameters to determine game mode
-  const urlParams = new URLSearchParams(window.location.search);
-  const gameId = urlParams.get('gameId');
-  const mode = urlParams.get('mode');
-  const opponent = urlParams.get('opponent');
-  
-  console.log('URL params:', { gameId, mode, opponent });
-  
-  if (mode === 'online' && gameId && opponent) {
-    console.log('Initializing ONLINE game');
-    // Initialize online multiplayer game ONLY
-    initOnlineGame(container, gameId, opponent);
-    return;
-  } else {
-    console.log('Initializing LOCAL game with menu');
-    // Initialize local game (existing logic) ONLY
-    initGame(container);
-    return;
-  }
+  i18n
+    .loadNamespaces('history')
+    .then(() => i18n.changeLanguage(i18n.language))
+    .then(() => {
+    // Clear the container
+    container.innerHTML = '';
+    
+    // Header and Menu
+    const headerWrapper = new HeaderTest().getElement();
+    headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
+    container.appendChild(headerWrapper);
+
+    // Language Selector
+    const langSelector = new LanguageSelector(() => showPong(container)).getElement();
+    container.appendChild(langSelector);
+
+    // Check URL parameters to determine game mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('gameId');
+    const mode = urlParams.get('mode');
+    const opponent = urlParams.get('opponent');
+    
+    if (mode === 'online' && gameId) {
+      // Initialize online multiplayer game
+      initOnlineGame(container, gameId, opponent);
+    } else {
+      // Initialize local game (existing logic)
+      initGame(container);
+    }
+  });
 }
 
 async function initOnlineGame(container: HTMLElement, gameId: string, opponent: string | null) {

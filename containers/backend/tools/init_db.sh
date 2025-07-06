@@ -25,14 +25,13 @@ if [ ! -f "$DB_PATH" ]; then
 		password TEXT,
 		provider TEXT NOT NULL DEFAULT 'local',
 		twoFactorSecret TEXT,
-		twoFactorEnabled BOOLEAN DEFAULT 1 CHECK (twoFactorEnabled IN (0, 1)),
+		twoFactorEnabled BOOLEAN DEFAULT 0 CHECK (twoFactorEnabled IN (0, 1)),
 		avatar_filename TEXT DEFAULT NULL,
 		avatar_type TEXT DEFAULT 'default' -- 'default', 'uploaded', 'generated'
 	);
 
 	CREATE TABLE IF NOT EXISTS games (
 		id_game INTEGER PRIMARY KEY AUTOINCREMENT,
-		game_id TEXT UNIQUE NOT NULL, -- From GameData.gameId
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		ended_at TIMESTAMP,
 		is_tournament BOOLEAN DEFAULT 0,

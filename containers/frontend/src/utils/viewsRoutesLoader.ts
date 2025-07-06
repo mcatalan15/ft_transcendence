@@ -11,6 +11,8 @@ import { showLobby } from '../views/lobby';
 import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
 import { showStats } from '../views/stats';
+import { showHistory } from '../views/history';
+import { show404 } from '../views/404';
 
 const viewsRoutes = {
 	showLanding,
@@ -25,7 +27,9 @@ const viewsRoutes = {
 	showLobby,
 	showAuth,
 	showSettings,
-	showStats
+	showStats,
+	showHistory,
+	show404,
 };
 
 export default viewsRoutes;

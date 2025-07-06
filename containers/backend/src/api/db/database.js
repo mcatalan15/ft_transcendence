@@ -225,6 +225,7 @@ async function getUserByUsername(username) {
 }
 
 async function saveGameToDatabase(
+    // game_id,
     player1_id,
     player2_id,
     winner_id,
@@ -260,6 +261,7 @@ async function saveGameToDatabase(
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const params = [
+            // game_id,
             player1_id,
             player2_id,
             winner_id,

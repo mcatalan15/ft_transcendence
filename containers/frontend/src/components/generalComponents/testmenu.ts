@@ -1,4 +1,4 @@
-import { navigate } from '../utils/router';
+import { navigate } from '../../utils/router';
 
 export class HeaderTest {
     private element: HTMLElement;
@@ -14,7 +14,7 @@ export class HeaderTest {
         <img src="/logo/pong.png" class="h-8" alt="Pong Logo">
     </button>
     <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-        <button type="button" class="text-amber-50 bg-neutral-800 hover:bg-neutral-700 font-medium rounded-lg text-sm px-4 py-2 text-center" data-route="/logout">Log out</button>
+        <button type="button" class="gaming-logout-btn" data-route="/logout">LOG OUT</button>
     </div>
     <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
       <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-neutral-900 rounded-lg bg-neutral-900 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-900 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
@@ -40,10 +40,37 @@ export class HeaderTest {
 `;
 
         this.setupEventListeners();
+        this.setupGamingLogoutButton();
+    }
+
+    private setupGamingLogoutButton(): void {
+        const logoutBtn = this.element.querySelector('.gaming-logout-btn') as HTMLButtonElement;
+        if (!logoutBtn) return;
+
+        logoutBtn.style.backgroundColor = 'transparent';
+        logoutBtn.style.border = '2px solid #FFFBEB';
+        logoutBtn.style.color = '#FFFBEB';
+        logoutBtn.style.fontFamily = '"Roboto Mono", monospace';
+        logoutBtn.style.fontWeight = 'bold';
+        logoutBtn.style.fontSize = '12px';
+        logoutBtn.style.textTransform = 'uppercase';
+        logoutBtn.style.padding = '8px 16px';
+        logoutBtn.style.borderRadius = '0px';
+        logoutBtn.style.cursor = 'pointer';
+        logoutBtn.style.transition = 'all 0.3s ease';
+
+        logoutBtn.addEventListener('mouseenter', () => {
+            logoutBtn.style.backgroundColor = '#FFFBEB';
+            logoutBtn.style.color = '#171717';
+        });
+
+        logoutBtn.addEventListener('mouseleave', () => {
+            logoutBtn.style.backgroundColor = 'transparent';
+            logoutBtn.style.color = '#FFFBEB';
+        });
     }
 
     private setupEventListeners(): void {
-        // Handle all navigation clicks with event delegation
         this.element.addEventListener('click', (event) => {
             const target = event.target as HTMLElement;
             const navLink = target.closest('[data-route]') as HTMLElement;
@@ -52,20 +79,18 @@ export class HeaderTest {
                 event.preventDefault();
                 const route = navLink.dataset.route;
                 this.updateActiveState(route);
-                navigate(route); // Use your existing router
+                navigate(route);
             }
         });
     }
 
     private updateActiveState(currentRoute: string): void {
-        // Remove active state from all nav links
         const navLinks = this.element.querySelectorAll('.nav-link[data-route]');
         navLinks.forEach(link => {
             link.removeAttribute('aria-current');
             link.classList.remove('active');
         });
 
-        // Add active state to current route (excluding logout)
         if (currentRoute !== '/logout') {
             const activeLink = this.element.querySelector(`[data-route="${currentRoute}"]`);
             if (activeLink && activeLink.classList.contains('nav-link')) {

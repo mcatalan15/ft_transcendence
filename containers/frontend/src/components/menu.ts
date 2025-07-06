@@ -1,4 +1,4 @@
-import { LanguageSelector } from './languageSelector';
+import { LanguageSelector } from './generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 
 export class Menu {
