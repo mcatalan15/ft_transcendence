@@ -1,9 +1,10 @@
+import { AvatarComponent } from './avatarComponent';
 type PongBoxOptions = {
   avatarUrl: string;
   nickname: string;
   leftExtraContent?: HTMLElement;
   mainContent: HTMLElement;
-  onArrowClick?: () => void; // Nueva opción para la flecha
+  //onArrowClick?: () => void;
 };
   
 export class PongBoxComponent {
@@ -19,9 +20,7 @@ export class PongBoxComponent {
       relative
     `.replace(/\s+/g, ' ').trim();
 
-    // Flecha a perfil (opcional)
-    // Se insertará después del nickname, pegada a la esquina derecha (no absolute)
-    let arrowBtn: HTMLButtonElement | null = null;
+    /*let arrowBtn: HTMLButtonElement | null = null;
     let arrowRow: HTMLDivElement | null = null;
     if (options.onArrowClick) {
       arrowBtn = document.createElement('button');
@@ -39,42 +38,29 @@ export class PongBoxComponent {
       arrowRow = document.createElement('div');
       arrowRow.className = 'flex w-full justify-start mb-2';
       arrowRow.appendChild(arrowBtn);
-    }
+    }*/
 
     const leftCol = document.createElement('div');
     leftCol.className = `
       w-full md:w-1/3 flex flex-col items-center justify-center bg-neutral-900 pt-6 pb-10 px-4 h-full relative
     `.replace(/\s+/g, ' ').trim();
 
-    // Contenedor para centrar avatar y nickname vertical y horizontalmente
-    const centerBox = document.createElement('div');
-    centerBox.className = 'flex flex-col items-center justify-center h-full';
+    const avatarComponent = new AvatarComponent(options.avatarUrl, options.nickname);
+    if (options.leftExtraContent) {
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(options.leftExtraContent);
+      wrapper.appendChild(avatarComponent.getElement());
+      leftCol.appendChild(wrapper);
+    } else {
+      leftCol.appendChild(avatarComponent.getElement());
+    }
 
-    const avatar = document.createElement('img');
-    avatar.src = options.avatarUrl;
-    avatar.alt = 'Profile';
-    avatar.className = `
-      w-32 h-32 md:w-56 md:h-56 rounded-full border-4 border-amber-50 object-cover
-      transition-all duration-300 mt-20 mb-2 mx-auto
-    `.replace(/\s+/g, ' ').trim();
-
-    const nicknameSpan = document.createElement('span');
-    nicknameSpan.className = `
-      mt-6 text-amber-50 text-2xl font-bold tracking-wide break-all text-center w-full pl-2
-    `.replace(/\s+/g, ' ').trim();
-    nicknameSpan.textContent = options.nickname;
-
-    if (options.leftExtraContent) centerBox.appendChild(options.leftExtraContent);
-    centerBox.appendChild(avatar);
-    centerBox.appendChild(nicknameSpan);
-    leftCol.appendChild(centerBox);
-    // Flecha independiente, pegada abajo
-    if (arrowRow) {
+    /*if (arrowRow) {
       arrowRow.style.position = 'absolute';
       arrowRow.style.left = '1rem'; // Más a la izquierda
       arrowRow.style.bottom = '1.5rem';
       leftCol.appendChild(arrowRow);
-    }
+    }*/
 
     const mainCol = document.createElement('div');
     mainCol.className = `

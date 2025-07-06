@@ -10,38 +10,55 @@ export function showSignUp(container: HTMLElement): void {
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
       loadGoogleScript();
-      setupGoogleSignUp();;
+      setupGoogleSignUp();
+
+      container.innerHTML = '';
+
+      const langSelector = new LanguageSelector(() => showSignUp(container)).getElement();
+      container.appendChild(langSelector);
 
       const wrapper = document.createElement('div');
+      wrapper.className = 'flex items-center justify-center min-h-screen bg-neutral-900';
       wrapper.innerHTML = `
-        <div class="h-screen flex items-center justify-center bg-neutral-900">
-          <div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6 relative">
-            <h2 class="text-2xl font-semibold text-center">${i18n.t('title', { ns: 'signup' })}</h2>
-            <form id="signup-form" class="space-y-4">
-              <input type="text" id="nickname" placeholder="${i18n.t('nickname', { ns: 'signup' })}" class="w-full border px-3 py-2 rounded" required />
-              <input type="email" id="email" placeholder="${i18n.t('email', { ns: 'signup' })}" class="w-full border px-3 py-2 rounded" required />
-              <input type="password" id="password" placeholder="${i18n.t('password', { ns: 'signup' })}" class="w-full border px-3 py-2 rounded" required />
-              <input type="password" id="confirmPassword" placeholder="${i18n.t('confirmPassword', { ns: 'signup' })}" class="w-full border px-3 py-2 rounded" required />
-              <button type="submit" id="sign-up-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+        <div class="w-full max-w-md flex flex-col items-center">
+          <div class="bg-neutral-900 border-2 border-amber-50 text-amber-50 w-full px-8 py-10 flex flex-col items-center" style="border-radius:0px;">
+            <h2 class="text-2xl font-bold mb-8 text-center" style="font-family:'Roboto Mono', monospace; text-transform:uppercase;">${i18n.t('title', { ns: 'signup' })}</h2>
+            <form id="signup-form" class="w-full flex flex-col gap-4">
+              <input type="text" id="nickname" placeholder="${i18n.t('nickname', { ns: 'signup' })}"
+                class="w-full px-4 py-3 border-2 border-amber-50 bg-transparent text-amber-50 focus:outline-none"
+                style="font-family:'Roboto Mono', monospace; border-radius:0px; font-size:14px;" required />
+              <input type="email" id="email" placeholder="${i18n.t('email', { ns: 'signup' })}"
+                class="w-full px-4 py-3 border-2 border-amber-50 bg-transparent text-amber-50 focus:outline-none"
+                style="font-family:'Roboto Mono', monospace; border-radius:0px; font-size:14px;" required />
+              <input type="password" id="password" placeholder="${i18n.t('password', { ns: 'signup' })}"
+                class="w-full px-4 py-3 border-2 border-amber-50 bg-transparent text-amber-50 focus:outline-none"
+                style="font-family:'Roboto Mono', monospace; border-radius:0px; font-size:14px;" required />
+              <input type="password" id="confirmPassword" placeholder="${i18n.t('confirmPassword', { ns: 'signup' })}"
+                class="w-full px-4 py-3 border-2 border-amber-50 bg-transparent text-amber-50 focus:outline-none"
+                style="font-family:'Roboto Mono', monospace; border-radius:0px; font-size:14px;" required />
+              <div id="errorMessage" class="text-red-500 text-sm"></div>
+              <button type="submit" id="sign-up-btn"
+                class="w-full py-3 mt-2 transition-all duration-300"
+                style="background:transparent; border:2px solid #FFFBEB; color:#FFFBEB; font-family:'Roboto Mono', monospace; font-weight:bold; font-size:14px; text-transform:uppercase; border-radius:0px; cursor:pointer;">
                 ${i18n.t('signUp', { ns: 'signup' })}
               </button>
             </form>
-            <div class="flex flex-col mt-4 text-sm text-center dark:text-gray-300">
-              <p>
-                Already have an account?
-                <a href="/signin" class="text-blue-400 transition hover:underline">
-                  Sign In
+            <div class="flex flex-col mt-6 text-sm text-center">
+              <p style="font-family:'Roboto Mono', monospace;">
+                ${i18n.t('alreadyAccount', { ns: 'signup', defaultValue: "Already have an account?" })}
+                <a href="/signin" class="text-amber-400 hover:underline" style="font-family:'Roboto Mono', monospace;">
+                  ${i18n.t('signIn', { ns: 'signup', defaultValue: "Sign In" })}
                 </a>
               </p>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500">
-              <hr class="flex-1 border-gray-300" />
+            <div class="flex items-center gap-2 text-sm text-gray-500 w-full my-6">
+              <hr class="flex-1 border-amber-50 opacity-30" />
             </div>
-            <div>
+            <div class="w-full flex flex-col items-center">
               <div id="g_id_onload"
                 data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
                 data-login_uri="http://localhost:5173"
-              data-callback="handleGoogleSignUp"
+                data-callback="handleGoogleSignUp"
                 data-auto_prompt="false">
               </div>
               <div class="g_id_signin"
@@ -53,12 +70,23 @@ export function showSignUp(container: HTMLElement): void {
                 data-logo_alignment="left">
               </div>
             </div>
-            <div id="errorMessage" class="text-red-500 text-sm"></div>
           </div>
         </div>
       `;
 
       container.appendChild(wrapper);
+
+      const btn = wrapper.querySelector('#sign-up-btn') as HTMLButtonElement;
+      if (btn) {
+        btn.addEventListener('mouseenter', () => {
+          btn.style.backgroundColor = '#FFFBEB';
+          btn.style.color = '#171717';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.backgroundColor = 'transparent';
+          btn.style.color = '#FFFBEB';
+        });
+      }
 
       const form = wrapper.querySelector('#signup-form') as HTMLFormElement;
       const errorMessageDiv = wrapper.querySelector('#errorMessage') as HTMLDivElement;
@@ -96,7 +124,7 @@ export function showSignUp(container: HTMLElement): void {
         if (!result.success) {
           errorMessageDiv.textContent = result.message;
         } else {
-          alert('Registration successful!');
+          alert(i18n.t('success', { ns: 'signup', defaultValue: 'Registration successful!' }));
           navigate('/signin');
         }
       };
@@ -106,29 +134,5 @@ export function showSignUp(container: HTMLElement): void {
         e.preventDefault();
         navigate('/signin');
       });
-
-      const langSelector = new LanguageSelector(() => {
-        const nickname = wrapper.querySelector('#nickname') as HTMLInputElement;
-        const email = wrapper.querySelector('#email') as HTMLInputElement;
-        const password = wrapper.querySelector('#password') as HTMLInputElement;
-        const confirmPassword = wrapper.querySelector('#confirmPassword') as HTMLInputElement;
-        const btn = wrapper.querySelector('#sign-up-btn') as HTMLButtonElement;
-        const title = wrapper.querySelector('h2')!;
-
-        nickname.placeholder = i18n.t('nickname', { ns: 'signup' });
-        email.placeholder = i18n.t('email', { ns: 'signup' });
-        password.placeholder = i18n.t('password', { ns: 'signup' });
-        confirmPassword.placeholder = i18n.t('confirmPassword', { ns: 'signup' });
-        btn.textContent = i18n.t('signUp', { ns: 'signup' });
-        title.textContent = i18n.t('title', { ns: 'signup' });
-      });
-
-	wrapper.appendChild(langSelector.getElement());
-
-      const selectorWrapper = document.createElement('div');
-      selectorWrapper.className = 'absolute bottom-4 w-full flex justify-center z-30';
-      selectorWrapper.appendChild(langSelector.getElement());
-      document.body.appendChild(selectorWrapper);
     });
-
 }

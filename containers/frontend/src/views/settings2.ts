@@ -2,7 +2,6 @@ import i18n from '../i18n';
 //import { Header } from '../components/header';
 import { HeaderTest } from '../components/generalComponents/testmenu'
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
-import { Menu } from '../components/menu';
 import { navigate } from '../utils/router';
 import { changeNickname, changePassword } from '../utils/profile/profileUtils';
 import { HeadersComponent } from '../components/profileComponents/pongBoxComponents/headersComponent';
@@ -277,7 +276,6 @@ function showMessage(message: string, type: 'success' | 'error') {
 
   messageContainer.appendChild(messageDiv);
 
-  // Auto-remove after 3 seconds
   setTimeout(() => {
     if (messageDiv.parentNode) {
       messageDiv.parentNode.removeChild(messageDiv);

@@ -4,7 +4,6 @@ import { navigate } from '../utils/router';
 import { bounceBall } from '../components/generalComponents/ballComponent/bounceBall';
 
 export function showLanding(container: HTMLElement): void {
-  
   container.innerHTML = '';
 
   i18n
@@ -17,10 +16,10 @@ export function showLanding(container: HTMLElement): void {
           <div id="animation-layer" class="fixed inset-0 z-0 pointer-events-none"></div>
           <div class="relative h-full flex flex-col">
             <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
-              <button id="sign-in-btn" class="bg-amber-50 text-neutral-900 px-4 py-2 rounded hover:bg-amber-100 transition-colors z-30 relative">
+              <button id="sign-in-btn" class="gaming-btn z-30 relative">
                 ${i18n.t('signIn', { ns: 'landing' })}
               </button>
-              <button id="sign-up-btn" class="border border-amber-50 text-amber-50 px-4 py-2 rounded hover:bg-neutral-800 transition-colors z-30 relative">
+              <button id="sign-up-btn" class="gaming-btn z-30 relative">
                 ${i18n.t('signUp', { ns: 'landing' })}
               </button>
             </div>
@@ -44,13 +43,33 @@ export function showLanding(container: HTMLElement): void {
         signInBtn.textContent = i18n.t('signIn', { ns: 'landing' });
         signUpBtn.textContent = i18n.t('signUp', { ns: 'landing' });
       });
-
       landingDiv.querySelector('.flex-col')?.appendChild(langSelector.getElement());
 
-      const animationLayer = landingDiv.querySelector('#animation-layer') as HTMLDivElement;
-      const bounceBtn = landingDiv.querySelector('#bounce-button') as HTMLButtonElement;
       const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
       const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
+      [signInBtn, signUpBtn].forEach(btn => {
+        if (!btn) return;
+        btn.style.backgroundColor = 'transparent';
+        btn.style.border = '2px solid #FFFBEB';
+        btn.style.color = '#FFFBEB';
+        btn.style.fontFamily = '"Roboto Mono", monospace';
+        btn.style.fontWeight = 'bold';
+        btn.style.fontSize = '16px';
+        btn.style.textTransform = 'uppercase';
+        btn.style.borderRadius = '0px';
+        btn.style.padding = '12px 32px';
+        btn.style.cursor = 'pointer';
+        btn.style.transition = 'all 0.3s ease';
+
+        btn.addEventListener('mouseenter', () => {
+          btn.style.backgroundColor = '#FFFBEB';
+          btn.style.color = '#171717';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.backgroundColor = 'transparent';
+          btn.style.color = '#FFFBEB';
+        });
+      });
 
       signInBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -62,6 +81,8 @@ export function showLanding(container: HTMLElement): void {
         navigate('/signup');
       });
 
+      const animationLayer = landingDiv.querySelector('#animation-layer') as HTMLDivElement;
+      const bounceBtn = landingDiv.querySelector('#bounce-button') as HTMLButtonElement;
       if (bounceBtn && animationLayer) {
         bounceBall(bounceBtn, animationLayer, 'bg-amber-400', 70);
       }

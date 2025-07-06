@@ -1,9 +1,7 @@
-export class MatchTableComponent {
-    private searchBar: HTMLTableElement;
-  
-    constructor(data: any) {
-      this.data = data;
-      this.searchBar = document.createElement('searchBar');
+export class SearchBarComponent {
+    private searchBar: HTMLElement;
+    constructor() {
+      this.searchBar = document.createElement('div');
       this.searchBar.className = 'flex w-full justify-end items-end mt-4 -ml-4';
       this.render();
     }
