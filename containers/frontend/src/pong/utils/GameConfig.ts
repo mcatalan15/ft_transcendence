@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 11:13:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:10:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,17 +106,17 @@ export interface GameData {
 }
 
 export interface PlayerData {
-	id: string;
-	name: string;
-	avatar?: string; // URL or path to the avatar image
-	type?: 'human' | 'ai' | 'remote';
-	side?: 'left' | 'right';
-	goalsScored: number;
-	goalsConceded: number;
-	tournaments: number;
-	wins: number;
-	losses: number;
-	draws: number;
-	rank?: number;
-	/* "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ",  */
+    id: string;
+    name: string;
+    avatar: string;
+    type: 'human' | 'ai';
+    side: 'left' | 'right';
+    goalsScored: number;
+    goalsConceded: number;
+    tournaments: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    rank: number;
+    totalPlayers?: number;
 }

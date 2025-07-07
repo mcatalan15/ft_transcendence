@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 11:47:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 18:35:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ export class Menu{
 	width: number;
 	height: number;
 	ballAmount: number = 0;
-	maxBalls: number = 40;
+	maxBalls: number = 50;
 	entities: Entity[] = [];
     systems: System[] = [];
 	eventQueue: GameEvent[] = [];
@@ -855,19 +855,16 @@ export class Menu{
 			
 			this.audioInitialized = true;
 			
-			// Process any pending audio
 			this.pendingAudio.forEach(fn => fn());
 			this.pendingAudio = [];
 		};
 	
-		// Listen for any user interaction
 		const events = ['click', 'keydown', 'touchstart', 'mousedown'];
 		events.forEach(event => {
 			document.addEventListener(event, initializeAudio, { once: true });
 		});
 	}
 	
-	// Helper method for playing sounds
 	public playSound(soundKey: keyof MenuSounds): void {
 		if (this.audioInitialized && this.sounds && this.sounds[soundKey]) {
 			console.log(`Playing ${soundKey}...`);
@@ -910,7 +907,6 @@ export class Menu{
 				throw new Error('User ID and token are required to fetch user data');
 			}
 			
-			// Fixed route path to match backend
 			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
 			const response = await fetch('/api/games/getUserData', {
 				method: 'POST',
@@ -932,7 +928,6 @@ export class Menu{
 			const data = await response.json();
 			console.log('User data fetched successfully:', data);
 			
-			// Return the userData property from the response
 			return data.userData as PlayerData;
 		} catch (error) {
 			console.error('Error fetching user data:', error);
@@ -942,13 +937,24 @@ export class Menu{
 
 	private async testApiCall(): Promise<void> {
 		try {
-			console.log('Testing API call...');
-			const testUserId = 'player1';
+			console.log('Testing API call with real user data...');
+			
+			const testUserId = '1'; 
 			const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBsYXllcjEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzUxODgxMjg4LCJleHAiOjE3NTE4ODQ4ODh9._x9yAMOPehBHx3hATN-lXKzJRj2j5_g47cuRn7p4hS8";
 			
 			const userData = await this.getUserData(testUserId, testToken);
 			this.playerData = userData;
-			console.log('✅ API call successful! User data:', userData);
+			console.log('✅ API call successful! Real user data:', userData);
+			console.log('User stats from database:', {
+				name: userData.name,
+				wins: userData.wins,
+				losses: userData.losses,
+				draws: userData.draws,
+				goalsScored: userData.goalsScored,
+				goalsConceded: userData.goalsConceded,
+				tournaments: userData.tournaments,
+				rank: userData.rank
+			});
 		} catch (error) {
 			console.error('❌ API call failed:', error);
 		}

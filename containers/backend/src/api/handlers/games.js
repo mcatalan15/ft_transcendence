@@ -6,47 +6,156 @@ const { saveGameToDatabase,
 	saveSmartContractToDatabase,
 	getGamesHistory,
 	getUserById,
+	getUserStats,
 	calculateUserStats,
  } = require('../db/database');
 
  async function getUserDataHandler(request, reply) {
     try {
-        // Get userId from body (as your frontend sends it)
         const { userId } = request.body;
         
         console.log('Received getUserData request for userId:', userId);
         
-        // For now, let's return mock data to test the connection
-        const mockUserData = {
-            id: userId,
-            name: 'HUGO',
-            avatar: 'avatarEva',
-            goalsScored: 42,
-            goalsConceded: 18,
-            tournaments: 7,
-            wins: 28,
-            losses: 12,
-            draws: 3,
-            rank: 15
-        };
+        if (!userId) {
+            return reply.status(400).send({
+                success: false,
+                message: 'userId is required'
+            });
+        }
 
-        console.log('Returning mock user data:', mockUserData);
-        
-        reply.status(200).send({
-            success: true,
-            userData: mockUserData
-        });
+        try {
+            const user = await getUserById(userId);
+            
+            if (!user) {
+                console.log(`User ${userId} not found in users table`);
+                return reply.status(404).send({
+                    success: false,
+                    message: 'User not found'
+                });
+            }
+
+            console.log('Found user:', user);
+
+            const userStats = await getUserStats(userId);
+            
+            if (!userStats) {
+                console.log(`No stats found for user ${userId}, returning default stats`);
+                const userData = {
+                    id: user.id.toString(),
+                    name: user.username || user.name || 'PLAYER',
+                    avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                    goalsScored: 0,
+                    goalsConceded: 0,
+                    tournaments: 0,
+                    wins: 0,
+                    losses: 0,
+                    draws: 0,
+                    rank: 999
+                };
+
+                console.log('Returning user with default stats:', userData);
+                
+                return reply.status(200).send({
+                    success: true,
+                    userData: userData
+                });
+            }
+
+            const userData = {
+                id: user.id.toString(),
+                name: user.username || user.name || 'PLAYER',
+                avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                goalsScored: userStats.total_goals_scored || 0,
+                goalsConceded: userStats.total_goals_conceded || 0,
+                tournaments: userStats.tournaments_won || 0,
+                wins: userStats.wins || 0,
+                losses: userStats.losses || 0,
+                draws: userStats.draws || 0,
+                rank: calculateRank(userStats) || 999
+            };
+
+            console.log('Returning real user data:', userData);
+            
+            reply.status(200).send({
+                success: true,
+                userData: userData
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            reply.status(500).send({
+                success: false,
+                message: 'Database error occurred',
+                error: dbError.message
+            });
+        }
     } catch (error) {
         console.error('Error in getUserDataHandler:', error);
         reply.status(500).send({
             success: false,
-            message: 'Failed to fetch user data'
+            message: 'Failed to fetch user data',
+            error: error.message
         });
     }
 }
 
+function calculateRank(stats) {
+    if (!stats) {
+        console.log('No stats available, returning lowest ELO rating');
+        return 999.0;
+    }
+    
+    let totalGames = stats.total_games || 0;
+    if (totalGames === 0) {
+        totalGames = (stats.wins || 0) + (stats.losses || 0) + (stats.draws || 0);
+    }
+    
+    if (totalGames === 0) {
+        console.log('No games played, returning unrated ELO (999.0)');
+        return 999.0;
+    }
+    
+    const winRate = stats.win_rate || (stats.wins / totalGames);
+    const wins = stats.wins || 0;
+    
+    const eloScore = (winRate * 100) + (totalGames * 0.5) + (wins * 2);
+    
+    const eloRating = Math.max(1.0, Math.min(999.9, 1000 - eloScore));
+    
+    console.log(`Calculated ELO rating: winRate=${winRate.toFixed(3)}, totalGames=${totalGames}, wins=${wins}, eloScore=${eloScore.toFixed(1)}, finalELO=${eloRating.toFixed(1)}`);
+    
+    return parseFloat(eloRating.toFixed(1));
+}
 
-// Updated saveGameHandler for basic game saving
+function mapAvatarFromDatabase(dbAvatar) {
+    if (!dbAvatar) return 'avatarUnknown';
+    
+    const avatarMap = {
+        'eva': 'avatarEva',
+        'marc': 'avatarMarc', 
+        'nico': 'avatarNico',
+        'hugo': 'avatarHugo',
+        
+        'square1.png': 'avatarEva',
+        'square2.png': 'avatarMarc',
+        'square3.png': 'avatarNico', 
+        'square4.png': 'avatarHugo',
+
+        'Eva': 'avatarEva',
+        'Marc': 'avatarMarc',
+        'Nico': 'avatarNico',
+        'Hugo': 'avatarHugo',
+        
+        'unknown': 'avatarUnknown',
+        'default': 'avatarUnknown'
+    };
+    
+    const mappedAvatar = avatarMap[dbAvatar] || 'avatarUnknown';
+    console.log(`Mapped avatar '${dbAvatar}' to '${mappedAvatar}'`);
+    
+    return mappedAvatar;
+}
+
 async function saveGameHandler(request, reply) {
 	const {
 		player1_id,
@@ -63,11 +172,10 @@ async function saveGameHandler(request, reply) {
 		is_tournament,
 		smart_contract_link,
 		contract_address,
-		gameData // Add gameData to the destructuring
+		gameData
 	} = request.body;
 
 	try {
-		// Create a minimal gameData object if not provided
 		const defaultGameData = gameData || {
 			gameId: `game_${Date.now()}`,
 			generalResult: null,
@@ -367,7 +475,9 @@ const saveResultsHandler = async (request, reply) => {
             gameData.config?.mode || 'local',
             gameData.config?.variant === 'tournament',
             null,
-            null
+            null,
+            new Date().toISOString(),
+            gameData.endedAt
         );
 
         console.log('Game saved with ID:', gameId);

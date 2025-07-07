@@ -238,20 +238,23 @@ async function saveGameToDatabase(
     game_mode,
     is_tournament,
     smart_contract_link,
-    contract_address
+    contract_address,
+    created_at,
+    ended_at
 ) {
     return new Promise((resolve, reject) => {
         console.log('saveGameToDatabase called with:', {
             player1_id, player2_id, winner_id, player1_name, player2_name,
             player1_score, player2_score, winner_name, player1_is_ai, player2_is_ai,
-            game_mode, is_tournament, smart_contract_link, contract_address
+            game_mode, is_tournament, smart_contract_link, contract_address,
+            created_at, ended_at
         });
 
         const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         const query = `
             INSERT INTO games (
-                game_id,        -- TEXT field that needs a value
+                game_id,
                 player1_id,
                 player2_id,
                 winner_id,
@@ -266,10 +269,11 @@ async function saveGameToDatabase(
                 is_tournament,
                 smart_contract_link,
                 contract_address,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                created_at,
+                ended_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        
+
         const params = [
             game_id,
             player1_id,
@@ -285,7 +289,9 @@ async function saveGameToDatabase(
             game_mode,
             is_tournament ? 1 : 0,
             smart_contract_link,
-            contract_address
+            contract_address,
+            created_at || new Date().toISOString(),
+            ended_at
         ];
 
         console.log('Executing query with params:', params);
@@ -306,7 +312,6 @@ async function saveGameToDatabase(
         });
     });
 }
-
 
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
@@ -670,6 +675,21 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 	});
 }
 
+async function getUserStats(userId) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM user_stats WHERE id_user = ?';
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error('Error getting user stats:', err);
+                reject(err);
+            } else {
+                console.log('Retrieved user stats for user', userId, ':', row);
+                resolve(row);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -694,5 +714,6 @@ module.exports = {
 	saveSmartContractToDatabase,
 	updateNickname,
 	changePassword,
-	getGamesHistory
+	getGamesHistory,
+    getUserStats,
 };

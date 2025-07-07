@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 14:17:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:56:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,7 +291,7 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name || 'Player 1',
+				name: this.leftPlayer.name|| 'PLAYER 1',
 				score: 0,
 				result: null,
 				hits: 0,
@@ -302,7 +302,7 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-				name: this.rightPlayer.name || 'Player 2',
+				name: this.rightPlayer.name || 'PLAYER 2',
 				score: 0,
 				result: null,
 				hits: 0,
@@ -458,7 +458,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name.toUpperCase());
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -466,7 +466,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name.toUpperCase());
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);

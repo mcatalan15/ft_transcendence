@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:47:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:30:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,10 @@ export class EndingSystem implements System {
                 }
             }
             
-            this.game.saveGameResults();
+            //! The save of game results needs to be done only in online mode, and check if the host is still connected to don´t make a double save
+            if (this.game.config.mode === 'online') {
+                    this.game.saveGameResults();
+            }
             this.game.hasEnded = true;
 
             this.displayResults();
