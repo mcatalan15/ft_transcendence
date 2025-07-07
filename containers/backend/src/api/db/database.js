@@ -241,8 +241,17 @@ async function saveGameToDatabase(
     contract_address
 ) {
     return new Promise((resolve, reject) => {
+        console.log('saveGameToDatabase called with:', {
+            player1_id, player2_id, winner_id, player1_name, player2_name,
+            player1_score, player2_score, winner_name, player1_is_ai, player2_is_ai,
+            game_mode, is_tournament, smart_contract_link, contract_address
+        });
+
+        const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
         const query = `
             INSERT INTO games (
+                game_id,        -- TEXT field that needs a value
                 player1_id,
                 player2_id,
                 winner_id,
@@ -256,35 +265,42 @@ async function saveGameToDatabase(
                 game_mode,
                 is_tournament,
                 smart_contract_link,
-                contract_address
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                contract_address,
+                created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
         `;
+        
         const params = [
+            game_id,
             player1_id,
             player2_id,
             winner_id,
             player1_name,
             player2_name,
-            player1_score,
-            player2_score,
+            player1_score || 0,
+            player2_score || 0,
             winner_name,
-            player1_is_ai,
-            player2_is_ai,
+            player1_is_ai ? 1 : 0,
+            player2_is_ai ? 1 : 0,
             game_mode,
-            is_tournament,
+            is_tournament ? 1 : 0,
             smart_contract_link,
             contract_address
         ];
+
+        console.log('Executing query with params:', params);
+
         db.run(query, params, function (err) {
             if (err) {
-                console.error('[DB INSERT ERROR] Full error:', {
+                console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
                     message: err.message,
                     code: err.code,
-                    errno: err.errno,
-                    stack: err.stack
+                    errno: err.errno
                 });
                 reject(err);
             } else {
+                console.log('Game saved successfully with auto-increment ID:', this.lastID);
+                console.log('Game_id used:', game_id);
                 resolve(this.lastID);
             }
         });

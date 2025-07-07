@@ -20,7 +20,7 @@ const { saveGameToDatabase,
         const mockUserData = {
             id: userId,
             name: 'HUGO',
-            avatar: 'avatarHugo',
+            avatar: 'avatarEva',
             goalsScored: 42,
             goalsConceded: 18,
             tournaments: 7,
@@ -295,14 +295,41 @@ async function getGamesHistoryHandler(request, reply) {
 
 const saveResultsHandler = async (request, reply) => {
     try {
+        console.log('Received saveResults request');
+        console.log('Request body:', JSON.stringify(request.body, null, 2));
+        console.log('Request user:', request.user);
+
         const { gameData } = request.body;
-        const userId = request.user.id;
+        
+        if (!gameData) {
+            console.error('No gameData in request body');
+            return reply.status(400).send({
+                success: false,
+                message: 'gameData is required in request body'
+            });
+        }
+
+        const userId = request.user?.id;
+        
+        if (!userId) {
+            console.error('No user ID found in request');
+            return reply.status(401).send({
+                success: false,
+                message: 'User authentication required'
+            });
+        }
+
+        console.log('Processing game data for user:', userId);
 
         const player1_id = userId;
         let player2_id = null;
         
-        if (gameData.config.mode === 'online' && gameData.config.player2Id) {
+        if (gameData.config?.mode === 'online' && gameData.config?.player2Id) {
             player2_id = gameData.config.player2Id;
+        } else if (gameData.config?.variant === '1vAI') {
+            player2_id = null;
+        } else {
+            player2_id = null;
         }
         
         let winner_id = null;
@@ -314,32 +341,39 @@ const saveResultsHandler = async (request, reply) => {
             winner_id = player2_id;
         }
 
-        console.log('Saving game with IDs:', {
+        console.log('Saving game with data:', {
             player1_id,
             player2_id,
             winner_id,
-            gameMode: gameData.config.mode,
-            variant: gameData.config.variant
+            leftPlayerName: gameData.leftPlayer?.name,
+            rightPlayerName: gameData.rightPlayer?.name,
+            leftScore: gameData.leftPlayer?.score,
+            rightScore: gameData.rightPlayer?.score,
+            gameMode: gameData.config?.mode,
+            variant: gameData.config?.variant
         });
 
         const gameId = await saveGameToDatabase(
             player1_id,
             player2_id,
             winner_id,
-            gameData.leftPlayer.name,
-            gameData.rightPlayer.name,
-            gameData.leftPlayer.score,
-            gameData.rightPlayer.score,
+            gameData.leftPlayer?.name || 'Player 1',
+            gameData.rightPlayer?.name || 'Player 2',
+            gameData.leftPlayer?.score || 0,
+            gameData.rightPlayer?.score || 0,
             winner_name,
             false,
-            gameData.config.variant === '1vAI',
-            gameData.config.mode,
-            gameData.config.variant === 'tournament',
+            gameData.config?.variant === '1vAI',
+            gameData.config?.mode || 'local',
+            gameData.config?.variant === 'tournament',
             null,
             null
         );
 
+        console.log('Game saved with ID:', gameId);
+
         await saveGameResultsToDatabase(gameId, gameData);
+        console.log('Detailed game results saved');
 
         reply.status(201).send({
             success: true,
@@ -348,7 +382,9 @@ const saveResultsHandler = async (request, reply) => {
         });
 
     } catch (error) {
-        console.error('Error saving game results:', error);
+        console.error('Error in saveResultsHandler:', error);
+        console.error('Error stack:', error.stack);
+        
         reply.status(500).send({
             success: false,
             message: 'Failed to save game results',

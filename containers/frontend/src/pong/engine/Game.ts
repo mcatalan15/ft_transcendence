@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:20:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 14:17:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -827,6 +827,10 @@ export class PongGame {
 				return;
 			}
 	
+			const requestBody = {
+				gameData: this.data
+			};
+	
 			console.log('Making API call to /api/games/results');
 			const response = await fetch('/api/games/results', {
 				method: 'POST',
@@ -834,9 +838,7 @@ export class PongGame {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${token}`
 				},
-				body: JSON.stringify({
-					gameData: this.data
-				})
+				body: JSON.stringify(requestBody)
 			});
 	
 			console.log('Response status:', response.status);
@@ -846,7 +848,7 @@ export class PongGame {
 				const result = await response.json();
 				console.log('Game results saved successfully:', result);
 			} else {
-				const error = await response.json();
+				const error = await response.text();
 				console.error('Failed to save game results:', error);
 			}
 		} catch (error) {
@@ -854,7 +856,6 @@ export class PongGame {
 		}
 	}
 
-	// In Game.ts
 	async cleanup(): Promise<void> {
 		try {			
 			if (this.sounds) {

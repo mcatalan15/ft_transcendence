@@ -447,59 +447,58 @@
       }
   };
   
-  const saveResultsSchema = {
-      body: {
-        type: 'object',
-        required: ['gameData'],
-        properties: {
-          gameData: {
+    const saveResultsSchema = {
+        body: {
             type: 'object',
+            required: ['gameData'],
             properties: {
-              gameId: { type: 'string' },
-              config: { type: 'object' },
-              createdAt: { type: 'string' },
-              endedAt: { type: 'string' },
-              generalResult: { type: 'string' },
-              winner: { type: ['string', 'null'] },
-              finalScore: {
-                type: 'object',
-                properties: {
-                  leftPlayer: { type: 'number' },
-                  rightPlayer: { type: 'number' }
+                gameData: {
+                    type: 'object',
+                    additionalProperties: true,
+                    required: ['leftPlayer', 'rightPlayer'],
+                    properties: {
+                        gameId: { type: 'string' },
+                        config: { type: 'object', additionalProperties: true },
+                        createdAt: { type: 'string' },
+                        endedAt: { type: ['string', 'null'] },
+                        generalResult: { type: ['string', 'null'] },
+                        winner: { type: ['string', 'null'] },
+                        finalScore: {
+                            type: 'object',
+                            additionalProperties: true
+                        },
+                        leftPlayer: {
+                            type: 'object',
+                            additionalProperties: true,
+                            required: ['name'],
+                            properties: {
+                                name: { type: 'string' },
+                                score: { type: 'number' }
+                            }
+                        },
+                        rightPlayer: {
+                            type: 'object',
+                            additionalProperties: true,
+                            required: ['name'],
+                            properties: {
+                                name: { type: 'string' },
+                                score: { type: 'number' }
+                            }
+                        }
+                    }
                 }
-              },
-              leftPlayer: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' },
-                  score: { type: 'number' },
-                  result: { type: ['string', 'null'] },
-                  hits: { type: 'number' },
-                  goalsInFavor: { type: 'number' },
-                  goalsAgainst: { type: 'number' },
-                  powerupsPicked: { type: 'number' },
-                  powerdownsPicked: { type: 'number' },
-                  ballchangesPicked: { type: 'number' }
-                }
-              },
-              rightPlayer: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' },
-                  score: { type: 'number' },
-                  result: { type: ['string', 'null'] },
-                  hits: { type: 'number' },
-                  goalsInFavor: { type: 'number' },
-                  goalsAgainst: { type: 'number' },
-                  powerupsPicked: { type: 'number' },
-                  powerdownsPicked: { type: 'number' },
-                  ballchangesPicked: { type: 'number' }
-                }
-              }
             }
-          }
+        },
+        response: {
+            201: {
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                    gameId: { type: 'number' }
+                }
+            }
         }
-      }
     };
   
   module.exports = {

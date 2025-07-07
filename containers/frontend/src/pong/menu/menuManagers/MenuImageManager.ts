@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 17:15:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 14:03:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,18 +340,110 @@ export class MenuImageManager {
         });
     }
 
-    static preparePlayAvatarImages(menu: Menu): void {
-        this.createPlayAvatars(menu);
-        
+    static createPlayerAvatarFromAsset(assetKey: string, menu: Menu): Sprite | null {
+        try {
+            console.log('Creating player avatar from asset key:', assetKey);
+
+            if (!this.assets.has(assetKey)) {
+                console.warn(`Asset ${assetKey} not found in loaded assets`);
+                return null;
+            }
+            
+            const texture = this.assets.get(assetKey);
+            const sprite = new Sprite(texture);
+            
+            sprite.anchor.set(0.5);
+            sprite.scale.set(0.35);
+            sprite.alpha = 0;
+            
+            console.log('Player avatar created successfully from asset');
+            return sprite;
+        } catch (error) {
+            console.error('Failed to create player avatar from asset:', error);
+            return null;
+        }
+    }
+
+    static async preparePlayAvatarImages(menu: Menu): Promise<void> {
         this.playAvatars.forEach(avatar => {
+            if (avatar && avatar.parent) {
+                avatar.parent.removeChild(avatar);
+            }
             if (avatar) {
-                avatar.alpha = 0;
-                if (avatar.parent) {
-                    avatar.parent.removeChild(avatar);
-                }
-                menu.renderLayers.overlays.addChild(avatar);
+                avatar.destroy();
             }
         });
+        this.playAvatars = [];
+
+        if (menu.playerData?.avatar) {
+            console.log('Creating left player avatar from playerData:', menu.playerData.avatar);
+            
+            const leftAvatar = this.createPlayerAvatarFromAsset(menu.playerData.avatar, menu);
+            if (leftAvatar) {
+                leftAvatar.x = 335;
+                leftAvatar.y = 365;
+                menu.renderLayers.overlays.addChild(leftAvatar);
+                this.playAvatars.push(leftAvatar);
+                console.log('Left player avatar added to scene');
+            } else {
+                console.warn('Failed to create left player avatar, using fallback');
+                const fallbackAvatar = this.createSimpleImage(
+                    menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
+                    335,
+                    365,
+                    menu,
+                    0.35
+                );
+                if (fallbackAvatar) {
+                    menu.renderLayers.overlays.addChild(fallbackAvatar);
+                    this.playAvatars.push(fallbackAvatar);
+                }
+            }
+        } else {
+            console.log('No playerData.avatar, using default');
+            const defaultLeftAvatar = this.createSimpleImage(
+                menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
+                335,
+                369.5,
+                menu,
+                0.35
+            );
+            if (defaultLeftAvatar) {
+                menu.renderLayers.overlays.addChild(defaultLeftAvatar);
+                this.playAvatars.push(defaultLeftAvatar);
+            }
+        }
+
+        const rightAvatarData = this.getRightPlayerAvatarData(menu);
+        const rightAvatar = this.createSimpleImage(
+            rightAvatarData.name,
+            rightAvatarData.x,
+            rightAvatarData.y,
+            menu,
+            0.35
+        );
+        if (rightAvatar) {
+            menu.renderLayers.overlays.addChild(rightAvatar);
+            this.playAvatars.push(rightAvatar);
+        }
+
+        console.log('Play avatars prepared:', this.playAvatars.length);
+    }
+
+    private static getRightPlayerAvatarData(menu: Menu): { name: string, x: number, y: number } {
+        if (menu.config.variant === '1vAI') {
+            return {
+                name: menu.config.classicMode ? 'avatarBotClassic' : 'avatarBotSquare',
+                x: 785,
+                y: 365
+            };
+        } else {
+            return {
+                name: menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
+                x: 785,
+                y: 369.5
+            };
+        }
     }
 
     static prepareAvatarImagesForAbout(menu: Menu): void {
