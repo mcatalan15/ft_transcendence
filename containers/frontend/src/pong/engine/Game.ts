@@ -838,7 +838,8 @@ export class PongGame {
 				},
 				body: JSON.stringify({
 					gameData: this.data
-				})
+				}),
+				credentials: 'include'
 			});
 	
 			console.log('Response status:', response.status);

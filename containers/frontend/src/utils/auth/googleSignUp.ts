@@ -38,6 +38,7 @@ export function setupGoogleSignUp(): void {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ credential: credential }),
         })
             .then(response => response.json())

@@ -382,12 +382,14 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 				return null; // Don't continue processing
 			}
 			if (!response.ok) {
+				console.error(`HTTP error! status: ${response}`);
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			return response.json();
 		})
 
 		.then(data => {
+			console.log('Profile data:', data);
 			if (!data) return;
 
 			const username = data.username;

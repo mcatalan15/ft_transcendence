@@ -44,6 +44,7 @@ function buildApp() {
     }
   }); */
   fastify.register(require('@fastify/session'), {
+      cookieName: 'sessionId',
       secret: process.env.SESSION_SECRET || 'a-secret-key-that-should-be-in-env-file',
       cookie: {
           secure: false,        // Allow HTTP for tunneling

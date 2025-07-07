@@ -5,11 +5,12 @@ export async function logUserOut(): Promise<{success: boolean, message: string}>
 		const user = sessionStorage.getItem('username');
 
 		const response = await fetch(getApiUrl('/auth/logout'), {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ user }),
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ user }),
+			credentials: 'include'
 		});
 
 		const data = await response.json();

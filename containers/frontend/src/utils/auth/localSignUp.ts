@@ -7,7 +7,7 @@ export async function localSignUp(username: string, email: string, password: str
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, email, password }),
-			credentials: 'include' // Add this for session handling
+			credentials: 'include'
 		});
 
 		console.log('[localSignUp] Response status:', response.status);

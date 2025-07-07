@@ -291,7 +291,8 @@ export function showBlockchain(container: HTMLElement): void {
 						is_tournament: isTournament,
 						smart_contract_link: smartContractLink,
 						contract_address: contractAddress
-					})
+					}),
+					credentials: 'include'
 				});
 
 				if (response.ok) {
