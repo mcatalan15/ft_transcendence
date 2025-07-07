@@ -63,7 +63,7 @@ export class HistoryContentRenderer {
     tableContainer.className = 'w-full flex flex-col items-center gap-4';
 
     const tableWrapper = document.createElement('div');
-    tableWrapper.className = 'w-full flex justify-center min-h-[200px]';
+    tableWrapper.className = 'w-full flex justify-center min-h-[20px]';
     tableWrapper.appendChild(this.matchTableComponent.getElement());
     
     this.styleTable();

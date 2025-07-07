@@ -6,7 +6,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY ./static .
+COPY . .
+RUN mkdir -p ./public && \
+    if [ -d ./static ]; then \
+      find ./static -mindepth 1 -maxdepth 1 -exec mv -t ./public {} +; \
+    fi
 
 EXPOSE 5173
 

@@ -10,6 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
+
 prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
@@ -79,5 +80,14 @@ fclean:
 	docker network prune -f
 	docker image prune -a -f
 
+nuke:
+	make stop
+	docker rm -f $(docker ps -aq)
+	docker rmi -f $(docker images -aq)
+	docker volume rm $(docker volume ls -q)
+	docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
+	docker builder prune -af
+	docker system prune -af --volumes
+
 .PHONY:
-	up down re stop clean fclean frontend dev prod redev back
+	up down re stop clean fclean frontend dev prod redev back nuke tunnel
