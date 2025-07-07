@@ -1,84 +1,139 @@
+const { get } = require('http');
 const { saveGameToDatabase,
     saveGameResultsToDatabase,
 	getLatestGame,
 	getAllGames,
 	saveSmartContractToDatabase,
-	getGamesHistory
+	getGamesHistory,
+	getUserById,
+	calculateUserStats,
  } = require('../db/database');
 
-async function saveGameHandler(request, reply) {
-    const {
-        player1_id,
-        player2_id,
-        winner_id,
-        player1_name,
-        player2_name,
-        player1_score,
-        player2_score,
-        winner_name,
-        player1_is_ai,
-        player2_is_ai,
-        game_mode,
-        is_tournament,
-        smart_contract_link,
-        contract_address
-    } = request.body;
-
+ async function getUserDataHandler(request, reply) {
     try {
-        const gameId = await saveGameToDatabase(
-            player1_id,
-            player2_id,
-            winner_id,
-            player1_name,
-            player2_name,
-            player1_score,
-            player2_score,
-            winner_name,
-            player1_is_ai,
-            player2_is_ai,
-            game_mode,
-            is_tournament,
-            smart_contract_link,
-            contract_address
-        );
+        // Get userId from body (as your frontend sends it)
+        const { userId } = request.body;
+        
+        console.log('Received getUserData request for userId:', userId);
+        
+        // For now, let's return mock data to test the connection
+        const mockUserData = {
+            id: userId,
+            name: 'HUGO',
+            avatar: 'avatarHugo',
+            goalsScored: 42,
+            goalsConceded: 18,
+            tournaments: 7,
+            wins: 28,
+            losses: 12,
+            draws: 3,
+            rank: 15
+        };
 
-        reply.status(201).send({
+        console.log('Returning mock user data:', mockUserData);
+        
+        reply.status(200).send({
             success: true,
-            message: 'Game saved successfully',
-            gameId
+            userData: mockUserData
         });
     } catch (error) {
-        console.log('Error saving game:', error);
-
-        if (error.message.includes('SQLITE_CONSTRAINT')) {
-            reply.status(400).send({
-                success: false,
-                message: 'Database constraint error'
-            });
-        } else {
-            reply.status(500).send({
-                success: false,
-                message: 'Failed to save game'
-            });
-        }
+        console.error('Error in getUserDataHandler:', error);
+        reply.status(500).send({
+            success: false,
+            message: 'Failed to fetch user data'
+        });
     }
 }
 
-async function retrieveGamesHandler(request, reply) {
+
+// Updated saveGameHandler for basic game saving
+async function saveGameHandler(request, reply) {
+	const {
+		player1_id,
+		player2_id,
+		winner_id,
+		player1_name,
+		player2_name,
+		player1_score,
+		player2_score,
+		winner_name,
+		player1_is_ai,
+		player2_is_ai,
+		game_mode,
+		is_tournament,
+		smart_contract_link,
+		contract_address,
+		gameData // Add gameData to the destructuring
+	} = request.body;
+
 	try {
-		const games = await getAllGames();
-		reply.status(200).send({
+		// Create a minimal gameData object if not provided
+		const defaultGameData = gameData || {
+			gameId: `game_${Date.now()}`,
+			generalResult: null,
+			config: {},
+			ballStats: {},
+			itemStats: {},
+			wallStats: {},
+			leftPlayer: {
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPickedCount: 0,
+				powerdownsPickedCount: 0,
+				ballchangesPickedCount: 0,
+				score: player1_score
+			},
+			rightPlayer: {
+				hits: 0,
+				goalsInFavor: 0,
+				goalsAgainst: 0,
+				powerupsPickedCount: 0,
+				powerdownsPickedCount: 0,
+				ballchangesPickedCount: 0,
+				score: player2_score
+			}
+		};
+
+		const gameId = await saveGameToDatabase(
+			player1_id,
+			player2_id,
+			winner_id,
+			player1_name,
+			player2_name,
+			player1_score,
+			player2_score,
+			winner_name,
+			player1_is_ai,
+			player2_is_ai,
+			game_mode,
+			is_tournament,
+			smart_contract_link,
+			contract_address,
+			defaultGameData
+		);
+
+		reply.status(201).send({
 			success: true,
-			games
+			message: 'Game saved successfully',
+			gameId
 		});
 	} catch (error) {
-		console.log('Error fetching games:', error);
-		reply.status(500).send({
-			success: false,
-			message: 'Failed to fetch games'
-		});
+		console.log('Error saving game:', error);
+
+		if (error.message.includes('SQLITE_CONSTRAINT')) {
+			reply.status(400).send({
+				success: false,
+				message: 'Database constraint error'
+			});
+		} else {
+			reply.status(500).send({
+				success: false,
+				message: 'Failed to save game'
+			});
+		}
 	}
-};
+}
 
 async function retrieveLastGameHandler(request, reply) {
 	try {
@@ -302,7 +357,24 @@ const saveResultsHandler = async (request, reply) => {
     }
 };
 
+async function retrieveGamesHandler(request, reply) {
+	try {
+		const games = await getAllGames();
+		reply.status(200).send({
+			success: true,
+			games
+		});
+	} catch (error) {
+		console.log('Error fetching games:', error);
+		reply.status(500).send({
+			success: false,
+			message: 'Failed to fetch games'
+		});
+	}
+};
+
 module.exports = {
+	getUserDataHandler,
 	saveGameHandler,
 	retrieveGamesHandler,
 	retrieveLastGameHandler,

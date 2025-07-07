@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:33:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 12:20:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,14 @@ export class Duel extends Entity {
 	vsText: Text = new Text();
 	nameTags: Text[] = [];
 	statsTexts: Text[] = [];
+	plainStats: string[] = [];
 
 	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
 		
 		this.menu = menu;
+
+		this.getPlainStats()
 
 		this.createDuelGraphic();
 
@@ -79,6 +82,74 @@ export class Duel extends Entity {
 		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
+	getPlainStats(){
+		this.plainStats = [];
+		
+		const tournamentsStat = this.menu.playerData?.tournaments || 0;
+		this.plainStats.push(this.formatStat(tournamentsStat, 'number'));
+	
+		const goalsScoredStat = this.menu.playerData?.goalsScored || 0;
+		this.plainStats.push(this.formatStat(goalsScoredStat, 'number'));
+	
+		const goalsConcededStat = this.menu.playerData?.goalsConceded || 0;
+		this.plainStats.push(this.formatStat(goalsConcededStat, 'number'));
+	
+		const winsStat = this.menu.playerData?.wins || 0;
+		this.plainStats.push(this.formatStat(winsStat, 'number'));
+	
+		const lossesStat = this.menu.playerData?.losses || 0;
+		this.plainStats.push(this.formatStat(lossesStat, 'number'));
+	
+		const drawsStat = this.menu.playerData?.draws || 0;
+		this.plainStats.push(this.formatStat(drawsStat, 'number'));
+	
+		const winLossRatioStat = this.calculateWinLossRatio();
+		this.plainStats.push(this.formatStat(winLossRatioStat, 'ratio'));
+	
+		const rankStat = this.menu.playerData?.rank || 0;
+		this.plainStats.push(this.formatStat(rankStat, 'rank'));
+	
+		console.log('Formatted stats:', this.plainStats);
+	}
+
+	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
+		if (stat === undefined || stat === null) {
+			return "???";
+		}
+		
+		switch (type) {
+			case 'ratio':
+				if (typeof stat === 'number') {
+					return stat.toFixed(3);
+				}
+				return stat.toString();
+				
+			case 'rank':
+				if (typeof stat === 'number') {
+					return stat.toString().padStart(3, '0')
+				}
+				return stat.toString().padStart(3, '0');
+				
+			case 'number':
+			default:
+				if (typeof stat === 'number') {
+					return stat.toString().padStart(3, '0');
+				}
+				return stat.toString().padStart(3, '0');
+		}
+	}
+	
+	calculateWinLossRatio(): number {
+		const wins = this.menu.playerData?.wins || 0;
+		const losses = this.menu.playerData?.losses || 0;
+	
+		if (losses === 0) {
+			return wins > 0 ? 999.999 : 0.000;
+		}
+	
+		return parseFloat((wins / losses).toFixed(3));
+	}
+
 	createStatsTexts(): Text[] {
 		const statsTexts: Text[] = [];
 
@@ -96,7 +167,7 @@ export class Duel extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "           000           000             000\n    000      000     000        0.000    000", 
+			text: `           ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n    ${this.plainStats[3]}      ${this.plainStats[4]}     ${this.plainStats[5]}        ${this.plainStats[6]}    ${this.plainStats[7]}`, 
 			x: 340,
 			y: 600,
 			style: {
@@ -122,7 +193,9 @@ export class Duel extends Entity {
 		} as Text);
 		
 		statsTexts.push({
-			text: this.menu.config.variant === "1vAI" ? "           ???           ???             ???\n    ???      ???     ???        ?????    ???" : "           000           000             000\n    000      000     000        0.000    000" , 
+			text: this.menu.config.variant === "1vAI" ?
+				"           ???           ???             ???\n    ???      ???     ???        ?????    ???" :
+				"           000           000             000\n    000      000     000        0.000    000" ,  //! PENDING OPPONENT STATS
 			x: 785,
 			y: 600,
 			style: {
@@ -144,10 +217,10 @@ export class Duel extends Entity {
 		let rightName = "UNKNOWN";
 	
 		if (this.menu.config.variant === '1vAI') {
-			leftName = "PLAYER";
+			leftName = this.menu.playerData!.name || "Player 1";
 			rightName = "AI-BOT";
 		} else {
-			leftName = "PLAYER 1";
+			leftName = this.menu.playerData!.name || "Player 2";
 			rightName = "PLAYER 2";
 		}
 	

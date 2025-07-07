@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 11:47:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { GameConfig, Preconfiguration } from '../utils/GameConfig';
+import { GameConfig, Preconfiguration, PlayerData } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -209,6 +209,9 @@ export class Menu{
 	wallBowtie!: Sprite;
 	wallHoneycomb!: Sprite;
 
+	// Player Data
+	playerData: PlayerData | null = null;
+
 	constructor(app: Application, language: string, hasPreConfiguration: boolean = false, preconfig?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
@@ -278,7 +281,8 @@ export class Menu{
 	}
 
 	async init(): Promise<void> {
-		console.log(this.language);
+		//! TEST DEBUG
+		await this.testApiCall();
 
 		await this.clearConflictingAssets();
 		await this.loadImages();
@@ -895,6 +899,58 @@ export class Menu{
 			} catch (error) {
 				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
 			}
+		}
+	}
+
+	// API CALL
+	async getUserData(userId: string, token: string): Promise<PlayerData> {
+		try {
+			console.log(`Fetching user data for user ${userId} with token ${token}`);
+			if (!userId || !token) {
+				throw new Error('User ID and token are required to fetch user data');
+			}
+			
+			// Fixed route path to match backend
+			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
+			const response = await fetch('/api/games/getUserData', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					userId: userId
+				})
+			});
+	
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+	
+			const data = await response.json();
+			console.log('User data fetched successfully:', data);
+			
+			// Return the userData property from the response
+			return data.userData as PlayerData;
+		} catch (error) {
+			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	private async testApiCall(): Promise<void> {
+		try {
+			console.log('Testing API call...');
+			const testUserId = 'player1';
+			const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBsYXllcjEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzUxODgxMjg4LCJleHAiOjE3NTE4ODQ4ODh9._x9yAMOPehBHx3hATN-lXKzJRj2j5_g47cuRn7p4hS8";
+			
+			const userData = await this.getUserData(testUserId, testToken);
+			this.playerData = userData;
+			console.log('✅ API call successful! User data:', userData);
+		} catch (error) {
+			console.error('❌ API call failed:', error);
 		}
 	}
 }
