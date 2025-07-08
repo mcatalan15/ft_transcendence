@@ -132,7 +132,10 @@ if [ ! -f "$DB_PATH" ]; then
 		draws INTEGER DEFAULT 0,
 		win_rate FLOAT DEFAULT 0.0,
 		vs_ai_games INTEGER DEFAULT 0,
+		-- Tournament statistics
+		total_tournaments INTEGER DEFAULT 0,
 		tournaments_won INTEGER DEFAULT 0,
+		tournaments_lost INTEGER DEFAULT 0,
 		-- Detailed gameplay statistics
 		total_hits INTEGER DEFAULT 0,
 		total_goals_scored INTEGER DEFAULT 0,
