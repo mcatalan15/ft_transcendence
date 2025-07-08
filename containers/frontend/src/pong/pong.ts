@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pong.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 11:31:10 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/08 12:11:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,11 @@ export async function initGame(container: HTMLElement) {
     if (hasPreconfig) {
       preconfig = {
         mode: url.searchParams.get('mode') as 'local' | 'online' || 'online',
-        variant: mode,
+        variant: mode!,
       };
     }
   }
 
-  const menu = new Menu(app, language, hasPreconfig, preconfig);
+  const menu = new Menu(app, language, hasPreconfig, preconfig!);
   await menu.init(false, true);
 };
