@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:33:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:09:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,14 @@ export class Duel extends Entity {
 	vsText: Text = new Text();
 	nameTags: Text[] = [];
 	statsTexts: Text[] = [];
+	plainStats: string[] = [];
 
 	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
 		
 		this.menu = menu;
+
+		this.getPlainStats()
 
 		this.createDuelGraphic();
 
@@ -79,11 +82,91 @@ export class Duel extends Entity {
 		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
+	getPlainStats(){
+		this.plainStats = [];
+		
+		const tournamentsStat = this.menu.playerData?.tournaments || 0;
+		this.plainStats.push(this.formatStat(tournamentsStat, 'number'));
+	
+		const goalsScoredStat = this.menu.playerData?.goalsScored || 0;
+		this.plainStats.push(this.formatStat(goalsScoredStat, 'number'));
+	
+		const goalsConcededStat = this.menu.playerData?.goalsConceded || 0;
+		this.plainStats.push(this.formatStat(goalsConcededStat, 'number'));
+	
+		const winsStat = this.menu.playerData?.wins || 0;
+		this.plainStats.push(this.formatStat(winsStat, 'number'));
+	
+		const lossesStat = this.menu.playerData?.losses || 0;
+		this.plainStats.push(this.formatStat(lossesStat, 'number'));
+	
+		const drawsStat = this.menu.playerData?.draws || 0;
+		this.plainStats.push(this.formatStat(drawsStat, 'number'));
+	
+		const winLossRatioStat = this.calculateWinLossRatio();
+		this.plainStats.push(this.formatStat(winLossRatioStat, 'ratio'));
+	
+		const rankStat = this.menu.playerData?.rank || 0;
+		this.plainStats.push(this.formatStat(rankStat, 'rank'));
+	
+		console.log('Formatted stats:', this.plainStats);
+	}
+
+	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
+		if (stat === undefined || stat === null) {
+			return "???";
+		}
+		
+		switch (type) {
+			case 'ratio':
+				if (typeof stat === 'number') {
+					if (stat < 10) {
+						const formatted = stat.toFixed(2);
+						const [integerPart, decimalPart] = formatted.split('.');
+						const paddedInteger = integerPart.padStart(2, '0');
+						return `${paddedInteger}.${decimalPart}`;
+					} else if (stat < 100) {
+						return stat.toFixed(2);
+					} else {
+						return stat.toFixed(1);
+					}
+				}
+				return stat.toString();
+				
+			case 'rank':
+				if (typeof stat === 'number') {
+					const formatted = stat.toFixed(1);
+					const [integerPart, decimalPart] = formatted.split('.');
+					const paddedInteger = integerPart.padStart(3, '0');
+					return `${paddedInteger}.${decimalPart}`;
+				}
+				return stat.toString();
+				
+			case 'number':
+			default:
+				if (typeof stat === 'number') {
+					return stat.toString().padStart(3, '0');
+				}
+				return stat.toString().padStart(3, '0');
+		}
+	}
+	
+	calculateWinLossRatio(): number {
+		const wins = this.menu.playerData?.wins || 0;
+		const losses = this.menu.playerData?.losses || 0;
+	
+		if (losses === 0) {
+			return wins > 0 ? 100 : 0.00;
+		}
+	
+		return parseFloat((wins / losses).toFixed(2));
+	}
+
 	createStatsTexts(): Text[] {
 		const statsTexts: Text[] = [];
 
 		statsTexts.push({
-			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
+			text: this.getStatsTextInLanguage(),
 			x: 340,
 			y: 600,
 			style: {
@@ -96,7 +179,7 @@ export class Duel extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "           000           000             000\n    000      000     000        0.000    000", 
+			text: this.getStatsValuesInLanguage(true), 
 			x: 340,
 			y: 600,
 			style: {
@@ -109,7 +192,7 @@ export class Duel extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   W-LRATIO     RANK   ", 
+			text: this.getStatsTextInLanguage(), 
 			x: 785,
 			y: 600,
 			style: {
@@ -122,7 +205,7 @@ export class Duel extends Entity {
 		} as Text);
 		
 		statsTexts.push({
-			text: this.menu.config.variant === "1vAI" ? "           ???           ???             ???\n    ???      ???     ???        ?????    ???" : "           000           000             000\n    000      000     000        0.000    000" , 
+			text: this.getStatsValuesInLanguage(false),
 			x: 785,
 			y: 600,
 			style: {
@@ -140,15 +223,33 @@ export class Duel extends Entity {
 	createNameTags(): Text[] {
 		const nameTags: Text[] = [];
 	
-		let leftName = "UNKNOWN";
-		let rightName = "UNKNOWN";
+		let leftName =  this.menu.playerData!.name.toUpperCase() || "PLAYER 1"
+		let rightName;
+
+		switch (this.menu.language) {
+			case ('en'): {
+				rightName = "GUEST";
+				break;
+			}
+
+			case ('es'): {
+				rightName = "INVITADE";
+				break;
+			}
+
+			case ('fr'): {
+				rightName = "INVITÉ";
+				break;
+			}
+
+			case ('cat'): {
+				rightName = "CONVIDAT";
+				break;
+			}
+		}
 	
 		if (this.menu.config.variant === '1vAI') {
-			leftName = "PLAYER";
 			rightName = "AI-BOT";
-		} else {
-			leftName = "PLAYER 1";
-			rightName = "PLAYER 2";
 		}
 	
 		nameTags.push({
@@ -424,6 +525,66 @@ export class Duel extends Entity {
 			this.replaceComponent('text', statsTextComponent, `statsText${i}`);
 		}
 	}
+
+	getStatsTextInLanguage(): string {
+		switch (this.menu.language) {
+			case ('es'): {
+				return ("TORNEOS   GOLESMARCADOS   GOLESCONCEDIDOS   \nVICTORIAS   DERROTAS   EMPATES   RATIOVD     ELO     ");
+			}
+
+			case ('fr'): {
+				return "TOURNOIS   BUTSMARQUÉS   BUTSENCAISSÉS   \nVICTOIRES   DÉFAITES   MATCHSNULS   RATIOVD     ELO     ";
+			}
+
+			case ('cat'): {
+				return "TORNEIGS   GOLSMARCATS   GOLSENCAIXATS   \nVICTÒRIES   DERROTES   EMPATS   RÀTIOVD     ELO     ";
+			}
+
+			default: {
+				return "TOURNAMENTS   GOALSSCORED   GOALSCONCEDED   \nWINS   LOSSES   DRAWS   WLRATIO     ELO     ";
+			}
+		}
+	};
+
+	getStatsValuesInLanguage(known: boolean): string {
+		if (known) {
+			switch (this.menu.language) {
+				case ('es'): {
+					return (`       ${this.plainStats[0]}             ${this.plainStats[1]}               ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}       ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+				}
+
+				case ('fr'): {
+					return (`        ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}          ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+				}
+
+				case ('cat'): {
+					return (`        ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}      ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+				}
+				
+				default: {
+					return (`           ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n    ${this.plainStats[3]}      ${this.plainStats[4]}     ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+				}
+			}
+		} else {
+			switch (this.menu.language) {
+				case ('es'): {
+					return "       ???             ???               ???\n         ???        ???       ???       ?????   ?????";
+				}
+
+				case ('fr'): {
+					return "        ???           ???             ???\n         ???        ???          ???       ?????   ?????";
+				}
+
+				case ('cat'): {
+					return "        ???           ???             ???\n         ???        ???      ???       ?????   ?????";
+				}
+
+				default: {
+					return "           ???           ???             ???\n    ???      ???     ???       ??????  ?????";
+				}
+			}
+		}
+	}	
 
 	getRandomName(index: number): string {
 		const names = [

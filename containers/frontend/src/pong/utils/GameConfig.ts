@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GameConfig.ts                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 16:24:00 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:10:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,4 +105,20 @@ export interface GameData {
 		powerdownsPicked: number;
 		ballchangesPicked: number;
 	};
+}
+
+export interface PlayerData {
+    id: string;
+    name: string;
+    avatar: string;
+    type: 'human' | 'ai';
+    side: 'left' | 'right';
+    goalsScored: number;
+    goalsConceded: number;
+    tournaments: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    rank: number;
+    totalPlayers?: number;
 }

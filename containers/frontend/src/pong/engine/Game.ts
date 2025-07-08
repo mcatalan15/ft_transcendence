@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:20:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 11:32:26 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,7 +293,7 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name || 'Player 1',
+				name: this.leftPlayer.name|| 'PLAYER 1',
 				score: 0,
 				result: null,
 				hits: 0,
@@ -304,7 +304,7 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-				name: this.rightPlayer.name || 'Player 2',
+				name: this.rightPlayer.name || 'PLAYER 2',
 				score: 0,
 				result: null,
 				hits: 0,
@@ -411,6 +411,20 @@ export class PongGame {
 				onload: () => console.log('paddleResetDown loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
+			endGame: new Howl({
+				src: ['/assets/sfx/used/explosion_filtered02.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('Explosion2 loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+			}),
+			spawn: new Howl({
+				src: ['/assets/sfx/used/spawn_filtered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('paddleResetDown loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+			}),
 		};
 	}
 
@@ -460,7 +474,7 @@ export class PongGame {
 		console.log("Bottom wall created");
 
 		// Create Paddles
-		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name);
+		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name.toUpperCase());
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
@@ -468,7 +482,7 @@ export class PongGame {
 		this.entities.push(paddleL);
 		console.log("Left paddle created");
 
-		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name);
+		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name.toUpperCase());
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
 		const paddleRText = paddleR.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleRRender.graphic);
@@ -582,21 +596,18 @@ export class PongGame {
 		
 		const middleLine = new Graphics();
 		
-		// Calculate how many complete segments we can fit
 		const numSegments = Math.floor(totalHeight / segmentSize);
 		
 		for (let i = 0; i < numSegments; i++) {
 			const dashStartY = startY + (i * segmentSize);
 			const dashEndY = dashStartY + dashSize;
 			
-			// Only draw if the dash end doesn't exceed our boundary
 			if (dashEndY <= endY) {
 				middleLine.moveTo(centerX, dashStartY);
 				middleLine.lineTo(centerX, dashEndY);
 			}
 		}
 		
-		// Handle any remaining space with a partial dash
 		const remainingSpace = totalHeight - (numSegments * segmentSize);
 		if (remainingSpace > 0) {
 			const lastDashStart = startY + (numSegments * segmentSize);
@@ -684,7 +695,6 @@ export class PongGame {
 		]);
 	}
 
-	// Add detailed debugging to the updateFromServer method:
 	updateFromServer(gameState: any) {
 		if (!this.isOnline || !gameState) return;
 
@@ -829,6 +839,10 @@ export class PongGame {
 				return;
 			}
 	
+			const requestBody = {
+				gameData: this.data
+			};
+	
 			console.log('Making API call to /api/games/results');
 			const response = await fetch(getApiUrl('/games/results'), {
 				method: 'POST',
@@ -849,7 +863,7 @@ export class PongGame {
 				const result = await response.json();
 				console.log('Game results saved successfully:', result);
 			} else {
-				const error = await response.json();
+				const error = await response.text();
 				console.error('Failed to save game results:', error);
 			}
 		} catch (error) {
@@ -857,7 +871,6 @@ export class PongGame {
 		}
 	}
 
-	// In Game.ts
 	async cleanup(): Promise<void> {
 		try {			
 			if (this.sounds) {

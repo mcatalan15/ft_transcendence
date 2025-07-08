@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 17:07:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:19:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,9 @@ export class MenuButtonSystem implements System {
         this.menu.glossaryQuitButton.resetButton();
         this.menu.glossaryOverlay.header.redrawOverlayElements();
         this.menu.glossaryButton.setClicked(true);
+        this.menu.tournamentFiltersButton.setClickable(false);
+        this.menu.tournamentGlossaryButton.setClickable(false);
+        this.menu.readyButton.setClickable(false);
         this.menu.glossaryOverlay.show();
         this.overlayStack.push('glossary');
         this.setButtonsClickability(false);
@@ -250,6 +253,9 @@ export class MenuButtonSystem implements System {
                 this.overlayStack.splice(index, 1);
             }
             
+            this.menu.tournamentFiltersButton.setClickable(true);
+            this.menu.tournamentGlossaryButton.setClickable(true);
+            this.menu.readyButton.setClickable(true);
             this.setButtonsClickability(this.overlayStack.length === 0);
 
             if (this.glossaryOpenedBy === 'main') {
@@ -611,7 +617,6 @@ export class MenuButtonSystem implements System {
                 playButton.getContainer().cursor = 'pointer';
                 playButton.setClicked(false);
                 
-                // Remove old listeners and add new ones
                 playButton.getContainer().removeAllListeners();
                 playButton.setupEventHandlers();
             } else {

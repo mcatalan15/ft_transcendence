@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:55:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/07 15:50:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -685,7 +685,7 @@ export class ButtonManager {
 					case ('en'): return 'CRT FILTER: ON';
 					case ('es'): return 'FILTRO CRT: SÍ';
 					case ('fr'): return 'FILTRE CRT: OUI';
-					case ('cat'): return 'FILTRE CRT: SI';
+					case ('cat'): return 'FILTRE CRT: SÍ';
 					default: return 'CRT FILTER: ON';
 				}
 			}

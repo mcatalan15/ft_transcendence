@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:05:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 09:35:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ export class BallSpawner {
 		game.renderLayers.foreground.addChild(ballRender.graphic);
 		game.entities.push(ball);
         game.data.balls.defaultBalls++;
+        if (!game.config.classicMode)
+            game.sounds.spawn.play();
 		console.log("DefaultBall spawned")
     }
 

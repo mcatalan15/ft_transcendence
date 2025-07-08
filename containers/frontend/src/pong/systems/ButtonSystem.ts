@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:52:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:20:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 10:31:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,6 @@ export class ButtonSystem implements System {
 	
 	private returnToMenu(): void {
 		const menu = new Menu(this.game.app, this.game.language);
-		menu.init();
+		menu.init(this.game.config.classicMode, this.game.config.filters);
 	}
 }

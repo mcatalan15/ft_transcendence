@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 11:33:13 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { GameConfig, Preconfiguration } from '../utils/GameConfig';
+import { GameConfig, Preconfiguration, PlayerData } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -78,7 +78,7 @@ export class Menu{
 	width: number;
 	height: number;
 	ballAmount: number = 0;
-	maxBalls: number = 40;
+	maxBalls: number = 50;
 	entities: Entity[] = [];
     systems: System[] = [];
 	eventQueue: GameEvent[] = [];
@@ -209,7 +209,10 @@ export class Menu{
 	wallBowtie!: Sprite;
 	wallHoneycomb!: Sprite;
 
-	constructor(app: Application, language: string, hasPreConfiguration: boolean = false, preconfig?: Preconfiguration) {
+	// Player Data
+	playerData: PlayerData | null = null;
+
+	constructor(app: Application, language: string, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
@@ -270,26 +273,16 @@ export class Menu{
 				{ name: 'Player 2', type: 'human', side: 'right' }
 			]
 		};
-
+		
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
-			this.preconfig = preconfig!;
-			this.config = {
-				mode: preconfig!.mode,
-				variant: preconfig!.variant,
-				classicMode: preconfig!.classicMode || true,
-				filters: false,
-				players: [
-					{ name: 'Player 1', type: 'human', side: 'left' },
-					{ name: 'Player 2', type: 'human', side: 'right' }
-				]
-			}
+			this.preconfig = preconfiguration!;
 		}
 	}
 
-	async init(): Promise<void> {
-		console.log(this.language);
-		console.log(this.config.filters);
+	async init(classic: boolean, filters: boolean): Promise<void> {
+		//! TEST DEBUG
+		await this.testApiCall();
 
 		await this.clearConflictingAssets();
 		await this.loadImages();
@@ -321,7 +314,63 @@ export class Menu{
 				system.update(this.entities, frameData);
 			});
 		});
-		this.handleFiltersClick
+
+		this.applyInitialConfiguration(classic, filters);
+	}
+
+	private applyInitialConfiguration(classic: boolean, filters: boolean): void {
+		console.log('Applying initial configuration...');
+		console.log('Current config:', this.config);
+		
+		// Only apply classic mode if it's NOT already in the desired state
+		if (classic) {
+			// We want classic mode ON, check if button reflects this
+			if (!this.classicButton.getIsClicked()) {
+				console.log('Classic mode should be ON, simulating click to turn it ON');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleClassicClicked();
+				}
+			} else {
+				console.log('Classic mode already correctly set to ON');
+			}
+		} else {
+			// We want classic mode OFF, check if button reflects this
+			if (this.classicButton.getIsClicked()) {
+				console.log('Classic mode should be OFF, simulating click to turn it OFF');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleClassicClicked();
+				}
+			} else {
+				console.log('Classic mode already correctly set to OFF');
+			}
+		}
+		
+		// Apply filters setting - same logic
+		if (filters) {
+			// We want filters OFF, check if button reflects this
+			if (!this.filtersButton.getIsClicked()) {
+				console.log('Filters should be OFF, simulating click to turn them OFF');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleFiltersClicked();
+				}
+			} else {
+				console.log('Filters already correctly set to OFF');
+			}
+		} else {
+			// We want filters ON, check if button reflects this
+			if (this.filtersButton.getIsClicked()) {
+				console.log('Filters should be ON, simulating click to turn them ON');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleFiltersClicked();
+				}
+			} else {
+				console.log('Filters already correctly set to ON');
+			}
+		}
 	}
 
 	createTitle(){
@@ -860,19 +909,16 @@ export class Menu{
 			
 			this.audioInitialized = true;
 			
-			// Process any pending audio
 			this.pendingAudio.forEach(fn => fn());
 			this.pendingAudio = [];
 		};
 	
-		// Listen for any user interaction
 		const events = ['click', 'keydown', 'touchstart', 'mousedown'];
 		events.forEach(event => {
 			document.addEventListener(event, initializeAudio, { once: true });
 		});
 	}
 	
-	// Helper method for playing sounds
 	public playSound(soundKey: keyof MenuSounds): void {
 		if (this.audioInitialized && this.sounds && this.sounds[soundKey]) {
 			console.log(`Playing ${soundKey}...`);
@@ -904,6 +950,67 @@ export class Menu{
 			} catch (error) {
 				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
 			}
+		}
+	}
+
+	// API CALL
+	async getUserData(userId: string, token: string): Promise<PlayerData> {
+		try {
+			console.log(`Fetching user data for user ${userId} with token ${token}`);
+			if (!userId || !token) {
+				throw new Error('User ID and token are required to fetch user data');
+			}
+			
+			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
+			const response = await fetch('/api/games/getUserData', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					userId: userId
+				})
+			});
+	
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+	
+			const data = await response.json();
+			console.log('User data fetched successfully:', data);
+			
+			return data.userData as PlayerData;
+		} catch (error) {
+			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	private async testApiCall(): Promise<void> {
+		try {
+			console.log('Testing API call with real user data...');
+			
+			const testUserId = '1'; 
+			const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBsYXllcjEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzUxODgxMjg4LCJleHAiOjE3NTE4ODQ4ODh9._x9yAMOPehBHx3hATN-lXKzJRj2j5_g47cuRn7p4hS8";
+			
+			const userData = await this.getUserData(testUserId, testToken);
+			this.playerData = userData;
+			console.log('✅ API call successful! Real user data:', userData);
+			console.log('User stats from database:', {
+				name: userData.name,
+				wins: userData.wins,
+				losses: userData.losses,
+				draws: userData.draws,
+				goalsScored: userData.goalsScored,
+				goalsConceded: userData.goalsConceded,
+				tournaments: userData.tournaments,
+				rank: userData.rank
+			});
+		} catch (error) {
+			console.error('❌ API call failed:', error);
 		}
 	}
 }

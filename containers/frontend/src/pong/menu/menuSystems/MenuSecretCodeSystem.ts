@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 16:14:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 09:46:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,9 @@ export class SecretCodeSystem implements System {
             effect: () => {
                 if (!this.menu.config.classicMode) {
                     for(let i = 0; i <= 50; i++) {
+                        setTimeout(() => {
                         MenuBallSpawner.spawnDefaultBallInMenu(this.menu);
+                        }, i * 20);
                     }
                 }
             },
@@ -254,28 +256,6 @@ export class SecretCodeSystem implements System {
                 }
             },
         }); */
-    }
-
-    private shouldEscapeBeActive(): boolean {
-        const buttonSystem = this.menu.systems.find(system => 
-            system.constructor.name === 'ButtonSystem'
-        ) as any;
-        
-        if (buttonSystem && typeof buttonSystem.getEscapeActive === 'function') {
-            return buttonSystem.getEscapeActive();
-        }
-        
-        if (this.menu.glossaryButton.getIsClicked()) {
-            return this.menu.overlayBackground.isAnimationComplete() && 
-                   this.menu.overlayBackground.getCurrentAlpha() === 1 &&
-                   this.menu.glossaryES.isAnimationComplete() &&
-                   this.menu.glossaryES.getCurrentAlpha() === 1;
-        } else if (this.menu.aboutButton.getIsClicked()) {
-            return this.menu.overlayBackground.isAnimationComplete() && 
-                   this.menu.overlayBackground.getCurrentAlpha() === 1;
-        }
-        
-        return false;
     }
 
     private konamiEffect(): void {
