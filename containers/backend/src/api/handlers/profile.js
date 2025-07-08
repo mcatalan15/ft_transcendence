@@ -6,7 +6,8 @@ const { updateUserAvatar,
 	checkFriendship,
 	updateNickname,
 	getHashedPassword,
-	changePassword
+	changePassword,
+	getUserProfileStats
 } = require('../db/database');
 
 const onlineTracker = require('../../utils/onlineTracker');
@@ -18,6 +19,7 @@ async function getUserProfile(request, reply) {
         const requestedUsername = request.params.username;
 
         let targetUser;
+        let userStats;
         let isOwnProfile = false;
         let isFriend = false;
 
@@ -39,11 +41,12 @@ async function getUserProfile(request, reply) {
             targetUser = {
                 id_user: sessionUser.userId,
                 username: sessionUser.username,
-                email: sessionUser.email,
-				isOwnProfile: isOwnProfile,
-            	isFriend: isFriend
+                email: sessionUser.email
             };
         }
+
+        // Fetch user stats
+        userStats = await getUserProfileStats(targetUser.id_user);
 
         isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
 
@@ -52,7 +55,13 @@ async function getUserProfile(request, reply) {
             username: targetUser.username,
             email: targetUser.email,
             isOwnProfile: isOwnProfile,
-            isFriend: isFriend
+            isFriend: isFriend,
+            stats: {
+                totalGames: userStats.total_games,
+                wins: userStats.wins,
+                losses: userStats.losses,
+                totalTournaments: userStats.total_tournaments
+            }
         });
 
     } catch (error) {
@@ -63,6 +72,58 @@ async function getUserProfile(request, reply) {
         });
     }
 }
+
+// async function getUserProfile(request, reply) {
+//     try {
+//         const sessionUser = request.session.get('user');
+//         const requestedUsername = request.params.username;
+
+//         let targetUser;
+//         let isOwnProfile = false;
+//         let isFriend = false;
+
+//         if (requestedUsername) {
+//             targetUser = await getUserByUsername(requestedUsername);
+
+//             if (!targetUser) {
+//                 return reply.status(404).send({
+//                     success: false,
+//                     message: 'User not found'
+//                 });
+//             }
+
+//             // Check if they are friends (only if viewing someone else's profile)
+//             if (targetUser.id_user !== sessionUser.userId) {
+//                 isFriend = await checkFriendship(sessionUser.userId, targetUser.id_user);
+//             }
+//         } else {
+//             targetUser = {
+//                 id_user: sessionUser.userId,
+//                 username: sessionUser.username,
+//                 email: sessionUser.email,
+// 				isOwnProfile: isOwnProfile,
+//             	isFriend: isFriend
+//             };
+//         }
+
+//         isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
+
+//         return reply.status(200).send({
+//             userId: targetUser.id_user,
+//             username: targetUser.username,
+//             email: targetUser.email,
+//             isOwnProfile: isOwnProfile,
+//             isFriend: isFriend
+//         });
+
+//     } catch (error) {
+//         console.error('Error fetching profile:', error);
+//         return reply.status(500).send({
+//             success: false,
+//             message: 'Internal server error'
+//         });
+//     }
+// }
 
 async function avatarUploadHandler(request, reply) {
 	try {

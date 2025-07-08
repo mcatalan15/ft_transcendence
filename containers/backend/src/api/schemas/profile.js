@@ -1,72 +1,84 @@
 const { updatePassword } = require("../db/database");
 
 const profileSchema = {
-	description: 'Get non-sensitive data from the user\'s profile.\
-	The user needs to be logged-in prior to accessing the profile.\
-	Returns null values in case of failure.\
-	',
-	tags: ['profile'],
-	querystring: {
-	  type: 'object',
-	  properties: {
-		userId: { type: 'string', description: 'User\'s ID from the database' },
-	  }
-	},
-	response: {
-	  200: {
-		description: 'Profile fetched successfully',
-		type: 'object',
-		properties: {
-		  userId: { type: 'string', description: 'User\'s ID' },
-		  username: { type: 'string', description: 'Username' },
-		  email: { type: 'string', description: 'User\'s email address' },
-		  avatarUrl: { type: 'string', description: 'URL of the user\'s avatar' },
-		  isOwnProfile: { type: 'boolean', description: 'Whether this is the current user\'s own profile' },
-		  isFriend: { type: 'boolean', description: 'Whether the current user is friends with this profile user' }
-		},
-		example: {
-		  userId: '42',
-		  username: 'testuser',
-		  email: 'user@test.com',
-		  avatarUrl: '/api/profile/avatar/42',
-		  isOwnProfile: false,
-		  isFriend: true
-		}
-	  },
-	  400: {
-		description: 'Couldn\'t fetch user\'s profile',
-		type: 'object',
-		properties: {
-		  userId: { type: 'null', description: 'User\'s ID' },
-		  username: { type: 'null', description: 'Username' },
-		  email: { type: 'null', description: 'User\'s email address' },
-		  avatarUrl: { type: 'null', description: 'URL of the user\'s avatar' },
-		},
-		example: {
-		  userId: null,
-		  username: null,
-		  email: null,
-		  avatarUrl: null
-		}
-	  },
-	  500: {
-		description: 'Internal server error',
-		type: 'object',
-		properties: {
-		  userId: { type: 'null', description: 'User\'s ID' },
-		  username: { type: 'null', description: 'Username' },
-		  email: { type: 'null', description: 'User\'s email address' },
-		  avatarUrl: { type: 'null', description: 'URL of the user\'s avatar' },
-		},
-		example: {
-		  userId: null,
-		  username: null,
-		  email: null,
-		  avatarUrl: null
-		}
-	  }
-	}
-  };
+    description: 'Get non-sensitive data from the user\'s profile.\
+    The user needs to be logged-in prior to accessing the profile.\
+    Returns null values in case of failure.\
+    ',
+    tags: ['profile'],
+    querystring: {
+        type: 'object',
+        properties: {
+            userId: { type: 'string', description: 'User\'s ID from the database' },
+        }
+    },
+    response: {
+        200: {
+            description: 'Profile fetched successfully',
+            type: 'object',
+            properties: {
+                userId: { type: 'string', description: 'User\'s ID' },
+                username: { type: 'string', description: 'Username' },
+                email: { type: 'string', description: 'User\'s email address' },
+                avatarUrl: { type: 'string', description: 'URL of the user\'s avatar' },
+                isOwnProfile: { type: 'boolean', description: 'Whether this is the current user\'s own profile' },
+                isFriend: { type: 'boolean', description: 'Whether the current user is friends with this profile user' },
+                stats: {
+                    type: 'object',
+                    description: 'User\'s game statistics',
+                    properties: {
+                        totalGames: { type: 'integer', description: 'Total number of games played' },
+                        wins: { type: 'integer', description: 'Number of games won' },
+                        losses: { type: 'integer', description: 'Number of games lost' },
+                        totalTournaments: { type: 'integer', description: 'Number of tournaments' }
+                    }
+                }
+            },
+            example: {
+                userId: '42',
+                username: 'testuser',
+                email: 'user@test.com',
+                avatarUrl: '/api/profile/avatar/42',
+                isOwnProfile: false,
+                isFriend: true,
+                stats: {
+                    totalGames: 100,
+                    wins: 60,
+                    losses: 30,
+                    tournamentsWon: 5
+                }
+            }
+        },
+        400: {
+            description: 'Couldn\'t fetch user\'s profile',
+            type: 'object',
+            properties: {
+                userId: { type: 'null', description: 'User\'s ID' },
+                username: { type: 'null', description: 'Username' },
+                email: { type: 'null', description: 'User\'s email address' },
+                avatarUrl: { type: 'null', description: 'URL of the user\'s avatar' },
+            },
+            example: {
+                userId: null,
+                username: null,
+                email: null,
+                avatarUrl: null
+            }
+        },
+		500: {
+            description: 'Internal server error',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', description: 'Whether the request was successful' },
+                message: { type: 'string', description: 'Error message' }
+            },
+            example: {
+                success: false,
+                message: 'Internal server error'
+            }
+        }
+    }
+};
 
 const uploadAvatarSchema = {
 	description: 'Allow the user to upload a new avatar to replace the old one.\

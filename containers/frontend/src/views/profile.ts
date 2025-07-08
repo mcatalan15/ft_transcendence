@@ -9,53 +9,6 @@ import { translateDOM } from '../utils/translateDOM';
 import { navigate } from '../utils/router';
 import { getApiUrl } from '../config/api';
 
-// async function fetchUserStats(username?: string): Promise<any> {
-//     try {
-//         const statsEndpoint = username ? `/api/stats/${username}` : '/api/stats';
-//         const response = await fetch(statsEndpoint, {
-//             credentials: 'include',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-
-//         if (!response.ok) {
-//             console.warn(`Stats API returned ${response.status}, using default values`);
-//             return {
-//                 matchesPlayed: 0,
-//                 tournamentsPlayed: 0,
-//                 victories: 0,
-//                 losses: 0,
-//                 winRate: 0.0,
-//                 draws: 0
-//             };
-//         }
-
-//         const data = await response.json();
-        
-//         // Ensure all values exist and default to 0 if missing
-//         return {
-//             matchesPlayed: data.total_games || 0,
-//             tournamentsPlayed: data.tournaments_won || 0, // You might need to adjust this based on your DB schema
-//             victories: data.wins || 0,
-//             losses: data.losses || 0,
-//             winRate: data.win_rate || 0.0,
-//             draws: data.draws || 0
-//         };
-//     } catch (error) {
-//         console.error('Error fetching user stats:', error);
-//         // Return default values on error
-//         return {
-//             matchesPlayed: 0,
-//             tournamentsPlayed: 0,
-//             victories: 0,
-//             losses: 0
-//         };
-//     }
-// 	console.log('fetchUserStats called with username:', username);
-// 	console.log('fetchUserStats returning:', Response);
-// }
-
 async function updateOnlineStatus(userId: string): Promise<void> {
 	try {
 		const response = await fetch(getApiUrl(`/profile/status/${userId}`), {
@@ -111,6 +64,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	const isOwnProfile = !username || username === currentUser;
 
 	const apiEndpoint = username ? getApiUrl(`/profile/${username}`) : getApiUrl('/profile');
+	console.log('API Endpoint:', apiEndpoint);
 
 	await i18n.loadNamespaces('profile');
 
@@ -305,9 +259,19 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	stat3.className = 'text-lg md:text-xl text-amber-50 mb-1 md:mb-2 flex items-center gap-2 md:gap-3';
 	stat3.innerHTML = `<span class="font-bold text-3xl md:text-4xl">0</span> <span>${i18n.t('victories', { ns: 'profile' }) || 'Victorias'}</span>`;
 
+	const stat4 = document.createElement('div');
+	stat4.className = 'text-lg md:text-xl text-amber-50 mb-1 md:mb-2 flex items-center gap-2 md:gap-3';
+	stat4.innerHTML = `<span class="font-bold text-3xl md:text-4xl">0</span> <span>${i18n.t('Losses', { ns: 'profile' }) || 'Derrotas'}</span>`;
+
+	const stat5 = document.createElement('div');
+	stat5.className = 'text-lg md:text-xl text-amber-50 mb-1 md:mb-2 flex items-center gap-2 md:gap-3';
+	stat5.innerHTML = `<span class="font-bold text-3xl md:text-4xl">0</span> <span>${i18n.t('Win rate', { ns: 'profile' }) || 'Porcentaje victorias'}</span>`;
+	
 	middleCol.appendChild(stat1);
 	middleCol.appendChild(stat2);
 	middleCol.appendChild(stat3);
+	middleCol.appendChild(stat4);
+	middleCol.appendChild(stat5);
 
 	// RIGHT COL
 	const rightCol = document.createElement('div');
@@ -390,6 +354,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 
 		.then(data => {
 			console.log('Profile data:', data);
+			console.log('stats:', data.stats);
 			if (!data) return;
 
 			const username = data.username;
@@ -416,15 +381,24 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 				}
 			}
 
+			
 			// Update stats if they exist
-			if (data.matchesPlayed !== undefined) {
-				stat1.querySelector('span.font-bold').textContent = data.matchesPlayed;
+			if (data.stats.totalGames !== undefined) {
+				stat1.querySelector('span.font-bold').textContent = data.stats?.totalGames || '0';
 			}
-			if (data.tournamentsPlayed !== undefined) {
-				stat2.querySelector('span.font-bold').textContent = data.tournamentsPlayed;
+			if (data.stats.totalTournaments !== undefined) {
+				stat2.querySelector('span.font-bold').textContent = data.stats.totalTournaments || '0';
 			}
-			if (data.victories !== undefined) {
-				stat3.querySelector('span.font-bold').textContent = data.victories;
+			if (data.stats.wins !== undefined) {
+				stat3.querySelector('span.font-bold').textContent = data.stats?.wins || '0';
+			}
+			if (data.stats.losses !== undefined) {
+				stat4.querySelector('span.font-bold').textContent = data.stats?.losses || '0';
+			}
+			// Win rate calculation
+			if (data.stats.totalGames && data.stats.wins !== undefined) {
+				const winRate = ((data.stats.wins / data.stats.totalGames) * 100).toFixed(0);
+				stat5.querySelector('span.font-bold').textContent = `${winRate}%`;
 			}
 
 			if (!isOwnProfile) {
