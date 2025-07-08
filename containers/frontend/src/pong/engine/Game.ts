@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 16:49:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 19:15:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ export class PongGame {
 
 	isOnline: boolean = false;
 	gameId?: string;
-	localPlayerNumber?: number;
+	localPlayerNumber?: number = 0;
 	networkManager?: any;
 
 	serverBallPosition: { x: number, y: number } = { x: 0, y: 0 };
@@ -235,7 +235,7 @@ export class PongGame {
 		const buttonSystem = new ButtonSystem(this);
 
 		this.systems.push(renderSystem);
-		if (!this.isOnline) this.systems.push(inputSystem);
+		this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);

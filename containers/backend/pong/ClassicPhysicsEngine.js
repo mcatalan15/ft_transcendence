@@ -14,30 +14,39 @@ class ClassicPhysicsEngine {
     }
 
     updatePaddles(deltaTime, paddleInputs) {
-        // Update paddle 1 (left)
-        if (paddleInputs.p1 === -1) {
-            this.gameState.paddle1.y -= this.paddleSpeed * deltaTime;
-        } else if (paddleInputs.p1 === 1) {
-            this.gameState.paddle1.y += this.paddleSpeed * deltaTime;
-        }
-
-        // Update paddle 2 (right)
-        if (paddleInputs.p2 === -1) {
-            this.gameState.paddle2.y -= this.paddleSpeed * deltaTime;
-        } else if (paddleInputs.p2 === 1) {
-            this.gameState.paddle2.y += this.paddleSpeed * deltaTime;
-        }
-
-        // Clamp paddles to screen bounds
-        this.gameState.paddle1.y = Math.max(
-            this.gameState.paddleHeight / 2, 
-            Math.min(this.gameState.height - this.gameState.paddleHeight / 2, this.gameState.paddle1.y)
-        );
-        this.gameState.paddle2.y = Math.max(
-            this.gameState.paddleHeight / 2, 
-            Math.min(this.gameState.height - this.gameState.paddleHeight / 2, this.gameState.paddle2.y)
-        );
-    }
+		console.log(`🎮 PHYSICS: Updating paddles with inputs:`, paddleInputs);
+		
+		const originalP1Y = this.gameState.paddle1.y;
+		const originalP2Y = this.gameState.paddle2.y;
+		
+		// Update paddle 1 (left)
+		if (paddleInputs.p1 === -1) {
+			this.gameState.paddle1.y -= this.paddleSpeed * deltaTime;
+			console.log(`🎮 PHYSICS: Paddle1 (LEFT) moving UP: ${originalP1Y} -> ${this.gameState.paddle1.y}`);
+		} else if (paddleInputs.p1 === 1) {
+			this.gameState.paddle1.y += this.paddleSpeed * deltaTime;
+			console.log(`🎮 PHYSICS: Paddle1 (LEFT) moving DOWN: ${originalP1Y} -> ${this.gameState.paddle1.y}`);
+		}
+	
+		// Update paddle 2 (right)
+		if (paddleInputs.p2 === -1) {
+			this.gameState.paddle2.y -= this.paddleSpeed * deltaTime;
+			console.log(`🎮 PHYSICS: Paddle2 (RIGHT) moving UP: ${originalP2Y} -> ${this.gameState.paddle2.y}`);
+		} else if (paddleInputs.p2 === 1) {
+			this.gameState.paddle2.y += this.paddleSpeed * deltaTime;
+			console.log(`🎮 PHYSICS: Paddle2 (RIGHT) moving DOWN: ${originalP2Y} -> ${this.gameState.paddle2.y}`);
+		}
+	
+		// Clamp paddles to screen bounds
+		this.gameState.paddle1.y = Math.max(
+			this.gameState.paddleHeight / 2, 
+			Math.min(this.gameState.height - this.gameState.paddleHeight / 2, this.gameState.paddle1.y)
+		);
+		this.gameState.paddle2.y = Math.max(
+			this.gameState.paddleHeight / 2, 
+			Math.min(this.gameState.height - this.gameState.paddleHeight / 2, this.gameState.paddle2.y)
+		);
+	}
 
     updateBall(deltaTime) {
         // Move ball

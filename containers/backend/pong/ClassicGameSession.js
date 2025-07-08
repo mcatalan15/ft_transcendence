@@ -57,11 +57,27 @@ class ClassicGameSession {
         this.externalBroadcast = broadcastFunction;
     }
     
+    // ClassicGameSession.js - Fix the addPlayer method
     addPlayer(player) {
-        if (!this.players.player1.socket) {
-            this.players.player1 = { ...player, ready: false };
-        } else if (!this.players.player2.socket) {
-            this.players.player2 = { ...player, ready: false };
+        console.log(`🎮 Adding player ${player.id} to game ${this.sessionId}`);
+        console.log(`🎮 Expected players: player1=${this.players.player1.id}, player2=${this.players.player2.id}`);
+        
+        // Assign players based on their ID, not socket availability
+        if (this.players.player1.id === player.id) {
+            this.players.player1.socket = player.socket;
+            this.players.player1.ready = false;
+            console.log(`🎮 Assigned ${player.id} to player1 (LEFT paddle)`);
+        } else if (this.players.player2.id === player.id) {
+            this.players.player2.socket = player.socket;
+            this.players.player2.ready = false;
+            console.log(`🎮 Assigned ${player.id} to player2 (RIGHT paddle)`);
+        } else {
+            console.log(`🎮 ERROR: Player ${player.id} not expected in this game!`);
+            console.log(`🎮 Expected players:`, {
+                player1: this.players.player1.id,
+                player2: this.players.player2.id
+            });
+            return;
         }
         
         this.broadcastToPlayer(player.socket, 'gameJoined', {
@@ -71,6 +87,8 @@ class ClassicGameSession {
         
         // If both players are connected, they can start
         if (this.players.player1.socket && this.players.player2.socket) {
+            console.log(`🎮 Both players connected: ${this.players.player1.id} (LEFT) vs ${this.players.player2.id} (RIGHT)`);
+            
             this.broadcastToAll('bothPlayersConnected', {
                 player1: this.players.player1.id,
                 player2: this.players.player2.id
@@ -165,19 +183,30 @@ class ClassicGameSession {
     handlePlayerInput(playerId, input) {
         if (!this.gameStarted || this.gameEnded) return;
         
+        console.log(`🎮 INPUT DEBUG: Player ${playerId} sent input:`, input);
+        
         let playerNumber = 0;
         if (this.players.player1.id === playerId) {
             playerNumber = 1;
+            console.log(`🎮 Player ${playerId} is player1 (LEFT paddle)`);
         } else if (this.players.player2.id === playerId) {
             playerNumber = 2;
+            console.log(`🎮 Player ${playerId} is player2 (RIGHT paddle)`);
+        } else {
+            console.log(`🎮 ERROR: Player ${playerId} not found in game!`);
+            console.log(`🎮 Available players:`, {
+                player1: this.players.player1.id,
+                player2: this.players.player2.id
+            });
+            return;
         }
-        
-        if (playerNumber === 0) return;
         
         // Convert input to direction: 'up' = -1, 'down' = 1, 'stop' = 0
         let direction = 0;
         if (input.up) direction = -1;
         else if (input.down) direction = 1;
+        
+        console.log(`🎮 Setting paddle input: p${playerNumber} = ${direction}`);
         
         if (playerNumber === 1) {
             this.paddleInputs.p1 = direction;
@@ -185,7 +214,7 @@ class ClassicGameSession {
             this.paddleInputs.p2 = direction;
         }
         
-        console.log(`Player ${playerNumber} input: ${direction}`);
+        console.log(`🎮 Current paddle inputs:`, this.paddleInputs);
     }
     
     broadcastGameState() {

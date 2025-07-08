@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 12:36:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 19:26:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ export class EndingSystem implements System {
 
     update(entities: Entity[]) {
         if (!this.endingProcessed) {
-            if (this.UI.leftScore >= 1 && this.UI.rightScore < 1) {
+            if (this.UI.leftScore >= 5 && this.UI.rightScore < 4) {
                 this.game.data.leftPlayer.result = 'win';
                 this.game.data.rightPlayer.result = 'lose';
                 this.ended = true;
-            } else if (this.UI.rightScore >= 1 && this.UI.leftScore < 1) {
+            } else if (this.UI.rightScore >= 5 && this.UI.leftScore < 4) {
                 this.game.data.rightPlayer.result = 'win';
                 this.game.data.leftPlayer.result = 'lose';
                 this.ended = true;

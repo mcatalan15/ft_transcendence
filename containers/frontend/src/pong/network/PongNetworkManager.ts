@@ -100,6 +100,27 @@ export class PongNetworkManager {
       console.log('Player connected:', message);
       this.showConnectionStatus(`Player ${message.playerId} connected (${message.playersConnected}/2)`);
     });
+
+    this.wsManager.registerHandler('GAME_JOINED', (message) => {
+      console.log('Successfully joined game:', message);
+      
+      this.playerNumber = message.playerNumber;
+      this.isHost = message.playerNumber === 1;
+      this.game.localPlayerNumber = message.playerNumber;
+      
+      console.log('🎮 DETAILED Player assignment DEBUG:', {
+          playerId: sessionStorage.getItem('username'),
+          playerNumber: this.playerNumber,
+          isHost: this.isHost,
+          gameLocalPlayerNumber: this.game.localPlayerNumber,
+          expectedPaddle: this.isHost ? 'LEFT (paddleL)' : 'RIGHT (paddleR)',
+          controls: this.isHost ? 'W/S keys' : 'Arrow keys',
+          role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
+      });
+      
+      this.showPlayerAssignment();
+      this.setupInputHandlers();
+    });
     
     this.wsManager.registerHandler('GAME_READY', (message) => {
       console.log('Both players connected, game is ready');
@@ -260,34 +281,38 @@ export class PongNetworkManager {
   }
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    if (!this.game.isOnline) return;
+    console.log('🎮 Key pressed:', e.key, 'isHost:', this.isHost, 'isOnline:', this.game.isOnline);
+    
+    if (!this.game.isOnline) {
+        console.log('🎮 Not online, ignoring input');
+        return;
+    }
 
     let input = 0;
     
     if (this.isHost) {
-      // Host controls left paddle with W/S
-      if (e.key === 'w' || e.key === 'W') {
-        input = -1; // Up
-        e.preventDefault(); // Prevent page scrolling
-      }
-      if (e.key === 's' || e.key === 'S') {
-        input = 1;  // Down
-        e.preventDefault();
-      }
+        if (e.key === 'w' || e.key === 'W') {
+            input = -1;
+            console.log('🎮 Host pressing W (up)');
+        }
+        if (e.key === 's' || e.key === 'S') {
+            input = 1;
+            console.log('🎮 Host pressing S (down)');
+        }
     } else {
-      // Guest controls right paddle with Arrow keys
-      if (e.key === 'ArrowUp') {
-        input = -1;   // Up
-        e.preventDefault();
-      }
-      if (e.key === 'ArrowDown') {
-        input = 1;  // Down
-        e.preventDefault();
-      }
+        if (e.key === 'ArrowUp') {
+            input = -1;
+            console.log('🎮 Guest pressing Arrow Up');
+        }
+        if (e.key === 'ArrowDown') {
+            input = 1;
+            console.log('🎮 Guest pressing Arrow Down');
+        }
     }
 
     if (input !== 0) {
-      this.sendPaddleInput(input);
+        console.log('🎮 Sending input:', input);
+        this.sendPaddleInput(input);
     }
   };
 
@@ -314,12 +339,15 @@ export class PongNetworkManager {
   };
 
   private sendPaddleInput(input: number) {
-    this.wsManager.send({
-      type: 'PADDLE_INPUT',
-      gameId: this.gameId,
-      playerId: sessionStorage.getItem('username'),
-      input: input
-    });
+    const message = {
+        type: 'PADDLE_INPUT',
+        gameId: this.gameId,
+        playerId: sessionStorage.getItem('username'),
+        input: input
+    };
+    
+    console.log('🎮 Sending paddle input to server:', message);
+    this.wsManager.send(message);
   }
 
   getPlayerNumber(): number {
