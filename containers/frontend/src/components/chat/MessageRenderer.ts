@@ -13,7 +13,7 @@ export class MessageRenderer {
   }
 
   getMessageStyle(type: MessageType): string {
-    const baseStyle = 'px-3 py-2 mb-1 rounded-md border-l-4 text-sm';
+    const baseStyle = 'px-3 py-2 mb-1 border-l-4 text-sm';
     
     switch (type) {
       case MessageType.GENERAL:
@@ -67,11 +67,11 @@ export class MessageRenderer {
           <div class="flex items-center justify-between">
             <span class="text-purple-300">[${timestamp}] [GAME INVITE] ${makeUsernameClickable(message.username || 'Unknown')}:</span>
             <div class="flex gap-2 ml-4">
-              <button class="accept-invite bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs" 
+              <button class="accept-invite bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs" 
                       data-invite-id="${message.inviteId}" data-from="${message.username}">
                 Accept
               </button>
-              <button class="decline-invite bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs" 
+              <button class="decline-invite bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-xs" 
                       data-invite-id="${message.inviteId}" data-from="${message.username}">
                 Decline
               </button>

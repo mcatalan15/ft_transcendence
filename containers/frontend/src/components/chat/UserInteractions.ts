@@ -51,7 +51,7 @@ export class UserInteractions {
     const menu = document.createElement('div');
     menu.id = 'user-context-menu';
     menu.className = `
-      absolute bg-neutral-800 border border-neutral-600 rounded-md shadow-lg 
+      absolute bg-neutral-800 border border-neutral-600 shadow-lg 
       py-2 min-w-[150px] z-50
     `.replace(/\s+/g, ' ').trim();
     
