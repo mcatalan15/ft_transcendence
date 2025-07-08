@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+         #
+#    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/06/17 18:03:00 by mcatalan         ###   ########.fr        #
+#    Updated: 2025/07/08 10:30:23 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,7 @@ tunnel:
 		alias cloudflared="$$PWD/cloudflared"; \
 		echo "cloudflared installed locally."; \
 	fi
-	cloudflared tunnel --url http://localhost:80 --http-host-header localhost
+	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
 
 re:
 	$(MAKE) stop
