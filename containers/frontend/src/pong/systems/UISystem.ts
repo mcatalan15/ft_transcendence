@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:52:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:14:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,10 @@ export class UISystem implements System {
 						}
 					} else if (tag === 'classicScoreLeft') {
 						textObject.x = entity.width / 2 - 250;
-						textObject.y = 200;
+						textObject.y = 225;
 					} else if (tag === 'classicScoreRight') {
 						textObject.x = entity.width / 2 + 250;
-						textObject.y = 200;
+						textObject.y = 225;
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
 						textObject.x = entity.width - 50;
 						textObject.y = entity.topOffset + 20;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:48:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:43:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ import { Bullet } from '../entities/Bullet';
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 
 import { PhysicsComponent } from '../components/PhysicsComponent';
+import { RenderComponent } from '../components/RenderComponent';
 import { VFXComponent } from '../components/VFXComponent';
 import { InputComponent } from '../components/InputComponent';
 import { LifetimeComponent } from '../components/LifetimeComponent';
@@ -37,7 +38,6 @@ import * as physicsUtils from '../utils/PhysicsUtils'
 import { isPaddle, isBall, isSpinBall, isBurstBall, isPowerup, isBullet, isUI } from '../utils/Guards';
 import { FrameData, GAME_COLORS } from '../utils/Types';
 
-
 export class PhysicsSystem implements System {
 	game: PongGame;
 	UI!: UI;
@@ -47,6 +47,10 @@ export class PhysicsSystem implements System {
 	mustResetBall: boolean = false;
 	ballResetTime: number = 0;
 	private ballCollisionHistory: Map<string, Array<{ time: number, normal: { x: number, y: number } }>> = new Map();
+
+	// Online stuff
+	private serverState: any = null;
+    private lastServerUpdate: number = 0;
 
 	constructor(game: PongGame, width: number, height: number) {
 		this.game = game;
@@ -60,32 +64,118 @@ export class PhysicsSystem implements System {
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
-	  const entitiesMap = createEntitiesMap(entities);
-	  
-	  if (this.mustResetBall) {
-		this.ballResetTime -= delta.deltaTime;
-	  }
-	
-	  if (this.mustResetBall && this.ballResetTime <= 0) {
-		this.mustResetBall = false;
-		BallSpawner.spawnDefaultBall(this.game);
-	  }
-	
-	  for (const entity of entities) {
-		const physics = entity.getComponent('physics') as PhysicsComponent;
-		if (physics && (physics as any).isServerControlled) {
-		  continue;
-		}
-		
-		if (isPaddle(entity)) {
-		  this.updatePaddle(entity, entitiesMap);
-		} else if (isBall(entity)) {
-		  this.updateBall(entity, entities, entitiesMap, delta);
-		} else if (isBullet(entity)) {
-		  this.updateBullet(entity, entitiesMap);
-		}
-	  }
+		if (this.shouldUseBackendPhysics()) {
+            this.handleNetworkPhysics(entities, delta);
+        } else {
+            this.handleLocalPhysics(entities, delta);
+        }
 	}
+
+	private shouldUseBackendPhysics(): boolean {
+        return this.game.isOnline && this.game.config.classicMode;
+    }
+
+	private handleNetworkPhysics(entities: Entity[], delta: FrameData): void {
+        // Apply server state to entities (visual only)
+        if (this.serverState) {
+            this.applyServerState(entities, this.serverState);
+        }
+        
+        // Still handle local visual effects and non-physics updates
+        this.handleLocalVisualEffects(entities, delta);
+    }
+
+	private applyServerState(entities: Entity[], serverState: any): void {
+        // Find and update ball
+        const ballEntity = entities.find(e => e.id === 'defaultBall');
+        if (ballEntity && serverState.ball) {
+            const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+            const ballRender = ballEntity.getComponent('render') as RenderComponent;
+            
+            if (ballPhysics && ballRender) {
+                // Mark as server controlled
+                (ballPhysics as any).isServerControlled = true;
+                
+                // Update position
+                ballPhysics.x = serverState.ball.x;
+                ballPhysics.y = serverState.ball.y;
+                ballRender.graphic.x = serverState.ball.x;
+                ballRender.graphic.y = serverState.ball.y;
+                
+                // Store velocity for prediction (optional)
+                if (serverState.ballVelocity) {
+                    ballPhysics.velocityX = serverState.ballVelocity.x;
+                    ballPhysics.velocityY = serverState.ballVelocity.y;
+                }
+            }
+        }
+
+        // Find and update paddles
+        const leftPaddle = entities.find(e => e.id === 'paddleL');
+        const rightPaddle = entities.find(e => e.id === 'paddleR');
+
+        if (leftPaddle && serverState.paddle1) {
+            const physics = leftPaddle.getComponent('physics') as PhysicsComponent;
+            const render = leftPaddle.getComponent('render') as RenderComponent;
+            if (physics && render) {
+                (physics as any).isServerControlled = true;
+                physics.y = serverState.paddle1.y;
+                render.graphic.y = serverState.paddle1.y;
+            }
+        }
+
+        if (rightPaddle && serverState.paddle2) {
+            const physics = rightPaddle.getComponent('physics') as PhysicsComponent;
+            const render = rightPaddle.getComponent('render') as RenderComponent;
+            if (physics && render) {
+                (physics as any).isServerControlled = true;
+                physics.y = serverState.paddle2.y;
+                render.graphic.y = serverState.paddle2.y;
+            }
+        }
+    }
+
+    private handleLocalVisualEffects(entities: Entity[], delta: FrameData): void {
+        // Handle visual-only effects that don't affect physics
+        // Like particle cleanup, visual animations, etc.
+        
+        // Clean up expired particles, handle visual timers, etc.
+        // This runs even in online mode for visual consistency
+    }
+
+    public updateFromServer(serverState: any): void {
+        this.serverState = serverState;
+        this.lastServerUpdate = Date.now();
+    }
+
+	private handleLocalPhysics(entities: Entity[], delta: FrameData): void {
+        // Your entire existing update method logic goes here
+        const entitiesMap = createEntitiesMap(entities);
+        
+        if (this.mustResetBall) {
+            this.ballResetTime -= delta.deltaTime;
+        }
+        
+        if (this.mustResetBall && this.ballResetTime <= 0) {
+            this.mustResetBall = false;
+            BallSpawner.spawnDefaultBall(this.game);
+        }
+        
+        for (const entity of entities) {
+            const physics = entity.getComponent('physics') as PhysicsComponent;
+            if (physics && (physics as any).isServerControlled) {
+                continue; // Skip server-controlled entities
+            }
+            
+            if (isPaddle(entity)) {
+                this.updatePaddle(entity, entitiesMap);
+            } else if (isBall(entity)) {
+                this.updateBall(entity, entities, entitiesMap, delta);
+            } else if (isBullet(entity)) {
+                this.updateBullet(entity, entitiesMap);
+            }
+        }
+    }
 
 	updatePaddle(paddle: Paddle, entitiesMap: Map<string, Entity>) {
 		const input = paddle.getComponent('input') as InputComponent;

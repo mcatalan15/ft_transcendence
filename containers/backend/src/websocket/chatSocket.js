@@ -253,13 +253,21 @@ function setupChatWebSocket(wss, redisService, gameManager) {
       // Create game in Redis/database
       const gameData = {
         gameId: gameId,
-        hostId: message.targetUser, // The original inviter becomes host
-        guestId: message.username,  // The accepter becomes guest
+        hostId: message.targetUser,
+        guestId: message.username,
         status: 'waiting',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        hostName: message.targetUser,
+        guestName: message.username
       };
       
       console.log('Game data prepared:', JSON.stringify(gameData, null, 2));
+
+      if (redisService && redisService.createGame) {
+        console.log('About to call redisService.createGame...');
+        await redisService.createGame(gameId, gameData);
+        console.log('Game saved to Redis successfully');
+      }
 
       console.log('=== STEP 3: Saving to Redis ===');
       

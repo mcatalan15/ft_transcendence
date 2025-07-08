@@ -3,7 +3,7 @@
     "i18next": "^25.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18",
+    "@types/node": "^22.16.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

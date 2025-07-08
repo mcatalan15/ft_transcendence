@@ -1,127 +1,166 @@
+// redisService.js - Complete fixed version
 const { createClient } = require('redis');
 
 class RedisService {
-  constructor(redisUrl) {
-    this.redisUrl = redisUrl;
-    this.publisher = null;
-    this.subscriber = null;
-  }
-
-  async connect() {
-    this.publisher = createClient({ url: this.redisUrl });
-    this.subscriber = this.publisher.duplicate();
-
-    try {
-      await this.publisher.connect();
-      await this.subscriber.connect();
-      console.log('Connected to Redis');
-      
-      await this.publisher.set('games:active', '0');
-      const oldGames = await this.publisher.keys('game:*');
-      if (oldGames.length > 0) {
-        await this.publisher.del(oldGames);
-      }
-      return true;
-    } catch (err) {
-      console.error('Redis connection failed:', err);
-      return false;
+    constructor(redisUrl) {
+        this.client = createClient({ url: redisUrl });
+        this.subscriber = createClient({ url: redisUrl });
     }
-  }
 
-  async createGame(gameId, gameData) {
-    try {
-      const result = await this.publisher.setEx(`game:${gameId}`, 3600, JSON.stringify(gameData));
-      console.log(`Game ${gameId} saved to Redis:`, gameData);
-      return result;
-    } catch (error) {
-      console.error(`Failed to save game ${gameId} to Redis:`, error);
-      throw error;
-    }
-  }
-
-  async findWaitingGame(gameType) {
-    try {
-      const gameKeys = await this.publisher.keys('game:*');
-      
-      for (const key of gameKeys) {
-        const gameData = await this.publisher.get(key);
-        if (gameData) {
-          const parsedGame = JSON.parse(gameData);
-          
-          if (parsedGame.status === 'waiting' && 
-              parsedGame.gameType === gameType && 
-              !parsedGame.guestId) {
-            return parsedGame;
-          }
+    async connect() {
+        try {
+            await this.client.connect();
+            await this.subscriber.connect();
+            console.log('Connected to Redis');
+            return true;
+        } catch (error) {
+            console.error('Failed to connect to Redis:', error);
+            return false;
         }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error finding waiting game:', error);
-      return null;
     }
-  }
 
-  async setGameAsActive(gameId, hostId, guestId) {
-    try {
-      const gameData = await this.getGame(gameId);
-      if (gameData) {
-        gameData.guestId = guestId;
-        gameData.status = 'active';
-        gameData.matchedAt = new Date().toISOString();
-        await this.updateGame(gameId, gameData);
-        return gameData;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error setting game as active:', error);
-      return null;
-    }
-  }
-
-  async cleanupExpiredGames() {
-    try {
-      const cutoffTime = Date.now() - (5 * 60 * 1000); // 5 minutes
-      const gameKeys = await this.publisher.keys('game:*');
-      
-      for (const key of gameKeys) {
-        const gameData = await this.publisher.get(key);
-        if (gameData) {
-          const parsedGame = JSON.parse(gameData);
-          
-          if (parsedGame.status === 'waiting' && 
-              new Date(parsedGame.createdAt).getTime() < cutoffTime) {
-            await this.publisher.del(key);
-            console.log(`Cleaned up expired game: ${parsedGame.gameId}`);
-          }
+    // Game management methods
+    async createGame(gameId, gameData) {
+        try {
+            await this.client.set(`game:${gameId}`, JSON.stringify(gameData));
+            await this.client.expire(`game:${gameId}`, 3600);
+            console.log(`Game ${gameId} created in Redis`);
+            return true;
+        } catch (error) {
+            console.error('Error creating game:', error);
+            return false;
         }
-      }
-    } catch (error) {
-      console.error('Error cleaning up expired games:', error);
     }
-  }
 
-  async getGame(gameId) {
-    const gameData = await this.publisher.get(`game:${gameId}`);
-    return gameData ? JSON.parse(gameData) : null;
-  }
+    async getGameData(gameId) {
+        try {
+            const gameData = await this.client.get(`game:${gameId}`);
+            if (gameData) {
+                return JSON.parse(gameData);
+            }
+            return null;
+        } catch (error) {
+            console.error('Error getting game data:', error);
+            return null;
+        }
+    }
 
-  async updateGame(gameId, gameData) {
-    return await this.publisher.set(`game:${gameId}`, JSON.stringify(gameData));
-  }
+    async updateGame(gameId, gameData) {
+        try {
+            await this.client.set(`game:${gameId}`, JSON.stringify(gameData));
+            console.log(`Game ${gameId} updated in Redis`);
+            return true;
+        } catch (error) {
+            console.error('Error updating game:', error);
+            return false;
+        }
+    }
 
-  async deleteGame(gameId) {
-    return await this.publisher.del(`game:${gameId}`);
-  }
+    async deleteGame(gameId) {
+        try {
+            await this.client.del(`game:${gameId}`);
+            console.log(`Game ${gameId} deleted from Redis`);
+            return true;
+        } catch (error) {
+            console.error('Error deleting game:', error);
+            return false;
+        }
+    }
 
-  async subscribeToChatMessages(callback) {
-    await this.subscriber.subscribe('chat', callback);
-  }
+    async findWaitingGame(gameType) {
+        try {
+            const gameKeys = await this.client.keys('game:*');
+            
+            for (const key of gameKeys) {
+                const gameData = await this.client.get(key);
+                if (gameData) {
+                    const parsedGame = JSON.parse(gameData);
+                    
+                    if (parsedGame.status === 'waiting' && 
+                        parsedGame.gameType === gameType && 
+                        !parsedGame.guestId) {
+                        return parsedGame;
+                    }
+                }
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Error finding waiting game:', error);
+            return null;
+        }
+    }
 
-  async publishChatMessage(message) {
-    return await this.publisher.publish('chat', message);
-  }
+    async setGameAsActive(gameId, hostId, guestId) {
+        try {
+            const gameData = await this.getGameData(gameId);
+            if (gameData) {
+                gameData.guestId = guestId;
+                gameData.status = 'active';
+                gameData.matchedAt = new Date().toISOString();
+                await this.updateGame(gameId, gameData);
+                return gameData;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error setting game as active:', error);
+            return null;
+        }
+    }
+
+    async subscribeToChatMessages(callback) {
+        try {
+            await this.subscriber.subscribe('chat', callback);
+            return true;
+        } catch (error) {
+            console.error('Error subscribing to chat:', error);
+            return false;
+        }
+    }
+
+    async publishChatMessage(message) {
+        try {
+            return await this.client.publish('chat', message);
+        } catch (error) {
+            console.error('Error publishing chat message:', error);
+            return false;
+        }
+    }
+
+    async disconnect() {
+        try {
+            await this.client.disconnect();
+            await this.subscriber.disconnect();
+            console.log('Disconnected from Redis');
+            return true;
+        } catch (error) {
+            console.error('Error disconnecting from Redis:', error);
+            return false;
+        }
+    }
+
+    // redisService.js - Add this method
+    async cleanupExpiredGames() {
+      try {
+          const cutoffTime = Date.now() - (5 * 60 * 1000); // 5 minutes
+          const gameKeys = await this.client.keys('game:*');
+          
+          for (const key of gameKeys) {
+              const gameData = await this.client.get(key);
+              if (gameData) {
+                  const parsedGame = JSON.parse(gameData);
+                  
+                  if (parsedGame.status === 'waiting' && 
+                      new Date(parsedGame.createdAt).getTime() < cutoffTime) {
+                      await this.client.del(key);
+                      console.log(`Cleaned up expired game: ${parsedGame.gameId}`);
+                  }
+              }
+          }
+      } catch (error) {
+          console.error('Error cleaning up expired games:', error);
+      }
+    }
 }
 
 module.exports = RedisService;
