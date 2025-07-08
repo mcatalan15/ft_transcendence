@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 12:12:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 13:57:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,12 @@ import { AboutOverlay } from './menuOverlays/AboutOverlay';
 import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
+
+declare global {
+    interface Window {
+        gc?: () => void;
+    }
+}
 
 export class Menu{
 	config: GameConfig;
@@ -213,11 +219,16 @@ export class Menu{
 	// Player Data
 	playerData: PlayerData | null = null;
 
-	constructor(app: Application, language: string, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
+	//Browser data
+	isFirefox: boolean = false;
+
+	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
+		this.isFirefox = isFirefox || false;
+		
 		this.menuContainer = new Container();
 		this.menuHidden = new Container();
 
@@ -282,6 +293,8 @@ export class Menu{
 	}
 
 	async init(classic: boolean, filters: boolean): Promise<void> {
+		this.applyFirefoxOptimizations();
+		
 		//! TEST DEBUG
 		await this.testApiCall();
 
@@ -951,6 +964,26 @@ export class Menu{
 			} catch (error) {
 				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
 			}
+		}
+	}
+
+	private applyFirefoxOptimizations(): void {
+		if (!this.isFirefox) return;
+		
+		console.log('Applying Firefox-specific optimizations...');
+		
+		// Reduce particle density
+		this.maxBalls = Math.floor(this.maxBalls * 0.7);
+		
+		// Disable some intensive visual effects
+		this.app.ticker.maxFPS = 60;
+		this.app.ticker.minFPS = 30;
+		
+		// Force garbage collection more frequently (if available)
+		if (window.gc) {
+			setInterval(() => {
+				window.gc!();
+			}, 10000);
 		}
 	}
 

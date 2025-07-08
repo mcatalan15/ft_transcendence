@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 11:32:26 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/08 13:55:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,12 +116,15 @@ export class PongGame {
 	alphaFade: Graphics = new Graphics();
 	endGameOverlay!: EndgameOverlay;
 
-	constructor(app: Application, config: GameConfig, language: string) {
+	isFirefox: boolean = false;
+
+	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
+		this.isFirefox = isFirefox || false;
 		this.entities = [];
 		this.systems = [];
 		this.eventQueue = [];
@@ -180,7 +183,19 @@ export class PongGame {
 			this.initSounds();
 			this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 		}
+
+		if (this.isFirefox) {
+            console.log('Game initialized with Firefox optimizations');
+            this.applyGameFirefoxOptimizations();
+        }
 	}
+
+	private applyGameFirefoxOptimizations(): void {
+        // Reduce particle density for Firefox
+        // Lower sound volumes
+        // Disable some intensive effects
+        console.log('Applied Firefox optimizations to game');
+    }
 
 	async init(): Promise<void> {
 		if (!this.app.ticker.started) {

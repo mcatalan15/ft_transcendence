@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 17:18:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:42:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,13 @@ export class EndgameOverlay extends Entity {
     private originalY: number;
     private originalWidth: number;
     private originalHeight: number;
+
+    isFirefox: boolean = false;
     
     constructor (game: PongGame, id: string, layer: string, x: number, y: number, width: number = 1000, height: number = 400) {
         super(id, layer);
         this.game = game;
+        this.isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
         this.originalX = x;
         this.originalY = y;
@@ -211,6 +214,8 @@ export class EndgameOverlay extends Entity {
         const language = this.game.language || 'en';
         
         let assetName: string;
+
+        console.log(`Creating header sprite for language: ${language}, isWinner: ${isWinner}, isFirefox: ${this.isFirefox}`);
         
         if (this.game.config.classicMode) {
             assetName = isWinner ? `victoryHeader${language.toUpperCase()}White` : `defeatHeader${language.toUpperCase()}White`;
@@ -228,6 +233,26 @@ export class EndgameOverlay extends Entity {
             headerSprite.x = this.game.width / 2;
             headerSprite.y = this.game.height / 2 - 190;
             headerSprite.alpha = 0;
+            
+            if (this.isFirefox) {
+                console.log('Applying Firefox SVG scaling fixes');
+                
+                headerSprite.scale.set(1.0715);
+                headerSprite.x -= 1;
+                headerSprite.y -= 2;
+                
+                if (headerSprite.texture && headerSprite.texture.source) {
+                    headerSprite.texture.source.scaleMode = 'nearest';
+                    
+                    if ('generateMipmaps' in headerSprite.texture.source) {
+                        (headerSprite.texture.source as any).generateMipmaps = false;
+                    }
+                }
+            } else {
+                headerSprite.scale.set(1.0);
+            }
+            
+            console.log(`Header sprite dimensions: ${headerSprite.width}x${headerSprite.height}, scale: ${headerSprite.scale.x}`);
             
             return headerSprite;
         }
