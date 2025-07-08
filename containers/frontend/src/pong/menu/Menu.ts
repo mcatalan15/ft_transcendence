@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 11:33:13 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/08 12:12:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ import { GlossaryOverlay } from './menuOverlays/GlossaryOverlay';
 import { AboutOverlay } from './menuOverlays/AboutOverlay';
 import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
+import { getApiUrl } from '../../config/api';
 
 export class Menu{
 	config: GameConfig;
@@ -266,8 +267,8 @@ export class Menu{
 		this.config = {
 			mode: 'local',
 			variant: '1v1',
-			classicMode: true,
-			filters: false,
+			classicMode: false,
+			filters: true,
 			players: [
 				{ name: 'Player 1', type: 'human', side: 'left' },
 				{ name: 'Player 2', type: 'human', side: 'right' }
@@ -962,7 +963,8 @@ export class Menu{
 			}
 			
 			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
-			const response = await fetch('/api/games/getUserData', {
+			console.log(getApiUrl('/games/getUserData'));
+			const response = await fetch(getApiUrl('/games/getUserData'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -970,7 +972,8 @@ export class Menu{
 				},
 				body: JSON.stringify({
 					userId: userId
-				})
+				}),
+				credentials: 'include'
 			});
 	
 			if (!response.ok) {
