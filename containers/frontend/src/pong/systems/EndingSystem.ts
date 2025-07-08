@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 17:30:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 09:35:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,11 @@ export class EndingSystem implements System {
 		const paddleHeight = paddlePhysics.height;
 		const isLeftPaddle = losingPaddleId === 'paddleL';
 		
-	
-		ParticleSpawner.spawnPaddleExplosion(
+        if (!this.game.config.classicMode) {
+            this.game.sounds.endGame.play();
+        }
+        
+        ParticleSpawner.spawnPaddleExplosion(
 			this.game,
 			paddleX,
 			paddleY,

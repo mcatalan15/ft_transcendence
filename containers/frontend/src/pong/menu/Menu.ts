@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 18:35:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 10:33:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ export class Menu{
 	// Player Data
 	playerData: PlayerData | null = null;
 
-	constructor(app: Application, language: string, hasPreConfiguration: boolean = false, preconfig?: Preconfiguration) {
+	constructor(app: Application, language: string, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
@@ -273,14 +273,14 @@ export class Menu{
 				{ name: 'Player 2', type: 'human', side: 'right' }
 			]
 		};
-
+		
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
-			this.preconfig = preconfig!;
+			this.preconfig = preconfiguration!;
 		}
 	}
 
-	async init(): Promise<void> {
+	async init(classic: boolean, filters: boolean): Promise<void> {
 		//! TEST DEBUG
 		await this.testApiCall();
 
@@ -319,6 +319,63 @@ export class Menu{
 				system.update(this.entities, frameData);
 			});
 		});
+
+		this.applyInitialConfiguration(classic, filters);
+	}
+
+	private applyInitialConfiguration(classic: boolean, filters: boolean): void {
+		console.log('Applying initial configuration...');
+		console.log('Current config:', this.config);
+		
+		// Only apply classic mode if it's NOT already in the desired state
+		if (classic) {
+			// We want classic mode ON, check if button reflects this
+			if (!this.classicButton.getIsClicked()) {
+				console.log('Classic mode should be ON, simulating click to turn it ON');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleClassicClicked();
+				}
+			} else {
+				console.log('Classic mode already correctly set to ON');
+			}
+		} else {
+			// We want classic mode OFF, check if button reflects this
+			if (this.classicButton.getIsClicked()) {
+				console.log('Classic mode should be OFF, simulating click to turn it OFF');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleClassicClicked();
+				}
+			} else {
+				console.log('Classic mode already correctly set to OFF');
+			}
+		}
+		
+		// Apply filters setting - same logic
+		if (filters) {
+			// We want filters OFF, check if button reflects this
+			if (!this.filtersButton.getIsClicked()) {
+				console.log('Filters should be OFF, simulating click to turn them OFF');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleFiltersClicked();
+				}
+			} else {
+				console.log('Filters already correctly set to OFF');
+			}
+		} else {
+			// We want filters ON, check if button reflects this
+			if (this.filtersButton.getIsClicked()) {
+				console.log('Filters should be ON, simulating click to turn them ON');
+				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
+				if (buttonSystem) {
+					buttonSystem.handleFiltersClicked();
+				}
+			} else {
+				console.log('Filters already correctly set to ON');
+			}
+		}
 	}
 
 	createTitle(){

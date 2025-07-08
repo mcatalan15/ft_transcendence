@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 15:56:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 09:29:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -409,6 +409,20 @@ export class PongGame {
 				onload: () => console.log('paddleResetDown loaded successfully'),
 				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
+			endGame: new Howl({
+				src: ['/assets/sfx/used/explosion_filtered02.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('Explosion2 loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+			}),
+			spawn: new Howl({
+				src: ['/assets/sfx/used/spawn_filtered01.mp3'],
+				html5: true,
+				preload: true,
+				onload: () => console.log('paddleResetDown loaded successfully'),
+				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+			}),
 		};
 	}
 
@@ -580,21 +594,18 @@ export class PongGame {
 		
 		const middleLine = new Graphics();
 		
-		// Calculate how many complete segments we can fit
 		const numSegments = Math.floor(totalHeight / segmentSize);
 		
 		for (let i = 0; i < numSegments; i++) {
 			const dashStartY = startY + (i * segmentSize);
 			const dashEndY = dashStartY + dashSize;
 			
-			// Only draw if the dash end doesn't exceed our boundary
 			if (dashEndY <= endY) {
 				middleLine.moveTo(centerX, dashStartY);
 				middleLine.lineTo(centerX, dashEndY);
 			}
 		}
 		
-		// Handle any remaining space with a partial dash
 		const remainingSpace = totalHeight - (numSegments * segmentSize);
 		if (remainingSpace > 0) {
 			const lastDashStart = startY + (numSegments * segmentSize);
@@ -682,7 +693,6 @@ export class PongGame {
 		]);
 	}
 
-	// Add detailed debugging to the updateFromServer method:
 	updateFromServer(gameState: any) {
 		if (!this.isOnline || !gameState) return;
 
