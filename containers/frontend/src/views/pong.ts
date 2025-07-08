@@ -50,7 +50,7 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
         <div id="player-names" class="mb-4">
           <!-- Player names will be populated by NetworkManager -->
         </div>
-        <div id="connection-status" class="text-xl text-blue-400 mb-4">
+        <div id="connection-status" class="text-xl text-blue-300 mb-4">
           Connecting to game session...
         </div>
       </div>

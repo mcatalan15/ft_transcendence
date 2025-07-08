@@ -50,10 +50,10 @@ export const CONFIG: SettingsConfig = {
   },
   MULTIPLIERS: {
     mobile: 3.2,
-    desktop: 3.4
+    desktop: 0.5
   },
   STYLES: {
-    pongBoxMarginTop: '-16px'
+    pongBoxMarginTop: '48px'
   },
   TRANSITIONS: {
     fadeOutDelay: 300,
