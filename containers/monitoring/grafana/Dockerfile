@@ -1,8 +1,12 @@
 FROM grafana/grafana-enterprise
 
+ENV TZ=Europe/Paris
+
 COPY ./config/grafana.ini /etc/grafana/grafana.ini
 
 EXPOSE 3100
 
-#CMD ["/usr/local/bin/grafana-server", "-homepath", "/usr/local/share/grafana", "-config", "/usr/local/share/grafana/conf/defaults.ini", "web"]
+# This always fails the password policy check for some reason
+# RUN grafana cli admin reset-admin-password ${GF_SECURITY_ADMIN_PASSWORD}
+
 USER grafana

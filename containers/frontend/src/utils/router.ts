@@ -53,22 +53,22 @@ function renderRoute(path: string) {
 			views.showHome(app);
 			break;
 
-		case '/history':
+/* 		case '/history':
 			if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
 			}
 			views.showHistory(app);
-			break;
+			break; */
 
-		case '/profile':
+/* 		case '/profile':
 			if (!isUserAuthenticated()) {
 				navigate('/');
 				return;
 			}
 			const currentUsername = sessionStorage.getItem('username');
 			navigate(`/profile/${currentUsername}`);
-			break;
+			break; */
 
 		case '/friends':
 			if (!isUserAuthenticated()) {
@@ -135,7 +135,22 @@ function renderRoute(path: string) {
 
 		default:
 
-			if (path === '/profile' || path.startsWith('/profile/')) {
+			if (path === '/history' || path.startsWith('/history/')) {
+				if (!isUserAuthenticated()) {
+					navigate('/');
+					return;
+				}
+
+				if (path === '/history') {
+					const currentUsername = sessionStorage.getItem('username');
+					navigate(`/history/${currentUsername}`);
+				} else {
+					const username = path.substring('/history/'.length);
+					views.showHistory(app, username);
+				}
+				return;
+			}
+			else if (path === '/profile' || path.startsWith('/profile/')) {
 				if (!isUserAuthenticated()) {
 					navigate('/');
 					return;
@@ -158,10 +173,7 @@ function renderRoute(path: string) {
 					views.showPong(app);
 				return;
 			}
+
 			navigate('/404');
-			/*app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
-	  <span style="display: block; height: 20px;"></span>
-	  <button onclick="navigate('/')">Back home</button>
-	  `;*/
 	}
 }

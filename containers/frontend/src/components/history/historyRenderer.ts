@@ -12,13 +12,15 @@ export class HistoryRenderer {
   private container: HTMLElement;
   private onRefresh: () => void;
   private pongBoxElement!: HTMLElement;
+  private username: string = '';
 
-  constructor(container: HTMLElement, onRefresh: () => void) {
+  constructor(container: HTMLElement, onRefresh: () => void, username: string) {
     this.container = container;
     this.onRefresh = onRefresh;
+	this.username = username;
   }
 
-  render(): void {
+  async render(): Promise<void> {
     this.container.innerHTML = '';
     
     const langSelector = new LanguageSelector(this.onRefresh).getElement();
@@ -28,7 +30,7 @@ export class HistoryRenderer {
     this.container.appendChild(testMenu);
 
     const svgHeader = this.createHeader();
-    this.pongBoxElement = this.createPongBox();
+    this.pongBoxElement = await this.createPongBox();
     const contentWrapper = this.createMainLayout(svgHeader, this.pongBoxElement);
     
     this.container.appendChild(contentWrapper);
@@ -58,12 +60,24 @@ export class HistoryRenderer {
     window.addEventListener('resize', updateSvgMargin);
   }
 
-  private createPongBox(): HTMLElement {
-    const username = sessionStorage.getItem('username') || '';
-    const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-    const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
+  private async createPongBox(): Promise<HTMLElement> {
+    const currentUser = sessionStorage.getItem('username') || '';
+	const username = this.username === currentUser ? currentUser : this.username;
 
-    const contentRenderer = new HistoryContentRenderer(this.container);
+	console.log('From createPongBox()> this.username:', this.username);
+	console.log('From createPongBox()> currentUsername:', currentUser);
+
+	const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	});
+    const data = await response.json();
+	console.log(`User ID for ${username}:`, data.userId);
+    const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
+
+    const contentRenderer = new HistoryContentRenderer(this.container, this.username);
     const historyContent = contentRenderer.render();
 
     const pongBox = new PongBoxComponent({

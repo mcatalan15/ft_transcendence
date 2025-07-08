@@ -126,7 +126,7 @@ async function avatarUploadHandler(request, reply) {
 }
 
 async function fetchUserAvatar(request, reply) {
-    const defaultPath = path.join('/usr/src/app/public/avatars/defaults/default_1.png');
+    const defaultPath = path.join('/usr/src/app/public/avatars/square/square1.png');
 
     try {
         // Get the requested userId from URL params, not from session!
@@ -158,7 +158,7 @@ async function fetchUserAvatar(request, reply) {
         }
 
         const avatarPath = user.avatar_type === 'default' 
-            ? path.join('/usr/src/app/public/avatars/defaults', user.avatar_filename)
+            ? path.join('/usr/src/app/public/avatars/square', user.avatar_filename)
             : path.join('/usr/src/app/public/avatars/uploads', user.avatar_filename);
         
         if (fs.existsSync(avatarPath)) {
@@ -184,7 +184,6 @@ async function getUserOnlineStatus(request, reply) {
             });
         }
 
-        // Check if user exists
         const user = await getUserById(requestedUserId);
         if (!user) {
             return reply.status(404).send({
@@ -193,7 +192,6 @@ async function getUserOnlineStatus(request, reply) {
             });
         }
 
-        // Check online status using our tracker
         const isOnline = onlineTracker.isUserOnline(requestedUserId);
         const lastActivity = onlineTracker.getUserLastActivity(requestedUserId);
         
@@ -238,7 +236,6 @@ async function updateNicknameHandler(request, reply) {
 			});
 		}
 
-		// Check if the nickname already exists
 		const existingUser = await getUserByUsername(newNickname);
 		if (existingUser && existingUser.id_user !== sessionUser.userId) {
 			return reply.status(400).send({

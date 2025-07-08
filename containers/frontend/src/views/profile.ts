@@ -322,7 +322,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	const buttons = [
 		{
 			label: () => i18n.t('matches', { ns: 'profile' }) || 'Partidas',
-			action: () => navigate('/history'),
+			action: () => currentUser === username ? navigate(`/history/${currentUser}`) : navigate(`/history/${username}`),
 			color: 'cyan'
 		},
 		{

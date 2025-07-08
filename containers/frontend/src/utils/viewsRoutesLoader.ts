@@ -7,7 +7,6 @@ import { showProfile } from '../views/profile';
 import { showBlockchain } from '../views/blockchain'; // si sigue en uso
 import { showFriends } from '../views/friends';
 import { showChat } from '../views/chat';
-import { showLobby } from '../views/lobby';
 import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
 import { showStats } from '../views/stats';
@@ -24,7 +23,6 @@ const viewsRoutes = {
 	showBlockchain,
 	showFriends,
 	showChat,
-	showLobby,
 	showAuth,
 	showSettings,
 	showStats,

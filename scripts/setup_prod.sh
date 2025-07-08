@@ -2,7 +2,17 @@
 
 JWT_SECRET=$(openssl rand -hex 32)
 SESSION_SECRET=$(openssl rand -hex 32)
-GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 16)
+
+while true; do
+  PASSWORD=$(< /dev/urandom tr -dc 'A-Za-z0-9!@#$%^&*()_+{}|:<>?' | head -c 12)
+  [[ ${#PASSWORD} -ge 12 ]] &&
+  [[ "$PASSWORD" =~ [A-Z] ]] &&
+  [[ "$PASSWORD" =~ [a-z] ]] &&
+  [[ "$PASSWORD" =~ [0-9] ]] &&
+  [[ "$PASSWORD" =~ [\!\@\#\$\%\^\&\*\(\)_\+\{\}\|\:\<\>\?] ]] && break
+done
+
+#GRAFANA_ADMIN_PASSWORD=$PASSWORD
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'

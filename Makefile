@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/08 10:30:23 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/08 16:10:00 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -81,13 +81,14 @@ fclean:
 	docker image prune -a -f
 
 nuke:
-	make stop
-	docker rm -f $(docker ps -aq)
-	docker rmi -f $(docker images -aq)
-	docker volume rm $(docker volume ls -q)
-	docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
-	docker builder prune -af
-	docker system prune -af --volumes
+	@read -p "This will remove all Docker cache, containers, images, etc. and will result  [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
+	-docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
+	-docker rm -f $(docker ps -aq)
+	-docker rmi -f $(docker images -aq)
+	-docker volume rm $(docker volume ls -q)
+	-docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
+	-docker builder prune -af
+	-docker system prune -af --volumes
 
 .PHONY:
 	up down re stop clean fclean frontend dev prod redev back nuke tunnel
