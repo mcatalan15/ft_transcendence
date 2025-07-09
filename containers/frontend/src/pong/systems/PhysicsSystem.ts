@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 16:38:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:52:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,37 +88,55 @@ export class PhysicsSystem implements System {
 
 	private applyServerState(entities: Entity[], serverState: any): void {
 		const ballEntity = entities.find(e => e.id === 'defaultBall');
-	if (ballEntity && serverState.ball) {
-		const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
-		const ballRender = ballEntity.getComponent('render') as RenderComponent;
-		
-		if (ballPhysics && ballRender) {
-			(ballPhysics as any).isServerControlled = true;
+		if (ballEntity && serverState.ball) {
+			const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+			const ballRender = ballEntity.getComponent('render') as RenderComponent;
 			
-			ballPhysics.x = serverState.ball.x;
-			ballPhysics.y = serverState.ball.y;
-			ballRender.graphic.x = serverState.ball.x;
-			ballRender.graphic.y = serverState.ball.y;
-
-			const isOffScreen = serverState.ball.x < 0 || serverState.ball.y < 0;
-			ballRender.graphic.alpha = isOffScreen ? 0 : 1;
-			ballRender.graphic.visible = !isOffScreen;
-			
-			if (isOffScreen) {
-				console.log(`🎮 Ball hidden - off-screen at (${serverState.ball.x}, ${serverState.ball.y})`);
-			} else {
-				console.log(`🎮 Ball visible at (${serverState.ball.x}, ${serverState.ball.y})`);
-			}
-			
-			if (serverState.ballVelocity) {
-				ballPhysics.velocityX = serverState.ballVelocity.x;
-				ballPhysics.velocityY = serverState.ballVelocity.y;
+			if (ballPhysics && ballRender) {
+				(ballPhysics as any).isServerControlled = true;
+				
+				// Check if ball is spawning (transitioning from hidden to visible)
+				const wasHidden = ballPhysics.x < 0 || ballPhysics.y < 0;
+				const isNowVisible = serverState.ball.x > 0 && serverState.ball.y > 0;
+				const isSpawning = wasHidden && isNowVisible;
+				
+				// Store target position from server
+				(ballPhysics as any).targetX = serverState.ball.x;
+				(ballPhysics as any).targetY = serverState.ball.y;
+				
+				// If this is the first server update OR ball is spawning, snap to position
+				if (!(ballPhysics as any).hasServerTarget || isSpawning) {
+					ballPhysics.x = serverState.ball.x;
+					ballPhysics.y = serverState.ball.y;
+					ballRender.graphic.x = serverState.ball.x;
+					ballRender.graphic.y = serverState.ball.y;
+					(ballPhysics as any).hasServerTarget = true;
+					console.log(`Ball ${isSpawning ? 'spawned' : 'initialized'} at (${serverState.ball.x}, ${serverState.ball.y})`);
+				} else {
+					// Smoothly interpolate towards target for normal movement
+					const lerpFactor = 0.75;
+					
+					ballPhysics.x += (serverState.ball.x - ballPhysics.x) * lerpFactor;
+					ballPhysics.y += (serverState.ball.y - ballPhysics.y) * lerpFactor;
+					ballRender.graphic.x = ballPhysics.x;
+					ballRender.graphic.y = ballPhysics.y;
+				}
+	
+				const isOffScreen = serverState.ball.x < 0 || serverState.ball.y < 0;
+				ballRender.graphic.alpha = isOffScreen ? 0 : 1;
+				ballRender.graphic.visible = !isOffScreen;
+				
+				if (serverState.ballVelocity) {
+					ballPhysics.velocityX = serverState.ballVelocity.x;
+					ballPhysics.velocityY = serverState.ballVelocity.y;
+				}
 			}
 		}
-	}
+		
+		// Keep existing paddle code...
 		const leftPaddle = entities.find(e => e.id === 'paddleL');
 		const rightPaddle = entities.find(e => e.id === 'paddleR');
-
+	
 		if (leftPaddle && serverState.paddle1) {
 			const physics = leftPaddle.getComponent('physics') as PhysicsComponent;
 			const render = leftPaddle.getComponent('render') as RenderComponent;
@@ -128,7 +146,7 @@ export class PhysicsSystem implements System {
 				render.graphic.y = serverState.paddle1.y;
 			}
 		}
-
+	
 		if (rightPaddle && serverState.paddle2) {
 			const physics = rightPaddle.getComponent('physics') as PhysicsComponent;
 			const render = rightPaddle.getComponent('render') as RenderComponent;
