@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 19:15:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 14:55:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -711,100 +711,50 @@ export class PongGame {
 	}
 
 	updateFromServer(gameState: any) {
+		if (this.hasEnded) {
+			console.log('Game has ended, ignoring all server updates');
+			return;
+		}
+		
 		if (!this.isOnline || !gameState) return;
-
+	
 		console.log('=== UPDATE FROM SERVER ===');
 		console.log('Game state received:', gameState);
-		console.log('Available entities:', this.entities.map(e => ({
-			id: e.id,
-			hasPhysics: !!e.getComponent('physics'),
-			hasRender: !!e.getComponent('render'),
-			physicsPos: e.getComponent('physics') ? { x: e.getComponent('physics').x, y: e.getComponent('physics').y } : null
-		})));
-
+	
 		try {
-			// Find entities by their IDs/types
-			const ballEntity = this.entities.find(e => e.id === 'defaultBall');
-			const paddle1Entity = this.entities.find(e => e.id === 'paddleL');
-			const paddle2Entity = this.entities.find(e => e.id === 'paddleR');
-
-			console.log('Entity search results:', {
-				ballFound: !!ballEntity,
-				paddle1Found: !!paddle1Entity,
-				paddle2Found: !!paddle2Entity
-			});
-
-			// Update ball position using PhysicsComponent
-			if (ballEntity && gameState.ball) {
-				const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
-				const ballRender = ballEntity.getComponent('render') as RenderComponent;
-
-				ballPhysics.x = gameState.ball.x;
-				ballPhysics.y = gameState.ball.y;
-				ballPhysics.velocityX = gameState.ball.vx || 0;
-				ballPhysics.velocityY = gameState.ball.vy || 0;
-				ballRender.graphic.x = gameState.ball.x;
-				ballRender.graphic.y = gameState.ball.y;
-
-			} else {
-				console.warn('Ball entity or gameState.ball missing');
-				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
-				if (!gameState.ball) console.warn('  - gameState.ball is missing from server data');
+			const physicsSystem = this.systems.find(s => s instanceof PhysicsSystem) as PhysicsSystem;
+			if (physicsSystem && physicsSystem.updateFromServer) {
+				physicsSystem.updateFromServer(gameState);
 			}
-
-			// Update paddle positions with similar detailed logging
-			if (paddle1Entity && gameState.paddle1) {
-				const paddle1Physics = paddle1Entity.getComponent('physics') as PhysicsComponent;
-				if (paddle1Physics) {
-					paddle1Physics.x = gameState.paddle1.x;
-					paddle1Physics.y = gameState.paddle1.y;
-
-					const paddle1Render = paddle1Entity.getComponent('render') as RenderComponent;
-					if (paddle1Render && paddle1Render.graphic) {
-						paddle1Render.graphic.x = gameState.paddle1.x;
-						paddle1Render.graphic.y = gameState.paddle1.y;
-					}
-				}
-			}
-
-			if (paddle2Entity && gameState.paddle2) {
-				const paddle2Physics = paddle2Entity.getComponent('physics') as PhysicsComponent;
-				if (paddle2Physics) {
-					paddle2Physics.x = gameState.paddle2.x;
-					paddle2Physics.y = gameState.paddle2.y;
-
-					const paddle2Render = paddle2Entity.getComponent('render') as RenderComponent;
-					if (paddle2Render && paddle2Render.graphic) {
-						paddle2Render.graphic.x = gameState.paddle2.x;
-						paddle2Render.graphic.y = gameState.paddle2.y;
-					}
-				}
-			}
-
+	
 			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
-				this.updateScoreDisplay(gameState.score1 || 0, gameState.score2 || 0);
+				this.updateScoreFromServer(gameState.score1 || 0, gameState.score2 || 0);
 			}
+	
+			if (gameState.gameEnded || gameState.winner) {
+				this.handleServerGameEnd(gameState);
+			}
+	
+			console.log('Server state processed successfully');
 		} catch (error) {
 			console.error('Error updating from server state:', error);
 		}
 	}
 
-	private updateScoreDisplay(score1: number, score2: number): void {
-		// Find the UI entity which contains the score
-		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
-
-		if (uiEntity) {
-			if (uiEntity.leftScore !== undefined && uiEntity.rightScore !== undefined) {
-				uiEntity.leftScore = score1;
-				uiEntity.rightScore = score2;
+	private handleServerGameEnd(gameState: any): void {
+		console.log('Server declared game ended:', gameState);
+		
+		const endingSystem = this.systems.find(s => s instanceof EndingSystem) as EndingSystem;
+		if (endingSystem && !this.hasEnded) {
+			const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+			if (uiEntity) {
+				uiEntity.leftScore = gameState.score1 || 0;
+				uiEntity.rightScore = gameState.score2 || 0;
 			}
-
-			const textComponent = uiEntity.getComponent('text') as TextComponent;
-			if (textComponent) {
-				textComponent.setText(`${score1} - ${score2}`);
-			}
+			
+			(endingSystem as any).ended = true;
+			console.log('Forced game end from server event');
 		}
-		console.log(`Score display updated: ${score1} - ${score2}`);
 	}
 
 	private disableLocalGameplayForOnline(): void {
@@ -883,6 +833,29 @@ export class PongGame {
 			}
 		} catch (error) {
 			console.error('Network error saving game results:', error);
+		}
+	}
+
+	private updateScoreFromServer(score1: number, score2: number): void {
+		if (this.hasEnded) {
+			console.log('Game has ended, ignoring score updates from server');
+			return;
+		}
+		
+		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+		
+		if (uiEntity) {
+			uiEntity.leftScore = score1;
+			uiEntity.rightScore = score2;
+			
+			if (this.config.classicMode) {
+				uiEntity.setClassicScoreText(score1.toString(), 'left');
+				uiEntity.setClassicScoreText(score2.toString(), 'right');
+				console.log(`🎮 UI: Classic score updated from server - left=${score1}, right=${score2}`);
+			} else {
+				uiEntity.setScoreText(`${score1} - ${score2}`);
+				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
+			}
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 16:43:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:38:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ export class PhysicsSystem implements System {
 
 	// Online stuff
 	private serverState: any = null;
-    private lastServerUpdate: number = 0;
+	lastServerUpdate: number = 0;
 
 	constructor(game: PongGame, width: number, height: number) {
 		this.game = game;
@@ -65,117 +65,120 @@ export class PhysicsSystem implements System {
 
 	update(entities: Entity[], delta: FrameData): void {
 		if (this.shouldUseBackendPhysics()) {
-            this.handleNetworkPhysics(entities, delta);
-        } else {
-            this.handleLocalPhysics(entities, delta);
-        }
+			this.handleNetworkPhysics(entities, delta);
+		} else {
+			this.handleLocalPhysics(entities, delta);
+		}
 	}
 
 	private shouldUseBackendPhysics(): boolean {
-        return this.game.isOnline && this.game.config.classicMode;
-    }
+		return this.game.isOnline && this.game.config.classicMode;
+	}
 
 	private handleNetworkPhysics(entities: Entity[], delta: FrameData): void {
-        // Apply server state to entities (visual only)
-        if (this.serverState) {
-            this.applyServerState(entities, this.serverState);
-        }
-        
-        // Still handle local visual effects and non-physics updates
-        this.handleLocalVisualEffects(entities, delta);
-    }
+		if (this.game.hasEnded) {
+			console.log('Game ended, stopping all server state updates to preserve final state');
+			return;
+		}
+		
+		if (this.serverState) {
+			this.applyServerState(entities, this.serverState);
+		}
+	}
 
 	private applyServerState(entities: Entity[], serverState: any): void {
-        // Find and update ball
-        const ballEntity = entities.find(e => e.id === 'defaultBall');
-        if (ballEntity && serverState.ball) {
-            const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
-            const ballRender = ballEntity.getComponent('render') as RenderComponent;
-            
-            if (ballPhysics && ballRender) {
-                // Mark as server controlled
-                (ballPhysics as any).isServerControlled = true;
-                
-                // Update position
-                ballPhysics.x = serverState.ball.x;
-                ballPhysics.y = serverState.ball.y;
-                ballRender.graphic.x = serverState.ball.x;
-                ballRender.graphic.y = serverState.ball.y;
-                
-                // Store velocity for prediction (optional)
-                if (serverState.ballVelocity) {
-                    ballPhysics.velocityX = serverState.ballVelocity.x;
-                    ballPhysics.velocityY = serverState.ballVelocity.y;
-                }
-            }
-        }
+		const ballEntity = entities.find(e => e.id === 'defaultBall');
+	if (ballEntity && serverState.ball) {
+		const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+		const ballRender = ballEntity.getComponent('render') as RenderComponent;
+		
+		if (ballPhysics && ballRender) {
+			(ballPhysics as any).isServerControlled = true;
+			
+			ballPhysics.x = serverState.ball.x;
+			ballPhysics.y = serverState.ball.y;
+			ballRender.graphic.x = serverState.ball.x;
+			ballRender.graphic.y = serverState.ball.y;
 
-        // Find and update paddles
-        const leftPaddle = entities.find(e => e.id === 'paddleL');
-        const rightPaddle = entities.find(e => e.id === 'paddleR');
+			const isOffScreen = serverState.ball.x < 0 || serverState.ball.y < 0;
+			ballRender.graphic.alpha = isOffScreen ? 0 : 1;
+			ballRender.graphic.visible = !isOffScreen;
+			
+			if (isOffScreen) {
+				console.log(`🎮 Ball hidden - off-screen at (${serverState.ball.x}, ${serverState.ball.y})`);
+			} else {
+				console.log(`🎮 Ball visible at (${serverState.ball.x}, ${serverState.ball.y})`);
+			}
+			
+			if (serverState.ballVelocity) {
+				ballPhysics.velocityX = serverState.ballVelocity.x;
+				ballPhysics.velocityY = serverState.ballVelocity.y;
+			}
+		}
+	}
+		const leftPaddle = entities.find(e => e.id === 'paddleL');
+		const rightPaddle = entities.find(e => e.id === 'paddleR');
 
-        if (leftPaddle && serverState.paddle1) {
-            const physics = leftPaddle.getComponent('physics') as PhysicsComponent;
-            const render = leftPaddle.getComponent('render') as RenderComponent;
-            if (physics && render) {
-                (physics as any).isServerControlled = true;
-                physics.y = serverState.paddle1.y;
-                render.graphic.y = serverState.paddle1.y;
-            }
-        }
+		if (leftPaddle && serverState.paddle1) {
+			const physics = leftPaddle.getComponent('physics') as PhysicsComponent;
+			const render = leftPaddle.getComponent('render') as RenderComponent;
+			if (physics && render) {
+				(physics as any).isServerControlled = true;
+				physics.y = serverState.paddle1.y;
+				render.graphic.y = serverState.paddle1.y;
+			}
+		}
 
-        if (rightPaddle && serverState.paddle2) {
-            const physics = rightPaddle.getComponent('physics') as PhysicsComponent;
-            const render = rightPaddle.getComponent('render') as RenderComponent;
-            if (physics && render) {
-                (physics as any).isServerControlled = true;
-                physics.y = serverState.paddle2.y;
-                render.graphic.y = serverState.paddle2.y;
-            }
-        }
-    }
+		if (rightPaddle && serverState.paddle2) {
+			const physics = rightPaddle.getComponent('physics') as PhysicsComponent;
+			const render = rightPaddle.getComponent('render') as RenderComponent;
+			if (physics && render) {
+				(physics as any).isServerControlled = true;
+				physics.y = serverState.paddle2.y;
+				render.graphic.y = serverState.paddle2.y;
+			}
+		}
+	}
 
-    private handleLocalVisualEffects(entities: Entity[], delta: FrameData): void {
-        // Handle visual-only effects that don't affect physics
-        // Like particle cleanup, visual animations, etc.
-        
-        // Clean up expired particles, handle visual timers, etc.
-        // This runs even in online mode for visual consistency
-    }
-
-    public updateFromServer(serverState: any): void {
-        this.serverState = serverState;
-        this.lastServerUpdate = Date.now();
-    }
+	public updateFromServer(serverState: any): void {
+		if (this.game.hasEnded) {
+			console.log('Game has ended, ignoring server state update');
+			return;
+		}
+		
+		this.serverState = serverState;
+		this.lastServerUpdate = Date.now();
+	}
 
 	private handleLocalPhysics(entities: Entity[], delta: FrameData): void {
-        // Your entire existing update method logic goes here
-        const entitiesMap = createEntitiesMap(entities);
-        
-        if (this.mustResetBall) {
-            this.ballResetTime -= delta.deltaTime;
-        }
-        
-        if (this.mustResetBall && this.ballResetTime <= 0) {
-            this.mustResetBall = false;
-            BallSpawner.spawnDefaultBall(this.game);
-        }
-        
-        for (const entity of entities) {
-            const physics = entity.getComponent('physics') as PhysicsComponent;
-            if (physics && (physics as any).isServerControlled) {
-                continue; // Skip server-controlled entities
-            }
-            
-            if (isPaddle(entity)) {
-                this.updatePaddle(entity, entitiesMap);
-            } else if (isBall(entity)) {
-                this.updateBall(entity, entities, entitiesMap, delta);
-            } else if (isBullet(entity)) {
-                this.updateBullet(entity, entitiesMap);
-            }
-        }
-    }
+		const entitiesMap = createEntitiesMap(entities);
+		
+		if (!this.game.isOnline || !this.game.config.classicMode) {
+			if (this.mustResetBall) {
+				this.ballResetTime -= delta.deltaTime;
+			}
+			
+			if (this.mustResetBall && this.ballResetTime <= 0) {
+				this.mustResetBall = false;
+				BallSpawner.spawnDefaultBall(this.game);
+			}
+		}
+		
+		for (const entity of entities) {
+			const physics = entity.getComponent('physics') as PhysicsComponent;
+			if (physics && (physics as any).isServerControlled) {
+				continue;
+			}
+			
+			if (isPaddle(entity)) {
+				this.updatePaddle(entity, entitiesMap);
+			} else if (isBall(entity)) {
+				this.updateBall(entity, entities, entitiesMap, delta);
+			} else if (isBullet(entity)) {
+				this.updateBullet(entity, entitiesMap);
+			}
+		}
+	}
 
 	updatePaddle(paddle: Paddle, entitiesMap: Map<string, Entity>) {
 		const input = paddle.getComponent('input') as InputComponent;
@@ -357,11 +360,9 @@ export class PhysicsSystem implements System {
 						continue;
 					}
 
-					// Check if ball is inside polygon first
 					const isInside = physicsUtils.pointInPolygon(ballCenter.x, ballCenter.y, polygon, cutOffsetX, cutOffsetY);
 
 					if (isInside) {
-						// Ball is inside - find closest edge to push out
 						let minDist = Infinity;
 						let closestEdgeNormal = { x: 0, y: 0 };
 						let closestPoint = { x: 0, y: 0 };
@@ -397,23 +398,19 @@ export class PhysicsSystem implements System {
 								minDist = distance;
 								closestPoint = closest;
 
-								// Calculate normal pointing outward from polygon
 								const nx = -edgeVector.y / edgeLength;
 								const ny = edgeVector.x / edgeLength;
 
-								// Make sure normal points away from polygon center
 								const centerToEdge = { x: closest.x - ballCenter.x, y: closest.y - ballCenter.y };
 								const dot = nx * centerToEdge.x + ny * centerToEdge.y;
 								closestEdgeNormal = dot > 0 ? { x: nx, y: ny } : { x: -nx, y: -ny };
 							}
 						}
 
-						// Push ball out with extra margin
-						const pushOutDistance = ballRadius + 2.0; // Increased margin
+						const pushOutDistance = ballRadius + 2.0;
 						physics.x = closestPoint.x + closestEdgeNormal.x * pushOutDistance;
 						physics.y = closestPoint.y + closestEdgeNormal.y * pushOutDistance;
 
-						// Reflect velocity
 						const dotVelocity = physics.velocityX * closestEdgeNormal.x + physics.velocityY * closestEdgeNormal.y;
 						physics.velocityX -= 2 * dotVelocity * closestEdgeNormal.x;
 						physics.velocityY -= 2 * dotVelocity * closestEdgeNormal.y;
@@ -423,7 +420,6 @@ export class PhysicsSystem implements System {
 						break;
 					}
 
-					// Check edge collisions only if not inside
 					for (let j = 0; j < polygon.length; j++) {
 						const pointA = {
 							x: polygon[j].x + cutOffsetX,
@@ -436,12 +432,10 @@ export class PhysicsSystem implements System {
 
 						const collision = physicsUtils.circleIntersectsSegment(ballCenter, ballRadius, pointA, pointB);
 						if (collision.intersects && collision.normal) {
-							// Extra safety margin
 							const pushOutDistance = ballRadius + 1.5;
 							physics.x = collision.point!.x + collision.normal.x * pushOutDistance;
 							physics.y = collision.point!.y + collision.normal.y * pushOutDistance;
 
-							// Reflect velocity
 							const dotVelocity = physics.velocityX * collision.normal.x + physics.velocityY * collision.normal.y;
 							physics.velocityX -= 2 * dotVelocity * collision.normal.x;
 							physics.velocityY -= 2 * dotVelocity * collision.normal.y;
@@ -452,7 +446,6 @@ export class PhysicsSystem implements System {
 						}
 					}
 
-					// Check vertex collisions
 					if (!collided) {
 						for (let j = 0; j < polygon.length; j++) {
 							const vertex = {
@@ -469,12 +462,10 @@ export class PhysicsSystem implements System {
 								const nx = distance > 0 ? dx / distance : 0;
 								const ny = distance > 0 ? dy / distance : 0;
 
-								// Push out with margin
 								const pushOutDistance = ballRadius + 1.5;
 								physics.x = vertex.x + nx * pushOutDistance;
 								physics.y = vertex.y + ny * pushOutDistance;
 
-								// Reflect velocity
 								const dotVelocity = physics.velocityX * nx + physics.velocityY * ny;
 								physics.velocityX -= 2 * dotVelocity * nx;
 								physics.velocityY -= 2 * dotVelocity * ny;
@@ -505,7 +496,6 @@ export class PhysicsSystem implements System {
 				ParticleSpawner.spawnBasicExplosion(this.game, physics.x - physics.width / 4, physics.y, GAME_COLORS.particleGray, 0.5);
 			}
 
-			// Anti-stuck mechanism: if ball is moving very slowly or oscillating
 			const speed = Math.hypot(physics.velocityX, physics.velocityY);
 			const distanceFromPrev = Math.hypot(physics.x - prevPos.x, physics.y - prevPos.y);
 
@@ -517,7 +507,6 @@ export class PhysicsSystem implements System {
 				console.log(`Broke ${oscillationCheck.type} oscillation for ball ${ball.id}`);
 			}
 
-			// If ball barely moved or is moving very slowly, give it a boost
 			if (speed < 3 || distanceFromPrev < 1) {
 				const boostMagnitude = Math.max(5, speed * 1.5);
 				const normalizedVelX = physics.velocityX / speed || collisionNormal.x;
@@ -527,7 +516,6 @@ export class PhysicsSystem implements System {
 				physics.velocityY = normalizedVelY * boostMagnitude;
 			}
 
-			// Enforce speed limits
 			const maxSpeed = 15;
 			const currentSpeed = Math.hypot(physics.velocityX, physics.velocityY);
 			if (currentSpeed > maxSpeed) {
@@ -613,9 +601,9 @@ export class PhysicsSystem implements System {
 	}
 
 	handleBallPaddleCollisions(physics: PhysicsComponent, entitiesMap: Map<string, Entity>, ball: Ball): void {
-		const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees
+		const MAX_BOUNCE_ANGLE = Math.PI / 4;
 		const PADDLE_INFLUENCE = 0.5;
-		const MIN_HORIZONTAL_COMPONENT = 0.7; // At least 70% of velocity should be horizontal
+		const MIN_HORIZONTAL_COMPONENT = 0.7;
 
 		if (ball.isGoodBall) {
 			const ballBox = {
@@ -667,10 +655,10 @@ export class PhysicsSystem implements System {
 						const bounceAngle = clamped * MAX_BOUNCE_ANGLE;
 
 						if (paddleSide === "left") {
-							physics.velocityX = Math.abs(physics.velocityX); // Force right direction
+							physics.velocityX = Math.abs(physics.velocityX);
 							physics.velocityX = Math.cos(bounceAngle) * speed;
 						} else {
-							physics.velocityX = -Math.abs(physics.velocityX); // Force left direction
+							physics.velocityX = -Math.abs(physics.velocityX);
 							physics.velocityX = -Math.cos(bounceAngle) * speed;
 						}
 
@@ -725,7 +713,7 @@ export class PhysicsSystem implements System {
 
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
-							vfx.startFlash(GAME_COLORS.greenParticle, 10); // Green flash for left paddle
+							vfx.startFlash(GAME_COLORS.greenParticle, 10);
 						}
 
 					} else {
@@ -735,7 +723,7 @@ export class PhysicsSystem implements System {
 
 						if (ball.hasComponent('vfx')) {
 							const vfx = ball.getComponent('vfx') as VFXComponent;
-							vfx.startFlash(GAME_COLORS.violetParticle, 10); // Purple flash for right paddle
+							vfx.startFlash(GAME_COLORS.violetParticle, 10);
 						}
 					}
 
@@ -800,6 +788,10 @@ export class PhysicsSystem implements System {
 
 
 	checkBallOutOfBounds(physics: PhysicsComponent, ball: Ball) {
+		if (this.game.isOnline && this.game.config.classicMode) {
+			return;
+		}
+
 		const ballLeft = physics.x - (physics.width / 2) + 10;
 		const ballRight = physics.x + (physics.width / 2) - 10;
 
@@ -1063,20 +1055,18 @@ export class PhysicsSystem implements System {
 		const history = this.ballCollisionHistory.get(ballId)!;
 		const now = Date.now();
 
-		// Clean old entries (older than 2 seconds)
 		while (history.length > 0 && now - history[0].time > 2000) {
 			history.shift();
 		}
 
 		history.push({ time: now, normal });
 
-		// Check for rapid back-and-forth bouncing
 		if (history.length >= 4) {
 			const recent = history.slice(-4);
 			const isOscillating = this.isRapidOscillation(recent);
 
 			if (isOscillating) {
-				return true; // Signal to break oscillation
+				return true;
 			}
 		}
 
@@ -1085,16 +1075,15 @@ export class PhysicsSystem implements System {
 
 	private isRapidOscillation(collisions: Array<{ time: number, normal: { x: number, y: number } }>): boolean {
 		const timeSpan = collisions[collisions.length - 1].time - collisions[0].time;
-		const isRapid = timeSpan < 1000; // 4 collisions in 1 second
+		const isRapid = timeSpan < 1000;
 
-		// Check if normals are roughly opposite (indicating back-and-forth)
 		let oppositeCount = 0;
 		for (let i = 1; i < collisions.length; i++) {
 			const prev = collisions[i - 1].normal;
 			const curr = collisions[i].normal;
 			const dot = prev.x * curr.x + prev.y * curr.y;
 
-			if (dot < -0.5) { // Roughly opposite directions
+			if (dot < -0.5) {
 				oppositeCount++;
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 19:19:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 09:33:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ export class MenuButtonSystem implements System {
                 this.handleAboutClick();
             } else if (event.type === 'PLAY_CLICK') {
                 this.handlePlayClick();
-            } else if (event.type === 'ONLINE_CLICK') {
+            } else if (event.type === 'RANKED_CLICK') {
                 this.handleOnlineClick();
-            } else if (event.type === 'LOCAL_CLICK') {
+            } else if (event.type === 'PRACTICE_CLICK') {
                 this.handleLocalClick();
             } else if (event.type === 'IA_CLICK') {
                 this.handleIAClick();
