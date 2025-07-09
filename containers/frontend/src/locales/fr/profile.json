@@ -1,0 +1,13 @@
+{
+	"profileTitleOwn": "Mon profil",
+	"profileTitle": "Profil de {{username}}",
+	"matchesPlayed": "Parties jouées",
+	"tournamentsPlayed": "Tournois joués",
+	"victories": "Victoires",
+	"settings": "Paramètres",
+	"matches": "Parties",
+	"friends": "Amis",
+	"stats": "Statistiques",
+	"addFriend": "Ajouter un ami",
+	"removeFriend": "Supprimer un ami"
+  }

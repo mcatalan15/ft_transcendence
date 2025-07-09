@@ -175,18 +175,16 @@ if [ ! -f "$DB_PATH" ]; then
 	);
 
 	CREATE TABLE IF NOT EXISTS game_results (
-    id_game INTEGER PRIMARY KEY,
-    game_data TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(id_game) REFERENCES games(id_game)
+		id_game INTEGER PRIMARY KEY,
+		game_data TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(id_game) REFERENCES games(id_game)
 	);
 
 		-- Create indexes for better performance
-	CREATE INDEX IF NOT EXISTS idx_games_game_id ON games(game_id);
-	CREATE INDEX IF NOT EXISTS idx_games_player1_id ON games(player1_id);
-	CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
-	CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
-	CREATE INDEX IF NOT EXISTS idx_user_stats_user_id ON user_stats(id_user);
+    CREATE INDEX IF NOT EXISTS idx_games_player1_id ON games(player1_id);
+    CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
+    CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
 
 	-- Add more initialization logic as needed
 EOF

@@ -93,14 +93,6 @@ function renderRoute(path: string) {
 			navigate('/');
 			break;
 
-		case '/lobby':
-			if (!isUserAuthenticated()) {
-				navigate('/');
-				return;
-			}
-			views.showLobby(app, sessionStorage.getItem('username') ?? 'undefined');
-			break;
-
 		case '/blockchain': //Delete when blockchain working!!
 			views.showBlockchain(app);
 			break;
