@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 18:12:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:19:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ import { createEntitiesMap, changePaddleLayer } from '../utils/Utils';
 import * as physicsUtils from '../utils/PhysicsUtils'
 import { isPaddle, isBall, isSpinBall, isBurstBall, isPowerup, isBullet, isUI } from '../utils/Guards';
 import { FrameData, GAME_COLORS } from '../utils/Types';
+import { TextComponent } from '../components/TextComponent';
 
 export class PhysicsSystem implements System {
 	game: PongGame;
@@ -172,6 +173,19 @@ export class PhysicsSystem implements System {
 		}
 		
 		render.graphic.y = physics.y;
+
+		if ((paddle.id === 'paddleL' || paddle.id === 'paddleR') && paddle.hasComponent('text')) {
+			const textComponent = paddle.getComponent('text') as TextComponent;
+			const textObject = textComponent.getRenderable();
+			
+			if (paddle.id === 'paddleL') {
+				textObject.x = physics.x - 25;
+				textObject.y = physics.y;
+			} else {
+				textObject.x = physics.x + 25;
+				textObject.y = physics.y;
+			}
+		}
 		
 		(physics as any).lastServerUpdate = Date.now();
 	}

@@ -1,4 +1,5 @@
 const ClassicPhysicsEngine = require('./ClassicPhysicsEngine');
+const GameResultsService = require('./GameResultService');
 
 class ClassicGameSession {
 	constructor(sessionId, player1, player2) {
@@ -191,7 +192,7 @@ class ClassicGameSession {
 				this.externalBroadcast(goalEvent);
 			}
 			
-			if (this.gameState.score1 >= 11 || this.gameState.score2 >= 11) {
+			if (this.gameState.score1 >= 3 || this.gameState.score2 >= 3) {
 				this.endGame();
 			}
 		}
@@ -254,6 +255,19 @@ class ClassicGameSession {
 		this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
 		
 		console.log(`Game ${this.sessionId} ended. Winner: ${this.winner}`);
+	
+		const physicsGameData = this.physicsEngine.getGameData();
+		
+		console.log('=== GAME DATA COLLECTION ===');
+		console.log('Raw physics engine data:', JSON.stringify(physicsGameData, null, 2));
+		console.log('Game scores:', {
+			player1: this.gameState.score1,
+			player2: this.gameState.score2
+		});
+		console.log('Player details:', {
+			player1: this.players.player1.id,
+			player2: this.players.player2.id
+		});
 		
 		const gameResults = {
 			type: 'GAME_END',
@@ -269,8 +283,41 @@ class ClassicGameSession {
 			players: {
 				player1: this.players.player1.id,
 				player2: this.players.player2.id
+			},
+	
+			gameData: {
+				...physicsGameData,
+				leftPlayer: {
+					...physicsGameData.leftPlayer,
+					name: this.players.player1.id,
+					score: this.gameState.score1,
+					result: this.gameState.score1 > this.gameState.score2 ? 'win' : 'lose'
+				},
+				rightPlayer: {
+					...physicsGameData.rightPlayer,
+					name: this.players.player2.id,
+					score: this.gameState.score2,
+					result: this.gameState.score2 > this.gameState.score1 ? 'win' : 'lose'
+				},
+				createdAt: new Date().toISOString(),
+				endedAt: new Date().toISOString(),
+				gameId: this.sessionId,
+				config: {
+					mode: 'online',
+					classicMode: true,
+					variant: '1v1'
+				}
 			}
 		};
+		
+		console.log('=== FINAL GAME RESULTS ===');
+		console.log('Complete gameResults object:', JSON.stringify(gameResults, null, 2));
+		console.log('=== GAME DATA BREAKDOWN ===');
+		console.log('Balls data:', gameResults.gameData.balls);
+		console.log('Left player data:', gameResults.gameData.leftPlayer);
+		console.log('Right player data:', gameResults.gameData.rightPlayer);
+		console.log('Game config:', gameResults.gameData.config);
+		console.log('===========================');
 		
 		this.broadcastToAll('gameEnded', gameResults);
 		
@@ -283,12 +330,15 @@ class ClassicGameSession {
 	
 	async saveGameResults(results) {
 		try {
-			console.log('Saving game results:', results);
+			console.log('Saving online game results:', results);
+			
+			await GameResultsService.saveOnlineGameResults(results.gameData);
+			
+			console.log('Online game results saved successfully');
 		} catch (error) {
-			console.error('Error saving game results:', error);
+			console.error('Error saving online game results:', error);
 		}
 	}
-	
 	stopGameLoop() {
 		if (this.gameLoop) {
 			clearInterval(this.gameLoop);

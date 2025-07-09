@@ -11,6 +11,32 @@ class ClassicPhysicsEngine {
 			this.ballDelayDuration = 2.0;
 			
 			this.gameState.ballVisible = false;
+
+			this.gameData = {
+				balls: {
+					defaultBalls: 0,
+					curveBalls: 0,
+					multiplyBalls: 0,
+					spinBalls: 0,
+					burstBalls: 0,
+				},
+				leftPlayer: {
+					hits: 0,
+					goalsInFavor: 0,
+					goalsAgainst: 0,
+					powerupsPicked: 0,
+					powerdownsPicked: 0,
+					ballchangesPicked: 0
+				},
+				rightPlayer: {
+					hits: 0,
+					goalsInFavor: 0,
+					goalsAgainst: 0,
+					powerupsPicked: 0,
+					powerdownsPicked: 0,
+					ballchangesPicked: 0
+				}
+			};
 		}
 
 	update(deltaTime, paddleInputs) {
@@ -45,6 +71,10 @@ class ClassicPhysicsEngine {
 	
 		if (this.gameState.ball.x <= 0) {
 			this.gameState.score2++;
+
+			this.gameData.rightPlayer.goalsInFavor++;
+            this.gameData.leftPlayer.goalsAgainst++;
+
 			console.log(`🎮 GOAL! Player 2 scores! Score: ${this.gameState.score1} - ${this.gameState.score2}`);
 			this.startBallDelay();
 			return { 
@@ -59,6 +89,10 @@ class ClassicPhysicsEngine {
 
 		if (this.gameState.ball.x >= this.gameState.width) {
 			this.gameState.score1++;
+
+			this.gameData.leftPlayer.goalsInFavor++;
+            this.gameData.rightPlayer.goalsAgainst++;
+
 			console.log(`🎮 GOAL! Player 1 scores! Score: ${this.gameState.score1} - ${this.gameState.score2}`);
 			this.startBallDelay();
 			return { 
@@ -94,6 +128,8 @@ class ClassicPhysicsEngine {
 		
 		this.gameState.ballVelocity.x = Math.cos(angle) * speed * direction;
 		this.gameState.ballVelocity.y = Math.sin(angle) * speed;
+
+		this.gameData.balls.defaultBalls++;
 	}
 
 	updatePaddles(deltaTime, paddleInputs) {
@@ -248,9 +284,11 @@ class ClassicPhysicsEngine {
 		);
 		
 		if (side === 'left') {
+			this.gameData.leftPlayer.hits++;
 			this.gameState.ballVelocity.x = Math.abs(Math.cos(bounceAngle)) * speed;
 			this.gameState.ball.x = paddle.x + this.gameState.paddleWidth / 2 + this.gameState.ballRadius + 1;
 		} else {
+			this.gameData.rightPlayer.hits++;
 			this.gameState.ballVelocity.x = -Math.abs(Math.cos(bounceAngle)) * speed;
 			this.gameState.ball.x = paddle.x - this.gameState.paddleWidth / 2 - this.gameState.ballRadius - 1;
 		}
@@ -266,6 +304,12 @@ class ClassicPhysicsEngine {
 			this.gameState.ballVelocity.y = Math.sign(this.gameState.ballVelocity.y) * remainingSpeed;
 		}
 	}
+
+	getGameData() {
+        console.log('🔍 getGameData() called in ClassicPhysicsEngine');
+        console.log('Current game data:', JSON.stringify(this.gameData, null, 2));
+        return this.gameData;
+    }
 }
 
 module.exports = ClassicPhysicsEngine;
