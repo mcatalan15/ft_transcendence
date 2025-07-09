@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 17:52:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:12:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,98 +64,116 @@ export class PhysicsSystem implements System {
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
-		if (this.shouldUseBackendPhysics()) {
-			this.handleNetworkPhysics(entities, delta);
+		if (this.game.isOnline && this.game.config.classicMode) {
+			this.handlePureServerPhysics(entities, delta);
 		} else {
-			this.handleLocalPhysics(entities, delta);
+			this.handlePureClientPhysics(entities, delta);
 		}
 	}
 
-	private shouldUseBackendPhysics(): boolean {
-		return this.game.isOnline && this.game.config.classicMode;
-	}
-
-	private handleNetworkPhysics(entities: Entity[], delta: FrameData): void {
+	private handlePureServerPhysics(entities: Entity[], delta: FrameData): void {
 		if (this.game.hasEnded) {
 			console.log('Game ended, stopping all server state updates to preserve final state');
 			return;
 		}
 		
 		if (this.serverState) {
-			this.applyServerState(entities, this.serverState);
+			this.applyServerStateDirectly(entities, this.serverState);
+		}
+		
+		this.handleLocalInputPrediction(entities);
+	}
+
+	private applyServerStateDirectly(entities: Entity[], serverState: any): void {
+		const ballEntity = entities.find(e => e.id === 'defaultBall');
+		if (ballEntity && serverState.ball) {
+			this.updateBallFromServer(ballEntity, serverState.ball);
+		}
+		
+		this.updatePaddlesFromServer(entities, serverState);
+	}
+
+	private updateBallFromServer(ballEntity: Entity, serverBall: any): void {
+		const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
+		const ballRender = ballEntity.getComponent('render') as RenderComponent;
+		
+		if (!ballPhysics || !ballRender) return;
+		
+		(ballPhysics as any).isServerControlled = true;
+
+		const wasHidden = ballPhysics.x < 0 || ballPhysics.y < 0;
+		const isNowVisible = serverBall.x > 0 && serverBall.y > 0;
+		const isSpawning = wasHidden && isNowVisible;
+		
+		const distance = Math.sqrt(
+			Math.pow(serverBall.x - ballPhysics.x, 2) + 
+			Math.pow(serverBall.y - ballPhysics.y, 2)
+		);
+		const isTeleport = distance > 300;
+		
+		if (isSpawning || isTeleport || !(ballPhysics as any).hasServerTarget) {
+			ballPhysics.x = serverBall.x;
+			ballPhysics.y = serverBall.y;
+			(ballPhysics as any).hasServerTarget = true;
+			console.log(`Ball ${isSpawning ? 'spawned' : isTeleport ? 'teleported' : 'initialized'} at (${serverBall.x}, ${serverBall.y})`);
+		} else {
+			const lerpFactor = 0.75;
+			ballPhysics.x += (serverBall.x - ballPhysics.x) * lerpFactor;
+			ballPhysics.y += (serverBall.y - ballPhysics.y) * lerpFactor;
+		}
+		
+		ballRender.graphic.x = ballPhysics.x;
+		ballRender.graphic.y = ballPhysics.y;
+		
+		const isOffScreen = serverBall.x < 0 || serverBall.y < 0;
+		ballRender.graphic.alpha = isOffScreen ? 0 : 1;
+		ballRender.graphic.visible = !isOffScreen;
+		
+		if (serverBall.ballVelocity || serverBall.velocityX !== undefined) {
+			ballPhysics.velocityX = serverBall.ballVelocity?.x || serverBall.velocityX || 0;
+			ballPhysics.velocityY = serverBall.ballVelocity?.y || serverBall.velocityY || 0;
 		}
 	}
 
-	private applyServerState(entities: Entity[], serverState: any): void {
-		const ballEntity = entities.find(e => e.id === 'defaultBall');
-		if (ballEntity && serverState.ball) {
-			const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
-			const ballRender = ballEntity.getComponent('render') as RenderComponent;
-			
-			if (ballPhysics && ballRender) {
-				(ballPhysics as any).isServerControlled = true;
-				
-				// Check if ball is spawning (transitioning from hidden to visible)
-				const wasHidden = ballPhysics.x < 0 || ballPhysics.y < 0;
-				const isNowVisible = serverState.ball.x > 0 && serverState.ball.y > 0;
-				const isSpawning = wasHidden && isNowVisible;
-				
-				// Store target position from server
-				(ballPhysics as any).targetX = serverState.ball.x;
-				(ballPhysics as any).targetY = serverState.ball.y;
-				
-				// If this is the first server update OR ball is spawning, snap to position
-				if (!(ballPhysics as any).hasServerTarget || isSpawning) {
-					ballPhysics.x = serverState.ball.x;
-					ballPhysics.y = serverState.ball.y;
-					ballRender.graphic.x = serverState.ball.x;
-					ballRender.graphic.y = serverState.ball.y;
-					(ballPhysics as any).hasServerTarget = true;
-					console.log(`Ball ${isSpawning ? 'spawned' : 'initialized'} at (${serverState.ball.x}, ${serverState.ball.y})`);
-				} else {
-					// Smoothly interpolate towards target for normal movement
-					const lerpFactor = 0.75;
-					
-					ballPhysics.x += (serverState.ball.x - ballPhysics.x) * lerpFactor;
-					ballPhysics.y += (serverState.ball.y - ballPhysics.y) * lerpFactor;
-					ballRender.graphic.x = ballPhysics.x;
-					ballRender.graphic.y = ballPhysics.y;
-				}
-	
-				const isOffScreen = serverState.ball.x < 0 || serverState.ball.y < 0;
-				ballRender.graphic.alpha = isOffScreen ? 0 : 1;
-				ballRender.graphic.visible = !isOffScreen;
-				
-				if (serverState.ballVelocity) {
-					ballPhysics.velocityX = serverState.ballVelocity.x;
-					ballPhysics.velocityY = serverState.ballVelocity.y;
-				}
-			}
-		}
-		
-		// Keep existing paddle code...
+	private updatePaddlesFromServer(entities: Entity[], serverState: any): void {
 		const leftPaddle = entities.find(e => e.id === 'paddleL');
 		const rightPaddle = entities.find(e => e.id === 'paddleR');
-	
+		
+		const isHost = this.game.networkManager?.isHost;
+		const localPaddleId = isHost ? 'paddleL' : 'paddleR';
+		
 		if (leftPaddle && serverState.paddle1) {
-			const physics = leftPaddle.getComponent('physics') as PhysicsComponent;
-			const render = leftPaddle.getComponent('render') as RenderComponent;
-			if (physics && render) {
-				(physics as any).isServerControlled = true;
-				physics.y = serverState.paddle1.y;
-				render.graphic.y = serverState.paddle1.y;
-			}
+			this.updatePaddleFromServer(leftPaddle, serverState.paddle1, localPaddleId === 'paddleL');
 		}
-	
+		
 		if (rightPaddle && serverState.paddle2) {
-			const physics = rightPaddle.getComponent('physics') as PhysicsComponent;
-			const render = rightPaddle.getComponent('render') as RenderComponent;
-			if (physics && render) {
-				(physics as any).isServerControlled = true;
-				physics.y = serverState.paddle2.y;
-				render.graphic.y = serverState.paddle2.y;
-			}
+			this.updatePaddleFromServer(rightPaddle, serverState.paddle2, localPaddleId === 'paddleR');
 		}
+	}
+
+	private updatePaddleFromServer(paddle: Entity, serverPaddle: any, isLocalPaddle: boolean): void {
+		const physics = paddle.getComponent('physics') as PhysicsComponent;
+		const render = paddle.getComponent('render') as RenderComponent;
+		
+		if (!physics || !render) return;
+		
+		(physics as any).isServerControlled = true;
+		
+		if (isLocalPaddle) {
+			const tolerance = 15;
+			if (Math.abs(physics.y - serverPaddle.y) > tolerance) {
+				// Server correction needed
+				console.log(`Local paddle corrected: client=${physics.y.toFixed(1)}, server=${serverPaddle.y.toFixed(1)}`);
+				physics.y = serverPaddle.y;
+			}
+		} else {
+			const lerpFactor = 0.6;
+			physics.y += (serverPaddle.y - physics.y) * lerpFactor;
+		}
+		
+		render.graphic.y = physics.y;
+		
+		(physics as any).lastServerUpdate = Date.now();
 	}
 
 	public updateFromServer(serverState: any): void {
@@ -168,32 +186,45 @@ export class PhysicsSystem implements System {
 		this.lastServerUpdate = Date.now();
 	}
 
-	private handleLocalPhysics(entities: Entity[], delta: FrameData): void {
+	private handleLocalInputPrediction(entities: Entity[]): void {
+		const isHost = this.game.networkManager?.isHost;
+		const localPaddleId = isHost ? 'paddleL' : 'paddleR';
+		const localPaddle = entities.find(e => e.id === localPaddleId);
+		
+		if (localPaddle && localPaddle instanceof Paddle) {
+			const input = localPaddle.getComponent('input') as InputComponent;
+			const physics = localPaddle.getComponent('physics') as PhysicsComponent;
+			
+			if (input && physics) {
+				const timeSinceServerUpdate = Date.now() - ((physics as any).lastServerUpdate || 0);
+				const shouldPredict = timeSinceServerUpdate > 50;
+				
+				if (shouldPredict) {
+					this.applyInputToPaddle(input, physics, localPaddle);
+					
+					const entitiesMap = createEntitiesMap(entities);
+					this.constrainPaddleToWalls(physics, entitiesMap);
+					
+					(physics as any).isPredicted = true;
+				}
+			}
+		}
+	}
+
+	private handlePureClientPhysics(entities: Entity[], delta: FrameData): void {
 		const entitiesMap = createEntitiesMap(entities);
 		
 		if (!this.game.isOnline || !this.game.config.classicMode) {
-			if (this.mustResetBall) {
-				this.ballResetTime -= delta.deltaTime;
-			}
-			
-			if (this.mustResetBall && this.ballResetTime <= 0) {
-				this.mustResetBall = false;
-				BallSpawner.spawnDefaultBall(this.game);
-			}
-		}
-		
-		for (const entity of entities) {
-			const physics = entity.getComponent('physics') as PhysicsComponent;
-			if (physics && (physics as any).isServerControlled) {
-				continue;
-			}
-			
-			if (isPaddle(entity)) {
-				this.updatePaddle(entity, entitiesMap);
-			} else if (isBall(entity)) {
-				this.updateBall(entity, entities, entitiesMap, delta);
-			} else if (isBullet(entity)) {
-				this.updateBullet(entity, entitiesMap);
+			for (const entity of entities) {
+				if (entity.hasComponent('physics')) {
+					if (entity instanceof Paddle) {
+						this.updatePaddle(entity as Paddle, entitiesMap);
+					} else if (entity instanceof Ball) {
+						this.updateBall(entity as Ball, entities, entitiesMap, delta);
+					} else if (entity instanceof Bullet) {
+						this.updateBullet(entity as Bullet, entitiesMap);
+					}
+				}
 			}
 		}
 	}
