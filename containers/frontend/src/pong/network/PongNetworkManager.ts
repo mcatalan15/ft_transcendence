@@ -150,13 +150,8 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('PLAYER_DISCONNECTED', (message) => {
-		console.log('Player disconnected:', message.playerId);
-		this.showDisconnectionMessage();
-		});
-
-		this.wsManager.registerHandler('GAME_END', (message) => {
-		console.log('Game ended:', message);
-		this.handleGameEnd(message);
+			console.log('Player disconnected:', message.playerId);
+			this.showDisconnectionMessage();
 		});
 
 		// Add error handler for WebSocket errors
@@ -167,6 +162,14 @@ export class PongNetworkManager {
 		if (statusDiv) {
 			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
 		}
+		});
+
+		this.wsManager.registerHandler('GAME_END', (message) => {
+			console.log('🏁 GAME_END received from server');
+			console.log('🏁 Winner:', message.winner);
+			console.log('🏁 Final scores:', message.finalScore);
+			
+			this.handleGameEndMessage(message);
 		});
 	}
 
@@ -245,27 +248,36 @@ export class PongNetworkManager {
 		}
 	}
 
-	private handleGameEnd(message: any) {
-		const { winner, finalScore } = message;
-		const winnerName = winner === 1 ? this.hostName : this.guestName;
+	private handleGameEndMessage(message: any): void {
+		console.log('🏁 Processing game end...');
 		
-		// Clean up input handlers since game is over
-		this.cleanupInputHandlers();
+		// Update UI scores
+		const uiEntity = this.game.entities.find(e => e.id === 'UI') as any;
+		if (uiEntity && message.finalScore) {
+			console.log(`🏁 Updating UI scores: ${message.finalScore.player1} - ${message.finalScore.player2}`);
+			uiEntity.leftScore = message.finalScore.player1;
+			uiEntity.rightScore = message.finalScore.player2;
+		}
 		
-		// Show game end screen
-		const statusDiv = document.getElementById('connection-status');
-		if (statusDiv) {
-		statusDiv.innerHTML = `
-			<div class="text-center text-yellow-400 text-xl mb-4">
-			🎉 Game Over! 🎉
-			</div>
-			<div class="text-center text-white text-lg mb-2">
-			Winner: ${winnerName}
-			</div>
-			<div class="text-center text-gray-400 text-md">
-			Final Score: ${finalScore.player1} - ${finalScore.player2}
-			</div>
-		`;
+		// Update game data
+		if (message.gameData) {
+			this.game.data.leftPlayer = { ...this.game.data.leftPlayer, ...message.gameData.leftPlayer };
+			this.game.data.rightPlayer = { ...this.game.data.rightPlayer, ...message.gameData.rightPlayer };
+			this.game.data.finalScore = {
+				leftPlayer: message.gameData.leftPlayer.score,
+				rightPlayer: message.gameData.rightPlayer.score
+			};
+			this.game.data.winner = message.gameData.leftPlayer.result === 'win' ? 
+				message.gameData.leftPlayer.name : message.gameData.rightPlayer.name;
+		}
+		
+		// Trigger ending system
+		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
+		if (endingSystem && !this.game.hasEnded) {
+			console.log('🏁 Triggering EndingSystem...');
+			(endingSystem as any).ended = true;
+			this.game.hasEnded = true;
+			console.log('🏁 EndingSystem triggered successfully');
 		}
 	}
 
@@ -393,6 +405,32 @@ export class PongNetworkManager {
 		// Close WebSocket connection
 		if (this.wsManager) {
 		this.wsManager.disconnect();
+		}
+	}
+
+	private handleServerGameEnd(message: any): void {
+		console.log('Processing server game end:', message);
+		
+		// Update final scores first
+		if (message.gameData) {
+			const leftScore = message.gameData.leftPlayer.score;
+			const rightScore = message.gameData.rightPlayer.score;
+			
+			// Update UI scores immediately
+			const uiEntity = this.game.entities.find(e => e.id === 'UI') as UI;
+			if (uiEntity) {
+				uiEntity.leftScore = leftScore;
+				uiEntity.rightScore = rightScore;
+				console.log(`Updated UI scores: ${leftScore} - ${rightScore}`);
+			}
+		}
+		
+		// Force the ending system to trigger
+		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
+		if (endingSystem && !this.game.hasEnded) {
+			console.log('Forcing EndingSystem to trigger...');
+			(endingSystem as any).ended = true;
+			this.game.hasEnded = true;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 14:55:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:31:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -728,10 +728,12 @@ export class PongGame {
 			}
 	
 			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
-				this.updateScoreFromServer(gameState.score1 || 0, gameState.score2 || 0);
+				this.updateScoreFromServer(gameState.score1, gameState.score2);
 			}
 	
-			if (gameState.gameEnded || gameState.winner) {
+			// ADD THIS: Check for game end from server
+			if (gameState.gameEnded || gameState.winner || gameState.type === 'GAME_END') {
+				console.log('Server indicates game has ended');
 				this.handleServerGameEnd(gameState);
 			}
 	
@@ -744,19 +746,19 @@ export class PongGame {
 	private handleServerGameEnd(gameState: any): void {
 		console.log('Server declared game ended:', gameState);
 		
-		const endingSystem = this.systems.find(s => s instanceof EndingSystem) as EndingSystem;
+		const endingSystem = this.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem && !this.hasEnded) {
 			const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
-			if (uiEntity) {
-				uiEntity.leftScore = gameState.score1 || 0;
-				uiEntity.rightScore = gameState.score2 || 0;
+			if (uiEntity && gameState.finalScore) {
+				uiEntity.leftScore = gameState.finalScore.player1;
+				uiEntity.rightScore = gameState.finalScore.player2;
 			}
 			
 			(endingSystem as any).ended = true;
+			this.hasEnded = true;
 			console.log('Forced game end from server event');
 		}
 	}
-
 	private disableLocalGameplayForOnline(): void {
 		console.log('Disabling local gameplay for online mode...');
 

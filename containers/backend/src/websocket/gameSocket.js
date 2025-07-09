@@ -299,21 +299,33 @@ function setupGameWebSocket(wss, redisService, gameManager) {
     endGame(gameId, activeGames);
   }
 
-  function broadcastToGame(gameId, message, activeGames) {
-    const game = activeGames.get(gameId);
-    if (!game) return;
+	function broadcastToGame(gameId, message, activeGames) {
+		const game = activeGames.get(gameId);
+		if (!game) return;
 
-    const messageStr = JSON.stringify(message);
-    
-    // Broadcast to all WebSocket clients
-    game.players.forEach((player, playerId) => {
-        if (player.ws && player.ws.readyState === WebSocket.OPEN) {
-            player.ws.send(messageStr);
-        }
-    });
+		// Ensure the message has the correct structure
+		const messageToSend = {
+			type: message.type || 'UNKNOWN',
+			...message
+		};
+		
+		const messageStr = JSON.stringify(messageToSend);
+		
+		console.log(`📡 Broadcasting to game ${gameId}:`, messageToSend.type);
+		console.log(`📡 Full message:`, messageStr);
+		
+		// Broadcast to all WebSocket clients
+		game.players.forEach((player, playerId) => {
+			if (player.ws && player.ws.readyState === WebSocket.OPEN) {
+				console.log(`📡 Sending to player ${playerId}`);
+				player.ws.send(messageStr);
+			} else {
+				console.log(`⚠️ Player ${playerId} WebSocket not ready`);
+			}
+		});
 
-    console.log(`Broadcasted message to game ${gameId}:`, message.type);
-  }
+		console.log(`Broadcasted message to game ${gameId}:`, messageToSend.type);
+	}
 }
 
 module.exports = { setupGameWebSocket };

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 18:19:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 20:08:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -885,6 +885,10 @@ export class PhysicsSystem implements System {
 				this.game.data.leftPlayer.score++;
 				this.game.data.leftPlayer.goalsInFavor++;
 				this.game.data.rightPlayer.goalsAgainst++;
+
+				setTimeout(() => {
+					BallSpawner.spawnDefaultBall(this.game);
+				}, 2000);
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
 			}
@@ -917,6 +921,10 @@ export class PhysicsSystem implements System {
 				this.game.data.rightPlayer.score++;
 				this.game.data.rightPlayer.goalsInFavor++;
 				this.game.data.leftPlayer.goalsAgainst++;
+
+				setTimeout(() => {
+					BallSpawner.spawnDefaultBall(this.game);
+				}, 2000);
 			} else if (ball.isFakeBall) {
 				ball.despawnBall(this.game, ball.id);
 			}

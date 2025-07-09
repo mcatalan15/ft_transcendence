@@ -312,19 +312,19 @@ class ClassicGameSession {
 		
 		console.log('=== FINAL GAME RESULTS ===');
 		console.log('Complete gameResults object:', JSON.stringify(gameResults, null, 2));
-		console.log('=== GAME DATA BREAKDOWN ===');
-		console.log('Balls data:', gameResults.gameData.balls);
-		console.log('Left player data:', gameResults.gameData.leftPlayer);
-		console.log('Right player data:', gameResults.gameData.rightPlayer);
-		console.log('Game config:', gameResults.gameData.config);
-		console.log('===========================');
 		
-		this.broadcastToAll('gameEnded', gameResults);
+		// CLEAN: Only use externalBroadcast (WebSocket)
+		if (this.externalBroadcast) {
+			console.log('📡 Broadcasting GAME_END via WebSocket');
+			this.externalBroadcast(gameResults); // Send the entire object, not wrapped
+			console.log('📡 GAME_END broadcast complete');
+		} else {
+			console.log('❌ No externalBroadcast function available');
+		}
 		
-		this.broadcastGameState();
+		// Remove the old broadcastToAll call - we only need WebSocket
 		
 		this.saveGameResults(gameResults);
-		
 		this.stopGameLoop();
 	}
 	

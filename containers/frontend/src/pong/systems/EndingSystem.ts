@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 13:58:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 20:05:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,22 @@ export class EndingSystem implements System {
 	update(entities: Entity[]) {
 		if (!this.endingProcessed) {
 			if (this.isOnlineGame && this.game.config.classicMode) {
-				this.checkOnlineGameEnd();
+				// For online games, check if server has declared the game ended OR if forced
+				if ((this as any).ended || this.game.hasEnded) {
+					console.log('Online game ended by server or forced trigger');
+					console.log('Current UI scores:', this.UI.leftScore, 'vs', this.UI.rightScore);
+					this.setGameResults();
+					this.ended = true;
+				} else {
+					this.checkOnlineGameEnd();
+				}
 			} else {
 				this.checkLocalGameEnd();
 			}
 		}
-
+	
 		if (this.ended && !this.endingProcessed) {
+			console.log('Processing game end with final scores:', this.UI.leftScore, 'vs', this.UI.rightScore);
 			this.processGameEnd();
 		}
 	}
