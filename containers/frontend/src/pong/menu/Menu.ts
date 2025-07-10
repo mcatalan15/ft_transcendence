@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/10 17:44:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:28:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ declare global {
 
 export class Menu{
 	config: GameConfig;
-	preconfig!: Preconfiguration;
+	preconfiguration!: Preconfiguration;
 	hasPreconfig: boolean = false;
 	language: string;
 	app: Application;
@@ -229,7 +229,7 @@ export class Menu{
 		this.height = app.screen.height;
 		this.isFirefox = isFirefox || false;
 
-		this.preconfig = preconfiguration || {
+		this.preconfiguration = preconfiguration || {
 			mode: 'local',
 			variant: '1v1',
 			classicMode: false,
@@ -238,14 +238,14 @@ export class Menu{
 		};
 		
 		console.log('🎯 Menu Preconfiguration Status:');
-		console.log('Has invitation context:', this.preconfig.hasInvitationContext);
+		console.log('Has invitation context:', this.preconfiguration.hasInvitationContext);
 		
-		if (this.preconfig.hasInvitationContext && this.preconfig.invitationData) {
+		if (this.preconfiguration.hasInvitationContext && this.preconfiguration.invitationData) {
 			console.log('📧 Invitation Data:');
-			console.log('  - Invite ID:', this.preconfig.invitationData.inviteId);
-			console.log('  - Current Player:', this.preconfig.invitationData.currentPlayer);
-			console.log('  - Timestamp:', this.preconfig.invitationData.timestamp);
-			console.log('  - Mode will be set to:', this.preconfig.mode);
+			console.log('  - Invite ID:', this.preconfiguration.invitationData.inviteId);
+			console.log('  - Current Player:', this.preconfiguration.invitationData.currentPlayer);
+			console.log('  - Timestamp:', this.preconfiguration.invitationData.timestamp);
+			console.log('  - Mode will be set to:', this.preconfiguration.mode);
 			this.hasPreconfig = true;
 		} else {
 			console.log('📝 No invitation context - standard menu initialization');
@@ -311,7 +311,7 @@ export class Menu{
 		
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
-			this.preconfig = preconfiguration!;
+			this.preconfiguration = preconfiguration!;
 		}
 	}
 
@@ -353,15 +353,38 @@ export class Menu{
 		});
 
 		this.applyInitialConfiguration(classic, filters);
+		if (this.preconfiguration) {
+			this.manageOnlineInvitationGame();
+		}
+	}
+
+	manageOnlineInvitationGame() {
+		// Test stuff to check if things happen. THIS IS NOT ONLINE YET.
+		
+		this.eventQueue.push({
+			type: 'FILTERS_CLICK',
+			target: this.filtersButton,
+			buttonName: 'FILTERS'
+		});
+
+		this.eventQueue.push({
+			type: 'CLASSIC_CLICK',
+			target: this.classicButton,
+			buttonName: 'CLASSIC'
+		});
+
+		this.eventQueue.push({
+			type: 'READY_CLICK',
+			target: this.playButton,
+			buttonName: 'READY'
+		});
 	}
 
 	private applyInitialConfiguration(classic: boolean, filters: boolean): void {
 		console.log('Applying initial configuration...');
 		console.log('Current config:', this.config);
 		
-		// Only apply classic mode if it's NOT already in the desired state
 		if (classic) {
-			// We want classic mode ON, check if button reflects this
 			if (!this.classicButton.getIsClicked()) {
 				console.log('Classic mode should be ON, simulating click to turn it ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -372,7 +395,6 @@ export class Menu{
 				console.log('Classic mode already correctly set to ON');
 			}
 		} else {
-			// We want classic mode OFF, check if button reflects this
 			if (this.classicButton.getIsClicked()) {
 				console.log('Classic mode should be OFF, simulating click to turn it OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -384,9 +406,7 @@ export class Menu{
 			}
 		}
 		
-		// Apply filters setting - same logic
 		if (filters) {
-			// We want filters OFF, check if button reflects this
 			if (!this.filtersButton.getIsClicked()) {
 				console.log('Filters should be OFF, simulating click to turn them OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -397,7 +417,6 @@ export class Menu{
 				console.log('Filters already correctly set to OFF');
 			}
 		} else {
-			// We want filters ON, check if button reflects this
 			if (this.filtersButton.getIsClicked()) {
 				console.log('Filters should be ON, simulating click to turn them ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
