@@ -7,32 +7,48 @@ import { CONFIG } from '../../config/settings.config';
 import { setResizeHandler } from '../../views/settings';
 import { SettingsFormsRenderer } from './settingsFormsRendered';
 import { getApiUrl } from '../../config/api';
+import { MessageManager } from '../../utils/messageManager';
 
 export class SettingsRenderer {
   private container: HTMLElement;
-  private onRefresh: () => void;
+  private reloadCallback: () => void;
+  private updateProfileCallback: () => void;
   private pongBoxElement!: HTMLElement;
 
-  constructor(container: HTMLElement, onRefresh: () => void) {
+  constructor(
+    container: HTMLElement, 
+    reloadCallback: () => void,
+    updateProfileCallback: () => void
+  ) {
     this.container = container;
-    this.onRefresh = onRefresh;
+    this.reloadCallback = reloadCallback;
+    this.updateProfileCallback = updateProfileCallback;
   }
+  
+  private onRefresh = (): void => {
+    this.reloadCallback();
+  };
 
   // Render complete settings page layout
-  render(): void {
-    this.container.innerHTML = '';
-    
-    const langSelector = new LanguageSelector(this.onRefresh).getElement();
-    const testMenu = new HeaderTest().getElement();
-    
-    this.container.appendChild(langSelector);
-    this.container.appendChild(testMenu);
+  public async render(): Promise<void> {
+    try {
+      this.container.innerHTML = '';
+      
+      const langSelector = new LanguageSelector(this.onRefresh).getElement();
+      const testMenu = new HeaderTest().getElement();
+      
+      this.container.appendChild(langSelector);
+      this.container.appendChild(testMenu);
 
-    const svgHeader = this.createHeader();
-    this.pongBoxElement = this.createPongBox();
-    const contentWrapper = this.createMainLayout(svgHeader, this.pongBoxElement);
-    
-    this.container.appendChild(contentWrapper);
+      const svgHeader = this.createHeader();
+      this.pongBoxElement = await this.createPongBox();
+      const contentWrapper = this.createMainLayout(svgHeader, this.pongBoxElement);
+      
+      this.container.appendChild(contentWrapper);
+    } catch (error) {
+      console.error('Error rendering settings:', error);
+      MessageManager.showError('Error al cargar la configuración');
+    }
   }
 
   // Create and configure SVG header component
@@ -62,24 +78,55 @@ export class SettingsRenderer {
   }
 
   // Create and configure pong box component with forms
-  private createPongBox(): HTMLElement {
-    const username = sessionStorage.getItem('username') || '';
-    const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-    const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
+  private async createPongBox(): Promise<HTMLElement> {
+    try {
+      const username = sessionStorage.getItem('username') || '';
+      const userId = sessionStorage.getItem('userId') || '';
+      
+      if (!username || !userId) {
+        throw new Error('Datos de usuario no disponibles');
+      }
 
-    const formsRenderer = new SettingsFormsRenderer(this.container, username, userId);
-    const formsContent = formsRenderer.render();
+      const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
+      const formsRenderer = new SettingsFormsRenderer(
+        this.container, 
+        username, 
+        userId
+      );
+      
+      // Set the profile update handler if the class has this method
+      (formsRenderer as any).setProfileUpdateHandler?.(this.handleProfileUpdate);
 
-    const pongBox = new PongBoxComponent({
-      avatarUrl,
-      nickname: username,
-      mainContent: formsContent,
-    });
-    
-    const pongBoxElement = pongBox.getElement();
-    pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
-    return pongBoxElement;
+      const formsContent = formsRenderer.render();
+      const pongBox = new PongBoxComponent({
+        avatarUrl,
+        nickname: username,
+        mainContent: formsContent,
+      });
+
+      const pongBoxElement = pongBox.getElement();
+      pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
+      return pongBoxElement;
+    } catch (error) {
+      console.error('Error creating PongBox:', error);
+      MessageManager.showError('Error al cargar el perfil');
+      throw error;
+    }
   }
+
+  private handleProfileUpdate = async () => {
+    try {
+      if (this.pongBoxElement) {
+        this.updateProfileCallback();
+        const newPongBox = await this.createPongBox();
+        this.pongBoxElement.replaceWith(newPongBox);
+        this.pongBoxElement = newPongBox;
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      MessageManager.showError('Error al actualizar el perfil');
+    }
+  };
 
   // Create main layout structure with header and pong box
   private createMainLayout(svgHeader: HTMLElement, pongBoxElement: HTMLElement): HTMLElement {
@@ -99,6 +146,20 @@ export class SettingsRenderer {
 
     return contentWrapper;
   }
+
+  /*
+  private async handleNicknameUpdate(newNickname: string): Promise<void> {
+    try {
+      // Aquí tu lógica existente para actualizar el nickname
+      
+      // Después de actualizar exitosamente:
+      this.updateProfileCallback(); // Actualiza el perfil
+      MessageManager.showSuccess('Nickname actualizado correctamente');
+    } catch (error) {
+      console.error('Error updating nickname:', error);
+      MessageManager.showError('Error al actualizar el nickname');
+    }
+  }*/
 
   getPongBoxElement(): HTMLElement {
     return this.pongBoxElement;
