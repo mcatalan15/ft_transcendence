@@ -288,6 +288,7 @@ async function googleHandler(request, reply, fastify) {
 				expiresIn: process.env.JWT_EXPIRES_IN,
 			});
 
+			request.session.set('token', authToken);
 			request.session.set('user', {
 				userId: user.id_user,
 				username: user.username,
