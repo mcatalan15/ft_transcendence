@@ -7,6 +7,7 @@ const { saveGameToDatabase,
 	getGamesHistory,
 	getUserById,
 	getUserStats,
+	getUsernameById,
 	calculateUserStats,
  } = require('../db/database');
 
@@ -346,59 +347,140 @@ async function deployContractHandler(request, reply) {
     }
 };
 
+// async function getGamesHistoryHandler(request, reply) {
+// 	console.log('Received getGamesHistory request');
+// 	try {
+// 		console.log('Entering getGamesHistoryHandler');
+// 		console.log('Request user:', request.user);
+// 		const userId = request.user?.id;
+// 		console.log('User ID:', userId);
+// 		if (!userId) {
+// 			console.log('No userId, returning 401');
+// 			return reply.code(401).send({
+// 				success: false,
+// 				error: 'Authentication required',
+// 			});
+// 		}
+
+// 		console.log('Parsing query parameters...');
+// 		const { page = 0, limit = 10 } = request.query;
+// 		console.log('Query params:', { page, limit });
+
+// 		console.log('Fetching game history from database...');
+// 		const result = await getGamesHistory(userId, page, limit);
+// 		console.log('Game history result:', {
+// 			total: result.total,
+// 			gamesCount: result.games.length,
+// 		});
+
+// 		reply.send({
+// 			success: true,
+// 			games: result.games,
+// 			total: result.total,
+// 			page: result.page,
+// 			limit: result.limit,
+// 			totalPages: result.totalPages,
+// 			hasNext: result.hasNext,
+// 			hasPrev: result.hasPrev,
+// 		});
+// 		console.log('[DB GAMES HISTORY RESPONSE]', result);
+// 	} catch (error) {
+// 		console.error('Error in getGamesHistoryHandler:', {
+// 			message: error.message,
+// 			stack: error.stack,
+// 			name: error.name,
+// 		});
+// 		request.log.error('Error fetching game history:', {
+// 			message: error.message,
+// 			stack: error.stack,
+// 			name: error.name,
+// 		});
+// 		reply.code(500).send({
+// 			success: false,
+// 			error: 'Internal server error',
+// 			message: error.message || 'Failed to fetch game history',
+// 		});
+// 	}
+// }
+
 async function getGamesHistoryHandler(request, reply) {
-	try {
-		console.log('Entering getGamesHistoryHandler');
-		console.log('Request user:', request.user);
-		const userId = request.user?.id;
-		console.log('User ID:', userId);
-		if (!userId) {
-			console.log('No userId, returning 401');
-			return reply.code(401).send({
-				success: false,
-				error: 'Authentication required',
-			});
-		}
+    console.log('Received getGamesHistory request');
+    try {
+        console.log('Entering getGamesHistoryHandler');
+        console.log('Request user:', request.user);
+        const userId = request.user?.id;
+        console.log('User ID:', userId);
+        if (!userId) {
+            console.log('No userId, returning 401');
+            return reply.code(401).send({
+                success: false,
+                error: 'Authentication required',
+            });
+        }
 
-		console.log('Parsing query parameters...');
-		const { page = 0, limit = 10 } = request.query;
-		console.log('Query params:', { page, limit });
+        console.log('Parsing query parameters...');
+        const { page = 0, limit = 10 } = request.query;
+        console.log('Query params:', { page, limit });
 
-		console.log('Fetching game history from database...');
-		const result = await getGamesHistory(userId, page, limit);
-		console.log('Game history result:', {
-			total: result.total,
-			gamesCount: result.games.length,
-		});
+        console.log('Fetching game history from database...');
+        const result = await getGamesHistory(userId, page, limit);
+        console.log('Game history result:', {
+            total: result.total,
+            gamesCount: result.games.length,
+        });
 
-		reply.send({
-			success: true,
-			games: result.games,
-			total: result.total,
-			page: result.page,
-			limit: result.limit,
-			totalPages: result.totalPages,
-			hasNext: result.hasNext,
-			hasPrev: result.hasPrev,
-		});
-		console.log('[DB GAMES HISTORY RESPONSE]', result);
-	} catch (error) {
-		console.error('Error in getGamesHistoryHandler:', {
-			message: error.message,
-			stack: error.stack,
-			name: error.name,
-		});
-		request.log.error('Error fetching game history:', {
-			message: error.message,
-			stack: error.stack,
-			name: error.name,
-		});
-		reply.code(500).send({
-			success: false,
-			error: 'Internal server error',
-			message: error.message || 'Failed to fetch game history',
-		});
-	}
+        // Fetch usernames for each game
+        const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
+            const [player1_name, player2_name, winner_name] = await Promise.all([
+                getUsernameById(game.player1_id),
+                getUsernameById(game.player2_id),
+                game.winner_id ? getUsernameById(game.winner_id) : Promise.resolve(null),
+            ]);
+
+            return {
+                ...game,
+                player1_name,
+                player2_name,
+                winner_name,
+            };
+        }));
+
+        reply.send({
+            success: true,
+            games: gamesWithUsernames,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            hasNext: result.hasNext,
+            hasPrev: result.hasPrev,
+        });
+        console.log('[DB GAMES HISTORY RESPONSE]', {
+            games: gamesWithUsernames,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            hasNext: result.hasNext,
+            hasPrev: result.hasPrev,
+        });
+    } catch (error) {
+        console.error('Error in getGamesHistoryHandler:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+        request.log.error('Error fetching game history:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+        reply.code(500).send({
+            success: false,
+            error: 'Internal server error',
+            message: error.message || 'Failed to fetch game history',
+        });
+    }
 }
 
 const saveResultsHandler = async (request, reply) => {

@@ -254,7 +254,7 @@ const deployContractSchema = {
 };
 
 const getGamesHistorySchema = {
-    description: 'Retrieve paginated game history for the current user',
+    description: 'Retrieve paginated game history for the current user by ID',
     tags: ['games'],
     querystring: {
         type: 'object',
@@ -291,11 +291,11 @@ const getGamesHistorySchema = {
                             player1_id: { type: 'number', description: 'Player 1 user ID' },
                             player2_id: { type: 'number', description: 'Player 2 user ID' },
                             winner_id: { type: ['number', 'null'], description: 'Winner user ID' },
-                            player1_name: { type: 'string', description: 'Player 1 username' },
-                            player2_name: { type: 'string', description: 'Player 2 username' },
+                            player1_name: { type: ['string', 'null'], description: 'Player 1 username' },
+                            player2_name: { type: ['string', 'null'], description: 'Player 2 username' },
+                            winner_name: { type: ['string', 'null'], description: 'Winner username' },
                             player1_score: { type: 'number', description: 'Player 1 final score' },
                             player2_score: { type: 'number', description: 'Player 2 final score' },
-                            winner_name: { type: ['string', 'null'], description: 'Winner username' },
                             player1_is_ai: { type: 'boolean', description: 'Whether player 1 is AI' },
                             player2_is_ai: { type: 'boolean', description: 'Whether player 2 is AI' },
                             game_mode: { type: ['string', 'null'], description: 'Game mode (Classic, Tournament, etc.)' },
@@ -318,14 +318,14 @@ const getGamesHistorySchema = {
                         id_game: 45,
                         created_at: '2025-01-15T14:30:00.000Z',
                         is_tournament: false,
-                        player1_id: 12,
+                        player1_id: 3,
                         player2_id: 15,
-                        winner_id: 12,
-                        player1_name: 'john_doe',
+                        winner_id: 3,
+                        player1_name: 'mcatalan',
                         player2_name: 'jane_smith',
+                        winner_name: 'mcatalan',
                         player1_score: 11,
                         player2_score: 7,
-                        winner_name: 'john_doe',
                         player1_is_ai: false,
                         player2_is_ai: false,
                         game_mode: 'Classic',
@@ -336,14 +336,14 @@ const getGamesHistorySchema = {
                         id_game: 44,
                         created_at: '2025-01-15T13:15:00.000Z',
                         is_tournament: true,
-                        player1_id: 12,
+                        player1_id: 3,
                         player2_id: 18,
                         winner_id: 18,
-                        player1_name: 'john_doe',
+                        player1_name: 'mcatalan',
                         player2_name: 'ai_opponent',
+                        winner_name: 'ai_opponent',
                         player1_score: 8,
                         player2_score: 11,
-                        winner_name: 'ai_opponent',
                         player1_is_ai: false,
                         player2_is_ai: true,
                         game_mode: 'Tournament',
@@ -353,8 +353,8 @@ const getGamesHistorySchema = {
                 ],
                 total: 25,
                 page: 0,
-                limit: 10,
-                totalPages: 3,
+                limit: 8,
+                totalPages: 4,
                 hasNext: true,
                 hasPrev: false
             }
@@ -389,7 +389,7 @@ const getGamesHistorySchema = {
                 games: [],
                 total: 0,
                 page: 0,
-                limit: 10,
+                limit: 8,
                 totalPages: 0,
                 hasNext: false,
                 hasPrev: false
@@ -411,6 +411,165 @@ const getGamesHistorySchema = {
         }
     }
 };
+
+// const getGamesHistorySchema = {
+//     description: 'Retrieve paginated game history for the current user',
+//     tags: ['games'],
+//     querystring: {
+//         type: 'object',
+//         properties: {
+//             page: { 
+//                 type: 'integer', 
+//                 minimum: 0, 
+//                 default: 0,
+//                 description: 'Page number (0-based)' 
+//             },
+//             limit: { 
+//                 type: 'integer', 
+//                 minimum: 1, 
+//                 maximum: 50, 
+//                 default: 10,
+//                 description: 'Number of games per page (max 50)' 
+//             }
+//         }
+//     },
+//     response: {
+//         200: {
+//             description: 'Games history retrieved successfully',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 games: {
+//                     type: 'array',
+//                     items: {
+//                         type: 'object',
+//                         properties: {
+//                             id_game: { type: 'number', description: 'Game ID' },
+//                             created_at: { type: 'string', description: 'Game creation timestamp' },
+//                             is_tournament: { type: 'boolean', description: 'Whether game was part of a tournament' },
+//                             player1_id: { type: 'number', description: 'Player 1 user ID' },
+//                             player2_id: { type: 'number', description: 'Player 2 user ID' },
+//                             winner_id: { type: ['number', 'null'], description: 'Winner user ID' },
+//                             player1_name: { type: 'string', description: 'Player 1 username' },
+//                             player2_name: { type: 'string', description: 'Player 2 username' },
+//                             player1_score: { type: 'number', description: 'Player 1 final score' },
+//                             player2_score: { type: 'number', description: 'Player 2 final score' },
+//                             winner_name: { type: ['string', 'null'], description: 'Winner username' },
+//                             player1_is_ai: { type: 'boolean', description: 'Whether player 1 is AI' },
+//                             player2_is_ai: { type: 'boolean', description: 'Whether player 2 is AI' },
+//                             game_mode: { type: ['string', 'null'], description: 'Game mode (Classic, Tournament, etc.)' },
+//                             smart_contract_link: { type: ['string', 'null'], description: 'Smart contract URL if available' },
+//                             contract_address: { type: ['string', 'null'], description: 'Smart contract address if available' }
+//                         }
+//                     }
+//                 },
+//                 total: { type: 'number', description: 'Total number of games for this user' },
+//                 page: { type: 'number', description: 'Current page number' },
+//                 limit: { type: 'number', description: 'Games per page limit' },
+//                 totalPages: { type: 'number', description: 'Total number of pages' },
+//                 hasNext: { type: 'boolean', description: 'Whether there are more pages' },
+//                 hasPrev: { type: 'boolean', description: 'Whether there are previous pages' }
+//             },
+//             example: {
+//                 success: true,
+//                 games: [
+//                     {
+//                         id_game: 45,
+//                         created_at: '2025-01-15T14:30:00.000Z',
+//                         is_tournament: false,
+//                         player1_id: 12,
+//                         player2_id: 15,
+//                         winner_id: 12,
+//                         player1_name: 'john_doe',
+//                         player2_name: 'jane_smith',
+//                         player1_score: 11,
+//                         player2_score: 7,
+//                         winner_name: 'john_doe',
+//                         player1_is_ai: false,
+//                         player2_is_ai: false,
+//                         game_mode: 'Classic',
+//                         smart_contract_link: 'https://etherscan.io/tx/0x123...',
+//                         contract_address: '0xabc123...'
+//                     },
+//                     {
+//                         id_game: 44,
+//                         created_at: '2025-01-15T13:15:00.000Z',
+//                         is_tournament: true,
+//                         player1_id: 12,
+//                         player2_id: 18,
+//                         winner_id: 18,
+//                         player1_name: 'john_doe',
+//                         player2_name: 'ai_opponent',
+//                         player1_score: 8,
+//                         player2_score: 11,
+//                         winner_name: 'ai_opponent',
+//                         player1_is_ai: false,
+//                         player2_is_ai: true,
+//                         game_mode: 'Tournament',
+//                         smart_contract_link: null,
+//                         contract_address: null
+//                     }
+//                 ],
+//                 total: 25,
+//                 page: 0,
+//                 limit: 10,
+//                 totalPages: 3,
+//                 hasNext: true,
+//                 hasPrev: false
+//             }
+//         },
+//         401: {
+//             description: 'User not authenticated',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' }
+//             },
+//             example: {
+//                 success: false,
+//                 message: 'Authentication required. Please log in to view game history.'
+//             }
+//         },
+//         404: {
+//             description: 'No games found for user',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' },
+//                 games: { 
+//                     type: 'array',
+//                     items: {}
+//                 },
+//                 total: { type: 'number' }
+//             },
+//             example: {
+//                 success: true,
+//                 message: 'No games found for this user',
+//                 games: [],
+//                 total: 0,
+//                 page: 0,
+//                 limit: 10,
+//                 totalPages: 0,
+//                 hasNext: false,
+//                 hasPrev: false
+//             }
+//         },
+//         500: {
+//             description: 'Server error',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' },
+//                 error: { type: 'string' }
+//             },
+//             example: {
+//                 success: false,
+//                 message: 'Failed to fetch game history',
+//                 error: 'Database connection error'
+//             }
+//         }
+//     }
+// };
 
 const saveResultsSchema = {
     body: {

@@ -40,9 +40,6 @@ if [ ! -f "$DB_PATH" ]; then
 		winner_id INTEGER,
 		player1_score INTEGER DEFAULT 0,
 		player2_score INTEGER DEFAULT 0,
-		winner_name TEXT,
-		player1_is_ai BOOLEAN DEFAULT 0,
-		player2_is_ai BOOLEAN DEFAULT 0,
 		game_mode TEXT,
 		general_result TEXT CHECK(general_result IN ('leftWin', 'rightWin', 'draw')) DEFAULT NULL,
 		-- Game configuration will be stored as JSON string

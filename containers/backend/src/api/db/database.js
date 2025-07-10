@@ -19,34 +19,6 @@ function connectToDatabase(retries = 5, delay = 2000) {
 	return db;
 }
 
-// async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
-// 	return new Promise((resolve, reject) => {
-// 		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
-// 		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
-
-// 		db.run(query, params, function (err) {
-// 			if (err) {
-// 				console.error('[DB INSERT ERROR] Full error:', {
-// 					message: err.message,
-// 					code: err.code,
-// 					errno: err.errno,
-// 					stack: err.stack
-// 				});
-
-// 				if (err.message.includes('UNIQUE constraint failed')) {
-// 					const customError = new Error('Username or email already exists');
-// 					customError.code = 'SQLITE_CONSTRAINT';
-// 					reject(customError);
-// 				} else {
-// 					reject(err);
-// 				}
-// 			} else {
-// 				resolve(this.lastID);
-// 			}
-// 		});
-// 	});
-// }
-
 async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
     return new Promise((resolve, reject) => {
         const userQuery = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -604,6 +576,23 @@ async function changePassword(userId, newHashedPassword) {
 	});
 }
 
+async function getUsernameById(userId) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            `SELECT username FROM users WHERE id_user = ?`,
+            [userId],
+            (err, row) => {
+                if (err) {
+                    console.error('[DB USERNAME ERROR]', err);
+                    reject(err);
+                } else {
+                    resolve(row ? row.username : null);
+                }
+            }
+        );
+    });
+}
+
 async function getGamesHistory(userId, page = 0, limit = 10) {
 	return new Promise((resolve, reject) => {
 		const offset = page * limit;
@@ -633,13 +622,8 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 			   player1_id,
 			   player2_id,
 			   winner_id,
-			   player1_name,
-			   player2_name,
 			   player1_score,
 			   player2_score,
-			   winner_name,
-			   player1_is_ai,
-			   player2_is_ai,
 			   COALESCE(game_mode, 'Classic') as game_mode,
 			   smart_contract_link,
 			   contract_address
@@ -740,4 +724,5 @@ module.exports = {
 	getGamesHistory,
     getUserStats,
 	getUserProfileStats,
+	getUsernameById,
 };
