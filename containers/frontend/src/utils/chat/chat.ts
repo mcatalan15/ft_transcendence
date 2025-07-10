@@ -1,5 +1,5 @@
 import { navigate } from '../router';
-import { getWsUrl } from '../../config/api';
+import { ChatWebSocket } from '../../components/chat/ChatWebSocket';
 
 export enum MessageType {
   GENERAL = 'general',
@@ -25,16 +25,18 @@ export interface ChatMessage {
 }
 
 export class ChatManager {
-  private socket: WebSocket | null = null;
+  private chatSocket: ChatWebSocket;
   private messages: ChatMessage[] = [];
   private blockedUsers: string[] = [];
-  private isIdentified: boolean = false;
   private chatContainer: HTMLElement | null = null;
   private messageInput: HTMLInputElement | null = null;
   private typeSelector: HTMLSelectElement | null = null;
   private activeFilter: MessageType | null = null;
 
   constructor() {
+    this.chatSocket = new ChatWebSocket();
+    this.chatSocket.registerMessageCallback(this.addMessage.bind(this));
+    this.chatSocket.registerSystemMessageCallback(this.addSystemMessage.bind(this));
     this.loadBlockedUsers();
   }
 
@@ -236,65 +238,15 @@ export class ChatManager {
   }
 
   public sendGameInvitation(targetUser: string): void {
-    const username = sessionStorage.getItem('username') || 'Anonymous';
-    const inviteId = `invite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const inviteMessage = {
-      type: MessageType.GAME_INVITE,
-      username: username,
-      targetUser: targetUser,
-      content: `${username} wants to challenge you to a Pong match!`,
-      inviteId: inviteId,
-      timestamp: new Date().toISOString()
-    };
-
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(inviteMessage));
-      this.addSystemMessage(`Game invitation sent to @${targetUser}`, MessageType.GAME);
-    }
+    this.chatSocket.sendGameInvitation(targetUser);
   }
 
   public acceptGameInvite(inviteId: string, fromUser: string): void {
-    const username = sessionStorage.getItem('username') || 'Anonymous';
-
-    console.log(`Accepting game invite: inviteId=${inviteId}, fromUser=${fromUser}, username=${username}`);
-
-    const responseMessage = {
-      type: MessageType.GAME_INVITE_RESPONSE,
-      username: username,
-      targetUser: fromUser,
-      content: `${username} accepted the game invitation!`,
-      inviteId: inviteId,
-      action: 'accept',
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Sending response message:', responseMessage);
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(responseMessage));
-    }
-    
-    this.addSystemMessage(`Joining game with ${fromUser}...`, MessageType.GAME);
-    this.addSystemMessage('Waiting for server to create game session...', MessageType.GAME);
+    this.chatSocket.acceptGameInvite(inviteId, fromUser);
   }
 
   public declineGameInvite(inviteId: string, fromUser: string): void {
-    const username = sessionStorage.getItem('username') || 'Anonymous';
-    
-    const responseMessage = {
-      type: MessageType.GAME_INVITE_RESPONSE,
-      username: username,
-      targetUser: fromUser,
-      content: `${username} declined the game invitation.`,
-      inviteId: inviteId,
-      action: 'decline',
-      timestamp: new Date().toISOString()
-    };
-    
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(responseMessage));
-    }
-    this.addSystemMessage(`Declined game invitation from ${fromUser}`, MessageType.GAME);
+    this.chatSocket.declineGameInvite(inviteId, fromUser);
   }
 
   public showUserContextMenu(event: MouseEvent, username: string): void {
@@ -382,7 +334,7 @@ export class ChatManager {
     const messageText = this.messageInput.value.trim();
     
     if (!messageText) return;
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN || !this.isIdentified) {
+    if (!this.chatSocket.isConnected()) {
       this.addSystemMessage('Not connected to server', MessageType.SYSTEM);
       return;
     }
@@ -418,7 +370,7 @@ export class ChatManager {
       timestamp: new Date().toISOString()
     };
 
-    this.socket.send(JSON.stringify(message));
+    this.chatSocket.sendMessage(message);
     this.messageInput.value = '';
   }
 
@@ -483,93 +435,6 @@ export class ChatManager {
     });
   }
 
-  public connectWebSocket(url: string = getWsUrl('')): void {
-    this.socket = new WebSocket(url);
-
-    this.socket.addEventListener('open', () => {
-      console.log('WebSocket connected');
-      this.addSystemMessage('Connected to chat server');
-      this.addSystemMessage('Type /help for available commands', MessageType.SYSTEM);
-
-      const username = sessionStorage.getItem('username') || 'Anonymous';
-      const userId = sessionStorage.getItem('userId') || Date.now().toString();
-      
-      this.socket!.send(JSON.stringify({
-        type: 'identify',
-        userId: userId,
-        username: username
-      }));
-      
-      this.isIdentified = true;
-    });
-
-    this.socket.addEventListener('message', (event) => {
-      this.handleWebSocketMessage(event);
-    });
-
-    this.socket.addEventListener('close', () => {
-      console.log('WebSocket closed');
-      this.addSystemMessage('Disconnected from chat server', MessageType.SYSTEM);
-      this.isIdentified = false;
-    });
-
-    this.socket.addEventListener('error', (e) => {
-      console.error('WebSocket error', e);
-      this.addSystemMessage('Connection error', MessageType.SYSTEM);
-      this.isIdentified = false;
-    });
-  }
-
-  private handleWebSocketMessage(event: MessageEvent): void {
-    try {
-      const data = JSON.parse(event.data);
-    
-    console.log('Received WebSocket message:', data);
-    
-    // ADD THIS NEW HANDLING:
-    if (data.type === 'game_invite_accepted' && data.action === 'navigate_to_pong') {
-      this.addSystemMessage(`Game invitation accepted! Navigating to Pong...`, MessageType.GAME);
-      setTimeout(() => {
-        navigate('/pong');
-      }, 1500);
-      return;
-    }
-      
-      if (data.type === 'game_invite_declined') {
-        this.addSystemMessage(`${data.username} declined your game invitation.`, MessageType.GAME);
-        return; // Important: return here to prevent creating a ChatMessage
-      }
-      
-      // Only create ChatMessage for actual chat messages, not system responses
-      if (data.type && Object.values(MessageType).includes(data.type)) {
-        const message: ChatMessage = {
-          id: data.id || Date.now().toString(),
-          type: data.type as MessageType,
-          username: data.username,
-          content: data.content,
-          timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
-          channel: data.channel,
-          targetUser: data.targetUser,
-          inviteId: data.inviteId,
-          gameRoomId: data.gameRoomId
-        };
-        
-        if (message.type === MessageType.GAME_INVITE) {
-          const currentUser = sessionStorage.getItem('username');
-          if (message.targetUser !== currentUser) {
-            return;
-          }
-        }
-          
-        this.addMessage(message);
-      } else {
-        console.log('Received non-chat message type:', data.type);
-      }
-    } catch (e) {
-      console.error('Error parsing message:', e, 'Raw data:', event.data);
-    }
-  }
-
   public initialize(chatContainer: HTMLElement, messageInput: HTMLInputElement, typeSelector: HTMLSelectElement): void {
     this.chatContainer = chatContainer;
     this.messageInput = messageInput;
@@ -590,14 +455,11 @@ export class ChatManager {
       }
     });
 
-    this.connectWebSocket();
+    this.addSystemMessage('Connected to chat server', MessageType.SYSTEM);
+    this.addSystemMessage('Type /help for available commands', MessageType.SYSTEM);
   }
 
   public disconnect(): void {
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
-    }
-    this.isIdentified = false;
+    // Cleanup will be handled by ChatWebSocket
   }
 }

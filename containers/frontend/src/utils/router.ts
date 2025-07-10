@@ -159,9 +159,5 @@ function renderRoute(path: string) {
 				return;
 			}
 			navigate('/404');
-			/*app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
-	  <span style="display: block; height: 20px;"></span>
-	  <button onclick="navigate('/')">Back home</button>
-	  `;*/
 	}
 }

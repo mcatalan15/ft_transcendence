@@ -54,7 +54,7 @@ export async function initGame(container: HTMLElement) {
         antialias: browserSettings.antialias,
         resolution: browserSettings.resolution,
         autoDensity: browserSettings.autoDensity,
-        powerPreference: browserSettings.powerPreference,
+        powerPreference: BrowserOptimizer.isFirefox ? 'high-performance' : 'low-power',
         
         ...(BrowserOptimizer.isFirefox && {
             clearBeforeRender: true,
@@ -65,7 +65,6 @@ export async function initGame(container: HTMLElement) {
     const language = localStorage.getItem('i18nextLng') || 'en';
     container.appendChild(app.canvas);
 
-    // Check for URL configuration
     const url = new URL(window.location.href);
     const pathname = url.pathname;
     const search = url.search;
