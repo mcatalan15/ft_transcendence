@@ -701,6 +701,128 @@ async function getUserProfileStats(userId) {
     });
 }
 
+async function updateUserStats(player1_id, player2_id, gameData) {
+    const db = require('./database'); // Assuming you have a database connection module
+    
+    try {
+        // Begin transaction to ensure atomic updates
+        await db.run('BEGIN TRANSACTION');
+
+        // Update stats for left player
+        await db.run(`
+            INSERT INTO user_stats (
+                user_id,
+                games_played,
+                wins,
+                losses,
+                draws,
+                total_score,
+                total_hits,
+                goals_scored,
+                goals_conceded,
+                powerups_collected,
+                powerdowns_collected,
+                ball_changes_collected
+            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                games_played = games_played + 1,
+                wins = wins + ?,
+                losses = losses + ?,
+                draws = draws + ?,
+                total_score = total_score + ?,
+                total_hits = total_hits + ?,
+                goals_scored = goals_scored + ?,
+                goals_conceded = goals_conceded + ?,
+                powerups_collected = powerups_collected + ?,
+                powerdowns_collected = powerdowns_collected + ?,
+                ball_changes_collected = ball_changes_collected + ?
+        `, [
+            // Initial insert values
+            player1_id,
+            gameData.leftPlayer.result === 'win' ? 1 : 0,
+            gameData.leftPlayer.result === 'lose' ? 1 : 0,
+            gameData.leftPlayer.result === 'draw' ? 1 : 0,
+            gameData.leftPlayer.score,
+            gameData.leftPlayer.hits,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.goalsAgainst,
+            gameData.leftPlayer.powerupsPicked,
+            gameData.leftPlayer.powerdownsPicked,
+            gameData.leftPlayer.ballchangesPicked,
+            // Update values
+            gameData.leftPlayer.result === 'win' ? 1 : 0,
+            gameData.leftPlayer.result === 'lose' ? 1 : 0,
+            gameData.leftPlayer.result === 'draw' ? 1 : 0,
+            gameData.leftPlayer.score,
+            gameData.leftPlayer.hits,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.goalsAgainst,
+            gameData.leftPlayer.powerupsPicked,
+            gameData.leftPlayer.powerdownsPicked,
+            gameData.leftPlayer.ballchangesPicked
+        ]);
+
+        // Update stats for right player
+        await db.run(`
+            INSERT INTO user_stats (
+                user_id,
+                games_played,
+                wins,
+                losses,
+                draws,
+                total_score,
+                total_hits,
+                goals_scored,
+                goals_conceded,
+                powerups_collected,
+                powerdowns_collected,
+                ball_changes_collected
+            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                games_played = games_played + 1,
+                wins = wins + ?,
+                losses = losses + ?,
+                draws = draws + ?,
+                total_score = total_score + ?,
+                total_hits = total_hits + ?,
+                goals_scored = goals_scored + ?,
+                goals_conceded = goals_conceded + ?,
+                powerups_collected = powerups_collected + ?,
+                powerdowns_collected = powerdowns_collected + ?,
+                ball_changes_collected = ball_changes_collected + ?
+        `, [
+            // Initial insert values
+            player2_id,
+            gameData.rightPlayer.result === 'win' ? 1 : 0,
+            gameData.rightPlayer.result === 'lose' ? 1 : 0,
+            gameData.rightPlayer.result === 'draw' ? 1 : 0,
+            gameData.rightPlayer.score,
+            gameData.rightPlayer.hits,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.goalsAgainst,
+            gameData.rightPlayer.powerupsPicked,
+            gameData.rightPlayer.powerdownsPicked,
+            gameData.rightPlayer.ballchangesPicked,
+            // Update values
+            gameData.rightPlayer.result === 'win' ? 1 : 0,
+            gameData.rightPlayer.result === 'lose' ? 1 : 0,
+            gameData.rightPlayer.result === 'draw' ? 1 : 0,
+            gameData.rightPlayer.score,
+            gameData.rightPlayer.hits,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.goalsAgainst,
+            gameData.rightPlayer.powerupsPicked,
+            gameData.rightPlayer.powerdownsPicked,
+            gameData.rightPlayer.ballchangesPicked
+        ]);
+
+        await db.run('COMMIT');
+    } catch (error) {
+        await db.run('ROLLBACK');
+        throw error;
+    }
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -729,4 +851,5 @@ module.exports = {
     getUserStats,
 	getUserProfileStats,
 	getUsernameById,
+	updateUserStats,
 };

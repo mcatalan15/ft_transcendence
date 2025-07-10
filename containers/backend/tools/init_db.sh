@@ -184,20 +184,20 @@ if [ ! -f "$DB_PATH" ]; then
 	CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
 	CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
 
-	-- Creation of BotiBot and Guest
-	-- Insert BotiBot user if not exists
+	-- Creation of ButiBot and Guest
+	-- Insert ButiBot user if not exists
 	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
-	SELECT 'BotiBot', 'BotiBot@example.com', 'Hola1234', 'local', 0, 'default'
-	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'BotiBot');
+	SELECT 'ButiBot', 'ButiBot@example.com', 'Hola1234', 'local', 0, 'default'
+	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'ButiBot');
 
 	-- Insert guest user if not exists
 	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
 	SELECT 'guest', 'guest@example.com', 'Hola1234', 'local', 0, 'default'
 	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'guest');
 
--- Insert user_stats for BotiBot if not exists
+-- Insert user_stats for ButiBot if not exists
 	INSERT OR IGNORE INTO user_stats (id_user)
-	SELECT id_user FROM users WHERE username = 'BotiBot';
+	SELECT id_user FROM users WHERE username = 'ButiBot';
 
 	-- Insert user_stats for guest if not exists
 	INSERT OR IGNORE INTO user_stats (id_user)

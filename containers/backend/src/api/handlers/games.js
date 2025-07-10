@@ -8,10 +8,11 @@ const { saveGameToDatabase,
 	getUserById,
 	getUserStats,
 	getUsernameById,
+	updateUserStats,
 	calculateUserStats,
  } = require('../db/database');
 
- async function getUserDataHandler(request, reply) {
+async function getUserDataHandler(request, reply) {
     try {
         const { userId } = request.body;
         
@@ -222,6 +223,8 @@ async function saveGameHandler(request, reply) {
 			defaultGameData
 		);
 
+		// Update user stats
+        await updateUserStats(player1_id, player2_id, defaultGameData);
 		reply.status(201).send({
 			success: true,
 			message: 'Game saved successfully',
