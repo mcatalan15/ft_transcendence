@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/10 19:28:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/10 21:01:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,9 +353,9 @@ export class Menu{
 		});
 
 		this.applyInitialConfiguration(classic, filters);
-		if (this.preconfiguration) {
+		/* if (this.preconfiguration) {
 			this.manageOnlineInvitationGame();
-		}
+		} */
 	}
 
 	manageOnlineInvitationGame() {
