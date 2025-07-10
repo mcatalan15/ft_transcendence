@@ -4,7 +4,8 @@ type PongBoxOptions = {
   nickname: string;
   leftExtraContent?: HTMLElement;
   mainContent: HTMLElement;
-  //onArrowClick?: () => void;
+  showCameraButton?: boolean;
+  showStatus?: boolean;
 };
   
 export class PongBoxComponent {
@@ -45,7 +46,12 @@ export class PongBoxComponent {
       w-full md:w-1/3 flex flex-col items-center justify-center bg-neutral-900 pt-6 pb-10 px-4 h-full relative
     `.replace(/\s+/g, ' ').trim();
 
-    const avatarComponent = new AvatarComponent(options.avatarUrl, options.nickname);
+    const avatarComponent = new AvatarComponent(
+      options.avatarUrl,
+      options.nickname,
+      options.showStatus || false,
+      options.showCameraButton || false
+    );
     if (options.leftExtraContent) {
       const wrapper = document.createElement('div');
       wrapper.appendChild(options.leftExtraContent);
@@ -76,4 +82,3 @@ export class PongBoxComponent {
     return this.pongBox;
   }
 }
-  

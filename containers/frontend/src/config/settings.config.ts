@@ -12,26 +12,49 @@ export const SPINNER_SVG = `<svg class="animate-spin w-6 h-6" fill="none" viewBo
 export const CAMERA_BUTTON_STYLES = {
   base: {
     position: 'absolute' as const,
-    bottom: '-8px',
-    right: '-8px',
-    width: '48px',
-    height: '48px',
-    backgroundColor: '#F59E0B',
+    bottom: '-30px',
+    right: '-30px',
+    width: '80px',
+    height: '80px',
+    backgroundColor: '#fbbf24',
     color: '#FFFFFF',
     borderRadius: '50%',
-    border: '3px solid #FFFBEB',
+    border: '6px solid #171717',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: 'all 0.3s ease',
-    zIndex: '10',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+    transition: 'all 0.3s ease-in-out',
+    zIndex: '20',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    transform: 'scale(1)'
   },
   hover: {
-    transform: 'scale(1.1)',
-    backgroundColor: '#D97706',
-    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)'
+    transform: 'scale(1.2)',
+    backgroundColor: '#f59e0b',
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)'
+  }
+};
+
+export const STATUS_BUTTON_STYLES = {
+  base: {
+    position: 'absolute' as const,
+    bottom: '-30px',
+    right: '-30px',
+    width: '80px',
+    height: '80px',
+    backgroundColor: '#6b7280',
+    borderRadius: '50%',
+    border: '6px solid #171717',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: '20',
+    transition: 'all 0.3s ease-in-out',
+    cursor: 'default'
+  },
+  online: {
+    backgroundColor: '#22c55e',
   }
 };
 
