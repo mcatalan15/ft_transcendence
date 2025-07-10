@@ -37,11 +37,11 @@ export class ChatWebSocket {
       try {
         const data = JSON.parse(event.data);
         
-        if (data.type === 'game_invite_accepted') {
-          this.addSystemMessage(`${data.username} accepted your game invitation! Starting game...`, MessageType.GAME);
+        if (data.type === 'game_invite_accepted' && data.action === 'navigate_to_pong') {
+          this.addSystemMessage(`Game invitation accepted! Navigating to Pong...`, MessageType.GAME);
           setTimeout(() => {
-            this.startPongGameFromInvite(data.username, data.inviteId);
-          }, 2000);
+            navigate('/pong');
+          }, 1500);
           return;
         }
         
@@ -136,11 +136,7 @@ export class ChatWebSocket {
     };
     
     this.sendMessage(responseMessage);
-    this.addSystemMessage(`Joining game with ${fromUser}...`, MessageType.GAME);
-    
-    setTimeout(() => {
-      this.startPongGameFromInvite(fromUser, inviteId);
-    }, 1000);
+    this.addSystemMessage(`Accepting game invitation from ${fromUser}...`, MessageType.GAME);
   }
 
   declineGameInvite(inviteId: string, fromUser: string) {
@@ -158,11 +154,6 @@ export class ChatWebSocket {
     
     this.sendMessage(responseMessage);
     this.addSystemMessage(`Declined game invitation from ${fromUser}`, MessageType.GAME);
-  }
-
-  private startPongGameFromInvite(opponent: string, inviteId: string) {
-    this.addSystemMessage('Initializing Pong game...', MessageType.GAME);
-    navigate(`/pong`);
   }
 
   isConnected(): boolean {

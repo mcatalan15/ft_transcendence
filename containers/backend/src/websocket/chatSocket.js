@@ -234,153 +234,61 @@ function setupChatWebSocket(wss, redisService, gameManager) {
   }
 
   async function handleGameInviteResponse(message, senderWs, wss, redisService) {
-  console.log(`Handling game invite response from ${message.username} to ${message.targetUser}`);
-  console.log('Full message object:', JSON.stringify(message, null, 2));
-  console.log('RedisService available:', !!redisService);
-  console.log('SenderWs available:', !!senderWs);
-  console.log('ConnectedUsers map size:', connectedUsers.size);
-
-  if (message.action === 'accept') {
-    try {
-      console.log('=== STEP 1: Creating game session ===');
+    console.log(`Handling game invite response from ${message.username} to ${message.targetUser}`);
+  
+    if (message.action === 'accept') {
+      console.log('=== HANDLING ACCEPT - Navigate to /pong ===');
       
-      // Create a game session when invitation is accepted
-      const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log('Created gameId:', gameId);
-
-      console.log('=== STEP 2: Preparing game data ===');
-      
-      // Create game in Redis/database
-      const gameData = {
-        gameId: gameId,
-        hostId: message.targetUser,
-        guestId: message.username,
-        status: 'waiting',
-        createdAt: new Date().toISOString(),
-        hostName: message.targetUser,
-        guestName: message.username
-      };
-      
-      console.log('Game data prepared:', JSON.stringify(gameData, null, 2));
-
-      if (redisService && redisService.createGame) {
-        console.log('About to call redisService.createGame...');
-        await redisService.createGame(gameId, gameData);
-        console.log('Game saved to Redis successfully');
-      }
-
-      console.log('=== STEP 3: Saving to Redis ===');
-      
-      // Save game session
-      if (redisService && redisService.createGame) {
-        console.log('About to call redisService.createGame...');
-        await redisService.createGame(gameId, gameData);
-        console.log('Game saved to Redis successfully');
-      } else {
-        console.error('RedisService.createGame not available');
-        console.error('redisService:', !!redisService);
-        console.error('redisService.createGame:', !!(redisService && redisService.createGame));
-        throw new Error('RedisService not available');
-      }
-
-      console.log('=== STEP 4: Finding WebSocket connections ===');
-
       // Find both players' WebSocket connections
       let hostWs = null;
       let guestWs = senderWs; // The one who accepted
-
-      console.log('Looking for host user:', message.targetUser);
-      console.log('Connected users:');
-      for (const [ws, userInfo] of connectedUsers) {
-        console.log(`  - ${userInfo.username} (${userInfo.userId})`);
-      }
-
+  
       // Find the original inviter (host)
       for (const [ws, userInfo] of connectedUsers) {
         if (userInfo.username === message.targetUser) {
           hostWs = ws;
-          console.log('Found host WebSocket for:', userInfo.username);
           break;
         }
       }
-
-      console.log('Found host WS:', !!hostWs, 'Ready state:', hostWs?.readyState);
-      console.log('Found guest WS:', !!guestWs, 'Ready state:', guestWs?.readyState);
-      
-      // Check WebSocket.OPEN constant
-      console.log('WebSocket.OPEN constant:', WebSocket.OPEN);
-
-      console.log('=== STEP 5: Sending messages to players ===');
-
+  
       // Notify the original inviter (host) that invitation was accepted
       if (hostWs && hostWs.readyState === WebSocket.OPEN) {
         const hostMessage = {
           type: 'game_invite_accepted',
           username: message.username,
-          gameId: gameId,
-          inviteId: message.inviteId
+          inviteId: message.inviteId,
+          action: 'navigate_to_pong'
         };
-        console.log('Sending to host:', JSON.stringify(hostMessage, null, 2));
         
         try {
           hostWs.send(JSON.stringify(hostMessage));
-          console.log('✅ Message sent to host successfully');
+          console.log('✅ Navigate message sent to host successfully');
         } catch (sendError) {
           console.error('❌ Error sending message to host:', sendError);
         }
-      } else {
-        console.error('❌ Host WebSocket not available or not open');
-        console.error('  hostWs exists:', !!hostWs);
-        console.error('  hostWs readyState:', hostWs?.readyState);
-        console.error('  WebSocket.OPEN:', WebSocket.OPEN);
       }
-
-      // Notify the accepter that game session was created
+  
+      // Notify the accepter to navigate to pong
       if (guestWs && guestWs.readyState === WebSocket.OPEN) {
         const guestMessage = {
-          type: 'game_session_created',
-          gameId: gameId,
+          type: 'game_invite_accepted',
           fromUser: message.targetUser,
-          inviteId: message.inviteId
+          inviteId: message.inviteId,
+          action: 'navigate_to_pong'
         };
-        console.log('Sending to guest:', JSON.stringify(guestMessage, null, 2));
         
         try {
           guestWs.send(JSON.stringify(guestMessage));
-          console.log('✅ Message sent to guest successfully');
+          console.log('✅ Navigate message sent to guest successfully');
         } catch (sendError) {
           console.error('❌ Error sending message to guest:', sendError);
         }
-      } else {
-        console.error('❌ Guest WebSocket not available or not open');
-        console.error('  guestWs exists:', !!guestWs);
-        console.error('  guestWs readyState:', guestWs?.readyState);
       }
-
-      console.log(`=== STEP 6: Complete - Game session ${gameId} created for ${message.targetUser} vs ${message.username} ===`);
-
-    } catch (error) {
-      console.error('💥 CRITICAL ERROR in handleGameInviteResponse:', error);
-      console.error('Error stack:', error.stack);
-
-      // Send error to accepter
-      if (senderWs && senderWs.readyState === WebSocket.OPEN) {
-        try {
-          senderWs.send(JSON.stringify({
-            type: 'game_invite_error',
-            content: 'Failed to create game session: ' + error.message,
-            inviteId: message.inviteId
-          }));
-        } catch (sendError) {
-          console.error('Failed to send error message:', sendError);
-        }
-      }
-    }
-  }
-
-  // Handle decline case (existing code)
-  if (message.action === 'decline') {
-    console.log('=== HANDLING DECLINE ===');
+  
+      console.log(`=== Game invite accepted - both players will navigate to /pong ===`);
+  
+    } else if (message.action === 'decline') {
+      console.log('=== HANDLING DECLINE ===');
       let inviterWs = null;
       for (const [ws, userInfo] of connectedUsers) {
         if (userInfo.username === message.targetUser) {
@@ -388,7 +296,7 @@ function setupChatWebSocket(wss, redisService, gameManager) {
           break;
         }
       }
-
+  
       if (inviterWs && inviterWs.readyState === WebSocket.OPEN) {
         inviterWs.send(JSON.stringify({
           type: 'game_invite_declined',

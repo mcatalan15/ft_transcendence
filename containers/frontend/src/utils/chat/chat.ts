@@ -523,39 +523,17 @@ export class ChatManager {
   private handleWebSocketMessage(event: MessageEvent): void {
     try {
       const data = JSON.parse(event.data);
-      
-      console.log('Received WebSocket message:', data);
-      
-      if (data.type === 'game_invite_accepted') {
-        console.log('Processing game_invite_accepted:', data);
-        this.addSystemMessage(`${data.username} accepted your game invitation! Creating game session...`, MessageType.GAME);
-        
-        if (data.gameId) {
-          console.log('Redirecting to pong with gameId:', data.gameId);
-          setTimeout(() => {
-            navigate(`/pong?gameId=${data.gameId}&mode=online&opponent=${data.username}`);
-          }, 1000);
-        } else {
-          console.error('No gameId received in game_invite_accepted:', data);
-          this.addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
-        }
-        return; // Important: return here to prevent creating a ChatMessage
-      }
-      
-      if (data.type === 'game_session_created') {
-        console.log('Processing game_session_created:', data);
-        this.addSystemMessage(`Game session created! Joining...`, MessageType.GAME);
-        if (data.gameId) {
-          console.log('Redirecting to pong with gameId:', data.gameId);
-          setTimeout(() => {
-            navigate(`/pong?gameId=${data.gameId}&mode=online&opponent=${data.fromUser}`);
-          }, 1000);
-        } else {
-          console.error('No gameId received in game_session_created:', data);
-          this.addSystemMessage('Error: No game ID received from server', MessageType.SYSTEM);
-        }
-        return; // Important: return here to prevent creating a ChatMessage
-      }
+    
+    console.log('Received WebSocket message:', data);
+    
+    // ADD THIS NEW HANDLING:
+    if (data.type === 'game_invite_accepted' && data.action === 'navigate_to_pong') {
+      this.addSystemMessage(`Game invitation accepted! Navigating to Pong...`, MessageType.GAME);
+      setTimeout(() => {
+        navigate('/pong');
+      }, 1500);
+      return;
+    }
       
       if (data.type === 'game_invite_declined') {
         this.addSystemMessage(`${data.username} declined your game invitation.`, MessageType.GAME);

@@ -25,19 +25,8 @@ export function showPong(container: HTMLElement): void {
     const langSelector = new LanguageSelector(() => showPong(container)).getElement();
     container.appendChild(langSelector);
 
-    // Check URL parameters to determine game mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get('gameId');
-    const mode = urlParams.get('mode');
-    const opponent = urlParams.get('opponent');
-    
-    if (mode === 'online' && gameId) {
-      // Initialize online multiplayer game
-      initOnlineGame(container, gameId, opponent);
-    } else {
-      // Initialize local game (existing logic)
-      initGame(container);
-    }
+    // Always initialize the standard local game (like clicking the menu button)
+    initGame(container);
   });
 }
 
