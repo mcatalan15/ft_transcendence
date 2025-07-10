@@ -15,6 +15,8 @@ prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
+	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
+    docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
 
 dev:
 	@bash ./scripts/setup_dev.sh
