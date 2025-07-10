@@ -255,7 +255,6 @@ async function saveGameToDatabase(
 
         const query = `
             INSERT INTO games (
-                game_id,
                 player1_id,
                 player2_id,
                 winner_id,
@@ -272,11 +271,11 @@ async function saveGameToDatabase(
                 contract_address,
                 created_at,
                 ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const params = [
-            game_id,
+            // game_id,
             player1_id,
             player2_id,
             winner_id,

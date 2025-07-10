@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 11:32:26 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/09 12:20:40 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -843,8 +843,9 @@ export class PongGame {
 				gameData: this.data
 			};
 	
-			console.log('Making API call to /api/games/results');
-			const response = await fetch(getApiUrl('/games/results'), {
+			// console.log('Making API call to /api/games/results');
+			console.log('Making API call to /api/games');
+			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

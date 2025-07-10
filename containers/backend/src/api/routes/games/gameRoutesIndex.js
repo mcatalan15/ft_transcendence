@@ -26,7 +26,7 @@ module.exports = async function (fastify, options) {
   // Register all games routes
   fastify.post('/api/games/getUserData', { schema: getUserDataSchema, preHandler: verifyToken }, getUserDataHandler);
   fastify.post('/api/games', { schema: saveGameSchema, preHandler: verifyToken }, saveGameHandler);
-  fastify.get('/api/games', { schema: retrieveGamesSchema, preHandler: verifyToken }, retrieveGamesHandler);
+//   fastify.get('/api/games', { schema: retrieveGamesSchema, preHandler: verifyToken }, retrieveGamesHandler);
   fastify.get('/api/games/latest', { schema: retrieveLastGameSchema, preHandler: verifyToken }, retrieveLastGameHandler);
   fastify.post('/api/deploy', { schema: deployContractSchema, preHandler: verifyToken }, deployContractHandler);
   fastify.get('/api/games/history', { schema: getGamesHistorySchema, preHandler: verifyToken }, getGamesHistoryHandler);

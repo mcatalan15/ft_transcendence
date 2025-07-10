@@ -38,8 +38,6 @@ if [ ! -f "$DB_PATH" ]; then
 		player1_id INTEGER,
 		player2_id INTEGER,
 		winner_id INTEGER,
-		player1_name TEXT NOT NULL,
-		player2_name TEXT NOT NULL,
 		player1_score INTEGER DEFAULT 0,
 		player2_score INTEGER DEFAULT 0,
 		winner_name TEXT,
@@ -185,12 +183,30 @@ if [ ! -f "$DB_PATH" ]; then
 	);
 
 		-- Create indexes for better performance
-	CREATE INDEX IF NOT EXISTS idx_games_game_id ON games(game_id);
 	CREATE INDEX IF NOT EXISTS idx_games_player1_id ON games(player1_id);
 	CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
 	CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
-	CREATE INDEX IF NOT EXISTS idx_user_stats_user_id ON user_stats(id_user);
 
+	-- Creation of AI_BOT and Guest
+	-- Insert AI_BOT user if not exists
+	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
+	SELECT 'AI_BOT', 'ai_bot@example.com', 'Hola1234', 'local', 0, 'default'
+	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'AI_BOT');
+
+	-- Insert guest user if not exists
+	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
+	SELECT 'guest', 'guest@example.com', 'Hola1234', 'local', 0, 'default'
+	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'guest');
+
+	-- Insert user_stats for AI_BOT if not exists
+    INSERT INTO user_stats (id_user)
+    SELECT id_user FROM users WHERE username = 'AI_BOT'
+    WHERE NOT EXISTS (SELECT 1 FROM user_stats WHERE id_user = (SELECT id_user FROM users WHERE username = 'AI_BOT'));
+
+    -- Insert user_stats for guest if not exists
+    INSERT INTO user_stats (id_user)
+    SELECT id_user FROM users WHERE username = 'guest'
+    WHERE NOT EXISTS (SELECT 1 FROM user_stats WHERE id_user = (SELECT id_user FROM users WHERE username = 'guest'));
 	-- Add more initialization logic as needed
 EOF
 

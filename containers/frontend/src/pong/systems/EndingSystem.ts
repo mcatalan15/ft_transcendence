@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EndingSystem.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 09:35:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 11:29:19 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ export class EndingSystem implements System {
             } else if (this.UI.rightScore > 2 && this.UI.leftScore < this.UI.rightScore - 2) {
                 this.game.data.rightPlayer.result = 'win';
                 this.game.data.leftPlayer.result = 'lose';
-            } else {
+            } else if (this.UI.leftScore === 20 && this.UI.rightScore === 20) {
                 this.game.data.leftPlayer.result = 'draw';
                 this.game.data.rightPlayer.result = 'draw';
                 this.game.data.leftPlayer.result = 'draw';
