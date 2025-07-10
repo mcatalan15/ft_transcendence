@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 13:57:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/10 17:44:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,29 @@ export class Menu{
 		this.width = app.screen.width;
 		this.height = app.screen.height;
 		this.isFirefox = isFirefox || false;
+
+		this.preconfig = preconfiguration || {
+			mode: 'local',
+			variant: '1v1',
+			classicMode: false,
+			hasInvitationContext: false,
+			invitationData: null
+		};
+		
+		console.log('🎯 Menu Preconfiguration Status:');
+		console.log('Has invitation context:', this.preconfig.hasInvitationContext);
+		
+		if (this.preconfig.hasInvitationContext && this.preconfig.invitationData) {
+			console.log('📧 Invitation Data:');
+			console.log('  - Invite ID:', this.preconfig.invitationData.inviteId);
+			console.log('  - Current Player:', this.preconfig.invitationData.currentPlayer);
+			console.log('  - Timestamp:', this.preconfig.invitationData.timestamp);
+			console.log('  - Mode will be set to:', this.preconfig.mode);
+			this.hasPreconfig = true;
+		} else {
+			console.log('📝 No invitation context - standard menu initialization');
+			this.hasPreconfig = false;
+		}
 		
 		this.menuContainer = new Container();
 		this.menuHidden = new Container();

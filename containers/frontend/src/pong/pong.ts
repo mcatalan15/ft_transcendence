@@ -31,13 +31,14 @@ class BrowserOptimizer {
   }
 }
 
-export async function initGame(container: HTMLElement) {
+export async function initGame(container: HTMLElement, preconfiguration?: Preconfiguration) {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const gameId = urlParams.get('gameId');
     
+    // Early exit for direct online game connections (bypassing menu)
     if (mode === 'online' && gameId) {
-        console.log('Online mode detected, skipping menu initialization');
+        console.log('Direct online game detected, skipping menu initialization');
         return;
     }
 
@@ -65,25 +66,18 @@ export async function initGame(container: HTMLElement) {
     const language = localStorage.getItem('i18nextLng') || 'en';
     container.appendChild(app.canvas);
 
-    const url = new URL(window.location.href);
-    const pathname = url.pathname;
-    const search = url.search;
-    let hasPreconfig = false;
-    let preconfig: Preconfiguration | null = null;
+    // Use the preconfiguration passed from showPong, or create default
+    const finalPreconfiguration: Preconfiguration = preconfiguration || {
+        mode: 'local',
+        variant: '1v1',
+        classicMode: true,
+        hasInvitationContext: false,
+        invitationData: null
+    };
 
-    if (pathname.endsWith('/pong') && search.length > 0) {
-        const params = new URLSearchParams(search);
-        const opponent = params.get('opponent');
-        const mode = params.get('mode');
-        hasPreconfig = search.length > 0;
-        if (hasPreconfig) {
-            preconfig = {
-                mode: url.searchParams.get('mode') as 'local' | 'online' || 'online',
-                variant: mode!,
-            };
-        }
-    }
+    console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
 
-    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, hasPreconfig, preconfig!, );
+    // Create menu with preconfiguration
+    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, finalPreconfiguration);
     await menu.init(false, true);
 }
