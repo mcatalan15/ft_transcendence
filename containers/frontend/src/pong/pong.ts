@@ -78,6 +78,6 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
     console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
 
     // Create menu with preconfiguration
-    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, finalPreconfiguration);
+    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
     await menu.init(false, true);
 }
