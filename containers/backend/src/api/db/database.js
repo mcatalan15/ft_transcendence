@@ -201,13 +201,13 @@ async function saveGameToDatabase(
     player1_id,
     player2_id,
     winner_id,
-    player1_name,
-    player2_name,
+    // player1_name,
+    // player2_name,
     player1_score,
     player2_score,
-    winner_name,
-    player1_is_ai,
-    player2_is_ai,
+    // winner_name,
+    // player1_is_ai,
+    // player2_is_ai,
     game_mode,
     is_tournament,
     smart_contract_link,
@@ -217,10 +217,14 @@ async function saveGameToDatabase(
 ) {
     return new Promise((resolve, reject) => {
         console.log('saveGameToDatabase called with:', {
-            player1_id, player2_id, winner_id, player1_name, player2_name,
-            player1_score, player2_score, winner_name, player1_is_ai, player2_is_ai,
-            game_mode, is_tournament, smart_contract_link, contract_address,
-            created_at, ended_at
+            player1_id, player2_id, winner_id,
+            player1_score, player2_score,
+            game_mode,
+			is_tournament, 
+			smart_contract_link,
+			contract_address,
+            created_at,
+			ended_at
         });
 
         const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -230,20 +234,20 @@ async function saveGameToDatabase(
                 player1_id,
                 player2_id,
                 winner_id,
-                player1_name,
-                player2_name,
+                -- player1_name,
+                -- player2_name,
                 player1_score,
                 player2_score,
-                winner_name,
-                player1_is_ai,
-                player2_is_ai,
+                -- winner_name,
+                -- player1_is_ai,
+                -- player2_is_ai,
                 game_mode,
                 is_tournament,
                 smart_contract_link,
                 contract_address,
                 created_at,
                 ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const params = [
@@ -251,13 +255,13 @@ async function saveGameToDatabase(
             player1_id,
             player2_id,
             winner_id,
-            player1_name,
-            player2_name,
+            // player1_name,
+            // player2_name,
             player1_score || 0,
             player2_score || 0,
-            winner_name,
-            player1_is_ai ? 1 : 0,
-            player2_is_ai ? 1 : 0,
+            // winner_name,
+            // player1_is_ai ? 1 : 0,
+            // player2_is_ai ? 1 : 0,
             game_mode,
             is_tournament ? 1 : 0,
             smart_contract_link,
