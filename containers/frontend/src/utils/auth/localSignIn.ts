@@ -24,8 +24,6 @@ export async function localSignIn(
         
         if (data.success) {
 
-            console.log(data);
-
             // Store in sessionStorage
             sessionStorage.setItem('username', data.username || '');
             sessionStorage.setItem('userId', data.userId || '');

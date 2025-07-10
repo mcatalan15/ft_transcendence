@@ -1,3 +1,5 @@
+const { get } = require('http');
+
 const sqlite3 = require('sqlite3').verbose();
 const dbPath = '/usr/src/app/db/mydatabase.db';
 const db = connectToDatabase();
@@ -18,34 +20,6 @@ function connectToDatabase(retries = 5, delay = 2000) {
 	});
 	return db;
 }
-
-// async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
-// 	return new Promise((resolve, reject) => {
-// 		const query = `INSERT INTO users (username, email, password, provider, avatar_filename, avatar_type) VALUES (?, ?, ?, ?, ?, ?)`;
-// 		const params = [username, email, hashedPassword, provider, avatarFilename, avatarFilename ? 'default' : null];
-
-// 		db.run(query, params, function (err) {
-// 			if (err) {
-// 				console.error('[DB INSERT ERROR] Full error:', {
-// 					message: err.message,
-// 					code: err.code,
-// 					errno: err.errno,
-// 					stack: err.stack
-// 				});
-
-// 				if (err.message.includes('UNIQUE constraint failed')) {
-// 					const customError = new Error('Username or email already exists');
-// 					customError.code = 'SQLITE_CONSTRAINT';
-// 					reject(customError);
-// 				} else {
-// 					reject(err);
-// 				}
-// 			} else {
-// 				resolve(this.lastID);
-// 			}
-// 		});
-// 	});
-// }
 
 async function saveUserToDatabase(username, email, hashedPassword, provider, avatarFilename = null) {
     return new Promise((resolve, reject) => {
@@ -692,6 +666,53 @@ async function getUserStats(userId) {
     });
 }
 
+async function saveRefreshTokenInDatabase(userId, refreshToken) {
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
+                      ON CONFLICT(user_id) DO UPDATE SET token = ?`;
+        const params = [userId, refreshToken, refreshToken];
+
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error('[DB INSERT ERROR] Failed to save refresh token:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
+async function getRefreshTokenFromDatabase(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT token FROM refresh_tokens WHERE user_id = ?`;
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error('[DB FETCH ERROR] Failed to get refresh token:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            }
+            else if (row) {
+                console.log(`[DB] Fetched refresh token for user ${userId}.`);
+                resolve(row.token);
+            }
+            else {
+                console.log(`[DB] No refresh token found for user ${userId}.`);
+                resolve(null);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -718,4 +739,6 @@ module.exports = {
 	changePassword,
 	getGamesHistory,
     getUserStats,
+    saveRefreshTokenInDatabase,
+    getRefreshTokenFromDatabase
 };

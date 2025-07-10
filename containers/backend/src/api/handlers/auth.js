@@ -20,7 +20,9 @@ const { saveUserToDatabase,
 	saveTwoFactorSecret,
 	getTwoFactorSecret,
 	enableTwoFactor,
-	getUserById
+	getUserById,
+	saveRefreshTokenInDatabase,
+	getRefreshTokenFromDatabase,
 } = require('../db/database');
 
 async function signupHandler(request, reply) {
@@ -104,8 +106,6 @@ async function signupHandler(request, reply) {
 async function signinHandler(request, reply) {
 	const { email, password, twoFACode } = request.body;
 
-	console.log(password);
-
 	if (!email || !password) {
 		return reply.status(400).send({ 
 			success: false,
@@ -183,7 +183,22 @@ async function signinHandler(request, reply) {
 			twoFAEnabled: twoFAEnabled,
 		});
 
-		console.log(`[Local Auth] User authenticated with 2FA: ${twoFAEnabled}`);
+		const refreshToken = jwt.sign(
+			{ id: user.id_user },
+			process.env.JWT_REFRESH_SECRET,
+			{ expiresIn: '7d' }
+			);
+
+		// Save refreshToken in DB for this user
+		await saveRefreshTokenInDatabase(user.id_user, refreshToken);
+
+		reply.setCookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: false,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
+		});
 
 		return reply.status(200).send({
 			success: true,
@@ -273,7 +288,6 @@ async function googleHandler(request, reply, fastify) {
 				expiresIn: process.env.JWT_EXPIRES_IN,
 			});
 
-			request.session.set('token', authToken);
 			request.session.set('user', {
 				userId: user.id_user,
 				username: user.username,
@@ -281,6 +295,22 @@ async function googleHandler(request, reply, fastify) {
 				twoFAEnabled: twoFAEnabled,
 			});
 
+			const refreshToken = jwt.sign(
+				{ id: user.id_user }, // or userId for signup
+				process.env.JWT_REFRESH_SECRET,
+				{ expiresIn: '7d' }
+			);
+
+			await saveRefreshTokenInDatabase(user.id_user, refreshToken);
+
+			reply.setCookie('refreshToken', refreshToken, {
+				httpOnly: true,
+				secure: false,
+				sameSite: 'strict',
+				path: '/', // or '/auth'
+				maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
+			});
+			
 			console.log(`[Google Auth - Existing User] Sending response with 2FA: ${twoFAEnabled}`);
 
 			return reply.status(200).send({
@@ -531,11 +561,43 @@ async function verifyTwoFa(request, reply) {
 	}
 };
 
+async function refreshTokenHandler(request, reply) {
+    const { refreshToken } = request.cookies;
+    if (!refreshToken) {
+        return reply.status(401).send({ success: false, message: 'No refresh token' });
+    }
+    try {
+        const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const valid = await isRefreshTokenValid(payload.id, refreshToken);
+        if (!valid) {
+            return reply.status(401).send({ success: false, message: 'Invalid refresh token' });
+        }
+        const newAccessToken = jwt.sign(
+            { id: payload.id },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
+        );
+        reply.send({
+            success: true,
+            message: 'Token renewed successfully',
+            newToken: newAccessToken
+        });
+    } catch (err) {
+        return reply.status(401).send({ success: false, message: 'Invalid refresh token' });
+    }
+}
+
+async function isRefreshTokenValid(userId, refreshToken) {
+	const storedToken = await getRefreshTokenFromDatabase(userId);
+	return storedToken === refreshToken;
+}
+
 module.exports = {
 	signupHandler,
 	signinHandler,
 	logoutHandler,
 	googleHandler,
 	setupTwoFa,
-	verifyTwoFa
+	verifyTwoFa,
+	refreshTokenHandler
 };

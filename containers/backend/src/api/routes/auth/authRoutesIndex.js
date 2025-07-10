@@ -4,7 +4,8 @@ const {
 	logoutSchema,
 	googleSchema,
 	setupTwoFaSchema,
-	verifyTwoFaSchema
+	verifyTwoFaSchema,
+	refreshTokenSchema
  } = require('../../schemas/auth');
  
 const { 
@@ -13,7 +14,8 @@ const {
 	logoutHandler,
 	googleHandler,
 	setupTwoFa,
-	verifyTwoFa
+	verifyTwoFa,
+	refreshTokenHandler
  } = require('../../handlers/auth');
 
 module.exports = async function (fastify, options) {
@@ -25,4 +27,6 @@ module.exports = async function (fastify, options) {
   fastify.post('/api/auth/google', { schema: googleSchema }, googleHandler);
   fastify.post('/api/auth/setup', { schema: setupTwoFaSchema }, setupTwoFa);
   fastify.post('/api/auth/verify', { schema: verifyTwoFaSchema }, verifyTwoFa);
-};
+  fastify.post('/api/auth/refresh', { schema: refreshTokenSchema }, refreshTokenHandler);
+
+  };

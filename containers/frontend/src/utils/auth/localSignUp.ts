@@ -29,7 +29,7 @@ export async function localSignUp(username: string, email: string, password: str
 		sessionStorage.setItem('username', data.username);
 		sessionStorage.setItem('userId', data.userId);
 		sessionStorage.setItem('email', data.email);
-		// sessionStorage.setItem('token', data.token);
+		sessionStorage.setItem('token', data.token);
 		sessionStorage.setItem('twoFAEnabled', data.twoFAEnabled);
 		sessionStorage.setItem('localAuth', 'true');
 

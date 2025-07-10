@@ -1,3 +1,5 @@
+const { renewToken } = require("../handlers/auth");
+
 const signupSchema = {
   description: 'Create a new user account from the data provided by the user via the frontend. The password is received in plain text and is hashed before being stored in the database.',
   tags: ['authentication'],
@@ -378,11 +380,58 @@ const verifyTwoFaSchema = {
 	}
 };
 
+const refreshTokenSchema = {
+	description: 'Renews the user\'s authentication token using a valid refresh token extracted from the cookies.',
+	tags: ['authentication'],
+	body: false, // No body required for this endpoint
+	response: {
+		200: {
+			description: 'Token successfully renewed',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				newToken: { type: 'string', description: 'Newly generated JWT token' }
+			},
+			example: {
+				success: true,
+				message: 'Token renewed successfully',
+				newToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+			}
+		},
+		400: {
+			description: 'Bad request - invalid token provided',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid token provided'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Internal server error'
+			}
+		}
+	}
+};
+
 module.exports = {
   signupSchema,
   signinSchema,
   logoutSchema,
   googleSchema,
   setupTwoFaSchema,
-  verifyTwoFaSchema
+  verifyTwoFaSchema,
+  refreshTokenSchema
 };
