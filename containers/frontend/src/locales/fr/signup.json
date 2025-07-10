@@ -1,11 +1,11 @@
 {
     "Sign in": "Se connecter",
-    "Sign up": "Se registrer",
+    "Sign up": "S'enregistrer",
     "EN": "EN",
     "ES": "ES",
     "FR": "FR",
     "Nickname": "Pseudo",
-    "E-mail": "Courriel",
+    "E-mail": "E-Mail",
     "Password": "Mot de passe",
     "ConfirmPassword": "Confirmez le mot de passe"
 }

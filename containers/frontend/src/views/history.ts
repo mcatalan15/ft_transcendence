@@ -4,10 +4,10 @@ import { HistoryRenderer } from '../components/history/historyRenderer';
 
 let currentResizeHandler: (() => void) | null = null;
 
-export async function showHistory(container: HTMLElement): Promise<void> {
+export async function showHistory(container: HTMLElement, username: string): Promise<void> {
   try {
     await initializeI18n();
-    render(container);
+    render(container, username);
   } catch (error) {
     console.error('Failed to initialize history:', error);
     navigate('/home');
@@ -19,9 +19,9 @@ async function initializeI18n(): Promise<void> {
   await i18n.changeLanguage(i18n.language);
 }
 
-function render(container: HTMLElement): void {
+function render(container: HTMLElement, username: string): void {
   cleanup();
-  const renderer = new HistoryRenderer(container, () => showHistory(container));
+  const renderer = new HistoryRenderer(container, () => showHistory(container, username), username);
   renderer.render();
 }
 

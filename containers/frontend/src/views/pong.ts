@@ -7,6 +7,7 @@ import { PongNetworkManager } from '../pong/network/PongNetworkManager';
 import { HeaderTest } from '../components/generalComponents/testmenu'
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import i18n from '../i18n';
+import { navigate } from '../utils/router';
 
 export function showPong(container: HTMLElement): void {
   i18n
@@ -43,33 +44,10 @@ export function showPong(container: HTMLElement): void {
 
 async function initOnlineGame(container: HTMLElement, gameId: string, opponent: string | null) {
   // Create a more comprehensive UI for online game
-  container.innerHTML = `
-    <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
-      <div class="text-center mb-4">
-        <h1 class="text-4xl font-bold text-white mb-4">Pong - Online Match</h1>
-        <div id="player-names" class="mb-4">
-          <!-- Player names will be populated by NetworkManager -->
-        </div>
-        <div id="connection-status" class="text-xl text-blue-300 mb-4">
-          Connecting to game session...
-        </div>
-      </div>
-      
+  container.innerHTML = `  
       <div id="game-canvas-container" class="mb-4">
         <!-- Canvas will be inserted here -->
       </div>
-      
-      <div class="text-center text-gray-400 mb-4">
-        <div class="text-sm">Controls:</div>
-        <div class="text-sm">Host (Left): W/S keys | Guest (Right): ↑/↓ arrow keys</div>
-      </div>
-      
-      <div class="flex space-x-4">
-        <button id="back-to-chat" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-          Back to Chat
-        </button>
-      </div>
-    </div>
   `;
   
   // Add back button functionality
@@ -96,9 +74,9 @@ async function initOnlineGame(container: HTMLElement, gameId: string, opponent: 
 
     // Create canvas for the game
     const canvas = document.createElement('canvas');
-    canvas.style.display = 'block';
+/*     canvas.style.display = 'block';
     canvas.style.margin = '0 auto';
-    canvas.style.border = '2px solid #374151';
+    canvas.style.border = '2px solid #374151'; */
     canvasContainer.appendChild(canvas);
     
     // Initialize PIXI application

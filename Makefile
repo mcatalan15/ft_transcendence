@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/08 10:30:23 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/09 11:58:49 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,11 +15,12 @@ prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
+	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
+    docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
 
 dev:
 	@bash ./scripts/setup_dev.sh
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
-#	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up --build
 
 tunnel:
 	@if ! command -v cloudflared >/dev/null 2>&1; then \
@@ -49,20 +50,6 @@ redev:
 	$(MAKE) clean
 	$(MAKE) dev
 
-frontend:
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build frontend
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d frontend
-#	$(MAKE) stop
-#	docker volume rm containers_public
-#	$(MAKE) clean
-#	$(MAKE) dev
-
-back:
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml stop backend
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml rm -f backend
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml build backend
-	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d backend
-
 stop:	# stops ALL containers running on the host, not just the ones in the compose file
 	docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
 
@@ -81,13 +68,14 @@ fclean:
 	docker image prune -a -f
 
 nuke:
-	make stop
-	docker rm -f $(docker ps -aq)
-	docker rmi -f $(docker images -aq)
-	docker volume rm $(docker volume ls -q)
-	docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
-	docker builder prune -af
-	docker system prune -af --volumes
+	@read -p "This will result in total Docker destruction, remove all cache, containers, images, etc. Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
+	-docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
+	-docker rm -f $(docker ps -aq)
+	-docker rmi -f $(docker images -aq)
+	-docker volume rm $(docker volume ls -q)
+	-docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
+	-docker builder prune -af
+	-docker system prune -af --volumes
 
 .PHONY:
-	up down re stop clean fclean frontend dev prod redev back nuke tunnel
+	re stop clean fclean dev prod redev nuke tunnel

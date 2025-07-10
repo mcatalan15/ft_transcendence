@@ -53,7 +53,7 @@ async function signupHandler(request, reply) {
 
 		const hashedPassword = await bcrypt.hash(password, 12);
 		const defaultAvatarId = Math.floor(Math.random() * 4) + 1;
-		const avatarFilename = `default_${defaultAvatarId}.png`;
+		const avatarFilename = `square${defaultAvatarId}.png`;
 
 		const newUserId = await saveUserToDatabase(username, email, hashedPassword, 'local', avatarFilename);
 		

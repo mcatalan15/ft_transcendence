@@ -1,5 +1,7 @@
 FROM alpine:3.21
 
+ENV TZ=Europe/Paris
+
 ENV PROMETHEUS_VERSION=2.46.0
 
 RUN apk update && apk add --no-cache \
@@ -14,7 +16,6 @@ RUN curl -LO https://github.com/prometheus/prometheus/releases/download/v${PROME
     && mv prometheus-${PROMETHEUS_VERSION}.linux-amd64/promtool /bin/promtool \
     && rm -rf prometheus-${PROMETHEUS_VERSION}.linux-amd64*
 
-# Create necessary directories
 RUN mkdir -p /etc/prometheus /prometheus
 
 COPY config/prometheus.yml /etc/prometheus/prometheus.yml

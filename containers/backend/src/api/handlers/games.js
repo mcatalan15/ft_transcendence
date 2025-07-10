@@ -8,6 +8,7 @@ const { saveGameToDatabase,
 	getUserById,
 	getUserStats,
 	calculateUserStats,
+	getUserByUsername,
  } = require('../db/database');
 
  async function getUserDataHandler(request, reply) {
@@ -350,19 +351,22 @@ async function getGamesHistoryHandler(request, reply) {
 	try {
 		console.log('Entering getGamesHistoryHandler');
 		console.log('Request user:', request.user);
-		const userId = request.user?.id;
-		console.log('User ID:', userId);
+		//const userId = request.user?.id;
+/* 		console.log('User ID:', userId);
 		if (!userId) {
 			console.log('No userId, returning 401');
 			return reply.code(401).send({
 				success: false,
 				error: 'Authentication required',
 			});
-		}
+		} */
 
 		console.log('Parsing query parameters...');
-		const { page = 0, limit = 10 } = request.query;
-		console.log('Query params:', { page, limit });
+		const { page = 0, limit = 8, user = request.user } = request.query;
+		console.log('Query params:', { page, limit, user });
+
+		const response = await getUserByUsername(user);
+		const userId = response?.id_user || user?.id;
 
 		console.log('Fetching game history from database...');
 		const result = await getGamesHistory(userId, page, limit);

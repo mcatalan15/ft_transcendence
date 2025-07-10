@@ -11,10 +11,12 @@ export class HistoryContentRenderer {
   private totalPages: number = 1;
   private matchTableComponent: MatchTableComponent;
   private paginationComponent: Pagination | null = null;
+  private username: string = '';
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, username: string = '') {
     this.container = container;
     this.matchTableComponent = new MatchTableComponent([]);
+	this.username = username;
   }
 
   render(): HTMLElement {
@@ -25,7 +27,7 @@ export class HistoryContentRenderer {
     const historySection = this.createHistorySection();
     mainContent.appendChild(historySection);
 
-    this.loadAndRenderGames();
+    this.loadAndRenderGames(this.username);
     return mainContent;
   }
 
@@ -113,7 +115,7 @@ export class HistoryContentRenderer {
 
   private async loadAndRenderGames(): Promise<void> {
     try {
-      const { games, totalGames: total } = await loadGames(this.currentPage, this.gamesPerPage);
+      const { games, totalGames: total } = await loadGames(this.currentPage, this.gamesPerPage, this.username);
       
       this.totalGames = total;
       this.totalPages = Math.max(1, Math.ceil(this.totalGames / this.gamesPerPage));

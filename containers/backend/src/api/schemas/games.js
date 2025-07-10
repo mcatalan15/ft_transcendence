@@ -413,6 +413,8 @@ const getGamesHistorySchema = {
 };
 
 const saveResultsSchema = {
+	description: 'Saves a game result with detailed player statistics',
+	tags: ['games'],
     body: {
       type: 'object',
       required: ['gameData'],
@@ -467,6 +469,95 @@ const saveResultsSchema = {
     }
   };
 
+  const getUserDataSchema = {
+	description: 'Get user profile and statistics by userId',
+	tags: ['games'],
+	body: {
+	  type: 'object',
+	  required: ['userId'],
+	  properties: {
+		userId: { type: 'string', description: 'User ID to fetch data for' }
+	  }
+	},
+	response: {
+	  200: {
+		description: 'User data retrieved successfully',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  userData: {
+			type: 'object',
+			properties: {
+			  id: { type: 'string', description: 'User ID' },
+			  name: { type: 'string', description: 'Username or display name' },
+			  avatar: { type: 'string', description: 'Avatar identifier or URL' },
+			  goalsScored: { type: 'number', description: 'Total goals scored' },
+			  goalsConceded: { type: 'number', description: 'Total goals conceded' },
+			  tournaments: { type: 'number', description: 'Tournaments won' },
+			  wins: { type: 'number', description: 'Total wins' },
+			  losses: { type: 'number', description: 'Total losses' },
+			  draws: { type: 'number', description: 'Total draws' },
+			  rank: { type: 'number', description: 'Calculated rank' }
+			}
+		  }
+		},
+		example: {
+		  success: true,
+		  userData: {
+			id: '42',
+			name: 'eva',
+			avatar: 'avatar1.png',
+			goalsScored: 10,
+			goalsConceded: 5,
+			tournaments: 2,
+			wins: 7,
+			losses: 2,
+			draws: 1,
+			rank: 123
+		  }
+		}
+	  },
+	  400: {
+		description: 'Missing userId in request body',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' }
+		},
+		example: {
+		  success: false,
+		  message: 'userId is required'
+		}
+	  },
+	  404: {
+		description: 'User not found',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' }
+		},
+		example: {
+		  success: false,
+		  message: 'User not found'
+		}
+	  },
+	  500: {
+		description: 'Server/database error',
+		type: 'object',
+		properties: {
+		  success: { type: 'boolean' },
+		  message: { type: 'string' },
+		  error: { type: 'string' }
+		},
+		example: {
+		  success: false,
+		  message: 'Database error occurred',
+		  error: 'SQLITE_ERROR: ...'
+		}
+	  }
+	}
+  };
+
 module.exports = {
     saveGameSchema,
     retrieveGamesSchema,
@@ -474,4 +565,5 @@ module.exports = {
     deployContractSchema,
 	getGamesHistorySchema,
     saveResultsSchema,
+	getUserDataSchema
 };

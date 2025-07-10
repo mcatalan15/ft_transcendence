@@ -169,7 +169,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 
 	avatar.alt = 'Profile';
 	avatar.className = `
-    w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-amber-50 object-cover
+    w-32 h-32 md:w-44 md:h-44 border-4 border-amber-50 object-cover
     shadow-xl transition-all duration-300
   `.replace(/\s+/g, ' ').trim();
 
@@ -286,7 +286,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
 	const buttons = [
 		{
 			label: () => i18n.t('matches', { ns: 'profile' }) || 'Partidas',
-			action: () => navigate('/history'),
+			action: () => currentUser === username ? navigate(`/history/${currentUser}`) : navigate(`/history/${username}`),
 			color: 'cyan'
 		},
 		{

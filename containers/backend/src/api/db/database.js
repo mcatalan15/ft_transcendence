@@ -225,7 +225,6 @@ async function getUserByUsername(username) {
 }
 
 async function saveGameToDatabase(
-    // game_id,
     player1_id,
     player2_id,
     winner_id,
@@ -255,7 +254,6 @@ async function saveGameToDatabase(
 
         const query = `
             INSERT INTO games (
-                game_id,
                 player1_id,
                 player2_id,
                 winner_id,
@@ -272,11 +270,11 @@ async function saveGameToDatabase(
                 contract_address,
                 created_at,
                 ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const params = [
-            game_id,
+            //game_id,
             player1_id,
             player2_id,
             winner_id,
@@ -605,7 +603,10 @@ async function changePassword(userId, newHashedPassword) {
 	});
 }
 
-async function getGamesHistory(userId, page = 0, limit = 10) {
+async function  getGamesHistory(userId, page = 0, limit = 8) {
+
+	console.log(`[DB] getGamesHistory called for user ${userId} on page ${page} with limit ${limit}`);
+
 	return new Promise((resolve, reject) => {
 		const offset = page * limit;
 

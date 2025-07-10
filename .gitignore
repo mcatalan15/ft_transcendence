@@ -8,3 +8,6 @@ ssl/
 **/ssl/
 
 cloudflared
+
+containers/nginx/ssl/server.crt
+containers/nginx/ssl/server.key
