@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:33:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 10:34:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 09:33:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ export class MenuHalfButton extends MenuButton {
             const themeColors = getThemeColors(false);
             
             switch (this.buttonId) {
-                case 'LOCAL':
-                case 'ONLINE':
+                case 'PRACTICE':
+                case 'RANKED':
                 case '1 vs IA':
                 case 'TOURNAMENT':
                 case '1 vs 1':
@@ -173,8 +173,8 @@ export class MenuHalfButton extends MenuButton {
     protected getEventType(): string | null {
         if (this.buttonId.includes('FILTER')) return 'FILTERS_CLICK';
         else if (this.buttonId.includes('CLASSIC')) return 'CLASSIC_CLICK';
-        else if (this.buttonId.includes('LOCAL')) return 'LOCAL_CLICK';
-        else if (this.buttonId.includes('ONLINE')) return 'ONLINE_CLICK';
+        else if (this.buttonId.includes('PRACTICE')) return 'PRACTICE_CLICK';
+        else if (this.buttonId.includes('RANKED')) return 'RANKED_CLICK';
         else if (this.buttonId.includes('1 vs IA')) return 'IA_CLICK';
         else if (this.buttonId.includes('TOURNAMENT')) return 'TOURNAMENT_CLICK';
         else if (this.buttonId.includes('1 vs 1')) return 'DUEL_CLICK';

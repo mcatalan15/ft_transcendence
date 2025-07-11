@@ -1,0 +1,1777 @@
+Database not found. Creating a new database...
+Database created at /usr/src/app/db/mydatabase.db
+
+> transcendence-fastify@1.0.0 dev
+> nodemon --watch src --ext js --watch pong --ext ts --exec "npm run build && node src/main.js"
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/* pong/**/*[39m
+[33m[nodemon] watching extensions: ts[39m
+[32m[nodemon] starting `npm run build && node src/main.js`[39m
+
+> transcendence-fastify@1.0.0 build
+> tsc
+
+🔍 About to start main application...
+🔍 Building app...
+✅ App built successfully
+🔍 Creating Redis service...
+✅ Redis service created
+🔍 Connecting to Redis...
+Connected to SQLite database successfully
+Connected to Redis
+✅ Redis connected successfully
+🔍 Decorating app with redisService...
+✅ App decorated
+🔍 Creating GameManager...
+✅ GameManager created
+🔍 Setting up WebSocket servers...
+✅ WebSocket servers created
+Online tracker started
+[2025-07-10 20:05:06.823 +0200] [32mINFO[39m: [36mServer listening at http://127.0.0.1:3100[39m
+[2025-07-10 20:05:06.823 +0200] [32mINFO[39m: [36mServer listening at http://172.18.0.6:3100[39m
+[2025-07-10 20:05:30.550 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:05:30.797 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 221.47872304916382
+[2025-07-10 20:05:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:05:45.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.7138090133666992
+[2025-07-10 20:06:00.211 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-3"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:06:00.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-3"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.702335000038147
+[2025-07-10 20:06:15.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-4"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:06:15.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-4"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.526993989944458
+[DB checkUserExists] Query: "SELECT * FROM users WHERE username = ? OR email = ?" with params: [hola, cucufu@cucufu.com]
+[DB checkUserExists] User NOT found.
+[2025-07-10 20:06:21.044 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-5"
+    req: {
+      "method": "POST",
+      "url": "/api/auth/signup",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 57072
+    }
+[BACKEND - signupHandler] User registered and authenticated: {
+  userId: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  twoFAEnabled: 0
+}
+[2025-07-10 20:06:21.564 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-5"
+    res: {
+      "statusCode": 201
+    }
+    responseTime: 520.1636800765991
+User 1 activity updated
+hola1234
+Fetched user: {
+  id_user: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  password: '$2b$12$MDTPfpdbSrNfzSGy7Xd7qunEgfnChXxZJAp3Wx7GNaM0m55Qr1Tka',
+  provider: 'local',
+  twoFactorSecret: null,
+  twoFactorEnabled: 0,
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default'
+}
+[Local Auth] User hola has 2FA enabled: 0
+[Local Auth] User authenticated with 2FA: 0
+[2025-07-10 20:06:24.984 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-6"
+    req: {
+      "method": "POST",
+      "url": "/api/auth/signin",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 57088
+    }
+[2025-07-10 20:06:25.183 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-6"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 199.02274096012115
+User 1 activity updated
+[2025-07-10 20:06:26.031 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-7"
+    req: {
+      "method": "GET",
+      "url": "/api/profile/hola",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 57092
+    }
+[2025-07-10 20:06:26.035 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-7"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 3.1046950817108154
+User 1 activity updated
+getUserById result for userId 1 : {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+[2025-07-10 20:06:26.239 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-8"
+    req: {
+      "method": "GET",
+      "url": "/api/profile/avatar/1?t=1752170786207",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 56546
+    }
+[2025-07-10 20:06:26.271 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-8"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 31.78520107269287
+[2025-07-10 20:06:30.211 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-9"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:06:30.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-9"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.5763180255889893
+[DB checkUserExists] Query: "SELECT * FROM users WHERE username = ? OR email = ?" with params: [adios, cocofo@cocofo.com]
+[DB checkUserExists] User NOT found.
+[BACKEND - signupHandler] User registered and authenticated: {
+  userId: 2,
+  username: 'adios',
+  email: 'cocofo@cocofo.com',
+  twoFAEnabled: 0
+}
+[2025-07-10 20:06:41.656 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-a"
+    req: {
+      "method": "POST",
+      "url": "/api/auth/signup",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 55550
+    }
+[2025-07-10 20:06:42.024 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-a"
+    res: {
+      "statusCode": 201
+    }
+    responseTime: 367.32917606830597
+[2025-07-10 20:06:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-b"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:06:45.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-b"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.6452139616012573
+User 2 activity updated
+hola1234
+Fetched user: {
+  id_user: 2,
+  username: 'adios',
+  email: 'cocofo@cocofo.com',
+  password: '$2b$12$A5vzwChGODsONtVZvQQObeAGG9ne20n1PQmGCOtgG9dNskH1KRJDW',
+  provider: 'local',
+  twoFactorSecret: null,
+  twoFactorEnabled: 0,
+  avatar_filename: 'default_3.png',
+  avatar_type: 'default'
+}
+[Local Auth] User adios has 2FA enabled: 0
+[Local Auth] User authenticated with 2FA: 0
+[2025-07-10 20:06:49.289 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-c"
+    req: {
+      "method": "POST",
+      "url": "/api/auth/signin",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 38020
+    }
+[2025-07-10 20:06:49.488 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-c"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 199.23796200752258
+User 2 activity updated
+User 2 activity updated
+getUserById result for userId 2 : {
+  id: 2,
+  username: 'adios',
+  email: 'cocofo@cocofo.com',
+  avatar_filename: 'default_3.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+[2025-07-10 20:06:50.266 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-d"
+    req: {
+      "method": "GET",
+      "url": "/api/profile/adios",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 38036
+    }
+[2025-07-10 20:06:50.268 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-d"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.803636908531189
+[2025-07-10 20:06:50.471 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-e"
+    req: {
+      "method": "GET",
+      "url": "/api/profile/avatar/2?t=1752170810441",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 38038
+    }
+[2025-07-10 20:06:50.489 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-e"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 18.104009985923767
+User 2 activity updated
+Received getUserData request for userId: 1
+getUserById result for userId 1 : {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Found user: {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Retrieved user stats for user 1 : {
+  id_user: 1,
+  total_games: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  win_rate: 0,
+  vs_ai_games: 0,
+  tournaments_won: 0,
+  total_hits: 0,
+  total_goals_scored: 0,
+  total_goals_conceded: 0,
+  total_powerups_picked: 0,
+  total_powerdowns_picked: 0,
+  total_ballchanges_picked: 0,
+  total_default_balls: 0,
+  total_curve_balls: 0,
+  total_multiply_balls: 0,
+  total_spin_balls: 0,
+  total_burst_balls: 0,
+  total_bullets: 0,
+  total_shields: 0,
+  total_pyramids: 0,
+  total_escalators: 0,
+  total_hourglasses: 0,
+  total_lightnings: 0,
+  total_maws: 0,
+  total_rakes: 0,
+  total_trenches: 0,
+  total_kites: 0,
+  total_bowties: 0,
+  total_honeycombs: 0,
+  total_snakes: 0,
+  total_vipers: 0,
+  total_waystones: 0,
+  average_score: 0,
+  highest_score: 0,
+  goals_per_game: 0,
+  hits_per_game: 0,
+  powerups_per_game: 0,
+  last_updated: '2025-07-10 18:06:21'
+}
+No games played, returning unrated ELO (999.0)
+Returning real user data: {
+  id: '1',
+  name: 'hola',
+  avatar: 'avatarUnknown',
+  goalsScored: 0,
+  goalsConceded: 0,
+  tournaments: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  rank: 999
+}
+User 1 activity updated
+Received getUserData request for userId: 1
+getUserById result for userId 1 : {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Found user: {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Retrieved user stats for user 1 : {
+  id_user: 1,
+  total_games: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  win_rate: 0,
+  vs_ai_games: 0,
+  tournaments_won: 0,
+  total_hits: 0,
+  total_goals_scored: 0,
+  total_goals_conceded: 0,
+  total_powerups_picked: 0,
+  total_powerdowns_picked: 0,
+  total_ballchanges_picked: 0,
+  total_default_balls: 0,
+  total_curve_balls: 0,
+  total_multiply_balls: 0,
+  total_spin_balls: 0,
+  total_burst_balls: 0,
+  total_bullets: 0,
+  total_shields: 0,
+  total_pyramids: 0,
+  total_escalators: 0,
+  total_hourglasses: 0,
+  total_lightnings: 0,
+  total_maws: 0,
+  total_rakes: 0,
+  total_trenches: 0,
+  total_kites: 0,
+  total_bowties: 0,
+  total_honeycombs: 0,
+  total_snakes: 0,
+  total_vipers: 0,
+  total_waystones: 0,
+  average_score: 0,
+  highest_score: 0,
+  goals_per_game: 0,
+  hits_per_game: 0,
+  powerups_per_game: 0,
+  last_updated: '2025-07-10 18:06:21'
+}
+No games played, returning unrated ELO (999.0)
+Returning real user data: {
+  id: '1',
+  name: 'hola',
+  avatar: 'avatarUnknown',
+  goalsScored: 0,
+  goalsConceded: 0,
+  tournaments: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  rank: 999
+}
+[2025-07-10 20:06:51.977 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-f"
+    req: {
+      "method": "POST",
+      "url": "/api/games/getUserData",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 38054
+    }
+[2025-07-10 20:06:51.980 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-f"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 3.110458016395569
+[2025-07-10 20:06:52.164 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-g"
+    req: {
+      "method": "POST",
+      "url": "/api/games/getUserData",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 38070
+    }
+[2025-07-10 20:06:52.166 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-g"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 2.273234009742737
+[2025-07-10 20:07:00.703 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-h"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:07:02.209 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-h"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1506.186399936676
+[2025-07-10 20:07:15.294 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-i"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:07:15.395 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-i"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 101.30874598026276
+User 1 activity updated
+Received getUserData request for userId: 1
+getUserById result for userId 1 : {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Found user: {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Retrieved user stats for user 1 : {
+  id_user: 1,
+  total_games: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  win_rate: 0,
+  vs_ai_games: 0,
+  tournaments_won: 0,
+  total_hits: 0,
+  total_goals_scored: 0,
+  total_goals_conceded: 0,
+  total_powerups_picked: 0,
+  total_powerdowns_picked: 0,
+  total_ballchanges_picked: 0,
+  total_default_balls: 0,
+  total_curve_balls: 0,
+  total_multiply_balls: 0,
+  total_spin_balls: 0,
+  total_burst_balls: 0,
+  total_bullets: 0,
+  total_shields: 0,
+  total_pyramids: 0,
+  total_escalators: 0,
+  total_hourglasses: 0,
+  total_lightnings: 0,
+  total_maws: 0,
+  total_rakes: 0,
+  total_trenches: 0,
+  total_kites: 0,
+  total_bowties: 0,
+  total_honeycombs: 0,
+  total_snakes: 0,
+  total_vipers: 0,
+  total_waystones: 0,
+  average_score: 0,
+  highest_score: 0,
+  goals_per_game: 0,
+  hits_per_game: 0,
+  powerups_per_game: 0,
+  last_updated: '2025-07-10 18:06:21'
+}
+No games played, returning unrated ELO (999.0)
+Returning real user data: {
+  id: '1',
+  name: 'hola',
+  avatar: 'avatarUnknown',
+  goalsScored: 0,
+  goalsConceded: 0,
+  tournaments: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  rank: 999
+}
+[2025-07-10 20:07:19.361 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-j"
+    req: {
+      "method": "POST",
+      "url": "/api/games/getUserData",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 59000
+    }
+[2025-07-10 20:07:19.400 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-j"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 39.06338405609131
+User 1 activity updated
+🎮 Matchmaking request received
+📥 Request body: { username: 'hola', gameType: 'classic' }
+🔑 Auth user: { id: 1, twoFAEnabled: 0, iat: 1752170785, exp: 1752775585 }
+Game game_1752170843209_47fr2yvpb created in Redis
+[2025-07-10 20:07:23.180 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-k"
+    req: {
+      "method": "POST",
+      "url": "/api/matchmaking/find",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 59012
+    }
+[2025-07-10 20:07:23.210 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-k"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 29.948518991470337
+User 1 activity updated
+[2025-07-10 20:07:25.257 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-l"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 59020
+    }
+[2025-07-10 20:07:25.485 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-l"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 228.130047082901
+User 1 activity updated
+User 2 activity updated
+🎮 Matchmaking request received
+📥 Request body: { username: 'adios', gameType: 'classic' }
+🔑 Auth user: { id: 2, twoFAEnabled: 0, iat: 1752170809, exp: 1752775609 }
+Game game_1752170843209_47fr2yvpb updated in Redis
+Notifying matchmaking success: hola vs adios in game game_1752170843209_47fr2yvpb
+[2025-07-10 20:07:27.262 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-m"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50148
+    }
+[2025-07-10 20:07:27.263 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-m"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.501899003982544
+[2025-07-10 20:07:27.640 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-n"
+    req: {
+      "method": "POST",
+      "url": "/api/matchmaking/find",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50160
+    }
+[2025-07-10 20:07:27.644 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-n"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 3.395350933074951
+User 1 activity updated
+[2025-07-10 20:07:29.253 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-o"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50174
+    }
+[2025-07-10 20:07:29.254 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-o"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.6556980609893799
+[2025-07-10 20:07:30.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-p"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:07:30.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-p"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.6797720193862915
+User 1 activity updated
+[2025-07-10 20:07:31.254 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-q"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50184
+    }
+[2025-07-10 20:07:31.255 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-q"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4011839628219604
+User 1 activity updated
+[2025-07-10 20:07:33.261 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-r"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50192
+    }
+[2025-07-10 20:07:33.263 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-r"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.7403199672698975
+User 1 activity updated
+[2025-07-10 20:07:35.251 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-s"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 50196
+    }
+[2025-07-10 20:07:35.253 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-s"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.527975082397461
+User 1 activity updated
+[2025-07-10 20:07:37.262 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-t"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46520
+    }
+[2025-07-10 20:07:37.264 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-t"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4230990409851074
+User 2 activity updated
+Received getUserData request for userId: 1
+getUserById result for userId 1 : {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Found user: {
+  id: 1,
+  username: 'hola',
+  email: 'cucufu@cucufu.com',
+  avatar_filename: 'default_1.png',
+  avatar_type: 'default',
+  twoFactorEnabled: 0
+}
+Retrieved user stats for user 1 : {
+  id_user: 1,
+  total_games: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  win_rate: 0,
+  vs_ai_games: 0,
+  tournaments_won: 0,
+  total_hits: 0,
+  total_goals_scored: 0,
+  total_goals_conceded: 0,
+  total_powerups_picked: 0,
+  total_powerdowns_picked: 0,
+  total_ballchanges_picked: 0,
+  total_default_balls: 0,
+  total_curve_balls: 0,
+  total_multiply_balls: 0,
+  total_spin_balls: 0,
+  total_burst_balls: 0,
+  total_bullets: 0,
+  total_shields: 0,
+  total_pyramids: 0,
+  total_escalators: 0,
+  total_hourglasses: 0,
+  total_lightnings: 0,
+  total_maws: 0,
+  total_rakes: 0,
+  total_trenches: 0,
+  total_kites: 0,
+  total_bowties: 0,
+  total_honeycombs: 0,
+  total_snakes: 0,
+  total_vipers: 0,
+  total_waystones: 0,
+  average_score: 0,
+  highest_score: 0,
+  goals_per_game: 0,
+  hits_per_game: 0,
+  powerups_per_game: 0,
+  last_updated: '2025-07-10 18:06:21'
+}
+No games played, returning unrated ELO (999.0)
+Returning real user data: {
+  id: '1',
+  name: 'hola',
+  avatar: 'avatarUnknown',
+  goalsScored: 0,
+  goalsConceded: 0,
+  tournaments: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  rank: 999
+}
+[2025-07-10 20:07:37.703 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-u"
+    req: {
+      "method": "POST",
+      "url": "/api/games/getUserData",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46526
+    }
+[2025-07-10 20:07:37.706 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-u"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 2.822793960571289
+User 1 activity updated
+[2025-07-10 20:07:39.260 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-v"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46538
+    }
+[2025-07-10 20:07:39.262 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-v"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.461864948272705
+User 1 activity updated
+[2025-07-10 20:07:41.264 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-w"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46554
+    }
+[2025-07-10 20:07:41.266 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-w"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.493067979812622
+User 1 activity updated
+User 2 activity updated
+🎮 Matchmaking request received
+📥 Request body: { username: 'adios', gameType: 'classic' }
+🔑 Auth user: { id: 2, twoFAEnabled: 0, iat: 1752170809, exp: 1752775609 }
+Game game_1752170863458_3w6stzl6q created in Redis
+[2025-07-10 20:07:43.255 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-x"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46568
+    }
+[2025-07-10 20:07:43.256 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-x"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4089690446853638
+[2025-07-10 20:07:43.456 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-y"
+    req: {
+      "method": "POST",
+      "url": "/api/matchmaking/find",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46576
+    }
+[2025-07-10 20:07:43.459 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-y"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 2.6570500135421753
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-z"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:07:45.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-z"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.5416760444641113
+[2025-07-10 20:07:45.259 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-10"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46584
+    }
+[2025-07-10 20:07:45.260 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-10"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.375177025794983
+[2025-07-10 20:07:45.505 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-11"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 46598
+    }
+[2025-07-10 20:07:45.506 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-11"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.446937084197998
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:47.254 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-12"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37728
+    }
+[2025-07-10 20:07:47.256 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-12"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3933459520339966
+[2025-07-10 20:07:47.509 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-13"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37738
+    }
+[2025-07-10 20:07:47.511 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-13"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.7874629497528076
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:49.253 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-14"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37754
+    }
+[2025-07-10 20:07:49.254 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-14"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3748859167099
+[2025-07-10 20:07:49.513 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-15"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37766
+    }
+[2025-07-10 20:07:49.514 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-15"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5541930198669434
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:51.259 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-16"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37774
+    }
+[2025-07-10 20:07:51.261 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-16"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5811909437179565
+[2025-07-10 20:07:51.507 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-17"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37786
+    }
+[2025-07-10 20:07:51.509 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-17"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4455420970916748
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:53.258 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-18"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37800
+    }
+[2025-07-10 20:07:53.260 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-18"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.6417880058288574
+[2025-07-10 20:07:53.514 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-19"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37802
+    }
+[2025-07-10 20:07:53.516 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-19"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3661630153656006
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:55.256 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1a"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37818
+    }
+[2025-07-10 20:07:55.257 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1a"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.479537010192871
+[2025-07-10 20:07:55.513 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1b"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 37820
+    }
+[2025-07-10 20:07:55.514 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1b"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5070240497589111
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:57.265 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1c"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44846
+    }
+[2025-07-10 20:07:57.266 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1c"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3623299598693848
+[2025-07-10 20:07:57.506 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1d"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44862
+    }
+[2025-07-10 20:07:57.508 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1d"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.525933027267456
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:07:59.253 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1e"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44878
+    }
+[2025-07-10 20:07:59.255 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1e"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4856940507888794
+[2025-07-10 20:07:59.510 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1f"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44894
+    }
+[2025-07-10 20:07:59.512 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1f"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3452939987182617
+[2025-07-10 20:08:00.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1g"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:08:00.211 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1g"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.5172820091247559
+User 1 activity updated
+[2025-07-10 20:08:01.256 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1h"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44910
+    }
+[2025-07-10 20:08:01.258 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1h"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3663049936294556
+User 2 activity updated
+[2025-07-10 20:08:01.513 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1i"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44912
+    }
+[2025-07-10 20:08:01.515 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1i"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.474971055984497
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:03.260 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1j"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44922
+    }
+[2025-07-10 20:08:03.261 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1j"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3693000078201294
+[2025-07-10 20:08:03.508 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1k"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44926
+    }
+[2025-07-10 20:08:03.509 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1k"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3611299991607666
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:05.255 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1l"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44934
+    }
+[2025-07-10 20:08:05.257 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1l"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5597600936889648
+[2025-07-10 20:08:05.512 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1m"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 44940
+    }
+[2025-07-10 20:08:05.513 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1m"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.349573016166687
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:07.258 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1n"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34100
+    }
+[2025-07-10 20:08:07.259 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1n"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3728070259094238
+[2025-07-10 20:08:07.519 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1o"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34112
+    }
+[2025-07-10 20:08:07.520 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1o"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5644549131393433
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:09.261 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1p"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34114
+    }
+[2025-07-10 20:08:09.262 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1p"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3890390396118164
+[2025-07-10 20:08:09.504 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1q"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34118
+    }
+[2025-07-10 20:08:09.505 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1q"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3257349729537964
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:11.258 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1r"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34124
+    }
+[2025-07-10 20:08:11.259 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1r"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4659459590911865
+[2025-07-10 20:08:11.526 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1s"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34136
+    }
+[2025-07-10 20:08:11.527 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1s"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4003310203552246
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:13.252 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1t"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34146
+    }
+[2025-07-10 20:08:13.254 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1t"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5224651098251343
+[2025-07-10 20:08:13.513 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1u"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34148
+    }
+[2025-07-10 20:08:13.515 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1u"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.7400779724121094
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:15.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1v"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:08:15.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1v"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.8687750101089478
+[2025-07-10 20:08:15.261 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1w"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34150
+    }
+[2025-07-10 20:08:15.262 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1w"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4530019760131836
+[2025-07-10 20:08:15.513 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1x"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 34152
+    }
+[2025-07-10 20:08:15.514 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1x"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.5220130681991577
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:17.254 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1y"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41842
+    }
+[2025-07-10 20:08:17.255 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1y"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3578449487686157
+[2025-07-10 20:08:17.510 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-1z"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41856
+    }
+[2025-07-10 20:08:17.511 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-1z"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.363919973373413
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:19.253 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-20"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41860
+    }
+[2025-07-10 20:08:19.255 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-20"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3555949926376343
+[2025-07-10 20:08:19.505 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-21"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41876
+    }
+[2025-07-10 20:08:19.507 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-21"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.34974205493927
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:21.454 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-22"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41886
+    }
+[2025-07-10 20:08:21.455 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-22"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.391543984413147
+[2025-07-10 20:08:21.520 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-23"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41890
+    }
+[2025-07-10 20:08:21.521 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-23"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.3752410411834717
+User 1 activity updated
+User 2 activity updated
+[2025-07-10 20:08:23.252 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-24"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170843209_47fr2yvpb",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41894
+    }
+[2025-07-10 20:08:23.254 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-24"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.4634039402008057
+[2025-07-10 20:08:23.502 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-25"
+    req: {
+      "method": "GET",
+      "url": "/api/matchmaking/status/game_1752170863458_3w6stzl6q",
+      "host": "localhost",
+      "remoteAddress": "172.18.0.8",
+      "remotePort": 41900
+    }
+[2025-07-10 20:08:23.504 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-25"
+    res: {
+      "statusCode": 500
+    }
+    responseTime: 1.380181908607483
+[2025-07-10 20:08:30.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-26"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:08:30.213 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-26"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 2.1496599912643433
+[2025-07-10 20:08:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-27"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:08:45.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-27"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.3684240579605103
+[2025-07-10 20:09:00.211 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-28"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:09:00.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-28"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.60862398147583
+[2025-07-10 20:09:15.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-29"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:09:15.211 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-29"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.2800129652023315
+[2025-07-10 20:09:30.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2a"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:09:30.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2a"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.3059799671173096
+[2025-07-10 20:09:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2b"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:09:45.211 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2b"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.2817250490188599
+[2025-07-10 20:10:00.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2c"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:10:00.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2c"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.432507038116455
+[2025-07-10 20:10:15.211 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2d"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:10:15.213 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2d"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.8668999671936035
+[2025-07-10 20:10:30.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2e"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:10:30.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2e"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.406872034072876
+[2025-07-10 20:10:45.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2f"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:10:45.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2f"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.302644968032837
+[2025-07-10 20:11:00.210 +0200] [32mINFO[39m: [36mincoming request[39m
+    reqId: "req-2g"
+    req: {
+      "method": "GET",
+      "url": "/metrics",
+      "host": "backend:3100",
+      "remoteAddress": "172.18.0.3",
+      "remotePort": 38718
+    }
+[2025-07-10 20:11:00.212 +0200] [32mINFO[39m: [36mrequest completed[39m
+    reqId: "req-2g"
+    res: {
+      "statusCode": 200
+    }
+    responseTime: 1.2873350381851196

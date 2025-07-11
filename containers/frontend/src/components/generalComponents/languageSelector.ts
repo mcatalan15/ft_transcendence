@@ -95,33 +95,61 @@ export class LanguageSelector {
     }
   }
 
-  private setupEvents(onChange?: (lang: string) => void) {
-    const btn = this.container.querySelector<HTMLButtonElement>("#language-btn");
-    const menu = this.container.querySelector<HTMLUListElement>("#lang-menu");
-    const langSpan = this.container.querySelector<HTMLSpanElement>("#current-lang");
+private setupEvents(onChange?: (lang: string) => void) {
+  const btn = this.container.querySelector<HTMLButtonElement>("#language-btn");
+  const menu = this.container.querySelector<HTMLUListElement>("#lang-menu");
+  const langSpan = this.container.querySelector<HTMLSpanElement>("#current-lang");
 
-    btn?.addEventListener("click", () => {
+  btn?.addEventListener("click", () => {
       menu?.classList.toggle("hidden");
-    });
+  });
 
-    document.addEventListener('click', (event) => {
+  document.addEventListener('click', (event) => {
       if (!this.container.contains(event.target as Node)) {
-        menu?.classList.add("hidden");
-      }
-    });
-
-    menu?.querySelectorAll("li").forEach((item) => {
-      item.addEventListener("click", () => {
-        const lang = item.getAttribute("data-lang") || "en";
-        i18n.changeLanguage(lang).then(() => {
-          langSpan!.textContent = lang.toUpperCase();
           menu?.classList.add("hidden");
-          translateDOM();
-          if (onChange) onChange(lang);
-        });
+      }
+  });
+
+  menu?.querySelectorAll("li").forEach((item) => {
+      item.addEventListener("click", async () => {
+          const lang = item.getAttribute("data-lang") || "en";
+          
+          await this.cleanupBeforeLanguageChange();
+          
+          i18n.changeLanguage(lang).then(() => {
+              langSpan!.textContent = lang.toUpperCase();
+              menu?.classList.add("hidden");
+              translateDOM();
+              if (onChange) onChange(lang);
+              
+              setTimeout(() => {
+                  window.location.reload();
+              }, 100);
+          });
       });
-    });
-  }
+  });
+}
+
+  private async cleanupBeforeLanguageChange(): Promise<void> {
+    try {
+        const gameInstance = (window as any).currentGame;
+        const menuInstance = (window as any).currentMenu;
+        
+        if (gameInstance && typeof gameInstance.cleanup === 'function') {
+            await gameInstance.cleanup();
+        }
+        
+        if (menuInstance && typeof menuInstance.cleanup === 'function') {
+            await menuInstance.cleanup();
+        }
+        
+        (window as any).currentGame = null;
+        (window as any).currentMenu = null;
+        
+    } catch (error) {
+        console.error('Error during cleanup:', error);
+    }
+}
 
   public getElement(): HTMLElement {
     return this.container;

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 14:03:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:36:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ export class MenuImageManager {
     private static classicLogoImages: Sprite[] = [];
     private static headerImages: Sprite[] = [];
     private static isAnimating: boolean = false;
+
+    static isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
     
     static async loadAssets(assetList: Array<{name: string, url: string}>): Promise<void> {
         const promises = assetList.map(async (asset) => {
@@ -55,8 +57,31 @@ export class MenuImageManager {
     }
     
     static createSprite(assetName: string): Sprite | null {
-        const texture = this.getAsset(assetName);
-        return texture ? new Sprite(texture) : null;
+        const texture = this.assets.get(assetName);
+        if (!texture) {
+            console.warn(`Asset ${assetName} not found`);
+            return null;
+        }
+        
+        const sprite = new Sprite(texture);
+        
+        if (this.isFirefox && assetName.toLowerCase().includes('header')) {
+            console.log(`Applying Firefox fixes for SVG asset: ${assetName}`);
+            
+            if (texture.source) {
+                texture.source.scaleMode = 'nearest';
+                
+                if ('resolution' in texture.source) {
+                    (texture.source as any).resolution = 1;
+                }
+                
+                if ('generateMipmaps' in texture.source) {
+                    (texture.source as any).generateMipmaps = false;
+                }
+            }
+        }
+        
+        return sprite;
     }
     
     static createSpriteWithFallback(assetName: string, fallbackColor: number = 0xFF0000): Sprite {

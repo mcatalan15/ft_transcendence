@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 14:29:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 12:41:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,11 +231,14 @@ export class UI extends Entity {
 	}
 
 	setClassicScoreText(newScore: string, side: string): void {
+		console.log(`🎮 UI: Setting classic score text - side: ${side}, score: ${newScore}`);
+		
 		if (side === 'left') {
 			const textComponent = this.getComponent('text', 'classicScoreTextLeft') as TextComponent;
 			if (textComponent) {
 				textComponent.text = newScore;
 				textComponent.setText(newScore);
+				console.log(`🎮 UI: Left score updated to: ${newScore}`);
 			} else {
 				console.error("Classic score left text component not found");
 			}
@@ -244,6 +247,7 @@ export class UI extends Entity {
 			if (textComponent) {
 				textComponent.text = newScore;
 				textComponent.setText(newScore);
+				console.log(`🎮 UI: Right score updated to: ${newScore}`);
 			} else {
 				console.error("Classic score right text component not found");
 			}
