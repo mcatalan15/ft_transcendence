@@ -1,0 +1,18 @@
+{
+    "changeNickname": "Change Nickname",
+    "current": "Current Nickname",
+    "newNickname": "New Nickname",
+    "updateNickname": "Update Nickname",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updatePassword": "Update Password",
+    "nicknameRequired": "Nickname is required",
+    "nicknameLength": "Nickname must be between 3 and 8 characters",
+    "nicknameFormat": "Nickname format is invalid",
+    "passwordRequired": "Password fields are required",
+    "passwordLength": "Password must be between 6 and 20 characters",
+    "passwordMismatch": "Passwords do not match",
+    "passwordSame": "New password must be different from current password"
+}
