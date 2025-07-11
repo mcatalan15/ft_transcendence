@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 11:51:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/10 20:34:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ export interface GameConfig {
     variant: '1v1' | '1vAI' | 'tournament';
     classicMode: boolean;
     filters: boolean;
+	gameId?: string;
     
     players: {
         id?: string;
@@ -34,9 +35,15 @@ export interface GameConfig {
 }
 
 export interface Preconfiguration {
-	mode: 'local' | 'online' | string;
-	variant: '1v1' | '1vAI' | 'tournament' | string;
-	classicMode?: boolean;
+    mode: 'local' | 'online' | string;
+    variant: '1v1' | '1vAI' | 'tournament' | string;
+    classicMode?: boolean;
+    hasInvitationContext?: boolean;
+    invitationData?: {
+        inviteId: string;
+        currentPlayer: string;
+        timestamp: string;
+    } | null;
 }
 
 export interface GameData {

@@ -1,4 +1,10 @@
 const client = require('prom-client');
+const onlineTracker = require('../utils/onlineTracker'); // Import your tracker
+
+const onlineUsersGauge = new client.Gauge({
+  name: 'online_users',
+  help: 'Number of currently online users'
+});
 
 const dbErrors = new client.Counter({
   name: 'database_errors_total',
@@ -68,6 +74,9 @@ module.exports = async function (fastify) {
   });
 
   fastify.get('/metrics', async (_, reply) => {
+    // Update online users gauge
+    onlineUsersGauge.set(onlineTracker.getStats().totalOnlineUsers);
+
     reply.type('text/plain');
     return client.register.metrics();
   });

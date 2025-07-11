@@ -19,7 +19,7 @@ export function navigate(path: string) {
 	renderRoute(path);
 }
 
-function renderRoute(path: string) {
+async function renderRoute(path: string) {
 	if (!app) return;
 
 	app.innerHTML = '';
@@ -38,7 +38,7 @@ function renderRoute(path: string) {
 			break;
 
 		case '/pong':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
@@ -46,32 +46,15 @@ function renderRoute(path: string) {
 			break;
 
 		case '/home':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
 			views.showHome(app);
 			break;
 
-/* 		case '/history':
-			if (!isUserAuthenticated()) {
-				navigate('/');
-				return;
-			}
-			views.showHistory(app);
-			break; */
-
-/* 		case '/profile':
-			if (!isUserAuthenticated()) {
-				navigate('/');
-				return;
-			}
-			const currentUsername = sessionStorage.getItem('username');
-			navigate(`/profile/${currentUsername}`);
-			break; */
-
 		case '/friends':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
@@ -79,7 +62,7 @@ function renderRoute(path: string) {
 			break;
 
 		case '/chat':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
@@ -87,7 +70,7 @@ function renderRoute(path: string) {
 			break;
 
 		case '/logout':
-			if (isUserAuthenticated()) {
+			if (await isUserAuthenticated()) {
 				logUserOut();
 			}
 			navigate('/');
@@ -102,7 +85,7 @@ function renderRoute(path: string) {
 			break;
 
 		case '/settings':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
@@ -110,7 +93,7 @@ function renderRoute(path: string) {
 			return;
 		
 		case '/stats':
-			if (!isUserAuthenticated()) {
+			if (!(await isUserAuthenticated())) {
 				navigate('/');
 				return;
 			}
@@ -118,17 +101,14 @@ function renderRoute(path: string) {
 			return;
 		
 		case '/404':
-			if (!isUserAuthenticated()) {
-				navigate('/');
-				return;
-			}
+
 			views.show404(app);
 			return;
 
 		default:
 
 			if (path === '/history' || path.startsWith('/history/')) {
-				if (!isUserAuthenticated()) {
+				if (!(await isUserAuthenticated())) {
 					navigate('/');
 					return;
 				}
@@ -143,7 +123,7 @@ function renderRoute(path: string) {
 				return;
 			}
 			else if (path === '/profile' || path.startsWith('/profile/')) {
-				if (!isUserAuthenticated()) {
+				if (!(await isUserAuthenticated())) {
 					navigate('/');
 					return;
 				}
@@ -158,7 +138,7 @@ function renderRoute(path: string) {
 				return;
 			} 
 			else if (path === '/pong' || path.startsWith('/pong?')) {
-				if (!isUserAuthenticated()) {
+				if (!(await isUserAuthenticated())) {
 					navigate('/');
 					return;
 				}

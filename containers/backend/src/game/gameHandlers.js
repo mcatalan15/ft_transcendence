@@ -11,7 +11,6 @@ async function handleCreateGame(ws, data, redisService, gameManager) {
   await redisService.createGame(gameId, hostId);
   gameManager.addPlayerToSession(gameId, hostId, ws);
 
-  // Send confirmation to creator
   ws.send(JSON.stringify({
     type: 'GAME_CREATED',
     gameId: gameId
@@ -19,7 +18,7 @@ async function handleCreateGame(ws, data, redisService, gameManager) {
 
   ws.send(JSON.stringify({
     type: 'PLAYER_ASSIGNED',
-    playerNumber: 1  // Host is always Player 1
+    playerNumber: 1
   }));
 
   console.log(`Game created: ${gameId} by player: ${hostId}`);
@@ -47,19 +46,16 @@ async function handleJoinGame(ws, data, redisService, gameManager) {
       return;
     }
 
-    // Update game status in Redis
     game.guestId = playerId;
     game.status = 'active';
     await redisService.updateGame(gameId, game);
 
     gameManager.addPlayerToSession(gameId, playerId, ws);
 
-    // Notify joiner
     ws.send(JSON.stringify({
       type: 'JOIN_SUCCESS'
     }));
 
-    // Notify host that someone joined
     const session = gameManager.getSession(gameId);
     const hostWs = session.sockets.get(game.hostId);
     if (hostWs && hostWs.readyState === WebSocket.OPEN) {
