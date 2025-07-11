@@ -1,5 +1,6 @@
 import { navigate } from '../router';
 import { ChatWebSocket } from '../../components/chat/ChatWebSocket';
+import i18n from '../../i18n';
 
 export enum MessageType {
   GENERAL = 'general',
@@ -52,7 +53,7 @@ export class ChatManager {
     if (!this.blockedUsers.includes(username)) {
       this.blockedUsers.push(username);
       this.saveBlockedUsers();
-      this.addSystemMessage(`Blocked user: ${username}`, MessageType.SYSTEM);
+      this.addSystemMessage(i18n.t('userBlocked', { ns: 'chat' }) + username, MessageType.SYSTEM);
       this.filterMessages();
     }
   }
