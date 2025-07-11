@@ -4,29 +4,31 @@ import { LanguageSelector } from '../generalComponents/languageSelector';
 import { PongBoxComponent } from '../pongBoxComponents/pongBox';
 import { HeadersComponent } from '../pongBoxComponents/headersComponent';
 import { CONFIG } from '../../config/settings.config';
-import { setResizeHandler } from '../../views/settings';
-import { SettingsFormsRenderer } from './settingsFormsRendered';
+import { setResizeHandler } from '../../views/profile';
+import { ProfileContentRenderer } from './profileContentRenderer';
 import { getApiUrl } from '../../config/api';
 import { MessageManager } from '../../utils/messageManager';
 
-export class SettingsRenderer {
+export class ProfileRenderer {
   private container: HTMLElement;
   private reloadCallback: () => void;
+  private username?: string;
   private pongBoxElement!: HTMLElement;
 
   constructor(
     container: HTMLElement, 
     reloadCallback: () => void,
+    username?: string
   ) {
     this.container = container;
     this.reloadCallback = reloadCallback;
+    this.username = username;
   }
-  
+
   private onRefresh = (): void => {
     this.reloadCallback();
   };
 
-  // Render complete settings page layout
   public async render(): Promise<void> {
     try {
       this.container.innerHTML = '';
@@ -43,16 +45,15 @@ export class SettingsRenderer {
       
       this.container.appendChild(contentWrapper);
     } catch (error) {
-      console.error('Error rendering settings:', error);
-      MessageManager.showError('Error al cargar la configuración');
+      console.error('Error rendering profile:', error);
+      MessageManager.showError('Error al cargar el perfil');
     }
   }
 
-  // Create and configure SVG header component
   private createHeader(): HTMLElement {
     const lang = i18n.language || 'en';
     const svgHeader = new HeadersComponent({
-      type: 'settings',
+      type: 'profile',
       lang
     }).getElement();
 
@@ -60,7 +61,6 @@ export class SettingsRenderer {
     return svgHeader;
   }
 
-  // Setup responsive margin adjustments for header
   private setupResponsiveMargin(svgHeader: HTMLElement): void {
     const updateSvgMargin = () => {
       const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
@@ -74,30 +74,38 @@ export class SettingsRenderer {
     window.addEventListener('resize', updateSvgMargin);
   }
 
-  // Create and configure pong box component with forms
   private async createPongBox(): Promise<HTMLElement> {
     try {
-      const username = sessionStorage.getItem('username') || '';
-      const userId = sessionStorage.getItem('userId') || '';
-      
-      if (!username || !userId) {
-        throw new Error('Datos de usuario no disponibles');
+      const response = await fetch(this.username ? 
+        getApiUrl(`/profile/${this.username}`) : 
+        getApiUrl('/profile'), {
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
-      const formsRenderer = new SettingsFormsRenderer(
-        this.container, 
-        username, 
-        userId
+      const profileData = await response.json();
+      const avatarUrl = `${getApiUrl('/profile/avatar')}/${profileData.userId}?t=${Date.now()}`;
+
+      const contentRenderer = new ProfileContentRenderer(
+        this.container,
+        this.username
       );
+
+      const content = await contentRenderer.render();
+      const isOwnProfile = !this.username || this.username === sessionStorage.getItem('username');
       
-      const formsContent = formsRenderer.render();
       const pongBox = new PongBoxComponent({
         avatarUrl,
-        nickname: username,
-        mainContent: formsContent,
-        showCameraButton: true
-      });
+        nickname: profileData.username,
+        mainContent: content,
+        showStatus: !isOwnProfile
+      } as any);
 
       const pongBoxElement = pongBox.getElement();
       pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
@@ -109,7 +117,6 @@ export class SettingsRenderer {
     }
   }
 
-  // Create main layout structure with header and pong box
   private createMainLayout(svgHeader: HTMLElement, pongBoxElement: HTMLElement): HTMLElement {
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'flex flex-col items-center justify-center w-full h-full bg-neutral-900';

@@ -1,5 +1,5 @@
 import { loadGames, GameHistory } from '../../utils/matchHistory/gameUtils';
-import { MatchTableComponent } from '../profileComponents/history/table';
+import { MatchTableComponent } from './table';
 import { Pagination } from '../generalComponents/Pagination';
 import i18n from '../../i18n';
 
