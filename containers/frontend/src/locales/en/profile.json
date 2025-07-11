@@ -1,15 +1,18 @@
 {
-    "profileTitleOwn": "Profile",
-    "profileTitle": "{{username}}'s profile",
-    "matchesPlayed": "Matches played",
-    "tournamentsPlayed": "Tournaments played",
-    "victories": "Victories",
-    "settings": "Settings",
-    "matches": "Matches",
-    "friends": "Friends",
-    "stats": "Stats",
-	"addFriend": "Add Friend",
-	"removeFriend": "Remove Friend",
-	"chat": "Chat"
-  }
-  
+  "profileTitleOwn": "Profile",
+  "profileTitle": "{{username}}'s profile",
+  "playerStats": "Player Stats",
+  "matchesPlayed": "Matches played",
+  "tournamentsPlayed": "Tournaments played",
+  "victories": "Victories",
+  "losses": "Losses",
+  "winRate": "Win rate",
+  "settings": "Settings",
+  "matches": "Matches",
+  "friends": "Friends",
+  "stats": "Stats",
+  "addFriend": "Add Friend",
+  "removeFriend": "Remove Friend",
+  "chat": "Chat",
+  "errorLoadingProfile": "Error loading profile"
+}

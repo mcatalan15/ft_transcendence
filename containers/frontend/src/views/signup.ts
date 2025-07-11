@@ -117,7 +117,10 @@ export function showSignUp(container: HTMLElement): void {
 
         const result = await localSignUp(username, email, password);
         if (!result.success) {
-          errorMessageDiv.textContent = result.message;
+          if (result.message === 'body/email must match format "email"') {
+            errorMessageDiv.textContent = i18n.t('errorInvalidEmail', { ns: 'signup' });
+          } else 
+            errorMessageDiv.textContent = result.message;
         } else {
           alert(i18n.t('success', { ns: 'signup', defaultValue: 'Registration successful!' }));
           navigate('/signin');
