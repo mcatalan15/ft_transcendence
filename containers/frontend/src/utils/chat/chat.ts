@@ -126,41 +126,41 @@ export class ChatManager {
       }
       return `<span class="username-clickable cursor-pointer hover:underline text-white font-semibold" 
                     data-username="${username}" 
-                    title="Left-click for profile, Right-click for options">
+                    title="${i18n.t('clickableUsername', { ns: 'chat' })}">
                 ${username}
               </span>`;
     };
     
     switch (message.type) {
       case MessageType.PRIVATE:
-        return `<span class="text-pink-300">[${timestamp}] [WHISPER] ${makeUsernameClickable(message.username || 'Unknown')}:</span> ${message.content}`;
+        return `<span class="text-pink-300">[${timestamp}] [${i18n.t('WHISPER', { ns: 'chat' })}] ${makeUsernameClickable(message.username || 'Unknown')}:</span> ${message.content}`;
       case MessageType.SERVER:
-        return `<span class="text-amber-300">[${timestamp}] [SERVER]</span> ${message.content}`;
+        return `<span class="text-amber-300">[${timestamp}] [${i18n.t('SERVER', { ns: 'chat' })}]</span> ${message.content}`;
       case MessageType.SYSTEM:
-        return `<span class="text-red-300">[${timestamp}] [SYSTEM]</span> ${message.content}`;
+        return `<span class="text-red-300">[${timestamp}] [${i18n.t('SYSTEM', { ns: 'chat' })}]</span> ${message.content}`;
       case MessageType.FRIEND:
-        return `<span class="text-lime-300">[${timestamp}] [FRIEND] ${makeUsernameClickable(message.username || 'Unknown')}:</span> ${message.content}`;
+        return `<span class="text-lime-300">[${timestamp}] [${i18n.t('FRIEND', { ns: 'chat' })}] ${makeUsernameClickable(message.username || 'Unknown')}:</span> ${message.content}`;
       case MessageType.GAME:
-        return `<span class="text-blue-300">[${timestamp}] [GAME]</span> ${message.content}`;
+        return `<span class="text-blue-300">[${timestamp}] [${i18n.t('GAME', { ns: 'chat' })}]</span> ${message.content}`;
       case MessageType.GAME_INVITE:
         return `
           <div class="flex items-center justify-between">
-            <span class="text-purple-300">[${timestamp}] [GAME INVITE] ${makeUsernameClickable(message.username || 'Unknown')}:</span>
+            <span class="text-purple-300">[${timestamp}] [${i18n.t('GAMEINVITE', { ns: 'chat' })}] ${makeUsernameClickable(message.username || 'Unknown')}:</span>
             <div class="flex gap-2 ml-4">
               <button class="accept-invite bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs" 
                       data-invite-id="${message.inviteId}" data-from="${message.username}">
-                Accept
+                ${i18n.t('accept', { ns: 'chat' })}
               </button>
               <button class="decline-invite bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs" 
                       data-invite-id="${message.inviteId}" data-from="${message.username}">
-                Decline
+                ${i18n.t('decline', { ns: 'chat' })}
               </button>
             </div>
           </div>
           <div class="mt-1">${message.content}</div>
         `;
       case MessageType.GAME_INVITE_RESPONSE:
-        return `<span class="text-green-300">[${timestamp}] [GAME]</span> ${message.content}`;
+        return `<span class="text-green-300">[${timestamp}] [${i18n.t('GAME', { ns: 'chat' })}]</span> ${message.content}`;
       case MessageType.GENERAL:
       default:
         return `<span class="text-cyan-300">[${timestamp}] ${makeUsernameClickable(message.username || 'Unknown')}:</span> ${message.content}`;
@@ -219,7 +219,7 @@ export class ChatManager {
         this.acceptGameInvite(inviteId!, fromUser!);
         acceptBtn.disabled = true;
         declineBtn.disabled = true;
-        acceptBtn.textContent = 'Accepted';
+        acceptBtn.textContent = i18n.t('accepted', { ns: 'chat' });
         acceptBtn.className = 'bg-gray-500 text-white px-3 py-1 rounded text-xs cursor-not-allowed';
       };
     }
@@ -232,7 +232,7 @@ export class ChatManager {
         this.declineGameInvite(inviteId!, fromUser!);
         acceptBtn.disabled = true;
         declineBtn.disabled = true;
-        declineBtn.textContent = 'Declined';
+        declineBtn.textContent = i18n.t('declined', { ns: 'chat' });
         declineBtn.className = 'bg-gray-500 text-white px-3 py-1 rounded text-xs cursor-not-allowed';
       };
     }
@@ -270,7 +270,7 @@ export class ChatManager {
     
     const menuItems = [
       {
-        label: `Private Message`,
+        label: i18n.t('privateMessage', { ns: 'chat' }),
         action: () => {
           if (this.typeSelector && this.messageInput) {
             this.typeSelector.value = MessageType.PRIVATE;
@@ -281,14 +281,14 @@ export class ChatManager {
         }
       },
       {
-        label: `Invite to Game`,
+        label: i18n.t('sendInvitation', { ns: 'chat' }),
         action: () => {
           this.sendGameInvitation(username);
           this.closeContextMenu();
         }
       },
       {
-        label: isBlocked ? `Unblock ${username}` : `Block ${username}`,
+        label: isBlocked ? i18n.t('block', { ns: 'chat' }) + username : i18n.t('unblock', { ns: 'chat' }) + username,
         action: () => {
           if (isBlocked) {
             this.unblockUser(username);
@@ -336,7 +336,7 @@ export class ChatManager {
     
     if (!messageText) return;
     if (!this.chatSocket.isConnected()) {
-      this.addSystemMessage('Not connected to server', MessageType.SYSTEM);
+      this.addSystemMessage(i18n.t('notConnectedServer', { ns: 'chat' }), MessageType.SYSTEM);
       return;
     }
 
@@ -358,7 +358,7 @@ export class ChatManager {
         targetUser = whisperMatch[1];
         content = whisperMatch[2];
       } else {
-        this.addSystemMessage('Private messages format: @username message', MessageType.SYSTEM);
+        this.addSystemMessage(i18n.t('privateMessageFormat', { ns: 'chat' }), MessageType.SYSTEM);
         return;
       }
     }
@@ -399,22 +399,17 @@ export class ChatManager {
     
     if (messageText === '/blocklist') {
       if (this.blockedUsers.length === 0) {
-        this.addSystemMessage('No blocked users', MessageType.SYSTEM);
+        this.addSystemMessage(i18n.t('noBlockedUsers', { ns: 'chat' }), MessageType.SYSTEM);
       } else {
-        this.addSystemMessage(`Blocked users: ${this.blockedUsers.join(', ')}`, MessageType.SYSTEM);
+        this.addSystemMessage(i18n.t('blockedUsers', { ns: 'chat' }) + this.blockedUsers.join(', '), MessageType.SYSTEM);
       }
       return true;
     }
     
     if (messageText === '/help') {
-      this.addSystemMessage(`Available commands:
-		/invite @username - Invite user to play Pong
-		/block @username - Block a user
-		/unblock @username - Unblock a user  
-		/blocklist - Show blocked users
-		/help - Show this help
-
-		Tip: Right-click on usernames for quick actions!`, MessageType.SYSTEM);
+      let helpMessage = i18n.t('helpMessage', { ns: 'chat' });
+      helpMessage = helpMessage.replace(/\n/g, '<br>');
+      this.addSystemMessage(helpMessage, MessageType.SYSTEM);
       return true;
     }
 
@@ -450,14 +445,14 @@ export class ChatManager {
     this.typeSelector.addEventListener('change', () => {
       const selectedType = this.typeSelector!.value as MessageType;
       if (selectedType === MessageType.PRIVATE) {
-        this.messageInput!.placeholder = 'Private message: @username your message...';
+        this.messageInput!.placeholder = i18n.t('typeWhisper', { ns: 'chat' });
       } else {
-        this.messageInput!.placeholder = 'Type your message...';
+        this.messageInput!.placeholder = i18n.t('typeWhisperFormat', { ns: 'chat' });
       }
     });
 
-    this.addSystemMessage('Connected to chat server', MessageType.SYSTEM);
-    this.addSystemMessage('Type /help for available commands', MessageType.SYSTEM);
+    this.addSystemMessage(i18n.t('connectedChatServer', { ns: 'chat' }), MessageType.SYSTEM);
+    this.addSystemMessage(i18n.t('availableCommands', { ns: 'chat' }), MessageType.SYSTEM);
   }
 
   public disconnect(): void {
