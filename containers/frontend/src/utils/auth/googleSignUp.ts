@@ -48,6 +48,8 @@ export function setupGoogleSignUp(): void {
                 console.log('typeof data.twoFAEnabled:', typeof data.twoFAEnabled);
                 console.log('Raw /api/auth/google response:', data.twoFAEnabled);
                 if (data.success) {
+
+                    
                     sessionStorage.setItem('username', data.username);
                     sessionStorage.setItem('userId', data.userId);
                     sessionStorage.setItem('email', data.email);

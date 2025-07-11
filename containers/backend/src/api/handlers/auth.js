@@ -23,6 +23,7 @@ const { saveUserToDatabase,
 	getUserById,
 	saveRefreshTokenInDatabase,
 	getRefreshTokenFromDatabase,
+	deleteRefreshTokenFromDatabase
 } = require('../db/database');
 
 async function signupHandler(request, reply) {
@@ -230,6 +231,8 @@ async function logoutHandler(request, reply) {
                 onlineTracker.removeUser(user.userId);
             }
             
+			await deleteRefreshTokenFromDatabase(user.userId);
+
             request.session.destroy();
             return reply.status(200).send({
                 success: true,

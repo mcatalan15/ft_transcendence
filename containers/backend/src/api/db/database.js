@@ -713,6 +713,31 @@ async function getRefreshTokenFromDatabase(userId) {
     });
 }
 
+async function deleteRefreshTokenFromDatabase(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `DELETE FROM refresh_tokens WHERE user_id = ?`;
+        db.run(query, [userId], function (err) {
+            if (err) {
+                console.error('[DB DELETE ERROR] Failed to delete refresh token:', {
+                    message: err.message,
+                    code: err.code,
+                    errno: err.errno,
+                    stack: err.stack
+                });
+                reject(err);
+            }
+            else if (this.changes === 0) {
+                console.warn(`[DB WARN] No refresh token found for user ${userId} to delete.`);
+                resolve(false);
+            }
+            else {
+                console.log(`[DB] Successfully deleted refresh token for user ${userId}`);
+                resolve(true);
+            }
+        });
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -740,5 +765,6 @@ module.exports = {
 	getGamesHistory,
     getUserStats,
     saveRefreshTokenInDatabase,
-    getRefreshTokenFromDatabase
+    getRefreshTokenFromDatabase,
+    deleteRefreshTokenFromDatabase
 };
