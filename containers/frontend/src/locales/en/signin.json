@@ -6,6 +6,7 @@
 	  "signUp": "Sign up",
     "errorAllFields": "All fields are required!",
     "errorInvalidCredentials": "Invalid email or password.",
-    "success": "Sign-in successful!"
+    "success": "Sign-in successful!",
+    "noAccount": "Don't have an account yet?"
   }
   

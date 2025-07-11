@@ -10,6 +10,9 @@
     "errorUsernameLength": "Username must be between 3 and 8 characters long!",
     "errorUsernameChars": "Username can only contain letters and numbers!",
     "errorPasswordLength": "Password must be between 6 and 20 characters long!",
-    "errorPasswordsMatch": "Passwords do not match!"
+    "errorPasswordsMatch": "Passwords do not match!",
+    "errorInvalidEmail": "Invalid email address!",
+    "alreadyAccount": "Already have an account?",
+    "success": "Registration successful!"
   }
   

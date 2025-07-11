@@ -96,7 +96,10 @@ export function showSignIn(container: HTMLElement): void {
 
         const result = await localSignIn(email, password);
         if (!result.success) {
-          errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
+          if (result.message === 'Invalid email or password') {
+            errorMessageDiv.textContent = i18n.t('errorInvalidCredentials', { ns: 'signin' });
+          } else
+            errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
         } else {
           alert(i18n.t('success', { ns: 'signin' }));
           navigate('/profile');

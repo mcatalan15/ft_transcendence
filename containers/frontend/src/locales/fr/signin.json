@@ -7,6 +7,6 @@
     "errorAllFields": "Tous les champs sont obligatoires !",
     "errorInvalidCredentials": "E-mail ou mot de passe incorrect.",
     "success": "Connexion réussie !",
-	"noAccount": "Pas encore de compte ?"
+	  "noAccount": "Pas encore de compte ?"
   }
   
