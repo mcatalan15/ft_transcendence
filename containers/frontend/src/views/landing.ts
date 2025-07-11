@@ -37,49 +37,57 @@ export function showLanding(container: HTMLElement): void {
 
       container.appendChild(landingDiv);
 
-      const langSelector = new LanguageSelector(() => {
+      // Función para configurar los botones
+      const setupButtons = () => {
         const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
         const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
-        signInBtn.textContent = i18n.t('signIn', { ns: 'landing' });
-        signUpBtn.textContent = i18n.t('signUp', { ns: 'landing' });
+        
+        [signInBtn, signUpBtn].forEach(btn => {
+          if (!btn) return;
+          btn.style.backgroundColor = 'transparent';
+          btn.style.border = '2px solid #FFFBEB';
+          btn.style.color = '#FFFBEB';
+          btn.style.fontFamily = '"Roboto Mono", monospace';
+          btn.style.fontWeight = 'bold';
+          btn.style.fontSize = '16px';
+          btn.style.textTransform = 'uppercase';
+          btn.style.borderRadius = '0px';
+          btn.style.padding = '12px 32px';
+          btn.style.cursor = 'pointer';
+          btn.style.transition = 'all 0.3s ease';
+
+          btn.addEventListener('mouseenter', () => {
+            btn.style.backgroundColor = '#FFFBEB';
+            btn.style.color = '#171717';
+          });
+          btn.addEventListener('mouseleave', () => {
+            btn.style.backgroundColor = 'transparent';
+            btn.style.color = '#FFFBEB';
+          });
+        });
+
+        signInBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          navigate('/signin');
+        });
+
+        signUpBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          navigate('/signup');
+        });
+      };
+
+      // Configurar botones inicialmente
+      setupButtons();
+
+      const langSelector = new LanguageSelector(() => {
+        // Solo actualizar el texto de los botones sin regenerar todo
+        const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
+        const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
+        if (signInBtn) signInBtn.textContent = i18n.t('signIn', { ns: 'landing' });
+        if (signUpBtn) signUpBtn.textContent = i18n.t('signUp', { ns: 'landing' });
       });
       landingDiv.querySelector('.flex-col')?.appendChild(langSelector.getElement());
-
-      const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
-      const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
-      [signInBtn, signUpBtn].forEach(btn => {
-        if (!btn) return;
-        btn.style.backgroundColor = 'transparent';
-        btn.style.border = '2px solid #FFFBEB';
-        btn.style.color = '#FFFBEB';
-        btn.style.fontFamily = '"Roboto Mono", monospace';
-        btn.style.fontWeight = 'bold';
-        btn.style.fontSize = '16px';
-        btn.style.textTransform = 'uppercase';
-        btn.style.borderRadius = '0px';
-        btn.style.padding = '12px 32px';
-        btn.style.cursor = 'pointer';
-        btn.style.transition = 'all 0.3s ease';
-
-        btn.addEventListener('mouseenter', () => {
-          btn.style.backgroundColor = '#FFFBEB';
-          btn.style.color = '#171717';
-        });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.backgroundColor = 'transparent';
-          btn.style.color = '#FFFBEB';
-        });
-      });
-
-      signInBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigate('/signin');
-      });
-
-      signUpBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigate('/signup');
-      });
 
       const animationLayer = landingDiv.querySelector('#animation-layer') as HTMLDivElement;
       const bounceBtn = landingDiv.querySelector('#bounce-button') as HTMLButtonElement;

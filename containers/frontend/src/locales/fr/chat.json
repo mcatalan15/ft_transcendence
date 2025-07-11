@@ -1,9 +1,12 @@
 {
-    "general": "général",
-    "whispers": "privé",
-    "friends": "amis",
-    "game": "jeu",
-    "server": "serveur",
-    "send": "envoyer",
-    "back": "retour"
-}
+  "general": "Général",
+  "whispers": "Privés",
+  "whisper": "Privé",
+  "friends": "Amis",
+  "friend": "Ami",
+  "game": "Jeu",
+  "server": "Serveur",
+  "send": "Envoyer",
+  "back": "Retour",
+  "typeMessage": "Écrivez votre message...",
+  "userBlocked": "Utilisateur bloqué : "}

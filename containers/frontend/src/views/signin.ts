@@ -23,7 +23,7 @@ export function showSignIn(container: HTMLElement): void {
       wrapper.innerHTML = `
         <div class="w-full max-w-md flex flex-col items-center">
           <div class="bg-neutral-900 border-2 border-amber-50 text-amber-50 w-full px-8 py-10 flex flex-col items-center" style="border-radius:0px;">
-            <h2 class="text-2xl font-bold mb-8 text-center" style="font-family:'Roboto Mono', monospace; text-transform:uppercase;">${i18n.t('title', { ns: 'signin' })}</h2>
+            <h2 class="text-4xl font-anatol mb-8 text-center" style="text-transform:uppercase;">${i18n.t('title', { ns: 'signin' })}</h2>
             <form id="login-form" class="w-full flex flex-col gap-4">
               <input type="email" id="email" placeholder="${i18n.t('email', { ns: 'signin' })}"
                 class="w-full px-4 py-3 border-2 border-amber-50 bg-transparent text-amber-50 focus:outline-none"

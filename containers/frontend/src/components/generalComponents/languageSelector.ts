@@ -121,10 +121,6 @@ private setupEvents(onChange?: (lang: string) => void) {
               menu?.classList.add("hidden");
               translateDOM();
               if (onChange) onChange(lang);
-              
-              setTimeout(() => {
-                  window.location.reload();
-              }, 100);
           });
       });
   });

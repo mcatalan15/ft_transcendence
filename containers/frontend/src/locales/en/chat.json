@@ -1,10 +1,13 @@
 {
-    "general": "general",
-    "whispers": "whispers",
-    "friends": "friends",
-    "game": "game",
-    "server": "server",
-    "send": "Send",
-    "back": "Back",
+  "general": "General",
+  "whispers": "Whispers",
+  "whisper": "Whisper",
+  "friends": "Friends",
+  "friend": "Friend",
+  "game": "Game",
+  "server": "Server",
+  "send": "Send",
+  "back": "Back",
+  "typeMessage": "Type your message...",
     "userBlocked": "User blocked: "
 }
