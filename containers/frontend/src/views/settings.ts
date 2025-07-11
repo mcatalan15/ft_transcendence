@@ -23,11 +23,25 @@ async function initializeI18n(): Promise<void> {
 
 function render(container: HTMLElement): void {
   cleanup();
-  const renderer = new SettingsRenderer(container, () => showSettings(container));
+
+  const updateProfile = () => {
+    const pongBoxElement = renderer.getPongBoxElement();
+    if (pongBoxElement) {
+      ProfileLoader.loadUserProfile(pongBoxElement);
+    }
+  };
+
+  const renderer = new SettingsRenderer(
+    container, 
+    () => showSettings(container),
+    updateProfile  // Pasamos la función de actualización
+  );
   renderer.render();
   
   const pongBoxElement = renderer.getPongBoxElement();
-  ProfileLoader.loadUserProfile(pongBoxElement);
+  if (pongBoxElement) {
+    ProfileLoader.loadUserProfile(pongBoxElement);
+  }
   
   MessageManager.createContainer(container);
 }

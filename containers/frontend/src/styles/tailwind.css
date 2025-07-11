@@ -1,35 +1,34 @@
-/* Import Tailwind's default styles */
 @import url('https://use.typekit.net/rla1kou.css');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Font loading management - add this section */
-.wf-loading #app {
-  visibility: hidden;
+/* Base styles */
+:root {
+  font-size: 16px;
 }
 
-.wf-active #app,
-.wf-inactive #app {
-  visibility: visible;
-}
-
-/* Optional: Show a loading indicator while fonts load */
-.wf-loading body::before {
-  content: "Loading fonts...";
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* Your core styles */
+body {
+  background-color: #171717;
   color: #feeee2;
-  font-size: 18px;
-  z-index: 9999;
+  min-height: 100vh;
 }
 
-.wf-active body::before,
-.wf-inactive body::before {
-  display: none;
+/* Layout utilities */
+.flex-layout {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.flex-layout > * {
+  margin: 0.5rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-gap: 1rem;
 }
 
 /* Your existing styles */
@@ -124,17 +123,6 @@ body {
   .lobby-actions {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
-	margin: 30px 0;
-  }
-  
-  .join-game {
-	display: flex;
-	gap: 10px;
-	justify-content: center;
-  }
-  
-  .lobby-status {
 	margin: 20px 0;
 	padding: 10px;
 	border-radius: 4px;
@@ -166,3 +154,64 @@ body {
 	border: 1px solid rgb(3, 0, 0);
 	border-radius: 4px;
   }
+
+html {
+  /* Eliminamos los prefijos problemáticos y usamos la propiedad estándar */
+  font-size: 100%;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Reemplazamos los gaps con flexbox y grid estándar */
+.flex-gap {
+  display: flex;
+  gap: 1rem;
+}
+
+.grid-gap {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Fallbacks para navegadores antiguos */
+@supports not (gap: 1rem) {
+  .flex-gap > * + * {
+    margin-left: 1rem;
+  }
+
+  .grid-gap > * + * {
+    margin-top: 1rem;
+  }
+}
+
+/* Ajustes básicos */
+html {
+  font-size: 16px;
+}
+
+/* Sistema de gaps simplificado */
+.flex-layout {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.flex-layout > * {
+  margin: 0.5rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+/* Eliminar todas las propiedades problemáticas */
+.lobby-actions,
+.join-game {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.lobby-actions > *,
+.join-game > * {
+  margin: 0.5rem;
+}

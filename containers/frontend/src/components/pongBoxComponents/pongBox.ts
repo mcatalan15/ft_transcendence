@@ -4,7 +4,8 @@ type PongBoxOptions = {
   nickname: string;
   leftExtraContent?: HTMLElement;
   mainContent: HTMLElement;
-  //onArrowClick?: () => void;
+  showCameraButton?: boolean;
+  showStatus?: boolean;
 };
   
 export class PongBoxComponent {
@@ -13,10 +14,10 @@ export class PongBoxComponent {
   constructor(options: PongBoxOptions) {
     this.pongBox = document.createElement('div');
     this.pongBox.className = `
-      w-full max-w-[1800px] h-auto md:h-[750px]
+      w-full max-w-[1800px] h-auto md:h-[665px]
       mx-auto bg-neutral-900 border-l-[8px] border-r-[8px] border-b-[8px] md:border-l-[16px] md:border-r-[16px] md:border-b-[16px] border-amber-50
       flex flex-col md:flex-row overflow-hidden shadow-xl
-      min-h-[600px]
+      min-h-[665px]
       relative
     `.replace(/\s+/g, ' ').trim();
 
@@ -45,7 +46,12 @@ export class PongBoxComponent {
       w-full md:w-1/3 flex flex-col items-center justify-center bg-neutral-900 pt-6 pb-10 px-4 h-full relative
     `.replace(/\s+/g, ' ').trim();
 
-    const avatarComponent = new AvatarComponent(options.avatarUrl, options.nickname);
+    const avatarComponent = new AvatarComponent(
+      options.avatarUrl,
+      options.nickname,
+      options.showStatus || false,
+      options.showCameraButton || false
+    );
     if (options.leftExtraContent) {
       const wrapper = document.createElement('div');
       wrapper.appendChild(options.leftExtraContent);
@@ -76,4 +82,3 @@ export class PongBoxComponent {
     return this.pongBox;
   }
 }
-  

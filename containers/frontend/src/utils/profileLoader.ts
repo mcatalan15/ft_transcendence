@@ -20,7 +20,9 @@ export class ProfileLoader {
   private static async fetchUserProfile(): Promise<Response> {
     return fetch(getApiUrl('/profile'), {
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Accept': 'application/json',
+      },
     });
   }
 
@@ -40,7 +42,7 @@ export class ProfileLoader {
 
   private static handleProfileError(error: any): void {
     console.error('Error fetching profile:', error);
-    MessageManager.showError('Failed to load profile');
+    MessageManager.showError('Error al cargar el perfil');
     navigate('/home');
   }
 }

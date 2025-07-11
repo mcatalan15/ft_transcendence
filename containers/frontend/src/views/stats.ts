@@ -2,7 +2,7 @@ import i18n from '../i18n';
 import { Header } from '../components/header';
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
-import { PongBoxComponent } from '../components/profileComponents/pongBoxComponents/pongBox';
+import { PongBoxComponent } from '../components/pongBoxComponents/pongBox';
 import { getApiUrl } from '../config/api';
 
 export function showStats(container: HTMLElement) {

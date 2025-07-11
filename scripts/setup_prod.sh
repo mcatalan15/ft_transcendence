@@ -12,9 +12,9 @@ while true; do
   [[ "$PASSWORD" =~ [0-9] ]] && break
 done
 
-echo $PASSWORD
+#echo $PASSWORD
 
-export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
+#export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'

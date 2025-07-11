@@ -59,6 +59,8 @@ export class MessageManager {
     messageDiv.className = this.getMessageClasses(type);
     messageDiv.textContent = message;
     messageDiv.style.cursor = 'pointer';
+    messageDiv.style.fontFamily = '"Roboto Mono", monospace';
+    messageDiv.style.fontSize = '14px';
     
     messageDiv.onclick = () => {
       this.removeMessage(messageDiv);
@@ -69,7 +71,7 @@ export class MessageManager {
 
   // Get CSS classes based on message type
   private static getMessageClasses(type: 'success' | 'error'): string {
-    const baseClasses = 'px-4 py-3 rounded-lg shadow-lg max-w-xs text-center transition-all duration-300 transform translate-x-full opacity-0';
+    const baseClasses = 'px-4 py-3 shadow-lg max-w-xs text-center transition-all duration-300 transform translate-x-full opacity-0';
     const typeClasses = type === 'success' 
       ? 'bg-green-500 text-white border-l-4 border-green-600' 
       : 'bg-red-500 text-white border-l-4 border-red-600';
