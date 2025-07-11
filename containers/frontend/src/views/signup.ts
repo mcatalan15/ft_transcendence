@@ -9,6 +9,12 @@ export function showSignUp(container: HTMLElement): void {
     .loadNamespaces('signup')
     .then(() => i18n.changeLanguage(i18n.language))
     .then(() => {
+
+      container.innerHTML = '';
+
+      const langSelector = new LanguageSelector(() => showSignUp(container)).getElement();
+      container.appendChild(langSelector);
+
       const wrapper = document.createElement('div');
       wrapper.className = 'flex items-center justify-center min-h-screen bg-neutral-900';
       wrapper.innerHTML = `
