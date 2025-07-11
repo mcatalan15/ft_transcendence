@@ -6,49 +6,47 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/10 20:34:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 12:54:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export interface GameConfig {
-    mode: 'local' | 'online';
-    variant: '1v1' | '1vAI' | 'tournament';
-    classicMode: boolean;
-    filters: boolean;
+	mode: 'local' | 'online';
+	variant: '1v1' | '1vAI' | 'tournament';
+	classicMode: boolean;
+	filters: boolean;
 	gameId?: string;
-    
-    players: {
-        id?: string;
-        name: string;
-        type: 'human' | 'ai' | 'remote';
-        side: 'left' | 'right';
-        team?: number;
-    }[];
+	
+	players: {
+		id?: string;
+		name: string;
+		type: 'human' | 'ai' | 'remote';
+		side: 'left' | 'right';
+		team?: number;
+	}[];
 
-    player2Id?: string;
-    
-    network?: {
-        roomId?: string;
-        isHost?: boolean;
-        serverUrl?: string;
-    };
+	player2Id?: string;
+	
+	network?: {
+		roomId?: string;
+		isHost?: boolean;
+		serverUrl?: string;
+	};
 }
 
 export interface Preconfiguration {
-    mode: 'local' | 'online' | string;
-    variant: '1v1' | '1vAI' | 'tournament' | string;
-    classicMode?: boolean;
-    hasInvitationContext?: boolean;
-    invitationData?: {
-        inviteId: string;
-        currentPlayer: string;
-        timestamp: string;
-    } | null;
+	mode: 'local' | 'online' | string;
+	variant: '1v1' | '1vAI' | 'tournament' | string;
+	classicMode?: boolean;
+	hasInvitationContext?: boolean;
+	invitationData?: {
+		inviteId: string;
+		currentPlayer: string;
+		timestamp: string;
+	} | null;
 }
 
 export interface GameData {
-	// gameId: string;
-	//!change
 	config: GameConfig;
 	createdAt: Date | string | null;
 	endedAt: Date | string | null;
@@ -115,17 +113,17 @@ export interface GameData {
 }
 
 export interface PlayerData {
-    id: string;
-    name: string;
-    avatar: string;
-    type: 'human' | 'ai';
-    side: 'left' | 'right';
-    goalsScored: number;
-    goalsConceded: number;
-    tournaments: number;
-    wins: number;
-    losses: number;
-    draws: number;
-    rank: number;
-    totalPlayers?: number;
+	id: string;
+	name: string;
+	avatar: string;
+	type: 'human' | 'ai';
+	side: 'left' | 'right';
+	goalsScored: number;
+	goalsConceded: number;
+	tournaments: number;
+	wins: number;
+	losses: number;
+	draws: number;
+	rank: number;
+	totalPlayers?: number;
 }

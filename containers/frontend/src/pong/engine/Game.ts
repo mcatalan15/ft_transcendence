@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 19:31:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 13:00:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Container, Graphics, Text } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
@@ -58,7 +58,7 @@ import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
 
 import { getApiUrl } from '../../config/api';
 
@@ -267,7 +267,6 @@ export class PongGame {
 
 	prepareGameData() {
 		this.data = {
-			gameId: this.gameId || '',
 			config: this.config,
 			createdAt: new Date().toString(),
 			endedAt: null,
@@ -343,14 +342,14 @@ export class PongGame {
 				loop: true,
 				volume: 0.5,
 				onload: () => console.log('bgm loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('bgm failed to load:', error)
+				onloaderror: (error: any) => console.error('bgm failed to load:', error)
 			}),
 			pong: new Howl({
 				src: ['/assets/sfx/used/pongFiltered02.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('pong loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('pong failed to load:', error)
+				onloaderror: (error: any) => console.error('pong failed to load:', error)
 			}),
 			thud: new Howl({
 				src: ['/assets/sfx/used/thudFiltered01.mp3'],
@@ -358,7 +357,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('thud loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('thud failed to load:', error)
+				onloaderror: (error: any) => console.error('thud failed to load:', error)
 			}),
 			shoot: new Howl({
 				src: ['/assets/sfx/used/shotFiltered01.mp3'],
@@ -366,7 +365,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('shoot loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('shoot failed to load:', error)
+				onloaderror: (error: any) => console.error('shoot failed to load:', error)
 			}),
 			hit: new Howl({
 				src: ['/assets/sfx/used/hitFiltered01.mp3'],
@@ -374,7 +373,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('hit loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('hit failed to load:', error)
+				onloaderror: (error: any) => console.error('hit failed to load:', error)
 			}),
 			shieldBreak: new Howl({
 				src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
@@ -382,63 +381,63 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('shieldBreak loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('shieldBreak failed to load:', error)
+				onloaderror: (error: any) => console.error('shieldBreak failed to load:', error)
 			}),
 			powerup: new Howl({
 				src: ['/assets/sfx/used/powerupFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerup loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('powerup failed to load:', error)
+				onloaderror: (error: any) => console.error('powerup failed to load:', error)
 			}),
 			powerdown: new Howl({
 				src: ['/assets/sfx/used/powerdownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerdown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('powerdown failed to load:', error)
+				onloaderror: (error: any) => console.error('powerdown failed to load:', error)
 			}),
 			ballchange: new Howl({
 				src: ['/assets/sfx/used/ballchangeFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('ballchange loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('ballchange failed to load:', error)
+				onloaderror: (error: any) => console.error('ballchange failed to load:', error)
 			}),
 			death: new Howl({
 				src: ['/assets/sfx/used/explosionFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('death loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
+				onloaderror: (error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({
 				src: ['/assets/sfx/used/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetUp loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({
 				src: ['/assets/sfx/used/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			endGame: new Howl({
 				src: ['/assets/sfx/used/explosion_filtered02.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('Explosion2 loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			spawn: new Howl({
 				src: ['/assets/sfx/used/spawn_filtered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 		};
 	}
@@ -465,6 +464,8 @@ export class PongGame {
 		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 		if (this.config.variant === '1vAI') {
 			this.rightPlayer = { name: "AI-BOT" };
+		} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
+			this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
 		} else {
 			this.rightPlayer = { name: this.config.opponent || "Player 2" };
 		}
@@ -539,12 +540,10 @@ export class PongGame {
 			console.log("PostProcessing Layer created")
 		}
 
-		// Create endgame alpha fade
 		this.alphaFade.rect(0, 0, this.width, this.height);
 		this.alphaFade.fill({ color: GAME_COLORS.black, alpha: 0.4 });
 		this.renderLayers.hidden.addChild(this.alphaFade);
 
-		// Create endgame overlays
 		this.endGameOverlay = new EndgameOverlay(this, 'EndGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
 		const EndGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
 		this.renderLayers.hidden.addChild(EndGameOverlayRender.graphic);
@@ -712,7 +711,6 @@ export class PongGame {
 
 	updateFromServer(gameState: any) {
 		if (this.hasEnded) {
-			console.log('Game has ended, ignoring all server updates');
 			return;
 		}
 		
@@ -731,7 +729,6 @@ export class PongGame {
 				this.updateScoreFromServer(gameState.score1, gameState.score2);
 			}
 	
-			// ADD THIS: Check for game end from server
 			if (gameState.gameEnded || gameState.winner || gameState.type === 'GAME_END') {
 				console.log('Server indicates game has ended');
 				this.handleServerGameEnd(gameState);
@@ -767,14 +764,12 @@ export class PongGame {
 		this.entities.forEach(entity => {
 			const physics = entity.getComponent('physics') as PhysicsComponent;
 
-			// Mark ball and paddles as server-controlled
 			if (physics && (entity.id === 'defaultBall' || entity.id === 'paddleL' || entity.id === 'paddleR')) {
 				(physics as any).isServerControlled = true;
 				console.log(`Marked entity ${entity.id} as server-controlled`);
 				disabledCount++;
 			}
 
-			// Remove input components from paddles (network manager handles input)
 			if (entity.id === 'paddleL' || entity.id === 'paddleR') {
 				const input = entity.getComponent('input');
 				if (input) {
@@ -862,90 +857,64 @@ export class PongGame {
 	}
 
 	async cleanup(): Promise<void> {
-		try {			
-			if (this.sounds) {
-				Object.values(this.sounds).forEach(sound => {
-					if (sound) {
-						sound.stop();
-						sound.unload();
-					}
-				});
+		try {            
+			console.log('Starting game cleanup...');
+			
+			if (this.soundManager) {
+				console.log('Stopping sound manager...');
+				await this.soundManager.stopAllSounds();
+				await this.soundManager.cleanup();
 			}
 			
-			this.systems.forEach(system => {
-				if (system && typeof (system as any).cleanup === 'function') {
-					(system as any).cleanup();
-				}
-			});
-			this.systems = [];
+			if (this.networkManager) {
+				console.log('Disconnecting network manager...');
+				this.networkManager.disconnect();
+			}
+
+			if (this.app?.ticker?.started) {
+				this.app.ticker.stop();
+			}
 			
-			this.entities.forEach(entity => {
-				if (entity && typeof entity.cleanup === 'function') {
-					entity.cleanup();
+			console.log('Cleaning up systems...');
+			for (const system of this.systems) {
+				if (system && typeof (system as any).cleanup === 'function') {
+					await (system as any).cleanup();
 				}
-			});
+			}
+			this.systems = [];
+
+			console.log('Cleaning up entities...');
+			for (const entity of this.entities) {
+				const render = entity.getComponent('render') as RenderComponent;
+				if (render?.graphic && render.graphic.parent) {
+					render.graphic.parent.removeChild(render.graphic);
+					render.graphic.destroy({ children: true });
+				}
+				
+				const text = entity.getComponent('text') as TextComponent;
+				if (text?.getRenderable && text.getRenderable().parent) {
+					text.getRenderable().parent.removeChild(text.getRenderable());
+					text.getRenderable().destroy();
+				}
+			}
 			this.entities = [];
 
-			if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
-				(ParticleSpawner as any).cleanup();
-			}
-			
-			if (ImageManager && typeof (ImageManager as any).cleanup === 'function') {
-				(ImageManager as any).cleanup();
+			if (ParticleSpawner?.cleanup) {
+				ParticleSpawner.cleanup();
 			}
 
-			if (this.soundManager && typeof this.soundManager.cleanup === 'function') {
-				this.soundManager.cleanup();
+			console.log('Cleaning up render layers...');
+			for (const layer of Object.values(this.renderLayers)) {
+				if (layer?.parent) {
+					layer.parent.removeChild(layer);
+				}
+				layer?.destroy({ children: true });
 			}
 			
-			const worldSystem = this.systems.find(s => s instanceof WorldSystem) as WorldSystem;
-			if (worldSystem) {
-				if (worldSystem.wallFigureManager && typeof worldSystem.wallFigureManager.cleanup === 'function') {
-					worldSystem.wallFigureManager.cleanup();
-				}
-				if (worldSystem.obstacleManager && typeof worldSystem.obstacleManager.cleanup === 'function') {
-					worldSystem.obstacleManager.cleanup();
-				}
-				if (worldSystem.worldManager && typeof worldSystem.worldManager.cleanup === 'function') {
-					worldSystem.worldManager.cleanup();
-				}
-    
-				worldSystem.figureQueue = [];
-				worldSystem.obstacleQueue = [];
-			}
-			
-			Object.values(this.renderLayers).forEach(layer => {
-				if (layer && layer.removeChildren) {
-					layer.removeChildren();
-					if (layer.parent) {
-						layer.parent.removeChild(layer);
-					}
-				}
-			});
-			
-			if (this.visualRoot) {
-				this.visualRoot.removeChildren();
-				if (this.visualRoot.parent) {
-					this.visualRoot.parent.removeChild(this.visualRoot);
-				}
-			}
-			
-			if (this.app.stage) {
-				this.app.stage.removeChildren();
-			}
-
-			this.eventQueue = [];
-			
-			if (this.endGameOverlay && typeof this.endGameOverlay.cleanup === 'function') {
-				this.endGameOverlay.cleanup();
-			}
-
-			this.worldPool = [];
-			
-			this.hasEnded = false;
-			
+			console.log('Game cleanup completed successfully');
 		} catch (error) {
 			console.error('Error during game cleanup:', error);
+			throw error;
 		}
 	}
 }

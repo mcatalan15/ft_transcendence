@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 14:30:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 10:31:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ export class UISystem implements System {
 
 	update(entities: Entity[], delta: { deltaTime: number }): void {
 		if (this.game.hasEnded) {
-			console.log('Game has ended, ignoring UI events');
 			return;
 		}
 		

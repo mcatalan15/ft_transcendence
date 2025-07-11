@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/10 21:42:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 10:14:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ export class PhysicsSystem implements System {
 
 	private handlePureServerPhysics(entities: Entity[], delta: FrameData): void {
 		if (this.game.hasEnded) {
-			console.log('Game ended, stopping all server state updates to preserve final state');
 			return;
 		}
 		
@@ -192,7 +191,6 @@ export class PhysicsSystem implements System {
 
 	public updateFromServer(serverState: any): void {
 		if (this.game.hasEnded) {
-			console.log('Game has ended, ignoring server state update');
 			return;
 		}
 		
