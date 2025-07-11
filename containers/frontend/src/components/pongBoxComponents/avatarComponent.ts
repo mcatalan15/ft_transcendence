@@ -1,5 +1,5 @@
-import { CAMERA_SVG, CAMERA_BUTTON_STYLES, STATUS_BUTTON_STYLES } from '../../../config/settings.config';
-import { getApiUrl } from '../../../config/api';
+import { CAMERA_SVG, CAMERA_BUTTON_STYLES, STATUS_BUTTON_STYLES } from '../../config/settings.config';
+import { getApiUrl } from '../../config/api';
 
 export class AvatarComponent {
   private element: HTMLDivElement;

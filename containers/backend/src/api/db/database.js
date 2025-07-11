@@ -685,6 +685,9 @@ async function getUserProfileStats(userId) {
                 losses: 0,
                 total_tournaments: 0
             });
+        });
+    });
+}
 
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
     return new Promise((resolve, reject) => {
