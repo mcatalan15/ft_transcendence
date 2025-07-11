@@ -666,6 +666,26 @@ async function getUserStats(userId) {
     });
 }
 
+async function getUserProfileStats(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT total_games, wins, losses, total_tournaments 
+            FROM user_stats 
+            WHERE id_user = ?
+        `;
+        db.get(query, [userId], (err, row) => {
+            if (err) {
+                console.error('[DB ERROR]', err);
+                reject(new Error('Database error'));
+                return;
+            }
+            resolve(row || {
+                total_games: 0,
+                wins: 0,
+                losses: 0,
+                total_tournaments: 0
+            });
+
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
@@ -787,8 +807,8 @@ module.exports = {
 	changePassword,
 	getGamesHistory,
     getUserStats,
+	getUserProfileStats,
     saveRefreshTokenInDatabase,
     getRefreshTokenFromDatabase,
     deleteRefreshTokenFromDatabase
-	getUserProfileStats,
 };
