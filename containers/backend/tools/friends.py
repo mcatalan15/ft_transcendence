@@ -170,7 +170,7 @@ def create_games(n):
         c.execute("""
             INSERT INTO games (
                 player1_id, player2_id, winner_id,
-                player1_score, player2_score, winner_name,
+                player1_score, player2_score,
                 game_mode, general_result,
                 config_json,
                 default_balls_used, curve_balls_used, multiply_balls_used,
@@ -188,7 +188,7 @@ def create_games(n):
                 player2_powerups_picked, player2_powerdowns_picked, player2_ballchanges_picked,
                 player2_result,
                 ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             player1_id, player2_id, winner_id,
             player1_score, player2_score,
