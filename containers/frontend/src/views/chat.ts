@@ -4,25 +4,62 @@ import { LanguageSelector } from '../components/generalComponents/languageSelect
 import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
 
-function createButton(color: string, text: string, action: () => void) {
-  let btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = `
-    bg-neutral-900 text-${color}-400 border border-${color}-400 border-2
-    font-medium overflow-hidden relative px-4 py-2 
-    hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75
-    outline-none duration-300 group text-sm
-  `.replace(/\s+/g, ' ').trim();
+let currentResizeHandler: (() => void) | null = null;
 
-  btn.innerHTML = `
-    <span class="bg-${color}-400 shadow-${color}-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
-    ${text}
-  `;
+function createButton(color: string, text: string, action: () => void) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = text;
+  
+  // Mapa de colores para convertir los nombres de color a códigos hexadecimales
+  const colorMap: { [key: string]: string } = {
+    'cyan': '#22d3ee',
+    'pink': '#f472b6',
+    'lime': '#84cc16',
+    'blue': '#3b82f6',
+    'amber': '#FFFBEB'
+  };
+  
+  // Obtener el color del mapa o usar el predeterminado si no existe
+  const buttonColor = colorMap[color] || '#FFFBEB';
+  
+  // Aplicar estilos inline similares a setupGamingLogoutButton
+  Object.assign(btn.style, {
+    backgroundColor: 'transparent',
+    border: `2px solid ${buttonColor}`,
+    color: buttonColor,
+    fontFamily: '"Roboto Mono", monospace',
+    fontWeight: 'bold',
+    fontSize: '12px',
+    textTransform: 'uppercase',
+    padding: '8px 16px',
+    borderRadius: '0px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    margin: '0 4px',
+    minWidth: '80px'
+  });
+  
+  // Añadir listeners para efectos hover
+  btn.addEventListener('mouseenter', () => {
+    btn.style.backgroundColor = buttonColor;
+    btn.style.color = '#171717';
+  });
+  
+  btn.addEventListener('mouseleave', () => {
+    btn.style.backgroundColor = 'transparent';
+    btn.style.color = buttonColor;
+  });
+  
   btn.onclick = action;
   return btn;
 }
 
-export function showChat(container: HTMLElement): void {
+export async function showChat(container: HTMLElement): Promise<void> {
+  // Inicializar i18n para la vista de chat
+  await i18n.loadNamespaces('chat');
+  await i18n.changeLanguage(i18n.language);
+  
   container.innerHTML = '';
   container.className = 'grid grid-rows-[auto_1fr] h-screen overflow-hidden';
 
@@ -63,6 +100,10 @@ export function showChat(container: HTMLElement): void {
     bg-neutral-900
   `.replace(/\s+/g, ' ').trim();
 
+  // Agregar selector de idioma
+        const langSelector = new LanguageSelector(() => showChat(container)).getElement();
+      container.appendChild(langSelector);
+  
   // Main chat container
   const chatBox = document.createElement('div');
   chatBox.className = `
@@ -72,24 +113,16 @@ export function showChat(container: HTMLElement): void {
     p-6
   `.replace(/\s+/g, ' ').trim();
 
-  // Chat title
-  /*const chatTitle = document.createElement('div');
-  chatTitle.className = `
-    text-amber-50 text-2xl font-bold tracking-wide text-center mb-4
-    border-b border-amber-50/20 pb-2
-  `.replace(/\s+/g, ' ').trim();
-  chatTitle.textContent = 'Pong Chat';*/
-
   // Channel tabs/filters
   const channelTabs = document.createElement('div');
   channelTabs.className = 'flex gap-2 mb-4 flex-wrap';
   
   const channels = [
-    { type: MessageType.GENERAL, label: 'General', color: 'cyan' },
-    { type: MessageType.PRIVATE, label: 'Whispers', color: 'pink' },
-    { type: MessageType.FRIEND, label: 'Friends', color: 'lime' },
-    { type: MessageType.GAME, label: 'Game', color: 'blue' },
-    { type: MessageType.SERVER, label: 'Server', color: 'amber' },
+    { type: MessageType.GENERAL, label: 'general', color: 'cyan' },
+    { type: MessageType.PRIVATE, label: 'whispers', color: 'pink' },
+    { type: MessageType.FRIEND, label: 'friends', color: 'lime' },
+    { type: MessageType.GAME, label: 'game', color: 'blue' },
+    { type: MessageType.SERVER, label: 'server', color: 'amber' },
   ];
 
   // Chat messages area
@@ -110,16 +143,12 @@ export function showChat(container: HTMLElement): void {
     bg-neutral-800 text-amber-50 border border-amber-50/30
     px-3 py-2 text-sm min-w-[100px]
   `.replace(/\s+/g, ' ').trim();
-  typeSelector.innerHTML = `
-    <option value="${MessageType.GENERAL}">General</option>
-    <option value="${MessageType.PRIVATE}">Whisper</option>
-    <option value="${MessageType.FRIEND}">Friend</option>
-  `;
+  
+  // Se añadirán las opciones en updateTranslations()
 
   // Message input
   const messageInput = document.createElement('input') as HTMLInputElement;
   messageInput.type = 'text';
-  messageInput.placeholder = 'Type your message...';
   messageInput.className = `
     flex-1 bg-neutral-800 text-amber-50 border border-amber-50/30 
     px-4 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400
@@ -145,43 +174,87 @@ export function showChat(container: HTMLElement): void {
     });
   }
 
-  // Create channel tabs
-  channels.forEach(({ type, label, color }) => {
-    const tab = createButton(color, label, () => {
-      activeFilter = activeFilter === type ? null : type;
-      chatManager.setActiveFilter(activeFilter);
-      updateTabStates();
-    });
-    tab.id = `tab-${type}`;
-    channelTabs.appendChild(tab);
-  });
-
-  // Send button
-  const sendButton = createButton('lime', 'Send', () => chatManager.sendMessage());
+  // Create channel tabs and buttons (se rellenarán en updateTranslations)
+  const sendButton = createButton('lime', i18n.t('send', { ns: 'chat' }), () => chatManager.sendMessage());
   sendButton.id = 'send-button';
+  
+  const backButton = createButton('pink', i18n.t('back', { ns: 'chat' }), () => navigate('/profile'));
+  backButton.id = 'back-button';
 
-  // Back button
-  const backButton = createButton('pink', 'Back', () => navigate('/profile'));
+  // Función para actualizar todas las traducciones
+  function updateTranslations() {
+    // Actualizar placeholder
+    messageInput.placeholder = i18n.t('typeMessage', { ns: 'chat' });
+    
+    // Actualizar selector de tipo de mensaje
+    typeSelector.innerHTML = `
+      <option value="${MessageType.GENERAL}">${i18n.t('general', { ns: 'chat' })}</option>
+      <option value="${MessageType.PRIVATE}">${i18n.t('whisper', { ns: 'chat' })}</option>
+      <option value="${MessageType.FRIEND}">${i18n.t('friend', { ns: 'chat' })}</option>
+    `;
+    
+    // Actualizar botones
+    sendButton.textContent = i18n.t('send', { ns: 'chat' });
+    backButton.textContent = i18n.t('back', { ns: 'chat' });
+    
+    // Limpiar y recrear pestañas de canales
+    channelTabs.innerHTML = '';
+    channels.forEach(({ type, label, color }) => {
+      const tab = createButton(color, i18n.t(label, { ns: 'chat' }), () => {
+        activeFilter = activeFilter === type ? null : type;
+        chatManager.setActiveFilter(activeFilter);
+        updateTabStates();
+      });
+      tab.id = `tab-${type}`;
+      channelTabs.appendChild(tab);
+    });
+    
+    // Actualizar estado activo de las pestañas
+    updateTabStates();
+  }
 
+  // Construir la interfaz
   inputArea.appendChild(typeSelector);
   inputArea.appendChild(messageInput);
   inputArea.appendChild(sendButton);
   inputArea.appendChild(backButton);
 
-  // Assemble the chat box
-  //chatBox.appendChild(chatTitle);
   chatBox.appendChild(channelTabs);
   chatBox.appendChild(chatContainer);
   chatBox.appendChild(inputArea);
 
   contentWrapper.appendChild(chatBox);
+  contentWrapper.appendChild(langSelector);
   container.appendChild(contentWrapper);
+
+  // Inicializar traducciones
+  updateTranslations();
 
   // Initialize chat manager with DOM elements
   chatManager.initialize(chatContainer, messageInput, typeSelector);
 
+  // Configurar el manejador de redimensionamiento
+  function handleResize() {
+    // Ajustar el tamaño y posición según sea necesario
+  }
+
+  currentResizeHandler = handleResize;
+  window.addEventListener('resize', handleResize);
+
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
+    cleanup();
     chatManager.disconnect();
   });
+}
+
+function cleanup(): void {
+  if (currentResizeHandler) {
+    window.removeEventListener('resize', currentResizeHandler);
+    currentResizeHandler = null;
+  }
+}
+
+export function setResizeHandler(handler: (() => void) | null): void {
+  currentResizeHandler = handler;
 }

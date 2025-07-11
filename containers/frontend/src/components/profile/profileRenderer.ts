@@ -1,8 +1,8 @@
 import i18n from '../../i18n';
 import { HeaderTest } from '../generalComponents/testmenu';
 import { LanguageSelector } from '../generalComponents/languageSelector';
-import { PongBoxComponent } from '../profileComponents/pongBoxComponents/pongBox';
-import { HeadersComponent } from '../profileComponents/pongBoxComponents/headersComponent';
+import { PongBoxComponent } from '../pongBoxComponents/pongBox';
+import { HeadersComponent } from '../pongBoxComponents/headersComponent';
 import { CONFIG } from '../../config/settings.config';
 import { setResizeHandler } from '../../views/profile';
 import { ProfileContentRenderer } from './profileContentRenderer';
