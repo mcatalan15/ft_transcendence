@@ -301,14 +301,14 @@ export class ProfileContentRenderer {
       }
 
       if (data.isFriend) {
-        MessageManager.showSuccess('Usuario añadido a amigos');
+        MessageManager.showSuccess(i18n.t('friendAdded', { ns: 'profile' }));
       } else {
-        MessageManager.showError('Usuario eliminado de amigos');
+        MessageManager.showError(i18n.t('friendRemoved', { ns: 'profile' }));
       }
 
     } catch (error) {
       console.error('Error updating friend status:', error);
-      MessageManager.showError('Error al actualizar estado de amistad');
+      MessageManager.showError(i18n.t('friendshipStatusError', { ns: 'profile' }));
     }
   }
 }

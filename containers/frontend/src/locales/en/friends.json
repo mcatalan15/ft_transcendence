@@ -1,4 +1,6 @@
 {
     "friendsitleOwn": "My friends",
-    "friendsTitle": "{{username}}'s friends"
+    "friendsTitle": "{{username}}'s friends",
+    "searchPlaceholder": "Search friends",
+    "noFriends": "No friends found. Go make some in the chat!"
   }

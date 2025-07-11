@@ -15,24 +15,24 @@ export class HeaderTest {
 			<img src="/logo/pong.png" class="h-8" alt="Pong Logo">
 		</button>
 		<div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-			<button type="button" class="gaming-logout-btn" data-route="/logout">LOG OUT</button>
+			<button type="button" class="gaming-logout-btn" data-route="/logout">${i18n.t('logout', { ns: 'menu'})}</button>
 		</div>
 		<div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
 		<ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-neutral-900 rounded-lg bg-neutral-900 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-900">
 			<li>
-			<button data-route="/profile" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer" aria-current="page">PROFILE</button>
+			<button data-route="/profile" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer" aria-current="page">${i18n.t('profile', { ns: 'menu'})}</button>
 			</li>
 			<li>
-			<button data-route="/pong" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">PONG</button>
+			<button data-route="/pong" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('pong', { ns: 'menu'})}</button>
 			</li>
             <li>
-			<button data-route="/history" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">HISTORY</button>
+			<button data-route="/history" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('history', { ns: 'menu'})}</button>
 			</li>
 			<li>
-			<button data-route="/friends" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">FRIENDS</button>
+			<button data-route="/friends" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('friends', { ns: 'menu'})}</button>
 			</li>
 			<li>
-			<button data-route="/chat" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-smhover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">CHAT</button>
+			<button data-route="/chat" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-smhover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('chat', { ns: 'menu'})}</button>
 			</li>
 		</ul>
 		</div>

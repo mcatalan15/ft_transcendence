@@ -1,5 +1,6 @@
 import { CAMERA_SVG, CAMERA_BUTTON_STYLES, STATUS_BUTTON_STYLES } from '../../config/settings.config';
 import { getApiUrl } from '../../config/api';
+import i18n from '../../i18n';
 
 export class AvatarComponent {
   private element: HTMLDivElement;
@@ -78,8 +79,12 @@ export class AvatarComponent {
             credentials: 'include',
             body: formData
           });
-          if (response.ok) {
+          if (!response.ok) {
+            alert(i18n.t('errors.uploadFailed', { ns: 'settings' }) || 'Error uploading avatar');
             // Actualizar la imagen usando userId
+
+          } else {
+
             const match = this.avatarImg.src.match(/\/avatar\/([^/?]+)/);
             const userId = match ? match[1] : sessionStorage.getItem('userId');
             if (userId) {
@@ -89,6 +94,7 @@ export class AvatarComponent {
             }
           }
         } catch (error) {
+
           console.error('Error uploading avatar:', error);
         }
       }

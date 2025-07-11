@@ -1,4 +1,6 @@
 {
     "friendsitleOwn": "Mes amis",
-    "friendsTitle": "Amis de {{username}}"
+    "friendsTitle": "Amis de {{username}}",
+    "searchPlaceholder": "Rechercher des amis",
+    "noFriends": "Aucun ami trouvé. Allez vous en faire dans le chat !"
 }
