@@ -74,7 +74,7 @@ async function renderRoute(path: string) {
 				logUserOut();
 			}
 			navigate('/');
-			break;
+			return;
 
 		case '/blockchain': //Delete when blockchain working!!
 			views.showBlockchain(app);
@@ -116,6 +116,7 @@ async function renderRoute(path: string) {
 				if (path === '/history') {
 					const currentUsername = sessionStorage.getItem('username');
 					navigate(`/history/${currentUsername}`);
+					return;
 				} else {
 					const username = path.substring('/history/'.length);
 					views.showHistory(app, username);
@@ -131,6 +132,7 @@ async function renderRoute(path: string) {
 				if (path === '/profile') {
 					const currentUsername = sessionStorage.getItem('username');
 					navigate(`/profile/${currentUsername}`);
+					return;
 				} else {
 					const username = path.substring('/profile/'.length);
 					views.showProfile(app, username);
@@ -147,5 +149,6 @@ async function renderRoute(path: string) {
 			}
 
 			navigate('/404');
+			return;
 	}
 }

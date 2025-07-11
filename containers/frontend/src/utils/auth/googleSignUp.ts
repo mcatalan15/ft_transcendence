@@ -66,6 +66,7 @@ export function setupGoogleSignUp(): void {
                     setTimeout(() => {
                         navigate('/profile');
                     }, 100);
+                    return;
                 } else {
                     alert('Google authentication failed: ' + (data.message || 'Unknown error'));
                 }

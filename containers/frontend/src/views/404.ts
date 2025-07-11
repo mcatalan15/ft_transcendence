@@ -62,6 +62,7 @@ export async function show404(container: HTMLElement): Promise<void> {
     backBtn.addEventListener('click', (e) => {
       e.preventDefault();
       navigate('/profile');
+      return;
     });
   }
 

@@ -13,6 +13,7 @@ export async function showSettings(container: HTMLElement): Promise<void> {
   } catch (error) {
     console.error('Failed to initialize settings:', error);
     navigate('/home');
+    return;
   }
 }
 

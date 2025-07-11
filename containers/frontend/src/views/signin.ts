@@ -103,6 +103,7 @@ export function showSignIn(container: HTMLElement): void {
         } else {
           alert(i18n.t('success', { ns: 'signin' }));
           navigate('/profile');
+          return;
         }
       };
 
@@ -110,6 +111,7 @@ export function showSignIn(container: HTMLElement): void {
       signUpLink?.addEventListener('click', (e) => {
         e.preventDefault();
         navigate('/signup');
+        return;
       });
     });
 }

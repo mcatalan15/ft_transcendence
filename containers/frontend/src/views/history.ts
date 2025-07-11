@@ -11,6 +11,7 @@ export async function showHistory(container: HTMLElement, username: string): Pro
   } catch (error) {
     console.error('Failed to initialize history:', error);
     navigate('/home');
+    return;
   }
 }
 

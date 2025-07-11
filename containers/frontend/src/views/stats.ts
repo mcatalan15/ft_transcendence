@@ -50,6 +50,7 @@ export function showStats(container: HTMLElement) {
         .catch(error => {
           navigate('/home');
           console.error('Error fetching profile:', error);
+          return;
         });
     });
 }
