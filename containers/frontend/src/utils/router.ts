@@ -14,9 +14,15 @@ export function startRouter(container: HTMLElement) {
 	renderRoute(location.pathname);
 }
 
+let lastNavigation = 0;
+const NAVIGATION_COOLDOWN = 3; // ms
+
 export function navigate(path: string) {
-	history.pushState({}, '', path);
-	renderRoute(path);
+    const now = Date.now();
+    if (now - lastNavigation < NAVIGATION_COOLDOWN) return;
+    lastNavigation = now;
+    history.pushState({}, '', path);
+    renderRoute(path);
 }
 
 async function renderRoute(path: string) {
