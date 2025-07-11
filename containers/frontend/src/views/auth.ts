@@ -26,7 +26,7 @@ export function showAuth(container: HTMLElement): void {
 	console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
 
 	const authDiv = document.createElement('div');
-	authDiv.className = 'auth-container';
+	authDiv.className = 'h-screen flex items-center justify-center bg-neutral-900';
 
 	const actualUserId = sessionStorage.getItem('userId');
 	const actualUsername = sessionStorage.getItem('username');
@@ -50,25 +50,25 @@ export function showAuth(container: HTMLElement): void {
 	if (actual2FA === '0') {
 		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');
-		twoFaBox.className = 'bg-amber-50 rounded-xl shadow-xl p-6 max-w-md w-full mx-auto';
+		twoFaBox.className = 'bg-neutral-800 border-2 border-amber-50 p-8 max-w-md w-full mx-auto';
 		twoFaBox.innerHTML = `
-		<h2 class="text-xl font-semibold mb-4 text-center text-neutral-900">${i18n.t('Two-Factor Verification')}</h2>
-		<p class="text-neutral-700 mb-4">${i18n.t('Please enter your 6-digit authentication code')}</p>
-		<div class="space-y-4">
+		<h2 class="text-4xl font-bold mb-6 text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('Two-Factor Verification')}</h2>
+		<p class="text-amber-50 mb-6 font-mono text-sm opacity-80">${i18n.t('Please enter your 6-digit authentication code')}</p>
+		<div class="space-y-6">
 		<input
 			type="text"
 			id="twoFaTokenInput"
 			placeholder="${i18n.t('123456')}"
 			maxlength="6"
-			class="w-full px-4 py-2 border rounded-lg text-center text-lg tracking-widest text-neutral-900"
+			class="w-full px-4 py-3 bg-neutral-800 border-2 border-amber-50 text-center italic text-sm tracking-widest text-amber-50 font-mono focus:outline-none focus:border-amber-400"
 		  >
 		  <button
 			id="verifyTwoFaBtn"
-			class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
+			class="gaming-button w-full py-3 text-amber-50 font-mono font-bold text-sm uppercase tracking-wider transition-all duration-300"
 		  >
 			${i18n.t('Verify')}
 		  </button>
-		  <p id="verificationStatus" class="text-sm text-center text-neutral-700"></p>
+		  <p id="verificationStatus" class="text-sm text-center text-amber-50 font-mono"></p>
 		</div>
 	  `;
 		authDiv.appendChild(twoFaBox);
@@ -76,6 +76,8 @@ export function showAuth(container: HTMLElement): void {
 		const tokenInput = twoFaBox.querySelector('#twoFaTokenInput') as HTMLInputElement;
 		const verifyBtn = twoFaBox.querySelector('#verifyTwoFaBtn') as HTMLButtonElement;
 		const verificationStatus = twoFaBox.querySelector('#verificationStatus') as HTMLParagraphElement;
+
+		setupGamingButton(verifyBtn, 'amber');
 
 		verifyBtn.addEventListener('click', async () => {
 			const token = tokenInput.value.trim();
@@ -132,33 +134,33 @@ export function showAuth(container: HTMLElement): void {
 		twoFaSection.innerHTML = `
 		<div class="relative h-full flex flex-col">
 		  <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
-			<div class="h-screen flex items-center justify-center text-amber-50 bg-gradient-to-br from-neutral-900">
-			  <div class="bg-amber-50 text-neutral-900 rounded-xl shadow-xl p-10 w-full max-w-md space-y-6">
-				<h2 class="text-2xl font-semibold text-center">${i18n.t('Two-Factor Authentication Setup')}</h2>
-				<div class="space-y-4">
-				  <p class="text-neutral-700">${i18n.t('Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).')}</p>
-				  <div class="qr-code-display flex justify-center items-center bg-white p-4 rounded border border-neutral-200">
-					<p class="text-neutral-500">${i18n.t('Loading QR code...')}</p>
+			<div class="h-screen flex items-center justify-center text-amber-50">
+			  <div class="bg-neutral-800 border-2 border-amber-50 p-10 w-full max-w-md space-y-8">
+				<h2 class="text-4xl font-bold text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('Two-Factor Authentication Setup')}</h2>
+				<div class="space-y-6">
+				  <p class="text-amber-50 font-mono text-sm opacity-80">${i18n.t('Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).')}</p>
+				  <div class="qr-code-display flex justify-center items-center bg-neutral-800">
+					<p class="text-amber-50 font-mono text-sm">${i18n.t('Loading QR code...')}</p>
 				  </div>
-				  <p class="text-neutral-700">
-					${i18n.t('Or manually enter this secret key:')}
-					<strong class="secret-key block bg-neutral-100 p-2 rounded mt-1 text-center font-mono">${i18n.t('Loading secret...')}</strong>
-				  </p>
-				  <div class="verification-input space-y-2">
+				  <div class="text-amber-50 font-mono text-sm">
+					<p class="opacity-80 mb-2">${i18n.t('Or manually enter this secret key:')}</p>
+					<div class="secret-key bg-amber-50 border border-amber-50 p-3 text-center font-mono text-xs tracking-widest text-neutral-900">${i18n.t('Loading secret...')}</div>
+				  </div>
+				  <div class="verification-input space-y-4">
 					<input
 					  type="text"
 					  id="twoFaTokenInput"
 					  placeholder="${i18n.t('Enter 6-digit code')}"
 					  maxlength="6"
-					  class="w-full border px-3 py-2 rounded text-center font-mono tracking-widest"
+					  class="w-full bg-neutral-800 border-2 border-amber-50 px-4 py-3 text-center text-sm italic font-mono tracking-widest text-amber-50 focus:outline-none focus:border-amber-400"
 					>
 					<button
 					  id="verifyTwoFaBtn"
-					  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+					  class="gaming-button w-full py-3 text-amber-50 font-mono font-bold text-sm uppercase tracking-wider transition-all duration-300"
 					>
 					  ${i18n.t('Verify 2FA')}
 					</button>
-					<p class="verification-status text-sm text-center"></p>
+					<p class="verification-status text-sm text-center font-mono text-amber-50"></p>
 				  </div>
 				</div>
 			  </div>
@@ -171,8 +173,10 @@ export function showAuth(container: HTMLElement): void {
 		const qrCodeDisplay = twoFaSection.querySelector('.qr-code-display') as HTMLDivElement;
 		const secretKeySpan = twoFaSection.querySelector('.secret-key') as HTMLElement;
 		const tokenInput = twoFaSection.querySelector('#twoFaTokenInput') as HTMLInputElement;
-		const verifyBtn = twoFaSection.querySelector('#verifyTwoFaBtn') as HTMLButtonElement;
+		const setupVerifyBtn = twoFaSection.querySelector('#verifyTwoFaBtn') as HTMLButtonElement;
 		const verificationStatus = twoFaSection.querySelector('.verification-status') as HTMLParagraphElement;
+
+		setupGamingButton(setupVerifyBtn, 'amber');
 
 		const initiateTwoFaSetup = async () => {
 			if (!actualUserId || !actualUsername || !actualEmail) {
@@ -207,7 +211,7 @@ export function showAuth(container: HTMLElement): void {
 
 		initiateTwoFaSetup();
 
-		verifyBtn.addEventListener('click', async () => {
+		setupVerifyBtn.addEventListener('click', async () => {
 			const token = tokenInput.value.trim();
 			if (!actualUserId) {
 				const errorMessage = i18n.t('Cannot verify 2FA: User ID missing. Please try signing up again.');
@@ -258,4 +262,38 @@ export function showAuth(container: HTMLElement): void {
 	}
 
 	container.appendChild(authDiv);
+}
+
+function setupGamingButton(button: HTMLButtonElement, color: 'amber' | 'lime' | 'cyan' | 'pink'): void {
+	const colorMap = {
+		'lime': '#84cc16',
+		'cyan': '#22d3ee', 
+		'pink': '#f472b6',
+		'amber': '#FFFBEB'
+	};
+	
+	const buttonColor = colorMap[color];
+	
+	Object.assign(button.style, {
+		backgroundColor: 'transparent',
+		border: `2px solid ${buttonColor}`,
+		color: buttonColor,
+		fontFamily: '"Roboto Mono", monospace',
+		fontWeight: 'bold',
+		fontSize: '12px',
+		textTransform: 'uppercase',
+		borderRadius: '0px',
+		cursor: 'pointer',
+		transition: 'all 0.3s ease'
+	});
+	
+	button.addEventListener('mouseenter', () => {
+		button.style.backgroundColor = buttonColor;
+		button.style.color = '#171717';
+	});
+	
+	button.addEventListener('mouseleave', () => {
+		button.style.backgroundColor = 'transparent';
+		button.style.color = buttonColor;
+	});
 }
