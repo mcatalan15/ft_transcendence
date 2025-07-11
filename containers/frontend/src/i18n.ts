@@ -21,6 +21,8 @@ i18n
       '404',
       'history',
       'friends',
+      'chat',
+      'auth',
      ],
     defaultNS: 'landing',
     backend: {

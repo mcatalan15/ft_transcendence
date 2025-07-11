@@ -1,4 +1,5 @@
 import i18n from '../i18n';
+import { navigate } from '../utils/router';
 import { getApiUrl } from '../config/api';
 
 // Define interfaces for API responses
@@ -13,7 +14,11 @@ interface TwoFaVerifyResponse {
 	verified: boolean;
 }
 
-export function showAuth(container: HTMLElement): void {
+export async function showAuth(container: HTMLElement): Promise<void> {
+
+	await i18n.loadNamespaces('auth');
+  	await i18n.changeLanguage(i18n.language);
+
 	console.log('Hola!');
 	const urlParams = new URLSearchParams(window.location.search);
 	const fromPage = urlParams.get('from');
@@ -22,7 +27,7 @@ export function showAuth(container: HTMLElement): void {
 	console.log('fromPage value:', fromPage);
 	console.log('UserId:', sessionStorage.getItem('userId'));
 	console.log('Username:', sessionStorage.getItem('username'));
-	console.log('Email:', sessionStorage.getItem('email'));
+/* 	console.log('Email:', sessionStorage.getItem('email')); */
 	console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
 
 	const authDiv = document.createElement('div');
@@ -36,29 +41,29 @@ export function showAuth(container: HTMLElement): void {
 
 	if (!actualUserId || !actualUsername || !actualEmail) {
 		console.error('Missing user data in sessionStorage, redirecting to signin');
-		window.location.href = '/signin';
+		navigate('/signin');
 		return;
 	}
 
 	// Validate 2FA value - should be "0" (enabled) or "1" (disabled)
 	if (actual2FA !== '0' && actual2FA !== '1') {
-		console.warn('Invalid twoFAEnabled value, defaulting to 1 (disabled)');
-		actual2FA = '1';
+		console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
+		actual2FA = '0';
 	}
 
 	// Check if 2FA is enabled (0 = enabled, needs verification)
-	if (actual2FA === '0') {
+	if (actual2FA === '1') {
 		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');
 		twoFaBox.className = 'bg-neutral-800 border-2 border-amber-50 p-8 max-w-md w-full mx-auto';
 		twoFaBox.innerHTML = `
-		<h2 class="text-4xl font-bold mb-6 text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('Two-Factor Verification')}</h2>
-		<p class="text-amber-50 mb-6 font-mono text-sm opacity-80">${i18n.t('Please enter your 6-digit authentication code')}</p>
+		<h2 class="text-4xl font-bold mb-6 text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('title', { ns: 'auth' })}</h2>
+		<p class="text-amber-50 mb-6 font-mono text-sm opacity-80">${i18n.t('enterCode', { ns: 'auth' })}</p>
 		<div class="space-y-6">
 		<input
 			type="text"
 			id="twoFaTokenInput"
-			placeholder="${i18n.t('123456')}"
+			placeholder="123456"
 			maxlength="6"
 			class="w-full px-4 py-3 bg-neutral-800 border-2 border-amber-50 text-center italic text-sm tracking-widest text-amber-50 font-mono focus:outline-none focus:border-amber-400"
 		  >
@@ -66,7 +71,7 @@ export function showAuth(container: HTMLElement): void {
 			id="verifyTwoFaBtn"
 			class="gaming-button w-full py-3 text-amber-50 font-mono font-bold text-sm uppercase tracking-wider transition-all duration-300"
 		  >
-			${i18n.t('Verify')}
+			${i18n.t('verify', { ns: 'auth' })}
 		  </button>
 		  <p id="verificationStatus" class="text-sm text-center text-amber-50 font-mono"></p>
 		</div>
@@ -82,14 +87,14 @@ export function showAuth(container: HTMLElement): void {
 		verifyBtn.addEventListener('click', async () => {
 			const token = tokenInput.value.trim();
 			if (!/^\d{6}$/.test(token)) {
-				verificationStatus.textContent = i18n.t('Please enter a valid 6-digit code');
+				verificationStatus.textContent = i18n.t('error.enterValidCode', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-red-500';
 				return;
 			}
 
 			try {
 				verifyBtn.disabled = true;
-				verificationStatus.textContent = i18n.t('Verifying...');
+				verificationStatus.textContent = i18n.t('verifying', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-gray-500';
 				const response = await fetch(getApiUrl('/auth/verify'), {
 					method: 'POST',
@@ -99,19 +104,20 @@ export function showAuth(container: HTMLElement): void {
 
 				const data = await response.json();
 				if (response.ok && data.verified) {
-					verificationStatus.textContent = i18n.t('Verification successful!');
+					verificationStatus.textContent = i18n.t('verificationSuccess', { ns: 'auth' });
 					verificationStatus.className = 'text-sm text-center text-green-500';
 					if (data.token) {
 						sessionStorage.setItem('token', data.token);
 					}
 					setTimeout(() => {
-						window.location.href = '/home';
+						navigate('/home');
+						return;
 					}, 1000);
 				} else {
-					throw new Error(data.message || 'Verification failed');
+					throw new Error(data.message || i18n.t('error.verificationFailed', { ns: 'auth' }));
 				}
 			} catch (error) {
-				verificationStatus.textContent = i18n.t(error.message);
+				verificationStatus.textContent = i18n.t('error.unknownError', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-red-500';
 				verifyBtn.disabled = false;
 			}
@@ -123,10 +129,10 @@ export function showAuth(container: HTMLElement): void {
 			}
 		});
 	} else {
-		// 2FA is disabled (1) - show setup
+		// 2FA is disabled (0) - show setup
 		console.log('Showing signup success and initiating 2FA setup');
 		const message = document.createElement('p');
-		message.textContent = i18n.t('You have successfully created an account!');
+		message.textContent = i18n.t('2FASetupMessage', { ns: 'auth' });
 		authDiv.appendChild(message);
 
 		const twoFaSection = document.createElement('div');
@@ -136,21 +142,21 @@ export function showAuth(container: HTMLElement): void {
 		  <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
 			<div class="h-screen flex items-center justify-center text-amber-50">
 			  <div class="bg-neutral-800 border-2 border-amber-50 p-10 w-full max-w-md space-y-8">
-				<h2 class="text-4xl font-bold text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('Two-Factor Authentication Setup')}</h2>
+				<h2 class="text-4xl font-bold text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('setup', { ns: 'auth' })}</h2>
 				<div class="space-y-6">
-				  <p class="text-amber-50 font-mono text-sm opacity-80">${i18n.t('Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).')}</p>
+				  <p class="text-amber-50 font-mono text-sm opacity-80">${i18n.t('scanInstructions', { ns: 'auth' })}</p>
 				  <div class="qr-code-display flex justify-center items-center bg-neutral-800">
-					<p class="text-amber-50 font-mono text-sm">${i18n.t('Loading QR code...')}</p>
+					<p class="text-amber-50 font-mono text-sm">${i18n.t('codeLoading', { ns: 'auth' })}</p>
 				  </div>
 				  <div class="text-amber-50 font-mono text-sm">
-					<p class="opacity-80 mb-2">${i18n.t('Or manually enter this secret key:')}</p>
+					<p class="opacity-80 mb-2">${i18n.t('manualEntry', { ns: 'auth' })}</p>
 					<div class="secret-key bg-amber-50 border border-amber-50 p-3 text-center font-mono text-xs tracking-widest text-neutral-900">${i18n.t('Loading secret...')}</div>
 				  </div>
 				  <div class="verification-input space-y-4">
 					<input
 					  type="text"
 					  id="twoFaTokenInput"
-					  placeholder="${i18n.t('Enter 6-digit code')}"
+					  placeholder="${i18n.t('enterCodeShort', { ns: 'auth' })}"
 					  maxlength="6"
 					  class="w-full bg-neutral-800 border-2 border-amber-50 px-4 py-3 text-center text-sm italic font-mono tracking-widest text-amber-50 focus:outline-none focus:border-amber-400"
 					>
@@ -158,7 +164,7 @@ export function showAuth(container: HTMLElement): void {
 					  id="verifyTwoFaBtn"
 					  class="gaming-button w-full py-3 text-amber-50 font-mono font-bold text-sm uppercase tracking-wider transition-all duration-300"
 					>
-					  ${i18n.t('Verify 2FA')}
+					  ${i18n.t('verify2FA', { ns: 'auth' })}
 					</button>
 					<p class="verification-status text-sm text-center font-mono text-amber-50"></p>
 				  </div>
@@ -180,7 +186,7 @@ export function showAuth(container: HTMLElement): void {
 
 		const initiateTwoFaSetup = async () => {
 			if (!actualUserId || !actualUsername || !actualEmail) {
-				const errorMessage = i18n.t('Cannot set up 2FA: User data missing. Please try signing up again.');
+				const errorMessage = i18n.t('error.missingUserData', { ns: 'auth' });
 				console.error(errorMessage);
 				qrCodeDisplay.textContent = errorMessage;
 				secretKeySpan.textContent = errorMessage;
@@ -199,13 +205,13 @@ export function showAuth(container: HTMLElement): void {
 					throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
 				}
 				const data: TwoFaSetupResponse = await response.json();
-				qrCodeDisplay.innerHTML = `<img src="${data.qrCodeUrl}" alt="${i18n.t('2FA QR Code')}" width="200" height="200"/>`;
+				qrCodeDisplay.innerHTML = `<img src="${data.qrCodeUrl}" alt="${i18n.t('QRCode', { ns: 'auth' })}" width="200" height="200"/>`;
 				secretKeySpan.textContent = data.secret;
 				console.log('2FA Setup Data:', data);
 			} catch (error: any) {
-				console.error('Error initiating 2FA setup:', error);
-				qrCodeDisplay.textContent = `${i18n.t('Failed to load QR code:')} ${error.message}`;
-				secretKeySpan.textContent = `${i18n.t('Error:')} ${error.message}`;
+				console.error('Failed to load QR code: ', error);
+				qrCodeDisplay.textContent = `${i18n.t('error.failedLoading', { ns: 'auth' })} ${error.message}`;
+				secretKeySpan.textContent = `${i18n.t('error.error', { ns: 'auth' })} ${error.message}`;
 			}
 		};
 
@@ -214,7 +220,7 @@ export function showAuth(container: HTMLElement): void {
 		setupVerifyBtn.addEventListener('click', async () => {
 			const token = tokenInput.value.trim();
 			if (!actualUserId) {
-				const errorMessage = i18n.t('Cannot verify 2FA: User ID missing. Please try signing up again.');
+				const errorMessage = i18n.t('error.missingUserId', { ns: 'auth' });
 				verificationStatus.textContent = errorMessage;
 				verificationStatus.style.color = 'red';
 				console.error(errorMessage);
@@ -222,7 +228,7 @@ export function showAuth(container: HTMLElement): void {
 			}
 
 			if (!token || !/^[0-9]{6}$/.test(token)) {
-				verificationStatus.textContent = i18n.t('Please enter a valid 6-digit code.');
+				verificationStatus.textContent = i18n.t('error.enterValidCode', { ns: 'auth' });
 				verificationStatus.style.color = 'red';
 				return;
 			}
@@ -238,24 +244,24 @@ export function showAuth(container: HTMLElement): void {
 				console.log('Frontend (Setup) received from /api/auth/verify:', data);
 
 				if (response.ok && data.verified) {
-					verificationStatus.textContent = i18n.t('2FA successfully verified! You can now proceed.');
+					verificationStatus.textContent = i18n.t('verificationSuccessProceed', { ns: 'auth' });
 					verificationStatus.style.color = 'green';
 					if (data.token) {
 						sessionStorage.setItem('token', data.token);
 						console.log('Updated authToken in sessionStorage (Setup):', data.token ? 'Present' : 'Missing');
 					}
 					// Set to "0" (enabled) after successful verification
-					sessionStorage.setItem('twoFAEnabled', '0');
-					console.log('Updated twoFAEnabled in sessionStorage to "0" (enabled) after setup.');
+					sessionStorage.setItem('twoFAEnabled', '1');
+					console.log('Updated twoFAEnabled in sessionStorage to "1" (enabled) after setup.');
 					tokenInput.disabled = true;
 					window.location.href = '/home';
 				} else {
-					verificationStatus.textContent = i18n.t(data.message || 'Verification failed. Please try again.');
+					verificationStatus.textContent = i18n.t(data.message || 'error.verificationFailed', { ns: 'auth' });
 					verificationStatus.style.color = 'red';
 				}
 			} catch (error: any) {
 				console.error('Error verifying 2FA token:', error);
-				verificationStatus.textContent = i18n.t(`Error during verification: ${error.message}`);
+				verificationStatus.textContent = i18n.t('error.errorDuringVerification', { ns: 'auth' }) + error.message;
 				verificationStatus.style.color = 'red';
 			}
 		});

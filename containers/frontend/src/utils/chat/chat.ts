@@ -288,7 +288,7 @@ export class ChatManager {
         }
       },
       {
-        label: isBlocked ? i18n.t('block', { ns: 'chat' }) + username : i18n.t('unblock', { ns: 'chat' }) + username,
+        label: isBlocked ? i18n.t('unblock', { ns: 'chat' }) + username : i18n.t('block', { ns: 'chat' }) + username,
         action: () => {
           if (isBlocked) {
             this.unblockUser(username);
