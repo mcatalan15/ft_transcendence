@@ -17,7 +17,7 @@ export async function show404(container: HTMLElement): Promise<void> {
   container.appendChild(langSelector);
 
   const section = document.createElement('section');
-  section.className = 'bg-neutral-900 dark:bg-gray-900 min-h-screen flex items-center justify-center';
+  section.className = 'bg-neutral-900 min-h-screen flex items-center justify-center';
   section.innerHTML = `
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
       <div class="mx-auto max-w-screen-sm text-center relative">
@@ -28,7 +28,7 @@ export async function show404(container: HTMLElement): Promise<void> {
           4
         </h1>
         <p class="mb-4 text-8xl tracking-tight font-anatol text-amber-50 md:text-4xl">${title}</p>
-        <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">${description}</p>
+        <p class="mb-4 text-lg font-light text-gray-500">${description}</p>
         <button id="back-home-btn" class="mt-12 w-full max-w-xs text-base md:text-xl">${backBtnText}</button>
       </div>
     </div>
