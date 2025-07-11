@@ -91,7 +91,7 @@ export class ProfileContentRenderer {
       fontWeight: 'bold',
       letterSpacing: '2px'
     });
-    headerText.textContent = 'PLAYER STATS';
+    headerText.textContent = i18n.t('playerStats', { ns: 'profile' });
     statsHeader.appendChild(headerText);
     statsContainer.appendChild(statsHeader);
 

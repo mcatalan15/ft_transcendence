@@ -1,4 +1,5 @@
 import { navigate } from '../../utils/router';
+import i18n from '../../i18n';
 
 export class HeaderTest {
     private element: HTMLElement;
@@ -17,21 +18,21 @@ export class HeaderTest {
 			<button type="button" class="gaming-logout-btn" data-route="/logout">LOG OUT</button>
 		</div>
 		<div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-		<ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-neutral-900 rounded-lg bg-neutral-900 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-900 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+		<ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-neutral-900 rounded-lg bg-neutral-900 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-900">
 			<li>
 			<button data-route="/profile" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer" aria-current="page">PROFILE</button>
 			</li>
 			<li>
 			<button data-route="/pong" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">PONG</button>
 			</li>
+            <li>
+			<button data-route="/history" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">HISTORY</button>
+			</li>
 			<li>
 			<button data-route="/friends" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">FRIENDS</button>
 			</li>
 			<li>
 			<button data-route="/chat" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-smhover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">CHAT</button>
-			</li>
-			<li>
-			<button data-route="/stats" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">STATISTICS</button>
 			</li>
 		</ul>
 		</div>

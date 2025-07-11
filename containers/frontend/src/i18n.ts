@@ -11,7 +11,16 @@ i18n
     debug: false,
     fallbackLng: 'en',
     supportedLngs: ['cat', 'en', 'es', 'fr'],
-    ns: ['landing', 'signin', 'signup', 'profile'],
+    ns: [
+      'landing',
+      'signin',
+      'signup',
+      'profile',
+      'settings',
+      '404',
+      'matches',
+      'friends',
+     ],
     defaultNS: 'landing',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json'

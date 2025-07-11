@@ -7,9 +7,9 @@ export async function show404(container: HTMLElement): Promise<void> {
   await i18n.loadNamespaces('404');
   await i18n.changeLanguage(i18n.language);
 
-  const title = i18n.t('404.title', { defaultValue: "Something's missing." });
-  const description = i18n.t('404.description', { defaultValue: "Sorry, we can't find that page. You'll find lots to explore on the home page." });
-  const backBtnText = i18n.t('404.backHome', { defaultValue: "Back to Homepage" });
+  const title = i18n.t('title', { ns: '404'});
+  const description = i18n.t('description', { ns: '404' });
+  const backBtnText = i18n.t('backHome', { ns: '404' });
 
   container.innerHTML = '';
 
