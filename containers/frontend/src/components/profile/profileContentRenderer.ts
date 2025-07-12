@@ -216,7 +216,7 @@ export class ProfileContentRenderer {
     if (color === 'black') {
       const spacer = document.createElement('div');
       spacer.className = 'w-full max-w-xs';
-      spacer.style.height = '20px'; // Reducido el espaciado
+      spacer.style.height = '20px';
       return spacer;
     }
 
