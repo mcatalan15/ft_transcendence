@@ -268,7 +268,7 @@ Object.assign(chatBoxContainer.style, {
     const multiplier = isMobile ? CONFIG.MULTIPLIERS.mobile : CONFIG.MULTIPLIERS.desktop;
     const border = isMobile ? CONFIG.BORDER_VALUES.mobile : CONFIG.BORDER_VALUES.desktop;
     
-    const headerOffset = isMobile ? -35 : -50;
+    const headerOffset = isMobile ? -35 : -70;
     svgHeader.style.marginTop = `-${border * multiplier + headerOffset}px`;
   }
 
@@ -290,7 +290,7 @@ function createHeader(): HTMLElement {
     lang,
     style: {
       position: 'absolute',
-      top: '0',
+      top: '-20px',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',

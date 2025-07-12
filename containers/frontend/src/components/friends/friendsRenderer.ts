@@ -63,7 +63,11 @@ export class FriendsRenderer {
     const userId = sessionStorage.getItem('userId') || 'defaultUserId';
     const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
 
-    const contentRenderer = new FriendsContentRenderer(this.container);
+    const friendsContentContainer = document.createElement('div');
+    friendsContentContainer.id = 'friends-content-container';
+    friendsContentContainer.className = 'w-full h-full';
+    
+    const contentRenderer = new FriendsContentRenderer(friendsContentContainer);
     const friendsContent = contentRenderer.render();
 
     const pongBox = new PongBoxComponent({

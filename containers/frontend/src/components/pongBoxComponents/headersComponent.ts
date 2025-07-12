@@ -16,7 +16,7 @@ export class HeadersComponent {
     this.element.className = 'absolute left-1/2 -translate-x-1/2 top-0 z-30 w-full max-w-[1800px] h-auto pointer-events-none select-none block mx-auto';
     this.element.style.objectFit = 'contain';
     const defaultStyle: Partial<CSSStyleDeclaration> = {
-      marginTop: '-20px',
+      marginTop: '0px',
       top: '0',
       transform: 'translateX(-50%)',
       position: 'absolute',

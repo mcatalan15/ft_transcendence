@@ -1,18 +1,35 @@
-interface PaginationProps {
+/*interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-}
+}*/
 
 export class Pagination {
   private element: HTMLElement;
-  private props: PaginationProps;
+  private props: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  };
 
-  constructor(props: PaginationProps) {
+  constructor(props: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  }) {
     this.props = props;
     this.element = document.createElement('div');
-    this.element.className = 'flex justify-center items-center gap-2 py-4';
+    this.element.className = 'flex items-center gap-1 my-2 pagination-container';
     this.render();
+  }
+
+  update(currentPage: number, totalPages: number) {
+    this.props = { ...this.props, currentPage, totalPages };
+    this.render();
+  }
+
+  getElement() {
+    return this.element;
   }
 
   private render() {
@@ -20,7 +37,9 @@ export class Pagination {
     this.element.innerHTML = '';
     if (totalPages <= 1) return;
 
-    const prevBtn = this.createGamingButton('< PREV', currentPage === 0, () => onPageChange(currentPage - 1));
+    const prevBtn = this.createGamingButton('< PREV', currentPage === 0, () => {
+      onPageChange(currentPage - 1);
+    });
     this.element.appendChild(prevBtn);
 
     let start = Math.max(0, currentPage - 2);
@@ -29,18 +48,23 @@ export class Pagination {
     if (currentPage >= totalPages - 2) start = Math.max(0, totalPages - 5);
     
     for (let i = start; i <= end; i++) {
-      const pageBtn = this.createGamingPageButton((i + 1).toString(), i === currentPage, () => onPageChange(i));
+      const pageBtn = this.createGamingPageButton((i + 1).toString(), i === currentPage, () => {
+        onPageChange(i);
+      });
       this.element.appendChild(pageBtn);
     }
 
-    const nextBtn = this.createGamingButton('NEXT >', currentPage === totalPages - 1, () => onPageChange(currentPage + 1));
+    const nextBtn = this.createGamingButton('NEXT >', currentPage === totalPages - 1, () => {
+      onPageChange(currentPage + 1);
+    });
     this.element.appendChild(nextBtn);
   }
 
   private createGamingButton(text: string, disabled: boolean, onClick: () => void): HTMLButtonElement {
     const button = document.createElement('button');
     button.textContent = text;
-    button.className = 'py-2 px-4 transition-all duration-300 cursor-pointer';
+    button.className = 'py-2 px-4 transition-all duration-300';
+    button.type = 'button';
     
     button.style.backgroundColor = 'transparent';
     button.style.border = '2px solid #FFFBEB';
@@ -56,6 +80,8 @@ export class Pagination {
       button.style.cursor = 'not-allowed';
       button.disabled = true;
     } else {
+      button.style.cursor = 'pointer';
+      
       button.addEventListener('mouseenter', () => {
         button.style.backgroundColor = '#FFFBEB';
         button.style.color = '#171717';
@@ -66,7 +92,12 @@ export class Pagination {
         button.style.color = '#FFFBEB';
       });
 
-      button.onclick = onClick;
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        onClick();
+      });
     }
 
     return button;
@@ -75,7 +106,8 @@ export class Pagination {
   private createGamingPageButton(text: string, isActive: boolean, onClick: () => void): HTMLButtonElement {
     const button = document.createElement('button');
     button.textContent = text;
-    button.className = 'py-2 px-3 transition-all duration-300 cursor-pointer';
+    button.className = 'py-2 px-3 transition-all duration-300';
+    button.type = 'button'; 
     
     button.style.fontFamily = '"Roboto Mono", monospace';
     button.style.fontWeight = 'bold';
@@ -91,6 +123,7 @@ export class Pagination {
     } else {
       button.style.backgroundColor = 'transparent';
       button.style.color = '#FFFBEB';
+      button.style.cursor = 'pointer';
       
       button.addEventListener('mouseenter', () => {
         button.style.backgroundColor = '#FFFBEB';
@@ -102,19 +135,13 @@ export class Pagination {
         button.style.color = '#FFFBEB';
       });
 
-      button.onclick = onClick;
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      });
     }
 
     return button;
-  }
-
-  update(currentPage: number, totalPages: number) {
-    this.props.currentPage = currentPage;
-    this.props.totalPages = totalPages;
-    this.render();
-  }
-
-  getElement() {
-    return this.element;
   }
 }

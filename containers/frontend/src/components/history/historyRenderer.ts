@@ -64,9 +64,6 @@ export class HistoryRenderer {
     const currentUser = sessionStorage.getItem('username') || '';
 	const username = this.username === currentUser ? currentUser : this.username;
 
-	console.log('From createPongBox()> this.username:', this.username);
-	console.log('From createPongBox()> currentUsername:', currentUser);
-
 	const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
 		credentials: 'include',
 		headers: {
