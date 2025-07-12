@@ -219,111 +219,81 @@ async function handleGameInviteResponse(message, senderWs, wss, redisService) {
     console.log(`Handling game invite response from ${message.username} to ${message.targetUser}`);
 
     if (message.action === 'accept') {
-        console.log('=== HANDLING ACCEPT - Create Game Session & Navigate ===');
-        
-        // CREATE ACTUAL GAME SESSION DATA
-        const gameId = message.inviteId;
-        const hostId = message.targetUser; // The original inviter  
-        const guestId = message.username; // The one accepting
-        
-        const gameData = {
-            gameId: gameId,
-            hostId: hostId,
-            guestId: guestId,
-            status: 'waiting',
-            createdAt: new Date().toISOString(),
-            mode: 'classic',
-            variant: '1v1'
-        };
-        
-        // STORE IN REDIS using the existing createGame method
-        try {
-            console.log('📝 Attempting to store game data in Redis...');
-            const success = await redisService.createGame(gameId, gameData);
-            if (success) {
-                console.log(`✅ Game session ${gameId} created in Redis:`, gameData);
-            } else {
-                throw new Error('Redis createGame returned false');
-            }
-        } catch (error) {
-            console.error('❌ Failed to create game session:', error);
-            console.error('❌ Error details:', error.message);
-            
-            // Send error to accepter
-            if (senderWs && senderWs.readyState === WebSocket.OPEN) {
-                senderWs.send(JSON.stringify({
-                    type: 'system',
-                    content: `Failed to create game session: ${error.message}`,
-                    timestamp: new Date().toISOString()
-                }));
-            }
-            return;
-        }
-
-        let hostWs = null;
-        let guestWs = senderWs;
-
-        for (const [ws, userInfo] of connectedUsers) {
-            if (userInfo.username === message.targetUser) {
-                hostWs = ws;
-                break;
-            }
-        }
-
-        if (hostWs && hostWs.readyState === WebSocket.OPEN) {
-            const hostMessage = {
-                type: 'game_invite_accepted',
-                username: message.username,
-                inviteId: message.inviteId,
-                gameId: gameId,
-                action: 'navigate_to_pong'
-            };
-            
-            try {
-                hostWs.send(JSON.stringify(hostMessage));
-                console.log('✅ Navigate message sent to host successfully');
-            } catch (sendError) {
-                console.error('❌ Error sending message to host:', sendError);
-            }
-        }
-
-        if (guestWs && guestWs.readyState === WebSocket.OPEN) {
-            const guestMessage = {
-                type: 'game_invite_accepted',
-                fromUser: message.targetUser,
-                inviteId: message.inviteId,
-                gameId: gameId,
-                action: 'navigate_to_pong'
-            };
-            
-            try {
-                guestWs.send(JSON.stringify(guestMessage));
-                console.log('✅ Navigate message sent to guest successfully');
-            } catch (sendError) {
-                console.error('❌ Error sending message to guest:', sendError);
-            }
-        }
-
-        console.log(`=== Game session created and both players will navigate to /pong ===`);
-
-    } else if (message.action === 'decline') {
-        console.log('=== HANDLING DECLINE ===');
-        let inviterWs = null;
-        for (const [ws, userInfo] of connectedUsers) {
-            if (userInfo.username === message.targetUser) {
-                inviterWs = ws;
-                break;
-            }
-        }
-
-        if (inviterWs && inviterWs.readyState === WebSocket.OPEN) {
-            inviterWs.send(JSON.stringify({
-                type: 'game_invite_declined',
-                username: message.username,
-                inviteId: message.inviteId
-            }));
-        }
-    }
+		console.log('=== HANDLING ACCEPT - Create Game Session & Navigate ===');
+		
+		const gameId = message.inviteId;
+		const hostId = message.targetUser; // The original inviter  
+		const guestId = message.username; // The one accepting
+		
+		const gameData = {
+			gameId: gameId,
+			hostId: hostId,
+			guestId: guestId,
+			status: 'waiting',
+			createdAt: new Date().toISOString(),
+			mode: 'classic',
+			variant: '1v1'
+		};
+		
+		// Store in Redis (keep existing logic)
+		try {
+			console.log('📝 Attempting to store game data in Redis...');
+			const success = await redisService.createGame(gameId, gameData);
+			if (success) {
+				console.log(`✅ Game session ${gameId} created in Redis:`, gameData);
+			} else {
+				throw new Error('Redis createGame returned false');
+			}
+		} catch (error) {
+			console.error('❌ Failed to create game session:', error);
+			// ... error handling
+			return;
+		}
+	
+		// Find WebSocket connections
+		let hostWs = null;
+		let guestWs = senderWs;
+	
+		for (const [ws, userInfo] of connectedUsers) {
+			if (userInfo.username === message.targetUser) {
+				hostWs = ws;
+				break;
+			}
+		}
+	
+		// Send navigation messages with player names included
+		if (hostWs && hostWs.readyState === WebSocket.OPEN) {
+			const hostMessage = {
+				type: 'game_invite_accepted',
+				username: message.username,
+				inviteId: message.inviteId,
+				gameId: gameId,
+				action: 'navigate_to_pong',
+				// Add player names for URL construction
+				hostName: hostId,
+				guestName: guestId
+			};
+			
+			hostWs.send(JSON.stringify(hostMessage));
+			console.log('✅ Navigate message sent to host successfully');
+		}
+	
+		if (guestWs && guestWs.readyState === WebSocket.OPEN) {
+			const guestMessage = {
+				type: 'game_invite_accepted',
+				fromUser: message.targetUser,
+				inviteId: message.inviteId,
+				gameId: gameId,
+				action: 'navigate_to_pong',
+				// Add player names for URL construction
+				hostName: hostId,
+				guestName: guestId
+			};
+			
+			guestWs.send(JSON.stringify(guestMessage));
+			console.log('✅ Navigate message sent to guest successfully');
+		}
+	}
 }
 
 return wss;
