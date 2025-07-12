@@ -8,7 +8,7 @@ export class AvatarComponent {
 
   constructor(avatarUrl: string, nickname: string, showStatus: boolean = false, showCameraButton: boolean = false) {
     this.element = document.createElement('div');
-    this.element.className = 'flex flex-col items-center justify-center h-full relative';
+    this.element.className = 'flex flex-col items-center justify-center h-full relative mt-10';
 
     const avatarContainer = document.createElement('div');
     avatarContainer.className = 'relative inline-block';
