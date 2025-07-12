@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 ENV TZ=Europe/Paris
 
-RUN apk add --no-cache sqlite python3 python3-dev py3-setuptools make g++
+RUN apk add --no-cache sqlite python3 py3-bcrypt python3-dev py3-setuptools make g++
 
 WORKDIR /usr/src/app
 
@@ -13,7 +13,7 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh tools/data.py
+RUN chmod +x tools/init_db.sh tools/data.py tools/friends.py
 
 RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 

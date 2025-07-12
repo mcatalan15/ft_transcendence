@@ -7,7 +7,7 @@ export class AvatarComponent {
 
   constructor(avatarUrl: string, nickname: string, showStatus: boolean = false, showCameraButton: boolean = false) {
     this.element = document.createElement('div');
-    this.element.className = 'flex flex-col items-center justify-center';
+    this.element.className = 'flex flex-col items-center justify-center h-full relative';
 
     const avatarContainer = document.createElement('div');
     avatarContainer.className = 'relative inline-block';
@@ -22,14 +22,13 @@ export class AvatarComponent {
 
     avatarFrame.appendChild(this.avatarImg);
 
-    // Extraer userId del avatarUrl
     const match = avatarUrl.match(/\/avatar\/([^/?]+)/);
     const userId = match ? match[1] : null;
 
     if (showStatus && userId) {
       const statusButton = document.createElement('div');
       Object.assign(statusButton.style, STATUS_BUTTON_STYLES.base);
-      avatarContainer.appendChild(statusButton); // Cambiado de avatarFrame a avatarContainer
+      avatarContainer.appendChild(statusButton);
       
       this.updateOnlineStatus(userId, statusButton);
       setInterval(() => this.updateOnlineStatus(userId, statusButton), 30000);
@@ -56,7 +55,7 @@ export class AvatarComponent {
     this.element.appendChild(avatarContainer);
 
     const nicknameSpan = document.createElement('span');
-    nicknameSpan.className = 'mt-4 text-amber-50 text-4xl font-anatol tracking-wide break-all text-center w-full max-w-[500px] pl-2';
+    nicknameSpan.className = 'mt-6 text-amber-50 text-4xl font-anatol tracking-wide break-all text-center w-full max-w-[500px] pl-2';
     nicknameSpan.textContent = nickname;
     this.element.appendChild(nicknameSpan);
   }
@@ -79,11 +78,9 @@ export class AvatarComponent {
             body: formData
           });
           if (response.ok) {
-            // Actualizar la imagen usando userId
             const match = this.avatarImg.src.match(/\/avatar\/([^/?]+)/);
             const userId = match ? match[1] : sessionStorage.getItem('userId');
             if (userId) {
-              // Forzar recarga de la imagen evitando caché
               const timestamp = Date.now();
               this.avatarImg.src = `${getApiUrl('/profile/avatar')}/${userId}?t=${timestamp}`;
             }
@@ -104,18 +101,16 @@ export class AvatarComponent {
       if (response.ok) {
         const data = await response.json();
         if (data.isOnline) {
-          // Usuario en línea - verde
           Object.assign(statusButton.style, {
             ...STATUS_BUTTON_STYLES.base,
-            backgroundColor: '#22c55e', // verde
+            backgroundColor: '#22c55e',
             transition: 'background-color 0.3s ease'
           });
           statusButton.title = 'Online';
         } else {
-          // Usuario desconectado - gris
           Object.assign(statusButton.style, {
             ...STATUS_BUTTON_STYLES.base,
-            backgroundColor: '#6b7280', // gris
+            backgroundColor: '#6b7280', //
             transition: 'background-color 0.3s ease'
           });
           statusButton.title = 'Offline';
@@ -123,7 +118,6 @@ export class AvatarComponent {
       }
     } catch (error) {
       console.error('Error checking online status:', error);
-      // En caso de error, mostrar como desconectado
       Object.assign(statusButton.style, STATUS_BUTTON_STYLES.base);
       statusButton.title = 'Status unknown';
     }
