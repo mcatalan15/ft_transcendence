@@ -33,15 +33,15 @@ async function renderRoute(path: string) {
 	switch (path) {
 		case '/':
 			views.showLanding(app);
-			break;
+			return;
 
 		case '/signin':
 			views.showSignIn(app);
-			break;
+			return;
 
 		case '/signup':
 			views.showSignUp(app);
-			break;
+			return;
 
 		case '/pong':
 			if (!(await isUserAuthenticated())) {
@@ -49,7 +49,7 @@ async function renderRoute(path: string) {
 				return;
 			}
 			views.showPong(app);
-			break;
+			return;
 
 		case '/home':
 			if (!(await isUserAuthenticated())) {
@@ -57,7 +57,7 @@ async function renderRoute(path: string) {
 				return;
 			}
 			views.showHome(app);
-			break;
+			return;
 
 		case '/friends':
 			if (!(await isUserAuthenticated())) {
@@ -65,7 +65,7 @@ async function renderRoute(path: string) {
 				return;
 			}
 			views.showFriends(app);
-			break;
+			return;
 
 		case '/chat':
 			if (!(await isUserAuthenticated())) {
@@ -73,7 +73,7 @@ async function renderRoute(path: string) {
 				return;
 			}
 			views.showChat(app);
-			break;
+			return;
 
 		case '/logout':
 			if (await isUserAuthenticated()) {
@@ -84,11 +84,11 @@ async function renderRoute(path: string) {
 
 		case '/blockchain': //Delete when blockchain working!!
 			views.showBlockchain(app);
-			break;
+			return;
 
 		case '/auth':
 			views.showAuth(app);
-			break;
+			return;
 
 		case '/settings':
 			if (!(await isUserAuthenticated())) {
