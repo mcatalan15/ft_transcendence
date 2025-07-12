@@ -3,6 +3,8 @@ import { HeaderTest } from '../components/generalComponents/testmenu';
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
+import { HeadersComponent } from '../components/pongBoxComponents/headersComponent';
+import { CONFIG } from '../config/settings.config';
 
 let currentResizeHandler: (() => void) | null = null;
 
@@ -93,24 +95,38 @@ export async function showChat(container: HTMLElement): Promise<void> {
   headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
   container.appendChild(headerWrapper);
 
+  // Agregar selector de idioma antes del contenido principal
+  const langSelector = new LanguageSelector(() => showChat(container)).getElement();
+  container.appendChild(langSelector);
+
   // Main content wrapper
   const contentWrapper = document.createElement('div');
   contentWrapper.className = `
-    row-start-2 flex items-center justify-center w-full h-full
-    bg-neutral-900
+    row-start-2 flex flex-col items-center justify-center w-full h-full
+    bg-neutral-900 relative
   `.replace(/\s+/g, ' ').trim();
 
-  // Agregar selector de idioma
-        const langSelector = new LanguageSelector(() => showChat(container)).getElement();
-      container.appendChild(langSelector);
+  // Header container para posicionar mejor el SVG
+  const headerContainer = document.createElement('div');
+  headerContainer.className = 'w-full relative';
   
-  // Main chat container
+  // Crear y agregar el SVG header
+  const svgHeader = createHeader();
+  headerContainer.appendChild(svgHeader);
+  contentWrapper.appendChild(headerContainer);
+  
+  // Agregar un contenedor de posicionamiento para el chat box
+  const chatBoxContainer = document.createElement('div');
+  // Quitar mt-16 para permitir que el centrado vertical funcione correctamente
+  chatBoxContainer.className = 'w-full max-w-[1800px] mx-auto flex justify-center'; 
+  
+  // Main chat container - usando los mismos bordes y dimensiones que PongBox
   const chatBox = document.createElement('div');
   chatBox.className = `
-    w-full max-w-[1800px] h-[750px]
-    mx-auto bg-neutral-900 border-4 border-amber-50
+    w-full
+    mx-auto bg-neutral-900 border-l-[8px] border-r-[8px] border-b-[8px] md:border-l-[16px] md:border-r-[16px] md:border-b-[16px] border-amber-50
     flex flex-col overflow-hidden shadow-xl
-    p-6
+    p-6 h-[665px]
   `.replace(/\s+/g, ' ').trim();
 
   // Channel tabs/filters
@@ -223,9 +239,12 @@ export async function showChat(container: HTMLElement): Promise<void> {
   chatBox.appendChild(chatContainer);
   chatBox.appendChild(inputArea);
 
-  contentWrapper.appendChild(chatBox);
-  contentWrapper.appendChild(langSelector);
+  chatBoxContainer.appendChild(chatBox);
+  contentWrapper.appendChild(chatBoxContainer);
   container.appendChild(contentWrapper);
+
+  // Eliminar la línea que estaba añadiendo el selector de idioma otra vez dentro del contentWrapper
+  // Esto puede estar causando conflicto o duplicación
 
   // Inicializar traducciones
   updateTranslations();
@@ -235,8 +254,21 @@ export async function showChat(container: HTMLElement): Promise<void> {
 
   // Configurar el manejador de redimensionamiento
   function handleResize() {
-    // Ajustar el tamaño y posición según sea necesario
+    updateHeaderMargin();
   }
+
+  function updateHeaderMargin() {
+    const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
+    const multiplier = isMobile ? CONFIG.MULTIPLIERS.mobile : CONFIG.MULTIPLIERS.desktop;
+    const border = isMobile ? CONFIG.BORDER_VALUES.mobile : CONFIG.BORDER_VALUES.desktop;
+    
+    // Mantener la posición original del header que ya estaba bien
+    const headerOffset = isMobile ? -35 : -50;
+    svgHeader.style.marginTop = `-${border * multiplier + headerOffset}px`;
+  }
+
+  // Aplicar margen inicial
+  updateHeaderMargin();
 
   currentResizeHandler = handleResize;
   window.addEventListener('resize', handleResize);
@@ -246,6 +278,25 @@ export async function showChat(container: HTMLElement): Promise<void> {
     cleanup();
     chatManager.disconnect();
   });
+}
+
+function createHeader(): HTMLElement {
+  const lang = i18n.language || 'en';
+  const svgHeader = new HeadersComponent({
+    type: 'chat',
+    lang,
+    style: {
+      position: 'absolute',
+      top: '-65px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      maxWidth: '1800px',
+      zIndex: '40'
+    }
+  }).getElement();
+  
+  return svgHeader;
 }
 
 function cleanup(): void {
