@@ -58,6 +58,7 @@ export function showScore(container: HTMLElement) {
         .catch(error => {
           navigate('/home');
           console.error('Error fetching score:', error);
+          return;
         });
     });
 }

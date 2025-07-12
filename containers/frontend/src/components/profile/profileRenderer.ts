@@ -1,4 +1,5 @@
 import i18n from '../../i18n';
+import { navigate } from '../../utils/router';
 import { HeaderTest } from '../generalComponents/testmenu';
 import { LanguageSelector } from '../generalComponents/languageSelector';
 import { PongBoxComponent } from '../pongBoxComponents/pongBox';
@@ -86,6 +87,9 @@ export class ProfileRenderer {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 

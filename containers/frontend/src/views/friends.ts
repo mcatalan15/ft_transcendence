@@ -11,6 +11,7 @@ export async function showFriends(container: HTMLElement): Promise<void> {
   } catch (error) {
     console.error('Failed to initialize friends:', error);
     navigate('/home');
+    return;
   }
 }
 

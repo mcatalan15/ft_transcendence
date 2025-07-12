@@ -14,9 +14,15 @@ export function startRouter(container: HTMLElement) {
 	renderRoute(location.pathname);
 }
 
+let lastNavigation = 0;
+const NAVIGATION_COOLDOWN = 3; // ms
+
 export function navigate(path: string) {
-	history.pushState({}, '', path);
-	renderRoute(path);
+    const now = Date.now();
+    if (now - lastNavigation < NAVIGATION_COOLDOWN) return;
+    lastNavigation = now;
+    history.pushState({}, '', path);
+    renderRoute(path);
 }
 
 async function renderRoute(path: string) {
@@ -74,7 +80,7 @@ async function renderRoute(path: string) {
 				logUserOut();
 			}
 			navigate('/');
-			break;
+			return;
 
 		case '/blockchain': //Delete when blockchain working!!
 			views.showBlockchain(app);
@@ -116,6 +122,7 @@ async function renderRoute(path: string) {
 				if (path === '/history') {
 					const currentUsername = sessionStorage.getItem('username');
 					navigate(`/history/${currentUsername}`);
+					return;
 				} else {
 					const username = path.substring('/history/'.length);
 					views.showHistory(app, username);
@@ -131,6 +138,7 @@ async function renderRoute(path: string) {
 				if (path === '/profile') {
 					const currentUsername = sessionStorage.getItem('username');
 					navigate(`/profile/${currentUsername}`);
+					return;
 				} else {
 					const username = path.substring('/profile/'.length);
 					views.showProfile(app, username);
@@ -147,5 +155,6 @@ async function renderRoute(path: string) {
 			}
 
 			navigate('/404');
+			return;
 	}
 }

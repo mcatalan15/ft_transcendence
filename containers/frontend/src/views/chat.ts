@@ -118,7 +118,7 @@ export async function showChat(container: HTMLElement): Promise<void> {
   channelTabs.className = 'flex gap-2 mb-4 flex-wrap';
   
   const channels = [
-    { type: MessageType.GENERAL, label: 'general', color: 'cyan' },
+    { type: MessageType.GENERAL, label: i18n.t('general', { ns: "chat" }), color: 'cyan' },
     { type: MessageType.PRIVATE, label: 'whispers', color: 'pink' },
     { type: MessageType.FRIEND, label: 'friends', color: 'lime' },
     { type: MessageType.GAME, label: 'game', color: 'blue' },
@@ -189,8 +189,8 @@ export async function showChat(container: HTMLElement): Promise<void> {
     // Actualizar selector de tipo de mensaje
     typeSelector.innerHTML = `
       <option value="${MessageType.GENERAL}">${i18n.t('general', { ns: 'chat' })}</option>
-      <option value="${MessageType.PRIVATE}">${i18n.t('whisper', { ns: 'chat' })}</option>
-      <option value="${MessageType.FRIEND}">${i18n.t('friend', { ns: 'chat' })}</option>
+      <option value="${MessageType.PRIVATE}">${i18n.t('whispers', { ns: 'chat' })}</option>
+      <option value="${MessageType.FRIEND}">${i18n.t('friends', { ns: 'chat' })}</option>
     `;
     
     // Actualizar botones

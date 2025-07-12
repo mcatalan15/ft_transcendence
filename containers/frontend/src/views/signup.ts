@@ -124,6 +124,7 @@ export function showSignUp(container: HTMLElement): void {
         } else {
           alert(i18n.t('success', { ns: 'signup', defaultValue: 'Registration successful!' }));
           navigate('/signin');
+          return;
         }
       };
 
@@ -131,6 +132,7 @@ export function showSignUp(container: HTMLElement): void {
       signInLink?.addEventListener('click', (e) => {
         e.preventDefault();
         navigate('/signin');
+        return;
       });
     });
 }

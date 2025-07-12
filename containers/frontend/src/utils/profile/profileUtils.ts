@@ -96,6 +96,7 @@ export async function changeNickname(newNick: string): Promise<void> {
             sessionStorage.setItem('username', newNick);
             alert('Nickname changed successfully!');
             navigate('/settings');
+            return;
         } else {
             // Handle different error cases
             if (result.message && result.message.includes('already exists')) {
@@ -132,6 +133,7 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 		if (result.success) {
 			alert('Password changed successfully!');
 			navigate('/settings');
+            return;
 		} else {
 			alert('Failed to change password: ' + (result.message || 'Unknown error'));
 		}

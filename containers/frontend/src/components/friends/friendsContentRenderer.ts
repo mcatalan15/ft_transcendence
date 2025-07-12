@@ -144,7 +144,7 @@ export class FriendsContentRenderer {
 
     if (friends.length === 0) {
       const emptyMessage = document.createElement('div');
-      emptyMessage.textContent = 'No friends found';
+      emptyMessage.textContent = i18n.t('noFriends', { ns: 'friends' }) || 'No friends found';
       emptyMessage.className = 'col-span-full text-center py-8';
       emptyMessage.style.color = '#FFFBEB';
       emptyMessage.style.fontFamily = '"Roboto Mono", monospace';

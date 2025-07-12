@@ -69,11 +69,13 @@ export function showLanding(container: HTMLElement): void {
         signInBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           navigate('/signin');
+          return;
         });
 
         signUpBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           navigate('/signup');
+          return;
         });
       };
 

@@ -46,5 +46,6 @@ export async function isUserAuthenticated(): Promise<boolean> {
 export function protectRoute(): void {
 	if (!isUserAuthenticated()) {
 	  navigate('/');
+	  return;
 	}
   } */

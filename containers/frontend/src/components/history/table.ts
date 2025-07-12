@@ -1,3 +1,5 @@
+import i18n from '../../i18n';
+
 type MatchRow = {
   date: string;
   opponent: string;
@@ -36,7 +38,7 @@ export class MatchTableComponent {
             color: #171717;
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
-          ">Date</th>
+          ">${i18n.t('date', { ns: 'history'})}</th>
           <th style="
             padding: 12px 24px; 
             text-align: left; 
@@ -49,7 +51,7 @@ export class MatchTableComponent {
             color: #171717;
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
-          ">Opponent</th>
+          ">${i18n.t('opponent', { ns: 'history'})}</th>
           <th style="
             padding: 12px 24px; 
             text-align: left; 
@@ -62,7 +64,7 @@ export class MatchTableComponent {
             color: #171717;
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
-          ">Score</th>
+          ">${i18n.t('score', { ns: 'history'})}</th>
           <th style="
             padding: 12px 24px; 
             text-align: left; 
@@ -75,7 +77,7 @@ export class MatchTableComponent {
             color: #171717;
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
-          ">Mode</th>
+          ">${i18n.t('mode', { ns: 'history'})}</th>
           <th style="
             padding: 12px 24px; 
             text-align: left; 
@@ -88,7 +90,7 @@ export class MatchTableComponent {
             color: #171717;
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
-          ">Contract</th>
+          ">${i18n.t('contract', { ns: 'history'})}</th>
         </tr>
       </thead>
       <tbody style="background-color: #171717;">

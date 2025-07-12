@@ -13,6 +13,9 @@
   "stats": "Stats",
   "addFriend": "Add Friend",
   "removeFriend": "Remove Friend",
+  "friendAdded": "Friend added successfully",
+  "friendRemoved": "Friend removed successfully",
+  "friendshipStatusError": "Error updating friendship status",
   "chat": "Chat",
   "errorLoadingProfile": "Error loading profile"
 }

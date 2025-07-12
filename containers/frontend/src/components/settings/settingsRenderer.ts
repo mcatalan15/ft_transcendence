@@ -44,7 +44,7 @@ export class SettingsRenderer {
       this.container.appendChild(contentWrapper);
     } catch (error) {
       console.error('Error rendering settings:', error);
-      MessageManager.showError('Error al cargar la configuración');
+      MessageManager.showError(i18n.t("errors.loadingFailed", { ns: "settings" }) || "Error loading settings");
     }
   }
 
@@ -81,7 +81,7 @@ export class SettingsRenderer {
       const userId = sessionStorage.getItem('userId') || '';
       
       if (!username || !userId) {
-        throw new Error('Datos de usuario no disponibles');
+        throw new Error(i18n.t("errors.userNotFound", { ns: "settings" }) || "User not found");
       }
 
       const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
@@ -104,7 +104,7 @@ export class SettingsRenderer {
       return pongBoxElement;
     } catch (error) {
       console.error('Error creating PongBox:', error);
-      MessageManager.showError('Error al cargar el perfil');
+      MessageManager.showError(i18n.t("errors.loadingFailed", { ns: "settings" }) || "Error loading settings");
       throw error;
     }
   }

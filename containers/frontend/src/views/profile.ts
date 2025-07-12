@@ -13,6 +13,7 @@ export async function showProfile(container: HTMLElement, username?: string): Pr
     console.error('Failed to initialize profile:', error);
     MessageManager.showError('Error loading profile');
     navigate('/home');
+    return;
   }
 }
 
