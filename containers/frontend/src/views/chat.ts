@@ -213,7 +213,7 @@ Object.assign(chatBoxContainer.style, {
   const sendButton = createButton('lime', i18n.t('send', { ns: 'chat' }), () => chatManager.sendMessage());
   sendButton.id = 'send-button';
   
-  const backButton = createButton('pink', i18n.t('back', { ns: 'chat' }), () => navigate('/profile'));
+  const backButton = createButton('pink', i18n.t('back', { ns: 'chat' }), () => navigate('/home'));
   backButton.id = 'back-button';
 
   function updateTranslations() {

@@ -64,7 +64,7 @@ export function setupGoogleSignUp(): void {
                     console.log('Value after setting:', sessionStorage.getItem('twoFAEnabled'));
 
                     setTimeout(() => {
-                        navigate('/profile');
+                        navigate('/home');
                     }, 100);
                     return;
                 } else {

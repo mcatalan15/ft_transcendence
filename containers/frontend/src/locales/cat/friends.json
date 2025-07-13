@@ -1,0 +1,13 @@
+{
+    "friendsitleOwn": "Els meus amics",
+    "friendsTitle": "Amics de {{username}}",
+    "searchPlaceholder": "Buscar amics",
+    "noFriends": "No s'han trobat amics. Vés a fer-ne alguns al xat!",
+    "addFailedMsg": "Error en afegir amic: ",
+    "addFailed": "Error en afegir amic.",
+    "friendRemoved": "Amic eliminat: ",
+    "removalFailedMsg": "Error en eliminar amic: ",
+    "removalFailed": "Error en eliminar amic.",
+    "friendAddedMsg": "{{username}} afegit com a amic!",
+    "friendRemovedMsg": "{{username}} eliminat d'amics."
+}

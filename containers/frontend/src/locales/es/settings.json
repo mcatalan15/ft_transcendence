@@ -1,0 +1,25 @@
+{
+    "changeNickname": "Cambiar apodo",
+    "current": "Apodo actual",
+    "newNickname": "Nuevo apodo",
+    "updateNickname": "Actualizar apodo",
+    "changePassword": "Cambiar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "updatePassword": "Actualizar contraseña",
+    "errors": {
+        "nicknameRequired": "El apodo es obligatorio",
+        "nicknameLength": "El apodo debe tener entre 3 y 8 caracteres",
+        "nicknameFormat": "El formato del apodo es inválido",
+        "passwordRequired": "Los campos de contraseña son obligatorios",
+        "passwordLength": "La contraseña debe tener entre 6 y 20 caracteres",
+        "passwordMismatch": "Las contraseñas no coinciden",
+        "passwordSame": "La nueva contraseña debe ser diferente a la actual",
+        "updateFailed": "Error al actualizar los ajustes. Por favor, inténtalo de nuevo más tarde.",
+        "updateSuccess": "Ajustes actualizados con éxito",
+        "loadingFailed": "Error al cargar los ajustes",
+        "userNotFound": "Usuario no encontrado",
+        "uploadFailed": "Error al subir el avatar: comprueba tu archivo e inténtalo de nuevo. La imagen debe ser un archivo PNG, GIF o JPEG válido y tener menos de 2MB de tamaño."
+    }
+}

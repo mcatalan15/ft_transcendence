@@ -22,12 +22,12 @@ export async function showHome(container: HTMLElement): Promise<void> {
       
       const pingpongBox = document.createElement('div');
       pingpongBox.className = `
-		w-full max-w-[1750px] h-auto md:h-[730px]
-		mx-auto bg-neutral-900 border-[8px] md:border-[16px] border-amber-50
-		flex flex-col overflow-hidden shadow-xl
-		min-h-[600px]
-		absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-		max-w-[95vw] flex items-center justify-center
+        w-full max-w-[1750px] h-auto md:h-[730px]
+        mx-auto bg-neutral-900 border-[8px] md:border-[16px] border-amber-50
+        flex flex-col overflow-hidden shadow-xl
+        min-h-[600px]
+        absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+        max-w-[95vw] flex items-center justify-center
       `.replace(/\s+/g, ' ').trim();
       
       const animationLayer = document.createElement('div');
@@ -76,10 +76,12 @@ export async function showHome(container: HTMLElement): Promise<void> {
       
       if (bounceBtn && animationLayer) {
         bounceBtn.addEventListener('click', () => {
-          clickCount++;
-          clickCounter.textContent = clickCount.toString();
+          if (clickCount < 42) {
+            clickCount++;
+            clickCounter.textContent = clickCount.toString();
+          }
         });
-        
+
         bounceBall(bounceBtn, animationLayer, 'bg-amber-400', 70, true);
       }
     ;
