@@ -15,7 +15,23 @@
   "removeFriend": "Remove Friend",
   "friendAdded": "Friend added successfully",
   "friendRemoved": "Friend removed successfully",
-  "friendshipStatusError": "Error updating friendship status",
   "chat": "Chat",
-  "errorLoadingProfile": "Error loading profile"
+  "errorLoadingProfile": "Error loading profile.",
+  "passwordChangeSuccess": "Password changed successfully!",
+  "nicknameChangeSuccess": "Nickname changed successfully!",
+  "error": {
+    "failedAddFriend": "Failed to add friend: {{result.message}}",
+    "friendshipStatus": "Error updating friendship status.",
+    "nicknameExists": "Nickname already exists, please choose another.",
+    "nicknameChangeFailed": "Nickname change failed: {{message}}",
+    "nicknameChangeError": "Error changing nickname.",
+    "changeFailedMsg": "Nickname change failed: ",
+    "networkError": "Network error while changing nickname.",
+    "nicknameEmpty": "Nickname cannot be empty!",
+    "nicknameSame": "New nickname cannot be the same as the current one!",
+    "passwordSame": "New password cannot be the same as the old one!",
+    "passwordChangeFailed": "Password change failed: ",
+    "passwordChangeError": "Error changing password.",
+    "networkErrorPassword": "Network error while changing password."
+  }
 }
