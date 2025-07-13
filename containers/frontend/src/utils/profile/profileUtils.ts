@@ -1,6 +1,5 @@
 import { navigate } from "../router";
 import { getApiUrl } from "../../config/api";
-import i18n from "../../i18n";
 
 export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
@@ -21,11 +20,11 @@ export async function addFriend(username: string, onSuccess?: () => void): Promi
             }
 			return true;
         } else {
-            alert(i18n.t('addFailedMsg' + result.message, { ns: 'friends' }));
+            alert('Failed to add friend: ' + result.message);
 			return false;
 		}
     } catch (error) {
-        alert(i18n.t('addFailed', { ns: 'friends' }));
+        alert('Failed to add friend');
 		return false;
     }
 }
@@ -43,17 +42,17 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
 
         const result = await response.json();
         if (result.success) {
-            alert(i18n.t('friendRemoved' + username, { ns: 'friends' })); ;
+            alert(`${username} removed from friends`);
             if (onSuccess) {
                 onSuccess();
             }
 			return true;
         } else {
-            alert(i18n.t('removalFailedMsg' + result.message, { ns: 'friends' }));
+            alert('Failed to remove friend: ' + result.message);
 			return false;
         }
     } catch (error) {
-        alert(i18n.t('removalFailed', { ns: 'friends' }));
+        alert('Failed to remove friend');
 		return false;
     }
 }
@@ -81,16 +80,6 @@ export async function statusFriend(username: string): Promise<boolean> {
 }
 
 export async function changeNickname(newNick: string): Promise<void> {
-
-    if (!newNick || newNick.trim() === '') {
-        alert(i18n.t('error.nicknameEmpty', { ns: 'profile' }));
-        return;
-    }
-    else if (newNick === sessionStorage.getItem('username')) {
-        alert(i18n.t('error.nicknameSame', { ns: 'profile' }));
-        return;
-    }
-
 	try {
 		const response = await fetch(getApiUrl('/profile/nickname'), {
 			method: 'PUT',
@@ -105,20 +94,21 @@ export async function changeNickname(newNick: string): Promise<void> {
         
         if (result.success) {
             sessionStorage.setItem('username', newNick);
-            alert(i18n.t('nicknameChangeSuccess', { ns: 'profile' }));
+            alert('Nickname changed successfully!');
             navigate('/settings');
             return;
         } else {
+            // Handle different error cases
             if (result.message && result.message.includes('already exists')) {
-                alert(i18n.t('error.nicknameExists', { ns: 'profile' }));
+                alert('Nickname already exists, please choose another one.');
             } else {
-                alert(i18n.t('error.changeFailedMsg' + (result.message || 'Unknown error'), { ns: 'profile' }));
+                alert('Failed to change nickname: ' + (result.message || 'Unknown error'));
             }
         }
 
     } catch (error) {
         console.error('Error changing nickname:', error);
-        alert(i18n.t('error.networkError', { ns: 'profile' }));
+        alert('Network error occurred while changing nickname.');
     }
 }
 
@@ -134,22 +124,22 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 		});
 
 		if (oldPassword === newPassword) {
-			alert(i18n.t('error.passwordSame', { ns: 'profile' }));
+			alert('New password cannot be the same as the current password.');
 			return;
 		}
 
 		const result = await response.json();
 		
 		if (result.success) {
-			alert(i18n.t('passwordChangeSuccess', { ns: 'profile' }));
+			alert('Password changed successfully!');
 			navigate('/settings');
             return;
 		} else {
-			alert(i18n.t('error.changeFailedMsg' + (result.message || 'Unknown error'), { ns: 'profile' }));
+			alert('Failed to change password: ' + (result.message || 'Unknown error'));
 		}
 
 	} catch (error) {
 		console.error('Error changing password:', error);
-		alert(i18n.t('error.networkError', { ns: 'profile' }));
+		alert('Network error occurred while changing password.');
 	}
 }
