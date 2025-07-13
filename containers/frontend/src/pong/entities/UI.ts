@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/30 14:29:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/12 22:01:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ export class UI extends Entity {
 		}
 	}
 
-	setClassicScoreText(newScore: string, side: string): void {
+	setClassicScoreText(newScore: string, side: string): void {	
 		if (side === 'left') {
 			const textComponent = this.getComponent('text', 'classicScoreTextLeft') as TextComponent;
 			if (textComponent) {

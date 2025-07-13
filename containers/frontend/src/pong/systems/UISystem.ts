@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:52:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 10:31:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ export class UISystem implements System {
 	}
 
 	update(entities: Entity[], delta: { deltaTime: number }): void {
+		if (this.game.hasEnded) {
+			return;
+		}
+		
 		entities.forEach(entity => {
 			if (!isUI(entity)) {
 				return;
@@ -73,10 +77,10 @@ export class UISystem implements System {
 						}
 					} else if (tag === 'classicScoreLeft') {
 						textObject.x = entity.width / 2 - 250;
-						textObject.y = 200;
+						textObject.y = 225;
 					} else if (tag === 'classicScoreRight') {
 						textObject.x = entity.width / 2 + 250;
-						textObject.y = 200;
+						textObject.y = 225;
 					} else if (tag === 'timer' || textComponent.instanceId === 'timer') {
 						textObject.x = entity.width - 50;
 						textObject.y = entity.topOffset + 20;
@@ -92,10 +96,16 @@ export class UISystem implements System {
 	}
 
 	private updateScore(entities: Entity[], event: GameEvent): void {
+		if (this.game.isOnline && this.game.config.classicMode || this.game.hasEnded) {
+			console.log('🎮 UI: Skipping local score event in online mode, server manages scoring');
+			return;
+		}
+
 		const uiEntity = entities.find(e => e.id === 'UI') as UI;
 		if (!uiEntity) {
 			return;
-		} else {
+		}
+
 		if (event.side === 'left') uiEntity.incrementScore('left');
 		else if (event.side === 'right') uiEntity.incrementScore('right');
 
@@ -103,15 +113,14 @@ export class UISystem implements System {
 		if (this.game.config.classicMode) {
 			if (event.side === 'left') {
 				newScore = `${uiEntity.getScore('left')}`;
+				uiEntity.setClassicScoreText(newScore, 'left');
 			} else if (event.side === 'right') {
 				newScore = `${uiEntity.getScore('right')}`;
+				uiEntity.setClassicScoreText(newScore, 'right');
 			}
-
-			uiEntity.setClassicScoreText(newScore!, event.side!);
 		} else {
 			newScore = `${uiEntity.getScore('left')} - ${uiEntity.getScore('right')}`;
 			uiEntity.setScoreText(newScore);
-		}
 		}
 	}
 

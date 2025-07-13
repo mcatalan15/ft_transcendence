@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 15:50:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/09 09:31:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,9 +160,9 @@ export class ButtonManager {
 		const HalfButtonConfigs: menuUtils.MenuButtonConfig[] = [
 			{
 				isClicked: true,
-				text: this.getButtonTexts(menu, 'local'),
+				text: this.getButtonTexts(menu, 'practice'),
 				onClick: () => {
-					console.log('LOCAL clicked');
+					console.log('PRACTICE clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -170,9 +170,9 @@ export class ButtonManager {
 			},
 			{
 				isClicked: false,
-				text: this.getButtonTexts(menu, 'online'),
+				text: this.getButtonTexts(menu, 'ranked'),
 				onClick: () => {
-					console.log('ONLINE clicked');
+					console.log('RANKED clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -211,8 +211,8 @@ export class ButtonManager {
 		];
 
 		let buttonIds: string[] = [
-			'LOCAL',
-			'ONLINE',
+			'PRACTICE',
+			'RANKED',
 			'1 vs IA',
 			'TOURNAMENT',
 			'1 vs 1'
@@ -657,6 +657,26 @@ export class ButtonManager {
 					case ('fr'): return 'EN LIGNE';
 					case ('cat'): return 'EN LÍNEA';
 					default: return 'ONLINE';
+				}
+			}
+
+			case ('practice'): {
+				switch (menu.language) {
+					case ('en'): return 'PRACTICE';
+					case ('es'): return 'PRÁCTICA';
+					case ('fr'): return 'PRATIQUE';
+					case ('cat'): return 'PRÀCTICA';
+					default: return 'PRACTICE';
+				}
+			}
+
+			case ('ranked'): {
+				switch (menu.language) {
+					case ('en'): return 'RANKED';
+					case ('es'): return 'CLASIFICATORIO';
+					case ('fr'): return 'CLASSÉ';
+					case ('cat'): return 'CLASSIFICATORI';
+					default: return 'RANKED';
 				}
 			}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 12:12:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 12:55:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,15 @@ import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
 
+declare global {
+    interface Window {
+        gc?: () => void;
+    }
+}
+
 export class Menu{
 	config: GameConfig;
-	preconfig!: Preconfiguration;
+	preconfiguration!: Preconfiguration;
 	hasPreconfig: boolean = false;
 	language: string;
 	app: Application;
@@ -213,11 +219,39 @@ export class Menu{
 	// Player Data
 	playerData: PlayerData | null = null;
 
-	constructor(app: Application, language: string, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
+	//Browser data
+	isFirefox: boolean = false;
+
+	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
+		this.isFirefox = isFirefox || false;
+
+		this.preconfiguration = preconfiguration || {
+			mode: 'local',
+			variant: '1v1',
+			classicMode: false,
+			hasInvitationContext: false,
+			invitationData: null
+		};
+		
+		console.log('🎯 Menu Preconfiguration Status:');
+		console.log('Has invitation context:', this.preconfiguration.hasInvitationContext);
+		
+		if (this.preconfiguration.hasInvitationContext && this.preconfiguration.invitationData) {
+			console.log('📧 Invitation Data:');
+			console.log('  - Invite ID:', this.preconfiguration.invitationData.inviteId);
+			console.log('  - Current Player:', this.preconfiguration.invitationData.currentPlayer);
+			console.log('  - Timestamp:', this.preconfiguration.invitationData.timestamp);
+			console.log('  - Mode will be set to:', this.preconfiguration.mode);
+			this.hasPreconfig = true;
+		} else {
+			console.log('📝 No invitation context - standard menu initialization');
+			this.hasPreconfig = false;
+		}
+		
 		this.menuContainer = new Container();
 		this.menuHidden = new Container();
 
@@ -277,11 +311,13 @@ export class Menu{
 		
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
-			this.preconfig = preconfiguration!;
+			this.preconfiguration = preconfiguration!;
 		}
 	}
 
 	async init(classic: boolean, filters: boolean): Promise<void> {
+		this.applyFirefoxOptimizations();
+		
 		//! TEST DEBUG
 		await this.testApiCall();
 
@@ -317,15 +353,38 @@ export class Menu{
 		});
 
 		this.applyInitialConfiguration(classic, filters);
+		/* if (this.preconfiguration) {
+			this.manageOnlineInvitationGame();
+		} */
+	}
+
+	manageOnlineInvitationGame() {
+		// Test stuff to check if things happen. THIS IS NOT ONLINE YET.
+		
+		this.eventQueue.push({
+			type: 'FILTERS_CLICK',
+			target: this.filtersButton,
+			buttonName: 'FILTERS'
+		});
+
+		this.eventQueue.push({
+			type: 'CLASSIC_CLICK',
+			target: this.classicButton,
+			buttonName: 'CLASSIC'
+		});
+
+		this.eventQueue.push({
+			type: 'READY_CLICK',
+			target: this.playButton,
+			buttonName: 'READY'
+		});
 	}
 
 	private applyInitialConfiguration(classic: boolean, filters: boolean): void {
 		console.log('Applying initial configuration...');
 		console.log('Current config:', this.config);
 		
-		// Only apply classic mode if it's NOT already in the desired state
 		if (classic) {
-			// We want classic mode ON, check if button reflects this
 			if (!this.classicButton.getIsClicked()) {
 				console.log('Classic mode should be ON, simulating click to turn it ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -336,7 +395,6 @@ export class Menu{
 				console.log('Classic mode already correctly set to ON');
 			}
 		} else {
-			// We want classic mode OFF, check if button reflects this
 			if (this.classicButton.getIsClicked()) {
 				console.log('Classic mode should be OFF, simulating click to turn it OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -348,9 +406,7 @@ export class Menu{
 			}
 		}
 		
-		// Apply filters setting - same logic
 		if (filters) {
-			// We want filters OFF, check if button reflects this
 			if (!this.filtersButton.getIsClicked()) {
 				console.log('Filters should be OFF, simulating click to turn them OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -361,7 +417,6 @@ export class Menu{
 				console.log('Filters already correctly set to OFF');
 			}
 		} else {
-			// We want filters ON, check if button reflects this
 			if (this.filtersButton.getIsClicked()) {
 				console.log('Filters should be ON, simulating click to turn them ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
@@ -791,16 +846,23 @@ export class Menu{
 	cleanup(): void {
 		console.log("Cleaning up menu...");
 		
-		// Stop and cleanup sounds
+		// Stop and cleanup sounds FIRST - Complete implementation
 		if (this.sounds) {
-			Object.values(this.sounds).forEach(sound => {
+			console.log('Stopping menu sounds...');
+			Object.entries(this.sounds).forEach(([key, sound]) => {
 				if (sound && typeof sound.stop === 'function') {
+					console.log(`Stopping menu sound: ${key}`);
 					sound.stop();
 				}
 				if (sound && typeof sound.unload === 'function') {
+					console.log(`Unloading menu sound: ${key}`);
 					sound.unload();
 				}
 			});
+			
+			// Clear the sounds object
+			this.sounds = {} as MenuSounds;
+			console.log('All menu sounds stopped and unloaded');
 		}
 		
 		this.app.ticker.stop();
@@ -831,7 +893,7 @@ export class Menu{
 			}
 		});
 		this.entities = [];
-
+	
 		Object.values(this.renderLayers).forEach(layer => {
 			if (layer.parent) {
 				layer.parent.removeChild(layer);
@@ -847,9 +909,8 @@ export class Menu{
 				container.destroy({ children: true });
 			}
 		});
-
+	
 		MenuPowerupManager.cleanup();
-		//! need to clean up more managers?
 		
 		this.app.stage.removeChildren();
 		
@@ -951,6 +1012,26 @@ export class Menu{
 			} catch (error) {
 				console.warn(`Failed to clear conflicting asset ${assetName}:`, error);
 			}
+		}
+	}
+
+	private applyFirefoxOptimizations(): void {
+		if (!this.isFirefox) return;
+		
+		console.log('Applying Firefox-specific optimizations...');
+		
+		// Reduce particle density
+		this.maxBalls = Math.floor(this.maxBalls * 0.7);
+		
+		// Disable some intensive visual effects
+		this.app.ticker.maxFPS = 60;
+		this.app.ticker.minFPS = 30;
+		
+		// Force garbage collection more frequently (if available)
+		if (window.gc) {
+			setInterval(() => {
+				window.gc!();
+			}, 10000);
 		}
 	}
 

@@ -12,6 +12,8 @@ export class WebSocketManager {
     private maxReconnectAttempts = 5;
     private currentPlayerNumber: number | null = null;
     private isConnecting: boolean = false;
+    private hostName: string | null = null;
+    private guestName: string | null = null;
     
     // Remove singleton pattern for game instances, or make it optional
     private static instance: WebSocketManager | null = null;
@@ -19,6 +21,17 @@ export class WebSocketManager {
     getGameWebSocketUrl(): string {
         return this.gameWebSocketUrl;
     }
+
+    setGameInfo(hostName: string, guestName: string, isHost: boolean): void {
+        this.hostName = hostName;
+        this.guestName = guestName;
+        this.playerRole = isHost ? 'host' : 'guest';
+        
+        console.log('Game info set:', { hostName, guestName, isHost });
+    }
+    
+    getHostName(): string | null { return this.hostName; }
+    getGuestName(): string | null { return this.guestName; }
 
     setPlayerRole(role: 'host' | 'guest') {
         this.playerRole = role;

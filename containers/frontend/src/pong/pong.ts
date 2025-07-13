@@ -1,65 +1,87 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pong.ts                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/28 11:29:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 12:11:04 by hmunoz-g         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
+// pong.ts
 import { Application } from "pixi.js";
 import { Menu } from './menu/Menu';
 import { Preconfiguration } from "./utils/GameConfig";
+import { gameManager } from "../utils/GameManager";
 
-export async function initGame(container: HTMLElement) {
+class BrowserOptimizer {
+static isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+static isChrome = navigator.userAgent.toLowerCase().includes('chrome');
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const mode = urlParams.get('mode');
-  const gameId = urlParams.get('gameId');
-  
-  if (mode === 'online' && gameId) {
-    console.log('Online mode detected, skipping menu initialization');
-    return; // Don't create menu for online games
-  }
+static getOptimalSettings(): {
+	antialias: boolean;
+	resolution: number;
+	powerPreference: 'default' | 'high-performance' | 'low-power';
+	autoDensity: boolean;
+} {
+	if (this.isFirefox) {
+		return {
+			antialias: false,
+			resolution: 1,
+			powerPreference: 'default',
+			autoDensity: false
+		};
+	} else {
+		return {
+			antialias: true,
+			resolution: 2,
+			powerPreference: 'high-performance',
+			autoDensity: true
+		};
+	}
+}
+}
 
-  const app = new Application();
-  await app.init({
-    background: '#171717',
-    width: 1800,
-    height: 750,
-    antialias: true,
-    resolution: 2                                                                                                                                                                                                                                                                                   ,
-    autoDensity: true,
-  });
+export async function initGame(container: HTMLElement, preconfiguration?: Preconfiguration) {
+	if (!container.id) {
+		container.id = `pong-container-${Date.now()}`;
+	}
 
-  const language = localStorage.getItem('i18nextLng') || 'en';
+	const urlParams = new URLSearchParams(window.location.search);
+	const mode = urlParams.get('mode');
+	const gameId = urlParams.get('gameId');
 
-  container.appendChild(app.canvas);
+	if (mode === 'online' && gameId) {
+		console.log('Direct online game detected, skipping menu initialization');
+		return;
+	}
 
-  // example: http://localhost:5173/pong?gameId=game_1751464868262_ehxauuvw2&mode=online&opponent=hmunoz-g
-  // Check if the URL path is '/pong' or contains configuration elements like '?opponent=user1+mode=classic'
-  const url = new URL(window.location.href);
-  const pathname = url.pathname;
-  const search = url.search;
-  let hasPreconfig = false;
-  let preconfig: Preconfiguration | null = null;
+	const browserSettings = BrowserOptimizer.getOptimalSettings();
+	
+	console.log(`Browser detected: ${BrowserOptimizer.isFirefox ? 'Firefox' : 'Chrome'}`);
+	console.log('Using settings:', browserSettings);
 
-  if (pathname.endsWith('/pong') && search.length > 0) {
-    const params = new URLSearchParams(search);
-    const opponent = params.get('opponent');
-    const mode = params.get('mode');
-    hasPreconfig = search.length > 0;
-    if (hasPreconfig) {
-      preconfig = {
-        mode: url.searchParams.get('mode') as 'local' | 'online' || 'online',
-        variant: mode!,
-      };
-    }
-  }
+	const app = new Application();
+	await app.init({
+		background: '#171717',
+		width: 1800,
+		height: 750,
+		antialias: browserSettings.antialias,
+		resolution: browserSettings.resolution,
+		autoDensity: browserSettings.autoDensity,
+		powerPreference: BrowserOptimizer.isFirefox ? 'high-performance' : 'low-power',
+		
+		...(BrowserOptimizer.isFirefox && {
+			clearBeforeRender: true,
+			preserveDrawingBuffer: false
+		})
+	});
 
-  const menu = new Menu(app, language, hasPreconfig, preconfig!);
-  await menu.init(false, true);
-};
+	const language = localStorage.getItem('i18nextLng') || 'en';
+	container.appendChild(app.canvas);
+
+	const finalPreconfiguration: Preconfiguration = preconfiguration || {
+		mode: 'local',
+		variant: '1v1',
+		classicMode: true,
+		hasInvitationContext: false,
+		invitationData: null
+	};
+
+	console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
+
+	const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
+	await menu.init(false, true);
+
+	gameManager.registerGame(container.id, menu, undefined, app);
+}

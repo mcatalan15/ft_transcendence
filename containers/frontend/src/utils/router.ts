@@ -1,12 +1,18 @@
 import views from './viewsRoutesLoader';
 import { isUserAuthenticated } from './auth/authGuard';
 import { logUserOut } from './auth/userLogout';
+import { gameManager } from './GameManager';
 
 let app: HTMLElement | null = null;
 
 export function startRouter(container: HTMLElement) {
 	app = container;
 
+	window.addEventListener('beforeunload', () => {
+		console.log('Page unloading, cleaning up games...');
+		gameManager.destroyAllGames();
+	});
+	
 	window.addEventListener('popstate', () => {
 		renderRoute(location.pathname);
 	});
@@ -22,7 +28,11 @@ export function navigate(path: string) {
 function renderRoute(path: string) {
 	if (!app) return;
 
+	console.log('🧹 Cleaning up games before route change...');
+	
 	app.innerHTML = '';
+
+	gameManager.destroyAllGames();
 
 	switch (path) {
 		case '/':
@@ -159,9 +169,5 @@ function renderRoute(path: string) {
 				return;
 			}
 			navigate('/404');
-			/*app.innerHTML = `<h2 style='margin-right:16px'>Page not found</h2>
-	  <span style="display: block; height: 20px;"></span>
-	  <button onclick="navigate('/')">Back home</button>
-	  `;*/
 	}
 }

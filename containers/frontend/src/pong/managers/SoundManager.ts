@@ -46,6 +46,22 @@ export class SoundManager {
 		this.startMusic();
 	}
 
+	stopAllSounds(): void {
+		Object.keys(this.sounds).forEach(soundName => {
+			const sound = this.sounds[soundName];
+			if (sound) {
+				sound.stop();
+			}
+		});
+		
+		if (this.music) {
+			this.music.stop();
+			this.musicPlaying = false;
+		}
+		
+		console.log('All sounds stopped');
+	}
+
 	cleanup(): void {
 		Object.keys(this.sounds).forEach(soundName => {
 			const sound = this.sounds[soundName];

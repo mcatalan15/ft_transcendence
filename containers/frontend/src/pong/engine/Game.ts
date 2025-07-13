@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 12:20:40 by mcatalan@st      ###   ########.fr       */
+/*   Updated: 2025/07/12 22:04:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // Import Pixi and Howler stuff
-import { Application, Container, Graphics, Text } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
@@ -58,7 +58,7 @@ import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
 
 // Import exported types and utils
-import { FrameData, GameEvent, GameSounds, World, Player, GAME_COLORS } from '../utils/Types'
+import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
 
 import { getApiUrl } from '../../config/api';
 
@@ -105,7 +105,7 @@ export class PongGame {
 
 	isOnline: boolean = false;
 	gameId?: string;
-	localPlayerNumber?: number;
+	localPlayerNumber?: number = 0;
 	networkManager?: any;
 
 	serverBallPosition: { x: number, y: number } = { x: 0, y: 0 };
@@ -116,12 +116,15 @@ export class PongGame {
 	alphaFade: Graphics = new Graphics();
 	endGameOverlay!: EndgameOverlay;
 
-	constructor(app: Application, config: GameConfig, language: string) {
+	isFirefox: boolean = false;
+
+	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
+		this.isFirefox = isFirefox || false;
 		this.entities = [];
 		this.systems = [];
 		this.eventQueue = [];
@@ -180,7 +183,19 @@ export class PongGame {
 			this.initSounds();
 			this.soundManager = new SoundManager(this.sounds as Record<string, Howl>);
 		}
+
+		if (this.isFirefox) {
+            console.log('Game initialized with Firefox optimizations');
+            this.applyGameFirefoxOptimizations();
+        }
 	}
+
+	private applyGameFirefoxOptimizations(): void {
+        // Reduce particle density for Firefox
+        // Lower sound volumes
+        // Disable some intensive effects
+        console.log('Applied Firefox optimizations to game');
+    }
 
 	async init(): Promise<void> {
 		if (!this.app.ticker.started) {
@@ -220,7 +235,7 @@ export class PongGame {
 		const buttonSystem = new ButtonSystem(this);
 
 		this.systems.push(renderSystem);
-		if (!this.isOnline) this.systems.push(inputSystem);
+		this.systems.push(inputSystem);
 		if (!this.config.classicMode) this.systems.push(crossCutSystem);
 		if (!this.config.classicMode) this.systems.push(worldSystem);
 		this.systems.push(animationSystem);
@@ -252,7 +267,6 @@ export class PongGame {
 
 	prepareGameData() {
 		this.data = {
-			gameId: this.gameId || '',
 			config: this.config,
 			createdAt: new Date().toString(),
 			endedAt: null,
@@ -293,9 +307,10 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name|| 'PLAYER 1',
-				score: 0,
-				result: null,
+				name: this.leftPlayer.name || 'PLAYER 1',
+                id: this.leftPlayer.id || 'player1',
+                score: 0,
+                result: null,
 				hits: 0,
 				goalsInFavor: 0,
 				goalsAgainst: 0,
@@ -305,8 +320,9 @@ export class PongGame {
 			},
 			rightPlayer: {
 				name: this.rightPlayer.name || 'PLAYER 2',
-				score: 0,
-				result: null,
+                id: this.rightPlayer.id || 'player2',
+                score: 0,
+                result: null,
 				hits: 0,
 				goalsInFavor: 0,
 				goalsAgainst: 0,
@@ -328,14 +344,14 @@ export class PongGame {
 				loop: true,
 				volume: 0.5,
 				onload: () => console.log('bgm loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('bgm failed to load:', error)
+				onloaderror: (error: any) => console.error('bgm failed to load:', error)
 			}),
 			pong: new Howl({
 				src: ['/assets/sfx/used/pongFiltered02.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('pong loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('pong failed to load:', error)
+				onloaderror: (error: any) => console.error('pong failed to load:', error)
 			}),
 			thud: new Howl({
 				src: ['/assets/sfx/used/thudFiltered01.mp3'],
@@ -343,7 +359,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('thud loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('thud failed to load:', error)
+				onloaderror: (error: any) => console.error('thud failed to load:', error)
 			}),
 			shoot: new Howl({
 				src: ['/assets/sfx/used/shotFiltered01.mp3'],
@@ -351,7 +367,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('shoot loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('shoot failed to load:', error)
+				onloaderror: (error: any) => console.error('shoot failed to load:', error)
 			}),
 			hit: new Howl({
 				src: ['/assets/sfx/used/hitFiltered01.mp3'],
@@ -359,7 +375,7 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('hit loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('hit failed to load:', error)
+				onloaderror: (error: any) => console.error('hit failed to load:', error)
 			}),
 			shieldBreak: new Howl({
 				src: ['/assets/sfx/used/shieldBreakFiltered01.mp3'],
@@ -367,63 +383,63 @@ export class PongGame {
 				preload: true,
 				volume: 0.3,
 				onload: () => console.log('shieldBreak loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('shieldBreak failed to load:', error)
+				onloaderror: (error: any) => console.error('shieldBreak failed to load:', error)
 			}),
 			powerup: new Howl({
 				src: ['/assets/sfx/used/powerupFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerup loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('powerup failed to load:', error)
+				onloaderror: (error: any) => console.error('powerup failed to load:', error)
 			}),
 			powerdown: new Howl({
 				src: ['/assets/sfx/used/powerdownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('powerdown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('powerdown failed to load:', error)
+				onloaderror: (error: any) => console.error('powerdown failed to load:', error)
 			}),
 			ballchange: new Howl({
 				src: ['/assets/sfx/used/ballchangeFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('ballchange loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('ballchange failed to load:', error)
+				onloaderror: (error: any) => console.error('ballchange failed to load:', error)
 			}),
 			death: new Howl({
 				src: ['/assets/sfx/used/explosionFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('death loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('death failed to load:', error)
+				onloaderror: (error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({
 				src: ['/assets/sfx/used/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetUp loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetUp failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({
 				src: ['/assets/sfx/used/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			endGame: new Howl({
 				src: ['/assets/sfx/used/explosion_filtered02.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('Explosion2 loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			spawn: new Howl({
 				src: ['/assets/sfx/used/spawn_filtered01.mp3'],
 				html5: true,
 				preload: true,
 				onload: () => console.log('paddleResetDown loaded successfully'),
-				onloaderror: (id: number, error: any) => console.error('paddleResetDown failed to load:', error)
+				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 		};
 	}
@@ -445,15 +461,18 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void> {
-
-		//TODO: Update to match online game player names consistently
-		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		if (this.config.variant === '1vAI') {
-			this.rightPlayer = { name: "AI-BOT" };
+		if (this.config.mode === 'online') {
+			this.leftPlayer = { name: this.config.hostName || "Host Player" };
+			this.rightPlayer = { name: this.config.guestName || "Guest Player" };
 		} else {
-			this.rightPlayer = { name: this.config.opponent || "Player 2" };
+			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
+			if (this.config.variant === '1vAI') {
+				this.rightPlayer = { name: "AI-BOT" };
+			} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
+				this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+			}
 		}
-
+		
 		this.data.leftPlayer.name = this.leftPlayer.name;
     	this.data.rightPlayer.name = this.rightPlayer.name;
 
@@ -524,12 +543,10 @@ export class PongGame {
 			console.log("PostProcessing Layer created")
 		}
 
-		// Create endgame alpha fade
 		this.alphaFade.rect(0, 0, this.width, this.height);
 		this.alphaFade.fill({ color: GAME_COLORS.black, alpha: 0.4 });
 		this.renderLayers.hidden.addChild(this.alphaFade);
 
-		// Create endgame overlays
 		this.endGameOverlay = new EndgameOverlay(this, 'EndGameOverlay', 'overlays', this.width / 2 - 500, this.height / 2 - 200, 1000, 400);
 		const EndGameOverlayRender = this.endGameOverlay.getComponent('render') as RenderComponent;
 		this.renderLayers.hidden.addChild(EndGameOverlayRender.graphic);
@@ -696,102 +713,46 @@ export class PongGame {
 	}
 
 	updateFromServer(gameState: any) {
+		if (this.hasEnded) {
+			return;
+		}
+		
 		if (!this.isOnline || !gameState) return;
-
-		console.log('=== UPDATE FROM SERVER ===');
-		console.log('Game state received:', gameState);
-		console.log('Available entities:', this.entities.map(e => ({
-			id: e.id,
-			hasPhysics: !!e.getComponent('physics'),
-			hasRender: !!e.getComponent('render'),
-			physicsPos: e.getComponent('physics') ? { x: e.getComponent('physics').x, y: e.getComponent('physics').y } : null
-		})));
-
+	
 		try {
-			// Find entities by their IDs/types
-			const ballEntity = this.entities.find(e => e.id === 'defaultBall');
-			const paddle1Entity = this.entities.find(e => e.id === 'paddleL');
-			const paddle2Entity = this.entities.find(e => e.id === 'paddleR');
-
-			console.log('Entity search results:', {
-				ballFound: !!ballEntity,
-				paddle1Found: !!paddle1Entity,
-				paddle2Found: !!paddle2Entity
-			});
-
-			// Update ball position using PhysicsComponent
-			if (ballEntity && gameState.ball) {
-				const ballPhysics = ballEntity.getComponent('physics') as PhysicsComponent;
-				const ballRender = ballEntity.getComponent('render') as RenderComponent;
-
-				ballPhysics.x = gameState.ball.x;
-				ballPhysics.y = gameState.ball.y;
-				ballPhysics.velocityX = gameState.ball.vx || 0;
-				ballPhysics.velocityY = gameState.ball.vy || 0;
-				ballRender.graphic.x = gameState.ball.x;
-				ballRender.graphic.y = gameState.ball.y;
-
-			} else {
-				console.warn('Ball entity or gameState.ball missing');
-				if (!ballEntity) console.warn('  - Ball entity not found in entities array');
-				if (!gameState.ball) console.warn('  - gameState.ball is missing from server data');
+			const physicsSystem = this.systems.find(s => s instanceof PhysicsSystem) as PhysicsSystem;
+			if (physicsSystem && physicsSystem.updateFromServer) {
+				physicsSystem.updateFromServer(gameState);
 			}
-
-			// Update paddle positions with similar detailed logging
-			if (paddle1Entity && gameState.paddle1) {
-				const paddle1Physics = paddle1Entity.getComponent('physics') as PhysicsComponent;
-				if (paddle1Physics) {
-					paddle1Physics.x = gameState.paddle1.x;
-					paddle1Physics.y = gameState.paddle1.y;
-
-					const paddle1Render = paddle1Entity.getComponent('render') as RenderComponent;
-					if (paddle1Render && paddle1Render.graphic) {
-						paddle1Render.graphic.x = gameState.paddle1.x;
-						paddle1Render.graphic.y = gameState.paddle1.y;
-					}
-				}
-			}
-
-			if (paddle2Entity && gameState.paddle2) {
-				const paddle2Physics = paddle2Entity.getComponent('physics') as PhysicsComponent;
-				if (paddle2Physics) {
-					paddle2Physics.x = gameState.paddle2.x;
-					paddle2Physics.y = gameState.paddle2.y;
-
-					const paddle2Render = paddle2Entity.getComponent('render') as RenderComponent;
-					if (paddle2Render && paddle2Render.graphic) {
-						paddle2Render.graphic.x = gameState.paddle2.x;
-						paddle2Render.graphic.y = gameState.paddle2.y;
-					}
-				}
-			}
-
+	
 			if (gameState.score1 !== undefined || gameState.score2 !== undefined) {
-				this.updateScoreDisplay(gameState.score1 || 0, gameState.score2 || 0);
+				this.updateScoreFromServer(gameState.score1, gameState.score2);
+			}
+	
+			if (gameState.gameEnded || gameState.winner || gameState.type === 'GAME_END') {
+				this.handleServerGameEnd(gameState);
 			}
 		} catch (error) {
 			console.error('Error updating from server state:', error);
 		}
 	}
 
-	private updateScoreDisplay(score1: number, score2: number): void {
-		// Find the UI entity which contains the score
-		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
-
-		if (uiEntity) {
-			if (uiEntity.leftScore !== undefined && uiEntity.rightScore !== undefined) {
-				uiEntity.leftScore = score1;
-				uiEntity.rightScore = score2;
+	private handleServerGameEnd(gameState: any): void {
+		console.log('Server declared game ended:', gameState);
+		
+		const endingSystem = this.systems.find(s => s.constructor.name === 'EndingSystem') as any;
+		if (endingSystem && !this.hasEnded) {
+			const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+			if (uiEntity && gameState.finalScore) {
+				uiEntity.leftScore = gameState.finalScore.player1;
+				uiEntity.rightScore = gameState.finalScore.player2;
 			}
-
-			const textComponent = uiEntity.getComponent('text') as TextComponent;
-			if (textComponent) {
-				textComponent.setText(`${score1} - ${score2}`);
-			}
+			
+			(endingSystem as any).ended = true;
+			this.hasEnded = true;
+			console.log('Forced game end from server event');
 		}
-		console.log(`Score display updated: ${score1} - ${score2}`);
 	}
-
 	private disableLocalGameplayForOnline(): void {
 		console.log('Disabling local gameplay for online mode...');
 
@@ -800,14 +761,12 @@ export class PongGame {
 		this.entities.forEach(entity => {
 			const physics = entity.getComponent('physics') as PhysicsComponent;
 
-			// Mark ball and paddles as server-controlled
 			if (physics && (entity.id === 'defaultBall' || entity.id === 'paddleL' || entity.id === 'paddleR')) {
 				(physics as any).isServerControlled = true;
 				console.log(`Marked entity ${entity.id} as server-controlled`);
 				disabledCount++;
 			}
 
-			// Remove input components from paddles (network manager handles input)
 			if (entity.id === 'paddleL' || entity.id === 'paddleR') {
 				const input = entity.getComponent('input');
 				if (input) {
@@ -872,91 +831,88 @@ export class PongGame {
 		}
 	}
 
+	private updateScoreFromServer(score1: number, score2: number): void {
+		if (this.hasEnded) {
+			console.log('Game has ended, ignoring score updates from server');
+			return;
+		}
+		
+		const uiEntity = this.entities.find(e => e.id === 'UI') as UI;
+		
+		if (uiEntity) {
+			uiEntity.leftScore = score1;
+			uiEntity.rightScore = score2;
+			
+			if (this.config.classicMode) {
+				uiEntity.setClassicScoreText(score1.toString(), 'left');
+				uiEntity.setClassicScoreText(score2.toString(), 'right');
+				console.log(`🎮 UI: Classic score updated from server - left=${score1}, right=${score2}`);
+			} else {
+				uiEntity.setScoreText(`${score1} - ${score2}`);
+				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
+			}
+		}
+	}
+
 	async cleanup(): Promise<void> {
-		try {			
-			if (this.sounds) {
-				Object.values(this.sounds).forEach(sound => {
-					if (sound) {
-						sound.stop();
-						sound.unload();
-					}
-				});
+		try {            
+			console.log('Starting game cleanup...');
+			
+			if (this.soundManager) {
+				console.log('Stopping sound manager...');
+				await this.soundManager.stopAllSounds();
+				await this.soundManager.cleanup();
 			}
 			
-			this.systems.forEach(system => {
-				if (system && typeof (system as any).cleanup === 'function') {
-					(system as any).cleanup();
-				}
-			});
-			this.systems = [];
+			if (this.networkManager) {
+				console.log('Disconnecting network manager...');
+				this.networkManager.disconnect();
+			}
+
+			if (this.app?.ticker?.started) {
+				this.app.ticker.stop();
+			}
 			
-			this.entities.forEach(entity => {
-				if (entity && typeof entity.cleanup === 'function') {
-					entity.cleanup();
+			console.log('Cleaning up systems...');
+			for (const system of this.systems) {
+				if (system && typeof (system as any).cleanup === 'function') {
+					await (system as any).cleanup();
 				}
-			});
+			}
+			this.systems = [];
+
+			console.log('Cleaning up entities...');
+			for (const entity of this.entities) {
+				const render = entity.getComponent('render') as RenderComponent;
+				if (render?.graphic && render.graphic.parent) {
+					render.graphic.parent.removeChild(render.graphic);
+					render.graphic.destroy({ children: true });
+				}
+				
+				const text = entity.getComponent('text') as TextComponent;
+				if (text?.getRenderable && text.getRenderable().parent) {
+					text.getRenderable().parent.removeChild(text.getRenderable());
+					text.getRenderable().destroy();
+				}
+			}
 			this.entities = [];
 
-			if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
-				(ParticleSpawner as any).cleanup();
-			}
-			
-			if (ImageManager && typeof (ImageManager as any).cleanup === 'function') {
-				(ImageManager as any).cleanup();
+			if (ParticleSpawner?.cleanup) {
+				ParticleSpawner.cleanup();
 			}
 
-			if (this.soundManager && typeof this.soundManager.cleanup === 'function') {
-				this.soundManager.cleanup();
+			console.log('Cleaning up render layers...');
+			for (const layer of Object.values(this.renderLayers)) {
+				if (layer?.parent) {
+					layer.parent.removeChild(layer);
+				}
+				layer?.destroy({ children: true });
 			}
 			
-			const worldSystem = this.systems.find(s => s instanceof WorldSystem) as WorldSystem;
-			if (worldSystem) {
-				if (worldSystem.wallFigureManager && typeof worldSystem.wallFigureManager.cleanup === 'function') {
-					worldSystem.wallFigureManager.cleanup();
-				}
-				if (worldSystem.obstacleManager && typeof worldSystem.obstacleManager.cleanup === 'function') {
-					worldSystem.obstacleManager.cleanup();
-				}
-				if (worldSystem.worldManager && typeof worldSystem.worldManager.cleanup === 'function') {
-					worldSystem.worldManager.cleanup();
-				}
-    
-				worldSystem.figureQueue = [];
-				worldSystem.obstacleQueue = [];
-			}
-			
-			Object.values(this.renderLayers).forEach(layer => {
-				if (layer && layer.removeChildren) {
-					layer.removeChildren();
-					if (layer.parent) {
-						layer.parent.removeChild(layer);
-					}
-				}
-			});
-			
-			if (this.visualRoot) {
-				this.visualRoot.removeChildren();
-				if (this.visualRoot.parent) {
-					this.visualRoot.parent.removeChild(this.visualRoot);
-				}
-			}
-			
-			if (this.app.stage) {
-				this.app.stage.removeChildren();
-			}
-
-			this.eventQueue = [];
-			
-			if (this.endGameOverlay && typeof this.endGameOverlay.cleanup === 'function') {
-				this.endGameOverlay.cleanup();
-			}
-
-			this.worldPool = [];
-			
-			this.hasEnded = false;
-			
+			console.log('Game cleanup completed successfully');
 		} catch (error) {
 			console.error('Error during game cleanup:', error);
+			throw error;
 		}
 	}
 }
