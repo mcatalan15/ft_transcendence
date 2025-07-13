@@ -2,5 +2,12 @@
     "friendsitleOwn": "Mes amis",
     "friendsTitle": "Amis de {{username}}",
     "searchPlaceholder": "Rechercher des amis",
-    "noFriends": "Aucun ami trouvé. Allez vous en faire dans le chat !"
+    "noFriends": "Aucun ami trouvé. Allez vous en faire dans le chat !",
+    "addFailedMsg": "Échec de l'ajout d'ami : ",
+    "addFailed": "Échec de l'ajout d'ami.",
+    "friendRemoved": "Ami retiré : ",
+    "removalFailedMsg": "Échec du retrait d'ami : ",
+    "removalFailed": "Échec du retrait d'ami.",
+    "friendAddedMsg": "{{username}} ajouté en tant qu'ami !",
+    "friendRemovedMsg": "{{username}} retiré de la liste d'amis."
 }

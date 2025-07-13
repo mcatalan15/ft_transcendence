@@ -15,7 +15,22 @@
   "removeFriend": "Retirer comme ami",
   "friendAdded": "Ami ajouté",
   "friendRemoved": "Ami retiré",
-  "friendshipStatusError": "Erreur lors de la mise à jour du statut d'amitié",
   "chat": "Chat",
-  "errorLoadingProfile": "Erreur lors du chargement du profil"
+  "errorLoadingProfile": "Erreur lors du chargement du profil.",
+  "passwordChangeSuccess": "Mot de passe changé avec succès !",
+  "nicknameChangeSuccess": "Pseudo changé avec succès !",
+  "error": {
+    "friendshipStatus": "Erreur lors de la mise à jour du statut d'amitié.",
+    "nicknameExists": "Le pseudo existe déjà, veuillez en choisir un autre.",
+    "nicknameChangeFailed": "Échec du changement de pseudo : {{message}}",
+    "nicknameChangeError": "Erreur lors du changement de pseudo.",
+    "changeFailedMsg": "Échec du changement de pseudo : ",
+    "networkError": "Erreur réseau lors du changement de pseudo.",
+    "nicknameEmpty": "Le pseudo ne peut pas être vide !",
+    "nicknameSame": "Le nouveau pseudo ne peut pas être le même que l'actuel !",
+    "passwordSame": "Le nouveau mot de passe ne peut pas être le même que l'ancien !",
+    "passwordChangeFailed": "Échec du changement de mot de passe : ",
+    "passwordChangeError": "Erreur lors du changement de mot de passe.",
+    "networkErrorPassword": "Erreur réseau lors du changement de mot de passe."
+  }
 }

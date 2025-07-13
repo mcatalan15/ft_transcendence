@@ -1,5 +1,6 @@
 import { navigate } from "../router";
 import { getApiUrl } from "../../config/api";
+import i18n from "../../i18n";
 
 export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
@@ -14,17 +15,17 @@ export async function addFriend(username: string, onSuccess?: () => void): Promi
 
         const result = await response.json();
         if (result.success) {
-            alert(`${username} added as friend!`);
+            alert(i18n.t('friendAddedMsg', { ns: 'friends' }));
             if (onSuccess) {
                 onSuccess();
             }
 			return true;
         } else {
-            alert('Failed to add friend: ' + result.message);
+            alert(i18n.t);
 			return false;
 		}
     } catch (error) {
-        alert('Failed to add friend');
+        alert(i18n.t('addFailed', { ns: 'friends' }));
 		return false;
     }
 }
@@ -42,17 +43,17 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
 
         const result = await response.json();
         if (result.success) {
-            alert(`${username} removed from friends`);
+            alert(i18n.t('friendRemovedMsg', { username, ns: 'friends' }));
             if (onSuccess) {
                 onSuccess();
             }
 			return true;
         } else {
-            alert('Failed to remove friend: ' + result.message);
+            alert(i18n.t('removalFailedMsg', { username, ns: 'friends' }));
 			return false;
         }
     } catch (error) {
-        alert('Failed to remove friend');
+        alert(i18n.t('removalFailed', { ns: 'friends' }));
 		return false;
     }
 }
@@ -80,6 +81,16 @@ export async function statusFriend(username: string): Promise<boolean> {
 }
 
 export async function changeNickname(newNick: string): Promise<void> {
+
+    if (!newNick || newNick.trim() === '') {
+        alert(i18n.t('error.nicknameEmpty', { ns: 'profile' }));
+        return;
+    }
+    if (newNick === sessionStorage.getItem('username')) {
+        alert(i18n.t('error.nicknameSame', { ns: 'profile' }));
+        return;
+    }
+
 	try {
 		const response = await fetch(getApiUrl('/profile/nickname'), {
 			method: 'PUT',
@@ -94,21 +105,20 @@ export async function changeNickname(newNick: string): Promise<void> {
         
         if (result.success) {
             sessionStorage.setItem('username', newNick);
-            alert('Nickname changed successfully!');
+            alert(i18n.t('nicknameChangeSuccess', { ns: 'profile' }));
             navigate('/settings');
             return;
         } else {
-            // Handle different error cases
             if (result.message && result.message.includes('already exists')) {
-                alert('Nickname already exists, please choose another one.');
+                alert(i18n.t('error.nicknameExists', { ns: 'profile' }));
             } else {
-                alert('Failed to change nickname: ' + (result.message || 'Unknown error'));
+                alert(i18n.t('error.nicknameChangeFailed', { ns: 'profile' }));
             }
         }
 
     } catch (error) {
         console.error('Error changing nickname:', error);
-        alert('Network error occurred while changing nickname.');
+        alert(i18n.t('error.networkError', { ns: 'profile' }));
     }
 }
 
@@ -124,7 +134,7 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 		});
 
 		if (oldPassword === newPassword) {
-			alert('New password cannot be the same as the current password.');
+			alert(i18n.t('error.passwordSame', { ns: 'profile' }));
 			return;
 		}
 
@@ -135,11 +145,11 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 			navigate('/settings');
             return;
 		} else {
-			alert('Failed to change password: ' + (result.message || 'Unknown error'));
+			alert(i18n.t('error.passwordChangeFailed', { ns: 'profile' }) + result.message);
 		}
 
 	} catch (error) {
 		console.error('Error changing password:', error);
-		alert('Network error occurred while changing password.');
+		alert(i18n.t('error.networkError', { ns: 'profile' }));
 	}
 }

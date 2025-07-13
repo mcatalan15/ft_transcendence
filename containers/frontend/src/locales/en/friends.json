@@ -2,5 +2,12 @@
     "friendsitleOwn": "My friends",
     "friendsTitle": "{{username}}'s friends",
     "searchPlaceholder": "Search friends",
-    "noFriends": "No friends found. Go make some in the chat!"
+    "noFriends": "No friends found. Go make some in the chat!",
+    "addFailedMsg": "Failed to add friend: ",
+    "addFailed": "Failed to add friend.",
+    "friendRemoved": "Friend removed: ",
+    "removalFailedMsg": "Failed to remove friend: ",
+    "removalFailed": "Failed to remove friend.",
+    "friendAddedMsg": "{{username}} added as friend!",
+    "friendRemovedMsg": "{{username}} removed from friends."
   }
