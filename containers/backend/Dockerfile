@@ -13,7 +13,7 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh tools/data.py tools/friends.py
+RUN chmod +x tools/init_db.sh tools/friends.py
 
 RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 
