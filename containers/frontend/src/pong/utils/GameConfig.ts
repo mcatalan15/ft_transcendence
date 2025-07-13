@@ -32,6 +32,12 @@ export interface GameConfig {
 		isHost?: boolean;
 		serverUrl?: string;
 	};
+
+	tournament?: {
+        matchId: string;
+        round: number;
+        roundName: string;
+    };
 }
 
 export interface Preconfiguration {

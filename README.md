@@ -3,7 +3,7 @@ _version 16.1_
 
 ## Overview
 
-**ft_transcendence** is a full-stack, single-page web application developed as the final project of the Common Core at 42 Barcelona. It is a modern recreation of the Pong game featuring real-time gameplay, user management, live chat, blockchain integration, secure authentication system, and many more features. The project is built with a microservices architecture using Docker Compose.
+**ft_transcendence** is a full-stack, single-page web application developed as the final project of the Common Core at 42 Barcelona. It is a modern recreation of the Pong game featuring real-time gameplay, user management, live chat, blockchain integration, secure authentication system, and many more features. The project is built with a microservices architecture using Docker.
 
 ---
 
@@ -117,7 +117,7 @@ make tunnel
 - [Avalanche official documentation](https://docs.avax.network/)
 - [Grafana official documentation](https://grafana.com/docs/)
 - [Prometheus official documentation](https://prometheus.io/docs/introduction/overview/)
-- [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-app
+- [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-app)
 
 ---
 
