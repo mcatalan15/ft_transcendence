@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/10 21:01:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 12:55:10 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -846,16 +846,23 @@ export class Menu{
 	cleanup(): void {
 		console.log("Cleaning up menu...");
 		
-		// Stop and cleanup sounds
+		// Stop and cleanup sounds FIRST - Complete implementation
 		if (this.sounds) {
-			Object.values(this.sounds).forEach(sound => {
+			console.log('Stopping menu sounds...');
+			Object.entries(this.sounds).forEach(([key, sound]) => {
 				if (sound && typeof sound.stop === 'function') {
+					console.log(`Stopping menu sound: ${key}`);
 					sound.stop();
 				}
 				if (sound && typeof sound.unload === 'function') {
+					console.log(`Unloading menu sound: ${key}`);
 					sound.unload();
 				}
 			});
+			
+			// Clear the sounds object
+			this.sounds = {} as MenuSounds;
+			console.log('All menu sounds stopped and unloaded');
 		}
 		
 		this.app.ticker.stop();
@@ -886,7 +893,7 @@ export class Menu{
 			}
 		});
 		this.entities = [];
-
+	
 		Object.values(this.renderLayers).forEach(layer => {
 			if (layer.parent) {
 				layer.parent.removeChild(layer);
@@ -902,9 +909,8 @@ export class Menu{
 				container.destroy({ children: true });
 			}
 		});
-
+	
 		MenuPowerupManager.cleanup();
-		//! need to clean up more managers?
 		
 		this.app.stage.removeChildren();
 		

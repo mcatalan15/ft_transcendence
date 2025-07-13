@@ -6,14 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:52:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 10:31:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/11 12:56:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { PongGame } from "../engine/Game";
-import { Menu } from "../menu/Menu";
 
 import { System } from "../engine/System";
+
+import { gameManager } from "../../utils/GameManager";
 
 export class ButtonSystem implements System {
 	private game: PongGame;
@@ -40,16 +41,11 @@ export class ButtonSystem implements System {
 		}
 	}
 
-	private async handleGameQuit(): Promise<void> {
-		console.log('Game quit requested - stopping ticker and cleaning up');
+	private handleGameQuit(): void {
+		console.log('Game quit requested - navigating back to /pong');
 		
-		await this.game.cleanup();
-
-		this.returnToMenu();
-	}
-	
-	private returnToMenu(): void {
-		const menu = new Menu(this.game.app, this.game.language);
-		menu.init(this.game.config.classicMode, this.game.config.filters);
+		gameManager.destroyGame(this.game.app.view.id);
+		
+		window.location.href = '/pong';	
 	}
 }
