@@ -88,7 +88,6 @@ function buildApp() {
     }
   });
 
-  // Register core plugins
   fastify.register(fastifyMultipart, {
     limits: {	// restrict custom avatars
       fieldNameSize: 100,
@@ -105,12 +104,10 @@ function buildApp() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Origin', 'X-Requested-With', 'Accept']
   });
-  // Register custom plugins
-  //fastify.register(require('../plugins/setupCors'));
+
   fastify.register(require('../plugins/healthCheck'));
   fastify.register(require('../plugins/prometheusMetrics'));
 
-  // Register routes
   fastify.register(require('../api/routes/routeLoader'));
 
   return fastify;

@@ -3,14 +3,12 @@ import { navigate } from '../router';
 
 export function loadGoogleScript(): Promise<void> {
     return new Promise((resolve, reject) => {
-        // Check if script already exists and is loaded
         const existingScript = document.getElementById('google-script') as HTMLScriptElement;
         if (existingScript && window.google?.accounts) {
             resolve();
             return;
         }
 
-        // Remove existing script if it exists but isn't loaded properly
         if (existingScript) {
             existingScript.remove();
         }
@@ -48,7 +46,6 @@ export function setupGoogleSignUp(): void {
                 console.log('typeof data.twoFAEnabled:', typeof data.twoFAEnabled);
                 console.log('Raw /api/auth/google response:', data.twoFAEnabled);
                 if (data.success) {
-
                     
                     sessionStorage.setItem('username', data.username);
                     sessionStorage.setItem('userId', data.userId);
@@ -67,6 +64,7 @@ export function setupGoogleSignUp(): void {
                         navigate('/profile');
                     }, 100);
                     return;
+                    
                 } else {
                     alert('Google authentication failed: ' + (data.message || 'Unknown error'));
                 }
@@ -78,20 +76,17 @@ export function setupGoogleSignUp(): void {
     };
 }
 
-// Add this new function to properly initialize/reinitialize the Google button
 export function initializeGoogleButton(containerId: string): void {
     if (!window.google?.accounts) {
         console.error('Google accounts library not loaded');
         return;
     }
 
-    // Clear the container first
     const container = document.getElementById(containerId);
     if (container) {
         container.innerHTML = '';
     }
 
-    // Initialize the Google Sign-In button
     window.google.accounts.id.initialize({
         client_id: '49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com',
         callback: window.handleGoogleSignUp,
@@ -99,7 +94,6 @@ export function initializeGoogleButton(containerId: string): void {
         cancel_on_tap_outside: false
     });
 
-    // Render the button
     window.google.accounts.id.renderButton(
         document.getElementById(containerId),
         {

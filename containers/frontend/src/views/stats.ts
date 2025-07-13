@@ -1,56 +1,43 @@
 import i18n from '../i18n';
-import { Header } from '../components/header';
-import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
-import { PongBoxComponent } from '../components/pongBoxComponents/pongBox';
-import { getApiUrl } from '../config/api';
+import { MessageManager } from '../utils/messageManager';
 
-export function showStats(container: HTMLElement) {
-  i18n
-    .loadNamespaces('history')
-    .then(() => i18n.changeLanguage(i18n.language))
-    .then(() => {
-      container.innerHTML = '';
+let currentResizeHandler: (() => void) | null = null;
 
-      const contentWrapper = document.createElement('div');
-      contentWrapper.className = 'flex flex-col items-center justify-center w-full h-full bg-neutral-900';
-      container.appendChild(contentWrapper);
-      
-      const langSelector = new LanguageSelector(() => showStats(container)).getElement();
-      container.appendChild(langSelector);
-    
-      const pongBox = new PongBoxComponent({
-        title: '',
-        avatarUrl: '',
-        nickname: '',
-        mainContent: document.createElement('div'),
-      });
+export async function showStats(container: HTMLElement, username?: string): Promise<void> {
+  try {
+    await initializeI18n();
+    await render(container, username);
+  } catch (error) {
+    console.error('Failed to initialize stats:', error);
+    MessageManager.showError('Error loading stats');
+    navigate('/profile ');
+    return;
+  }
+}
 
-      const pongBoxElement = pongBox.getElement();
-      contentWrapper.appendChild(pongBoxElement);
-      container.appendChild(contentWrapper);
+async function initializeI18n(): Promise<void> {
+  await i18n.loadNamespaces('stats');
+  await i18n.changeLanguage(i18n.language);
+}
 
-      fetch(getApiUrl('/profile'), {
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then(response => response.json())
-        .then(data => {
-          const titleEl = pongBoxElement.querySelector('div.text-amber-50');
-          const nicknameEl = pongBoxElement.querySelector('span.text-amber-50');
-          const avatarImg = pongBoxElement.querySelector('img');
+function render(container: HTMLElement, username?: string): void {
+  cleanup();
+  const renderer = new StatsRenderer(
+    container, 
+    () => showStats(container, username),
+    username
+  );
+  renderer.render();
+}
 
-          if (titleEl)
-            titleEl.textContent = i18n.t('statsTitle', { ns: 'stats', username: data.username });
-          if (nicknameEl)
-            nicknameEl.textContent = data.username;
-          if (avatarImg && data.userId)
-            (avatarImg as HTMLImageElement).src = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
-        })
-        .catch(error => {
-          navigate('/home');
-          console.error('Error fetching profile:', error);
-          return;
-        });
-    });
+function cleanup(): void {
+  if (currentResizeHandler) {
+    window.removeEventListener('resize', currentResizeHandler);
+    currentResizeHandler = null;
+  }
+}
+
+export function setResizeHandler(handler: (() => void) | null): void {
+  currentResizeHandler = handler;
 }

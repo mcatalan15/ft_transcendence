@@ -22,7 +22,6 @@ export class AvatarFileHandler {
     this.refreshAvatar = refreshAvatar;
   }
 
-  // Setup file input change handler for avatar upload
   setupFileUploadHandler(
     fileInput: HTMLInputElement, 
     avatarImg: HTMLImageElement, 
@@ -42,7 +41,6 @@ export class AvatarFileHandler {
     };
   }
 
-  // Process avatar file upload with error handling
   private async uploadAvatar(file: File, uploadButton: HTMLButtonElement): Promise<void> {
     const formData = new FormData();
     formData.append('avatar', file);
@@ -59,7 +57,6 @@ export class AvatarFileHandler {
     }
   }
 
-  // Toggle button loading state with spinner
   private setLoadingState(uploadButton: HTMLButtonElement, isLoading: boolean): void {
     this.setIsUploading(isLoading);
     uploadButton.disabled = isLoading;
@@ -72,7 +69,6 @@ export class AvatarFileHandler {
     }
   }
 
-  // Send HTTP request to upload avatar
   private async sendAvatarRequest(formData: FormData): Promise<Response> {
     return fetch(getApiUrl('/profile/avatar'), {
       method: 'POST',
@@ -81,7 +77,6 @@ export class AvatarFileHandler {
     });
   }
 
-  // Handle server response from avatar upload
   private async handleUploadResponse(response: Response): Promise<void> {
     if (response.ok) {
       this.refreshAvatar();

@@ -13,7 +13,6 @@ export class AvatarUploader {
     this.userId = userId || sessionStorage.getItem('userId') || 'defaultUserId';
   }
 
-  // Initialize avatar upload functionality
   setup(): void {
     const avatarImg = this.pongBoxElement.querySelector('img') as HTMLImageElement;
     if (!avatarImg) return;
@@ -24,7 +23,6 @@ export class AvatarUploader {
     this.setupFileHandler(elements, avatarImg);
   }
 
-  // Create all required DOM elements for avatar upload
   private createAvatarElements(avatarImg: HTMLImageElement) {
     const avatarWrapper = AvatarElementBuilder.createAvatarWrapper(avatarImg);
     const fileInput = AvatarElementBuilder.createFileInput();
@@ -37,18 +35,15 @@ export class AvatarUploader {
     return { avatarWrapper, fileInput, uploadButton };
   }
 
-  // Append elements to avatar wrapper container
   private appendAvatarElements(elements: any): void {
     elements.avatarWrapper.appendChild(elements.fileInput);
     elements.avatarWrapper.appendChild(elements.uploadButton);
   }
 
-  // Set avatar image source with cache busting
   private setAvatarSource(avatarImg: HTMLImageElement): void {
     avatarImg.src = `${getApiUrl('/profile/avatar')}/${this.userId}?t=${Date.now()}`;
   }
 
-  // Setup file upload handler with callbacks
   private setupFileHandler(elements: any, avatarImg: HTMLImageElement): void {
     const fileHandler = new AvatarFileHandler(
       this.userId,

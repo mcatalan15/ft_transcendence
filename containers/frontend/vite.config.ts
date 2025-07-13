@@ -24,7 +24,7 @@ export default defineConfig({
       overlay: false,
     },
     // Add origin handling for tunneling
-    origin: 'http://localhost:5173'
+    origin: 'http://localhost:1443'
   },
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
