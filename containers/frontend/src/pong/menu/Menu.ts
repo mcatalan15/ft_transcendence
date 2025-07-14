@@ -223,16 +223,12 @@ export class Menu{
 	//Browser data
 	isFirefox: boolean = false;
 
-	// Tournament
-	tournamentController!: TournamentController;
-
 	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
 		this.height = app.screen.height;
 		this.isFirefox = isFirefox || false;
-		this.tournamentController = new TournamentController(this);
 
 		this.preconfiguration = preconfiguration || {
 			mode: 'local',
@@ -1103,35 +1099,4 @@ export class Menu{
 		}
 	}
 	
-	createQuickTournament(): void {
-		console.log("🏁 Création d'un tournoi de test...");
-		
-		const participants = [
-			{ name: "Player 1", isAI: false },
-			{ name: "Player 2", isAI: false },
-			{ name: "AI Easy", isAI: true },
-			{ name: "AI Hard", isAI: true }
-		];
-		
-		// Initialiser le tournamentController si ce n'est pas fait
-		if (!this.tournamentController) {
-			this.tournamentController = new TournamentController(this);
-		}
-		
-		const success = this.tournamentController.startTournament(participants);
-		
-		if (success) {
-			console.log("✅ Tournoi créé avec succès !");
-			// SUPPRIMÉ : L'overlay est maintenant affiché par handlePlayClick dans MenuButtonSystem
-		} else {
-			console.error("❌ Erreur lors de la création du tournoi");
-		}
-	}
-    
-    // Méthode pour démarrer le prochain match (à connecter au bouton Ready)
-    async startTournamentMatch(): Promise<void> {
-        if (this.config.variant === 'tournament' && this.tournamentController.isActiveTournament()) {
-            await this.tournamentController.startNextMatch();
-        }
-    }
 }

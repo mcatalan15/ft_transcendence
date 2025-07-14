@@ -95,9 +95,8 @@ export class MenuButtonSystem implements System {
 	handleStartMatchClick() {
 		console.log("🚀 Bouton Start Match cliqué !");
 		
-		if (this.menu.config.variant === 'tournament' && this.menu.tournamentController.isActiveTournament()) {
-			// Utiliser directement startNextMatch au lieu de startTournamentMatch
-			this.menu.tournamentController.startNextMatch();
+		if (this.menu.config.variant === 'tournament') {
+			console.log("✅ Tournoi actif, démarrage du match...");
 		} else {
 			console.log("❌ Aucun tournoi actif");
 		}
@@ -137,21 +136,6 @@ export class MenuButtonSystem implements System {
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 		
-		if (this.menu.config.variant === 'tournament') {
-
-        	console.log("🏁 Création du tournoi maintenant que PLAY a été cliqué...");
-			this.menu.createQuickTournament();
-
-			this.menu.playButton.setClicked(true);
-			this.menu.tournamentOverlay.show();
-			this.overlayStack.push('tournament');
-			this.setButtonsClickability(false);
-		} else {
-			this.menu.playButton.setClicked(true);
-			this.menu.playOverlay.show();
-			this.overlayStack.push('play');
-			this.setButtonsClickability(false);
-		}
 	}
 
 	handleReadyClick() {
@@ -170,12 +154,6 @@ export class MenuButtonSystem implements System {
 		
 		// Register new game with GameManager
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
-
-		if (this.menu.config.variant === 'tournament' && this.menu.tournamentController.isActiveTournament()) {
-            console.log("🎮 Démarrage du prochain match de tournoi...");
-            this.menu.startTournamentMatch();
-            return;
-        }
 		
 		game.init();
 	}
