@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 20:05:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 11:35:33 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,11 @@ export class EndingSystem implements System {
 		}
 	
 		if (this.ended && !this.endingProcessed) {
-			console.log('Processing game end with final scores:', this.UI.leftScore, 'vs', this.UI.rightScore);
 			this.processGameEnd();
 		}
 	}
+
+	//! SET CORRECT ENDING CONDITIONS BEFORE TURNING IN
 
 	private checkOnlineGameEnd(): void {
 		if (this.UI.leftScore >= 3 || this.UI.rightScore >= 3) {
@@ -74,6 +75,11 @@ export class EndingSystem implements System {
 				this.ended = true;
 			}
 		}
+
+		if (this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+			this.setGameResults();
+				this.ended = true;
+		}
 		
 		if (this.UI.leftScore >= 21 || this.UI.rightScore >= 21) {
 			this.setGameResults();
@@ -82,31 +88,18 @@ export class EndingSystem implements System {
 	}
 
 	private checkLocalGameEnd(): void {
-		if (this.game.config.classicMode) {
-			if (this.UI.leftScore >= 3 || this.UI.rightScore >= 3) {
-				const scoreDiff = Math.abs(this.UI.leftScore - this.UI.rightScore);
-				if (scoreDiff >= 2) {
-					this.setGameResults();
-					this.ended = true;
-				} else if (this.UI.leftScore >= 21 || this.UI.rightScore >= 21) {
-					this.setGameResults();
-					this.ended = true;
-				}
-			}
-		} else {
-			if (this.UI.leftScore >= 3 && this.UI.rightScore < 2) {
-				this.game.data.leftPlayer.result = 'win';
-				this.game.data.rightPlayer.result = 'lose';
-				this.ended = true;
-			} else if (this.UI.rightScore >= 3 && this.UI.leftScore < 2) {
-				this.game.data.rightPlayer.result = 'win';
-				this.game.data.leftPlayer.result = 'lose';
-				this.ended = true;
-			} else if (this.UI.leftScore === 20 && this.UI.rightScore === 20) {
-				this.game.data.leftPlayer.result = 'draw';
-				this.game.data.rightPlayer.result = 'draw';
-				this.ended = true;
-			}
+		if (this.UI.leftScore >= 3 && this.UI.rightScore < 2) {
+			this.game.data.leftPlayer.result = 'win';
+			this.game.data.rightPlayer.result = 'lose';
+			this.ended = true;
+		} else if (this.UI.rightScore >= 3 && this.UI.leftScore < 2) {
+			this.game.data.rightPlayer.result = 'win';
+			this.game.data.leftPlayer.result = 'lose';
+			this.ended = true;
+		} else if (this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+			this.game.data.leftPlayer.result = 'draw';
+			this.game.data.rightPlayer.result = 'draw';
+			this.ended = true;
 		}
 	}
 
@@ -124,11 +117,20 @@ export class EndingSystem implements System {
 	}
 
 	private processGameEnd(): void {
-		console.log(`Game ending - Online: ${this.isOnlineGame}, Classic: ${this.game.config.classicMode}`);
+		console.log('Processing game end...');
+		console.log(`Left player: ${this.game.leftPlayer.name} - (${this.game.data.leftPlayer.isDisconnected}) (${this.UI.leftScore}) vs Right player: ${this.game.data.rightPlayer.name} - (${this.game.rightPlayer.isDisconnected}) (${this.UI.rightScore})`);
 		
-		this.game.data.winner = this.game.data.leftPlayer.result === 'win' ? 
-			this.game.data.leftPlayer.name : 
-			(this.game.data.rightPlayer.result === 'win' ? this.game.data.rightPlayer.name : null);
+		if (this.game.leftPlayer.isDisconnected === true || this.game.rightPlayer.isDisconnected === true) {
+			if (this.game.leftPlayer.isDisconnected === true) {
+				this.game.data.winner = this.game.data.rightPlayer.name;
+			} else {
+				this.game.data.winner = this.game.data.leftPlayer.name;
+			}
+		} else {
+			this.game.data.winner = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : (this.game.data.rightPlayer.result === 'win' ? this.game.data.rightPlayer.name : null);
+		}
+
+		console.log(`Game ended. Winner: ${this.game.data.winner}`);
 		
 		this.game.data.finalScore = {
 			leftPlayer: this.UI.leftScore,

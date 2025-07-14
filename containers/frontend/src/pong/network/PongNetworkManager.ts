@@ -3,6 +3,7 @@ import { PongGame } from '../engine/Game';
 import { getWsUrl } from '../../config/api';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
+import { UI } from '../entities/UI';
 
 export class PongNetworkManager {
 	private wsManager: WebSocketManager;
@@ -128,40 +129,39 @@ export class PongNetworkManager {
 		});
 		
 		this.wsManager.registerHandler('GAME_READY', (message) => {
-		console.log('Both players connected, game is ready');
-		this.hostName = message.hostName;
-		this.guestName = message.guestName;
-		this.updatePlayerNames();
-		this.showConnectionStatus('Both players connected! Game starting...');
-		});
+			console.log('Both players connected, game is ready');
+			this.hostName = message.hostName;
+			this.guestName = message.guestName;
+			this.updatePlayerNames();
+			this.showConnectionStatus('Both players connected! Game starting...');
+			});
 
 		this.wsManager.registerHandler('GAME_START', (message) => {
-		console.log('Game started!');
-		this.game.start();
-		this.game.updateFromServer(message.gameState);
-		this.showConnectionStatus('Game in progress');
+			console.log('Game started!');
+			this.game.start();
+			this.game.updateFromServer(message.gameState);
+			this.showConnectionStatus('Game in progress');
 		});
 		
 		this.wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
-		// Update game state from server
-		if (message.gameState) {
-			this.game.updateFromServer(message.gameState);
-		}
+
+			if (message.gameState) {
+				this.game.updateFromServer(message.gameState);
+			}
 		});
 
 		this.wsManager.registerHandler('PLAYER_DISCONNECTED', (message) => {
 			console.log('Player disconnected:', message.playerId);
-			this.showDisconnectionMessage();
+			this.handlePlayerDisconnection(message.playerId);
 		});
 
-		// Add error handler for WebSocket errors
 		this.wsManager.registerHandler('ERROR', (message) => {
-		console.error('WebSocket error:', message);
-		this.showConnectionStatus(`Connection error: ${message.message || 'Unknown error'}`);
-		const statusDiv = document.getElementById('connection-status');
-		if (statusDiv) {
-			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
-		}
+			console.error('WebSocket error:', message);
+			this.showConnectionStatus(`Connection error: ${message.message || 'Unknown error'}`);
+			const statusDiv = document.getElementById('connection-status');
+			if (statusDiv) {
+				statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+			}
 		});
 
 		this.wsManager.registerHandler('GAME_END', (message) => {
@@ -171,6 +171,21 @@ export class PongNetworkManager {
 			
 			this.handleGameEndMessage(message);
 		});
+	}
+
+	handlePlayerDisconnection(id: string) {
+		const leftPlayerId = this.game.data.leftPlayer.name;
+		const rightPlayerId = this.game.data.rightPlayer.name;
+
+		if (id === leftPlayerId) {
+			this.game.leftPlayer.isDisconnected = true;
+			console.log(`Player ${leftPlayerId} has disconnected in handlePlayerDisconnection`);
+		} else if (id === rightPlayerId) {
+			this.game.rightPlayer.isDisconnected = true;
+			console.log(`Player ${rightPlayerId} has disconnected in handlePlayerDisconnection`);
+		}
+
+		//! MIGHT NEED TO HANDLE THE DATA SEND OF ONLINE GAMES BY ONLY HOST (AND CHANGE OF HOSTS) FROM HERE
 	}
 
 	async connect(gameId: string) {
@@ -237,14 +252,6 @@ export class PongNetworkManager {
 			Controls: ${controls}
 			</div>
 		`;
-		}
-	}
-
-	private showDisconnectionMessage() {
-		const statusDiv = document.getElementById('connection-status');
-		if (statusDiv) {
-		statusDiv.textContent = 'Opponent disconnected from the game';
-		statusDiv.className = 'text-center text-red-400 text-lg mb-4';
 		}
 	}
 

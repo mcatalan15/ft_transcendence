@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/12 21:34:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 10:58:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ export interface GameData {
 	leftPlayer: {
 		name: string;
 		id: string;
+		isDisconnected: boolean;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;
 		hits: number;
@@ -106,6 +107,7 @@ export interface GameData {
 	rightPlayer: {
 		name: string;
 		id: string;
+		isDisconnected: boolean;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;
 		hits: number;

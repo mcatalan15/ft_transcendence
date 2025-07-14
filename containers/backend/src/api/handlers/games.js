@@ -43,7 +43,7 @@ const { saveGameToDatabase,
                 const userData = {
                     id: user.id.toString(),
                     name: user.username || user.name || 'PLAYER',
-                    avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                    avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknownSquare',
                     goalsScored: 0,
                     goalsConceded: 0,
                     tournaments: 0,
@@ -64,7 +64,7 @@ const { saveGameToDatabase,
             const userData = {
                 id: user.id.toString(),
                 name: user.username || user.name || 'PLAYER',
-                avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknownSquare',
                 goalsScored: userStats.total_goals_scored || 0,
                 goalsConceded: userStats.total_goals_conceded || 0,
                 tournaments: userStats.tournaments_won || 0,
@@ -128,7 +128,7 @@ function calculateRank(stats) {
 }
 
 function mapAvatarFromDatabase(dbAvatar) {
-    if (!dbAvatar) return 'avatarUnknown';
+    if (!dbAvatar) return 'avatarUnknownSquare';
     
     const avatarMap = {
         'eva': 'avatarEva',
@@ -146,11 +146,11 @@ function mapAvatarFromDatabase(dbAvatar) {
         'Nico': 'avatarNico',
         'Hugo': 'avatarHugo',
         
-        'unknown': 'avatarUnknown',
-        'default': 'avatarUnknown'
+        'unknown': 'avatarUnknownSquare',
+        'default': 'avatarUnknownSquare',
     };
     
-    const mappedAvatar = avatarMap[dbAvatar] || 'avatarUnknown';
+    const mappedAvatar = avatarMap[dbAvatar] || 'avatarUnknownSquare';
     console.log(`Mapped avatar '${dbAvatar}' to '${mappedAvatar}'`);
     
     return mappedAvatar;

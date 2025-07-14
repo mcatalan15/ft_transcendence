@@ -260,7 +260,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		const game = activeGames.get(gameId);
 		if (!game) return;
 
-		game.players.delete(playerId);
+		game.players.delete(playerId);	
 
 		broadcastToGame(gameId, {
 		type: 'PLAYER_DISCONNECTED',
