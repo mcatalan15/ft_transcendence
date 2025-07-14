@@ -34,11 +34,14 @@ export class ChatManager {
   private typeSelector: HTMLSelectElement | null = null;
   private activeFilter: MessageType | null = null;
 
+  private boundCloseContextMenu: () => void;
+
   constructor() {
     this.chatSocket = new ChatWebSocket();
     this.chatSocket.registerMessageCallback(this.addMessage.bind(this));
     this.chatSocket.registerSystemMessageCallback(this.addSystemMessage.bind(this));
     this.loadBlockedUsers();
+    this.boundCloseContextMenu = this.closeContextMenu.bind(this);
   }
 
   private loadBlockedUsers(): void {
@@ -251,10 +254,7 @@ export class ChatManager {
   }
 
   public showUserContextMenu(event: MouseEvent, username: string): void {
-    const existingMenu = document.getElementById('user-context-menu');
-    if (existingMenu) {
-      existingMenu.remove();
-    }
+    this.closeContextMenu();
     
     const menu = document.createElement('div');
     menu.id = 'user-context-menu';
@@ -315,8 +315,8 @@ export class ChatManager {
     document.body.appendChild(menu);
     
     setTimeout(() => {
-      document.addEventListener('click', this.closeContextMenu.bind(this));
-      document.addEventListener('contextmenu', this.closeContextMenu.bind(this));
+      document.addEventListener('click', this.boundCloseContextMenu);
+      document.addEventListener('contextmenu', this.boundCloseContextMenu);
     }, 100);
   }
 
@@ -325,8 +325,8 @@ export class ChatManager {
     if (menu) {
       menu.remove();
     }
-    document.removeEventListener('click', this.closeContextMenu.bind(this));
-    document.removeEventListener('contextmenu', this.closeContextMenu.bind(this));
+    document.removeEventListener('click', this.boundCloseContextMenu);
+    document.removeEventListener('contextmenu', this.boundCloseContextMenu);
   }
 
   public sendMessage(): void {

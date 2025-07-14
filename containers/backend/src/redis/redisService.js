@@ -139,7 +139,6 @@ class RedisService {
         }
     }
 
-    // redisService.js - Add this method
     async cleanupExpiredGames() {
       try {
           const cutoffTime = Date.now() - (5 * 60 * 1000); // 5 minutes

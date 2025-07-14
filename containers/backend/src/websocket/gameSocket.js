@@ -55,6 +55,10 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					handlePlayerReady(data, activeGames);
 					break;
 
+				case 'PING':
+					ws.send(JSON.stringify({ type: 'PONG' }));
+					break;
+
 				default:
 					console.log('Unknown game message type:', data.type);
 				}

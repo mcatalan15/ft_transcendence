@@ -1,11 +1,18 @@
 const WebSocket = require('ws');
 
 function setupChatWebSocket(wss, redisService, gameManager) {
-// Store connected users
 const connectedUsers = new Map(); // ws -> { userId, username, connectedAt }
+
+function heartbeat() {
+	this.isAlive = true;
+}
 
 wss.on('connection', (ws) => {
 	console.log('Chat WebSocket connection established');
+
+	ws.isAlive = true;
+	ws.on('pong', heartbeat);
+
 	let userId = null;
 	let username = null;
 
@@ -72,6 +79,10 @@ wss.on('connection', (ws) => {
 				await handleGameInviteResponse(enrichedMessage, ws, wss, redisService);
 				break;
 
+			case 'PING':
+				ws.send(JSON.stringify({ type: 'PONG' }));
+				break;
+
 			default:
 				await redisService.publishChatMessage(JSON.stringify(enrichedMessage));
 				break;
@@ -105,6 +116,22 @@ wss.on('connection', (ws) => {
 		console.error('Chat WebSocket error:', error);
 	});
 });
+
+	const pingInterval = setInterval(() => {
+		wss.clients.forEach((ws) => {
+			if (ws.isAlive === false) {
+			console.log('Terminating dead WebSocket connection');
+			return ws.terminate();
+			}
+			
+			ws.isAlive = false;
+			ws.ping();
+		});
+	}, 30000); // 30 seconds
+
+	wss.on('close', () => {
+		clearInterval(pingInterval);
+	});
 
 redisService.subscribeToChatMessages((message) => {
 	try {
