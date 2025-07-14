@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 11:35:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 19:29:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,13 +243,6 @@ export class EndingSystem implements System {
 	}
 
 	displayResults(): void {    
-		console.log(`=== DISPLAY RESULTS DEBUG ===`);
-		console.log(`Game mode: ${this.isOnlineGame ? 'ONLINE' : 'LOCAL'}`);
-		console.log(`Game config classic: ${this.game.config.classicMode}`);
-		console.log(`Game dimensions: ${this.game.width}x${this.game.height}`);
-		console.log(`Game has ended: ${this.game.hasEnded}`);
-		console.log(`Overlay original position: (${this.game.endGameOverlay.originalX}, ${this.game.endGameOverlay.originalY})`);
-		
 		this.game.endGameOverlay.redraw();
 		
 		this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);

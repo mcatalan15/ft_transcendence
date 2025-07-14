@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 19:09:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 19:39:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -715,8 +715,8 @@ export class PongGame {
 			{ name: 'drawHeaderCATYellow', url: '/headers/headers_draw_cat_yellow.svg' },
 
 			// Placeholding avatars
-			{ name: 'avatarUnknownSquare', url: '/avatars/square/square4.png' },
-			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareClassic4.png' },
+			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
+			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
 		]);
 	}
 
@@ -904,7 +904,7 @@ export class PongGame {
 		try {
 			const token = sessionStorage.getItem('token');
 
-			const hostUsername = this.config.hostName;
+			const hostUsername = this.config.hostName || sessionStorage.getItem('username');
 			const guestUsername = this.config.guestName;
 
 			const hostRes = await fetch(`/api/profile/${hostUsername}`, {
