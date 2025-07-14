@@ -306,6 +306,10 @@ async function getLatestGame() {
 async function saveGameToDatabase(gameRecord, gameData) {
 	const db = require('./database'); // Assuming your database connection module
 
+	// if (!db || typeof db.run !== 'function') {
+    //   reject(new Error('Database not properly initialized'));
+    //   return;
+    // }
 	return new Promise((resolve, reject) => {
 		console.log('saveGameToDatabase called with gameRecord:', gameRecord);
 

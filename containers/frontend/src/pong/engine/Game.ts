@@ -268,7 +268,7 @@ export class PongGame {
 	prepareGameData() {
 		this.data = {
 			config: this.config,
-			createdAt: new Date().toString(),
+			createdAt: new Date().toISOString(),
 			endedAt: null,
 			generalResult: null,
 			winner: null,

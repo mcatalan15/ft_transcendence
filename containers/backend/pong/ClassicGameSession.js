@@ -280,10 +280,10 @@ class ClassicGameSession {
 			},
 			score1: this.gameState.score1,
 			score2: this.gameState.score2,
-			// players: {
-			// 	player1: this.players.player1.id,
-			// 	player2: this.players.player2.id
-			// },
+			players: {
+				player1: this.players.player1.id,
+				player2: this.players.player2.id
+			},
 	
 			gameData: {
 				...physicsGameData,

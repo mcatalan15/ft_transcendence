@@ -69,196 +69,138 @@
 // };
 
 const saveGameSchema = {
-	description: 'Save a completed game to the database with player scores and winner information',
-	tags: ['games'],
-	body: {
-		type: 'object',
-		required: ['gameData'],
-		properties: {
-			gameData: {
-				type: 'object',
-				required: [
-					'config',
-					'createdAt',
-					'endedAt',
-					'generalResult',
-					'winner',
-					'finalScore',
-					'balls',
-					'specialItems',
-					'walls',
-					'leftPlayer',
-					'rightPlayer'
-				],
-				properties: {
-					config: {
-						type: 'object',
-						required: ['mode'],
-						properties: {
-							mode: { type: 'string', description: 'Game mode (e.g., online, offline)' },
-							classicMode: { type: 'boolean', description: 'Whether the game is in classic mode' },
-							variant: { type: 'string', description: 'Game variant (e.g., 1v1)' }
-						}
-					},
-					createdAt: {
-						type: ['string', 'null'],
-						format: 'date-time',
-						description: 'Timestamp when the game was created'
-					},
-					endedAt: {
-						type: ['string', 'null'],
-						format: 'date-time',
-						description: 'Timestamp when the game ended'
-					},
-					generalResult: {
-						type: ['string', 'null'],
-						enum: ['leftWin', 'rightWin', 'draw', null],
-						description: 'General result of the game'
-					},
-					winner: {
-						type: ['string', 'null'],
-						description: 'ID of the winning player'
-					},
-					finalScore: {
-						type: 'object',
-						required: ['leftPlayer', 'rightPlayer'],
-						properties: {
-							leftPlayer: { type: 'number', minimum: 0, description: 'Score of the left player' },
-							rightPlayer: { type: 'number', minimum: 0, description: 'Score of the right player' }
-						}
-					},
-					balls: {
-						type: 'object',
-						properties: {
-							defaultBalls: { type: 'number', minimum: 0, description: 'Number of default balls used' },
-							curveBalls: { type: 'number', minimum: 0, description: 'Number of curve balls used' },
-							multiplyBalls: { type: 'number', minimum: 0, description: 'Number of multiply balls used' },
-							spinBalls: { type: 'number', minimum: 0, description: 'Number of spin balls used' },
-							burstBalls: { type: 'number', minimum: 0, description: 'Number of burst balls used' }
-						}
-					},
-					specialItems: {
-						type: 'object',
-						properties: {
-							bullets: { type: 'number', minimum: 0, description: 'Number of bullets used' },
-							shields: { type: 'number', minimum: 0, description: 'Number of shields used' }
-						}
-					},
-					walls: {
-						type: 'object',
-						properties: {
-							pyramids: { type: 'number', minimum: 0, description: 'Number of pyramid walls' },
-							escalators: { type: 'number', minimum: 0, description: 'Number of escalator walls' },
-							hourglasses: { type: 'number', minimum: 0, description: 'Number of hourglass walls' },
-							lightnings: { type: 'number', minimum: 0, description: 'Number of lightning walls' },
-							maws: { type: 'number', minimum: 0, description: 'Number of maw walls' },
-							rakes: { type: 'number', minimum: 0, description: 'Number of rake walls' },
-							trenches: { type: 'number', minimum: 0, description: 'Number of trench walls' },
-							kites: { type: 'number', minimum: 0, description: 'Number of kite walls' },
-							bowties: { type: 'number', minimum: 0, description: 'Number of bowtie walls' },
-							honeycombs: { type: 'number', minimum: 0, description: 'Number of honeycomb walls' },
-							snakes: { type: 'number', minimum: 0, description: 'Number of snake walls' },
-							vipers: { type: 'number', minimum: 0, description: 'Number of viper walls' },
-							waystones: { type: 'number', minimum: 0, description: 'Number of waystone walls' }
-						}
-					},
-					leftPlayer: {
-						type: 'object',
-						required: ['id', 'score', 'result'],
-						properties: {
-							id: { type: 'string', description: 'ID of the left player' },
-							score: { type: 'number', minimum: 0, description: 'Score of the left player' },
-							result: {
-								type: ['string', 'null'],
-								enum: ['win', 'lose', 'draw', null],
-								description: 'Result for the left player'
-							},
-							hits: { type: 'number', minimum: 0, description: 'Number of hits by the left player' },
-							goalsInFavor: { type: 'number', minimum: 0, description: 'Goals scored by the left player' },
-							goalsAgainst: { type: 'number', minimum: 0, description: 'Goals conceded by the left player' },
-							powerupsPicked: { type: 'number', minimum: 0, description: 'Power-ups picked by the left player' },
-							powerdownsPicked: { type: 'number', minimum: 0, description: 'Power-downs picked by the left player' },
-							ballchangesPicked: { type: 'number', minimum: 0, description: 'Ball changes picked by the left player' }
-						}
-					},
-					rightPlayer: {
-						type: 'object',
-						required: ['id', 'score', 'result'],
-						properties: {
-							id: { type: 'string', description: 'ID of the right player' },
-							score: { type: 'number', minimum: 0, description: 'Score of the right player' },
-							result: {
-								type: ['string', 'null'],
-								enum: ['win', 'lose', 'draw', null],
-								description: 'Result for the right player'
-							},
-							hits: { type: 'number', minimum: 0, description: 'Number of hits by the right player' },
-							goalsInFavor: { type: 'number', minimum: 0, description: 'Goals scored by the right player' },
-							goalsAgainst: { type: 'number', minimum: 0, description: 'Goals conceded by the right player' },
-							powerupsPicked: { type: 'number', minimum: 0, description: 'Power-ups picked by the right player' },
-							powerdownsPicked: { type: 'number', minimum: 0, description: 'Power-downs picked by the right player' },
-							ballchangesPicked: { type: 'number', minimum: 0, description: 'Ball changes picked by the right player' }
-						}
-					},
-					is_tournament: {
-						type: 'boolean',
-						description: 'Whether the game is part of a tournament',
-						default: false
-					},
-					smart_contract_link: {
-						type: ['string', 'null'],
-						description: 'Link to the smart contract',
-						default: ''
-					},
-					contract_address: {
-						type: ['string', 'null'],
-						description: 'Address of the smart contract',
-						default: ''
-					}
-				}
-			}
-		}
-	},
-	response: {
-		201: {
-			description: 'Game saved successfully',
-			type: 'object',
-			properties: {
-				success: { type: 'boolean' },
-				message: { type: 'string' },
-				gameId: { type: 'number', description: 'ID of the saved game' }
-			},
-			example: {
-				success: true,
-				message: 'Game saved successfully',
-				gameId: 123
-			}
-		},
-		400: {
-			description: 'Database constraint error',
-			type: 'object',
-			properties: {
-				success: { type: 'boolean' },
-				message: { type: 'string' }
-			},
-			example: {
-				success: false,
-				message: 'Database constraint error'
-			}
-		},
-		500: {
-			description: 'Server error',
-			type: 'object',
-			properties: {
-				success: { type: 'boolean' },
-				message: { type: 'string' }
-			},
-			example: {
-				success: false,
-				message: 'Failed to save game'
-			}
-		}
-	}
+    body: {
+        type: 'object',
+        required: ['gameData'],
+        properties: {
+            gameData: {
+                type: 'object',
+                required: ['config', 'createdAt', 'endedAt', 'finalScore', 'balls', 'leftPlayer', 'rightPlayer'],
+                properties: {
+                    config: {
+                        type: 'object',
+                        required: ['mode', 'classicMode', 'variant'],
+                        properties: {
+                            mode: { type: 'string', enum: ['online', 'local', 'tournament'] },
+                            classicMode: { type: 'boolean' },
+                            variant: { type: 'string', enum: ['1v1', '2v2', '3v3', '4v4'] }
+                        }
+                    },
+                    createdAt: { type: ['string', 'null'], format: 'date-time', description: 'Timestamp when the game was created' },
+                    endedAt: { type: ['string', 'null'], format: 'date-time', description: 'Timestamp when the game ended' },
+                    generalResult: { type: ['string', 'null'], enum: ['leftWin', 'rightWin', 'draw', null], default: null },
+                    winner: { type: ['string', 'null'], default: null },
+                    finalScore: {
+                        type: 'object',
+                        required: ['leftPlayer', 'rightPlayer'],
+                        properties: {
+                            leftPlayer: { type: 'number' },
+                            rightPlayer: { type: 'number' }
+                        }
+                    },
+                    balls: {
+                        type: 'object',
+                        required: ['defaultBalls', 'curveBalls', 'multiplyBalls', 'spinBalls', 'burstBalls'],
+                        properties: {
+                            defaultBalls: { type: 'number', minimum: 0 },
+                            curveBalls: { type: 'number', minimum: 0 },
+                            multiplyBalls: { type: 'number', minimum: 0 },
+                            spinBalls: { type: 'number', minimum: 0 },
+                            burstBalls: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    specialItems: {
+                        type: 'object',
+                        properties: {
+                            bullets: { type: 'number', minimum: 0, default: 0 },
+                            shields: { type: 'number', minimum: 0, default: 0 }
+                        },
+                        default: { bullets: 0, shields: 0 }
+                    },
+                    walls: {
+                        type: 'object',
+                        properties: {
+                            pyramids: { type: 'number', minimum: 0, default: 0 },
+                            escalators: { type: 'number', minimum: 0, default: 0 },
+                            hourglasses: { type: 'number', minimum: 0, default: 0 },
+                            lightnings: { type: 'number', minimum: 0, default: 0 },
+                            maws: { type: 'number', minimum: 0, default: 0 },
+                            rakes: { type: 'number', minimum: 0, default: 0 },
+                            trenches: { type: 'number', minimum: 0, default: 0 },
+                            kites: { type: 'number', minimum: 0, default: 0 },
+                            bowties: { type: 'number', minimum: 0, default: 0 },
+                            honeycombs: { type: 'number', minimum: 0, default: 0 },
+                            snakes: { type: 'number', minimum: 0, default: 0 },
+                            vipers: { type: 'number', minimum: 0, default: 0 },
+                            waystones: { type: 'number', minimum: 0, default: 0 }
+                        },
+                        default: {
+                            pyramids: 0, escalators: 0, hourglasses: 0, lightnings: 0,
+                            maws: 0, rakes: 0, trenches: 0, kites: 0,
+                            bowties: 0, honeycombs: 0, snakes: 0, vipers: 0, waystones: 0
+                        }
+                    },
+                    leftPlayer: {
+                        type: 'object',
+                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        properties: {
+                            id: { type: 'string', description: 'Username of the left player' },
+                            score: { type: 'number', minimum: 0 },
+                            result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
+                            hits: { type: 'number', minimum: 0 },
+                            goalsInFavor: { type: 'number', minimum: 0 },
+                            goalsAgainst: { type: 'number', minimum: 0 },
+                            powerupsPicked: { type: 'number', minimum: 0 },
+                            powerdownsPicked: { type: 'number', minimum: 0 },
+                            ballchangesPicked: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    rightPlayer: {
+                        type: 'object',
+                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        properties: {
+                            id: { type: 'string', description: 'Username of the right player' },
+                            score: { type: 'number', minimum: 0 },
+                            result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
+                            hits: { type: 'number', minimum: 0 },
+                            goalsInFavor: { type: 'number', minimum: 0 },
+                            goalsAgainst: { type: 'number', minimum: 0 },
+                            powerupsPicked: { type: 'number', minimum: 0 },
+                            powerdownsPicked: { type: 'number', minimum: 0 },
+                            ballchangesPicked: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    is_tournament: { type: 'boolean', default: false },
+                    smart_contract_link: { type: ['string', 'null'], default: '' },
+                    contract_address: { type: ['string', 'null'], default: '' }
+                }
+            }
+        }
+    },
+    response: {
+        201: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                gameId: { type: 'number' }
+            }
+        },
+        400: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' }
+            }
+        },
+        500: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' }
+            }
+        }
+    }
 };
 
 const retrieveGamesSchema = {

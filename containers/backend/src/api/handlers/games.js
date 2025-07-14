@@ -9,6 +9,7 @@ const { saveGameToDatabase,
 	getUserStats,
 	getUsernameById,
 	updateUserStats,
+	getUserByUsername,
 	calculateUserStats,
  } = require('../db/database');
 
@@ -251,13 +252,40 @@ async function saveGameHandler(request, reply) {
 	const { gameData } = request.body;
 
 	try {
+		const player1User = await getUserByUsername(gameData.leftPlayer.id);
+		const player2User = await getUserByUsername(gameData.rightPlayer.id);
+		
+		// Check if users exist
+		if (!player1User) {
+			return reply.status(400).send({
+				success: false,
+				message: `Player 1 with username '${gameData.leftPlayer.id}' not found`
+			});
+		}
+		
+		if (!player2User) {
+			return reply.status(400).send({
+				success: false,
+				message: `Player 2 with username '${gameData.rightPlayer.id}' not found`
+			});
+		}
+
+		const player1_id = player1User.id_user;
+		const player2_id = player2User.id_user;
+		
+		// Determine winner ID
+		let winner_id = 0; // Default for draw
+		if (gameData.generalResult === 'leftWin') {
+			winner_id = player1_id;
+		} else if (gameData.generalResult === 'rightWin') {
+			winner_id = player2_id;
+		}
 		// Map GameData to database fields
 		const gameRecord = {
-			player1_id: parseInt(gameData.leftPlayer.id, 10),
-			player2_id: parseInt(gameData.rightPlayer.id, 10),
-			winner_id: gameData.winner ? parseInt(gameData.winner, 10) :
-				gameData.generalResult === 'leftWin' ? parseInt(gameData.leftPlayer.id, 10) :
-					gameData.generalResult === 'rightWin' ? parseInt(gameData.rightPlayer.id, 10) : 0,
+			
+			player1_id: player1_id,
+			player2_id: player2_id,
+			winner_id: winner_id,
 			player1_score: gameData.finalScore.leftPlayer,
 			player2_score: gameData.finalScore.rightPlayer,
 			game_mode: gameData.config.mode,
@@ -438,62 +466,6 @@ async function deployContractHandler(request, reply) {
         });
     }
 };
-
-// async function getGamesHistoryHandler(request, reply) {
-// 	console.log('Received getGamesHistory request');
-// 	try {
-// 		console.log('Entering getGamesHistoryHandler');
-// 		console.log('Request user:', request.user);
-// 		const userId = request.user?.id;
-// 		console.log('User ID:', userId);
-// 		if (!userId) {
-// 			console.log('No userId, returning 401');
-// 			return reply.code(401).send({
-// 				success: false,
-// 				error: 'Authentication required',
-// 			});
-// 		}
-
-// 		console.log('Parsing query parameters...');
-// 		const { page = 0, limit = 10 } = request.query;
-// 		console.log('Query params:', { page, limit });
-
-// 		console.log('Fetching game history from database...');
-// 		const result = await getGamesHistory(userId, page, limit);
-// 		console.log('Game history result:', {
-// 			total: result.total,
-// 			gamesCount: result.games.length,
-// 		});
-
-// 		reply.send({
-// 			success: true,
-// 			games: result.games,
-// 			total: result.total,
-// 			page: result.page,
-// 			limit: result.limit,
-// 			totalPages: result.totalPages,
-// 			hasNext: result.hasNext,
-// 			hasPrev: result.hasPrev,
-// 		});
-// 		console.log('[DB GAMES HISTORY RESPONSE]', result);
-// 	} catch (error) {
-// 		console.error('Error in getGamesHistoryHandler:', {
-// 			message: error.message,
-// 			stack: error.stack,
-// 			name: error.name,
-// 		});
-// 		request.log.error('Error fetching game history:', {
-// 			message: error.message,
-// 			stack: error.stack,
-// 			name: error.name,
-// 		});
-// 		reply.code(500).send({
-// 			success: false,
-// 			error: 'Internal server error',
-// 			message: error.message || 'Failed to fetch game history',
-// 		});
-// 	}
-// }
 
 async function getGamesHistoryHandler(request, reply) {
     console.log('Received getGamesHistory request');
