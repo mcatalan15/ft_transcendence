@@ -72,6 +72,7 @@ services:
       - "3100:3100"
     volumes:
       - userbase:/usr/src/app/db
+      - ./frontend/static/avatars:/usr/src/app/public/avatars
     env_file:
       - .env
     restart: always
@@ -110,8 +111,8 @@ services:
       backend:
         condition: service_healthy
     environment:
-      - PUID=1000  # Adjust to match your user ID (UID) if needed
-      - PGID=1000  # Adjust to match your group ID (GID) if needed
+      - PUID=1000
+      - PGID=1000
     volumes:
       - userbase:/db
     ports:

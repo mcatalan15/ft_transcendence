@@ -153,6 +153,12 @@ const fetchUserAvatarSchema = {
 	',
 	tags: ['profile'],
 	response: {
+		200: {
+			description: 'Avatar fetched successfully',
+			type: 'string',
+			format: 'binary',
+			example: '/api/profile/avatar/42'
+		},
 	  404: {
 		description: 'Default avatar was not found',
 		type: 'object',
