@@ -158,73 +158,163 @@ function mapAvatarFromDatabase(dbAvatar) {
     return mappedAvatar;
 }
 
+// async function saveGameHandler(request, reply) {
+// 	const {
+// 		player1_id,
+// 		player2_id,
+// 		winner_id,
+// 		// player1_name,
+// 		// player2_name,
+// 		player1_score,
+// 		player2_score,
+// 		// winner_name,
+// 		// player1_is_ai,
+// 		// player2_is_ai,
+// 		game_mode,
+// 		is_tournament,
+// 		smart_contract_link,
+// 		contract_address,
+// 		gameData
+// 	} = request.body;
+
+// 	try {
+// 		const defaultGameData = gameData || {
+// 			gameId: `game_${Date.now()}`,
+// 			generalResult: null,
+// 			config: {},
+// 			ballStats: {},
+// 			itemStats: {},
+// 			wallStats: {},
+// 			leftPlayer: {
+// 				hits: 0,
+// 				goalsInFavor: 0,
+// 				goalsAgainst: 0,
+// 				powerupsPickedCount: 0,
+// 				powerdownsPickedCount: 0,
+// 				ballchangesPickedCount: 0,
+// 				score: player1_score
+// 			},
+// 			rightPlayer: {
+// 				hits: 0,
+// 				goalsInFavor: 0,
+// 				goalsAgainst: 0,
+// 				powerupsPickedCount: 0,
+// 				powerdownsPickedCount: 0,
+// 				ballchangesPickedCount: 0,
+// 				score: player2_score
+// 			}
+// 		};
+
+// 		const gameId = await saveGameToDatabase(
+// 			player1_id,
+// 			player2_id,
+// 			winner_id,
+// 			// player1_name,
+// 			// player2_name,
+// 			player1_score,
+// 			player2_score,
+// 			// winner_name,
+// 			// player1_is_ai,
+// 			// player2_is_ai,
+// 			game_mode,
+// 			is_tournament,
+// 			smart_contract_link,
+// 			contract_address,
+// 			defaultGameData
+// 		);
+
+// 		// Update user stats
+//         await updateUserStats(player1_id, player2_id, defaultGameData);
+// 		reply.status(201).send({
+// 			success: true,
+// 			message: 'Game saved successfully',
+// 			gameId
+// 		});
+// 	} catch (error) {
+// 		console.log('Error saving game:', error);
+
+// 		if (error.message.includes('SQLITE_CONSTRAINT')) {
+// 			reply.status(400).send({
+// 				success: false,
+// 				message: 'Database constraint error'
+// 			});
+// 		} else {
+// 			reply.status(500).send({
+// 				success: false,
+// 				message: 'Failed to save game'
+// 			});
+// 		}
+// 	}
+// }
+
 async function saveGameHandler(request, reply) {
-	const {
-		player1_id,
-		player2_id,
-		winner_id,
-		// player1_name,
-		// player2_name,
-		player1_score,
-		player2_score,
-		// winner_name,
-		// player1_is_ai,
-		// player2_is_ai,
-		game_mode,
-		is_tournament,
-		smart_contract_link,
-		contract_address,
-		gameData
-	} = request.body;
+	const { gameData } = request.body;
 
 	try {
-		const defaultGameData = gameData || {
-			gameId: `game_${Date.now()}`,
-			generalResult: null,
-			config: {},
-			ballStats: {},
-			itemStats: {},
-			wallStats: {},
-			leftPlayer: {
-				hits: 0,
-				goalsInFavor: 0,
-				goalsAgainst: 0,
-				powerupsPickedCount: 0,
-				powerdownsPickedCount: 0,
-				ballchangesPickedCount: 0,
-				score: player1_score
-			},
-			rightPlayer: {
-				hits: 0,
-				goalsInFavor: 0,
-				goalsAgainst: 0,
-				powerupsPickedCount: 0,
-				powerdownsPickedCount: 0,
-				ballchangesPickedCount: 0,
-				score: player2_score
-			}
+		// Map GameData to database fields
+		const gameRecord = {
+			player1_id: parseInt(gameData.leftPlayer.id, 10),
+			player2_id: parseInt(gameData.rightPlayer.id, 10),
+			winner_id: gameData.winner ? parseInt(gameData.winner, 10) :
+				gameData.generalResult === 'leftWin' ? parseInt(gameData.leftPlayer.id, 10) :
+					gameData.generalResult === 'rightWin' ? parseInt(gameData.rightPlayer.id, 10) : 0,
+			player1_score: gameData.finalScore.leftPlayer,
+			player2_score: gameData.finalScore.rightPlayer,
+			game_mode: gameData.config.mode,
+			is_tournament: gameData.is_tournament || false, // Default: false
+			smart_contract_link: gameData.smart_contract_link || '', // Default: empty string
+			contract_address: gameData.contract_address || '', // Default: empty string
+			created_at: gameData.createdAt,
+			ended_at: gameData.endedAt,
+			config_json: JSON.stringify(gameData.config),
+			general_result: gameData.generalResult,
+			// Ball usage
+			default_balls_used: gameData.balls.defaultBalls,
+			curve_balls_used: gameData.balls.curveBalls,
+			multiply_balls_used: gameData.balls.multiplyBalls,
+			spin_balls_used: gameData.balls.spinBalls,
+			burst_balls_used: gameData.balls.burstBalls,
+			// Special items
+			bullets_used: gameData.specialItems.bullets,
+			shields_used: gameData.specialItems.shields,
+			// Walls
+			pyramids_used: gameData.walls.pyramids,
+			escalators_used: gameData.walls.escalators,
+			hourglasses_used: gameData.walls.hourglasses,
+			lightnings_used: gameData.walls.lightnings,
+			maws_used: gameData.walls.maws,
+			rakes_used: gameData.walls.rakes,
+			trenches_used: gameData.walls.trenches,
+			kites_used: gameData.walls.kites,
+			bowties_used: gameData.walls.bowties,
+			honeycombs_used: gameData.walls.honeycombs,
+			snakes_used: gameData.walls.snakes,
+			vipers_used: gameData.walls.vipers,
+			waystones_used: gameData.walls.waystones,
+			// Player 1 stats
+			player1_hits: gameData.leftPlayer.hits,
+			player1_goals_in_favor: gameData.leftPlayer.goalsInFavor,
+			player1_goals_against: gameData.leftPlayer.goalsAgainst,
+			player1_powerups_picked: gameData.leftPlayer.powerupsPicked,
+			player1_powerdowns_picked: gameData.leftPlayer.powerdownsPicked,
+			player1_ballchanges_picked: gameData.leftPlayer.ballchangesPicked,
+			player1_result: gameData.leftPlayer.result,
+			// Player 2 stats
+			player2_hits: gameData.rightPlayer.hits,
+			player2_goals_in_favor: gameData.rightPlayer.goalsInFavor,
+			player2_goals_against: gameData.rightPlayer.goalsAgainst,
+			player2_powerups_picked: gameData.rightPlayer.powerupsPicked,
+			player2_powerdowns_picked: gameData.rightPlayer.powerdownsPicked,
+			player2_ballchanges_picked: gameData.rightPlayer.ballchangesPicked,
+			player2_result: gameData.rightPlayer.result
 		};
 
-		const gameId = await saveGameToDatabase(
-			player1_id,
-			player2_id,
-			winner_id,
-			// player1_name,
-			// player2_name,
-			player1_score,
-			player2_score,
-			// winner_name,
-			// player1_is_ai,
-			// player2_is_ai,
-			game_mode,
-			is_tournament,
-			smart_contract_link,
-			contract_address,
-			defaultGameData
-		);
+		// Save to database
+		const gameId = await saveGameToDatabase(gameRecord, gameData);
 
 		// Update user stats
-        await updateUserStats(player1_id, player2_id, defaultGameData);
+		await updateUserStats(gameRecord.player1_id, gameRecord.player2_id, gameData);
+
 		reply.status(201).send({
 			success: true,
 			message: 'Game saved successfully',
@@ -232,7 +322,6 @@ async function saveGameHandler(request, reply) {
 		});
 	} catch (error) {
 		console.log('Error saving game:', error);
-
 		if (error.message.includes('SQLITE_CONSTRAINT')) {
 			reply.status(400).send({
 				success: false,
@@ -250,7 +339,7 @@ async function saveGameHandler(request, reply) {
 async function retrieveLastGameHandler(request, reply) {
 	try {
 		const latestGame = await getLatestGame();
-		
+
 		if (!latestGame) {
 			return reply.status(404).send({
 				success: false,

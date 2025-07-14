@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GameConfig.ts                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/12 21:34:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/13 21:25:27 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ export interface GameData {
 
 	}
 
-	specialItmes: {
+	specialItems: {
 		bullets: number;
 		shields: number;
 	}
@@ -91,7 +91,7 @@ export interface GameData {
 	}
 
 	leftPlayer: {
-		name: string;
+		// name: string;
 		id: string;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;
@@ -104,7 +104,7 @@ export interface GameData {
 	}
 
 	rightPlayer: {
-		name: string;
+		// name: string;
 		id: string;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;

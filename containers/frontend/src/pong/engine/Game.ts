@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/12 22:04:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/13 22:34:32 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,7 +285,7 @@ export class PongGame {
 				burstBalls: 0,
 			},
 
-			specialItmes: {
+			specialItems: {
 				bullets: 0,
 				shields: 0
 			},
@@ -801,7 +801,12 @@ export class PongGame {
 			const requestBody = {
 				gameData: this.data
 			};
-	
+			
+			const gameData = {
+				...this.data,
+				createdAt: this.data.createdAt instanceof Date ? this.data.createdAt.toISOString() : this.data.createdAt,
+				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
+			};
 			// console.log('Making API call to /api/games/results');
 			console.log('Making API call to /api/games');
 			const response = await fetch(getApiUrl('/games'), {

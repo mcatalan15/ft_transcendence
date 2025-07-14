@@ -1,71 +1,264 @@
-const saveGameSchema = {
-    description: 'Save a completed game to the database with player scores and winner information',
-    tags: ['games'],
-    body: {
-        type: 'object',
-        required: [
-            'player1_id',
-            'player2_id',
-            'player1_score',
-            'player2_score',
+// const saveGameSchema = {
+//     description: 'Save a completed game to the database with player scores and winner information',
+//     tags: ['games'],
+//     body: {
+//         type: 'object',
+//         required: [
+//             'player1_id',
+//             'player2_id',
+//             'player1_score',
+//             'player2_score',
 
-            'game_mode',
-            'is_tournament',
-            'smart_contract_link',
-            'contract_address'
-        ],
-        properties: {
-            player1_id: { type: 'number', description: 'ID of player 1' },
-            player2_id: { type: 'number', description: 'ID of player 2' },
-            winner_id: { type: 'number', description: 'ID of the winning player, 0 for tie' },
-            player1_score: { type: 'number', minimum: 0, description: 'Score of player 1' },
-            player2_score: { type: 'number', minimum: 0, description: 'Score of player 2' },
-            game_mode: { type: 'string', description: 'Mode of the game' },
-            is_tournament: { type: 'boolean', description: 'Whether the game is part of a tournament' },
-            smart_contract_link: { type: 'string', description: 'Link to the smart contract' },
-            contract_address: { type: 'string', description: 'Address of the smart contract' }
-        }
-    },
-    response: {
-        201: {
-            description: 'Game saved successfully',
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                message: { type: 'string' },
-                gameId: { type: 'number', description: 'ID of the saved game' }
-            },
-            example: {
-                success: true,
-                message: 'Game saved successfully',
-                gameId: 123
-            }
-        },
-        400: {
-            description: 'Database constraint error',
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                message: { type: 'string' }
-            },
-            example: {
-                success: false,
-                message: 'Database constraint error'
-            }
-        },
-        500: {
-            description: 'Server error',
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                message: { type: 'string' }
-            },
-            example: {
-                success: false,
-                message: 'Failed to save game'
-            }
-        }
-    }
+//             'game_mode',
+//             'is_tournament',
+//             'smart_contract_link',
+//             'contract_address'
+//         ],
+//         properties: {
+//             player1_id: { type: 'number', description: 'ID of player 1' },
+//             player2_id: { type: 'number', description: 'ID of player 2' },
+//             winner_id: { type: 'number', description: 'ID of the winning player, 0 for tie' },
+//             player1_score: { type: 'number', minimum: 0, description: 'Score of player 1' },
+//             player2_score: { type: 'number', minimum: 0, description: 'Score of player 2' },
+//             game_mode: { type: 'string', description: 'Mode of the game' },
+//             is_tournament: { type: 'boolean', description: 'Whether the game is part of a tournament' },
+//             smart_contract_link: { type: 'string', description: 'Link to the smart contract' },
+//             contract_address: { type: 'string', description: 'Address of the smart contract' }
+//         }
+//     },
+//     response: {
+//         201: {
+//             description: 'Game saved successfully',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' },
+//                 gameId: { type: 'number', description: 'ID of the saved game' }
+//             },
+//             example: {
+//                 success: true,
+//                 message: 'Game saved successfully',
+//                 gameId: 123
+//             }
+//         },
+//         400: {
+//             description: 'Database constraint error',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' }
+//             },
+//             example: {
+//                 success: false,
+//                 message: 'Database constraint error'
+//             }
+//         },
+//         500: {
+//             description: 'Server error',
+//             type: 'object',
+//             properties: {
+//                 success: { type: 'boolean' },
+//                 message: { type: 'string' }
+//             },
+//             example: {
+//                 success: false,
+//                 message: 'Failed to save game'
+//             }
+//         }
+//     }
+// };
+
+const saveGameSchema = {
+	description: 'Save a completed game to the database with player scores and winner information',
+	tags: ['games'],
+	body: {
+		type: 'object',
+		required: ['gameData'],
+		properties: {
+			gameData: {
+				type: 'object',
+				required: [
+					'config',
+					'createdAt',
+					'endedAt',
+					'generalResult',
+					'winner',
+					'finalScore',
+					'balls',
+					'specialItems',
+					'walls',
+					'leftPlayer',
+					'rightPlayer'
+				],
+				properties: {
+					config: {
+						type: 'object',
+						required: ['mode'],
+						properties: {
+							mode: { type: 'string', description: 'Game mode (e.g., online, offline)' },
+							classicMode: { type: 'boolean', description: 'Whether the game is in classic mode' },
+							variant: { type: 'string', description: 'Game variant (e.g., 1v1)' }
+						}
+					},
+					createdAt: {
+						type: ['string', 'null'],
+						format: 'date-time',
+						description: 'Timestamp when the game was created'
+					},
+					endedAt: {
+						type: ['string', 'null'],
+						format: 'date-time',
+						description: 'Timestamp when the game ended'
+					},
+					generalResult: {
+						type: ['string', 'null'],
+						enum: ['leftWin', 'rightWin', 'draw', null],
+						description: 'General result of the game'
+					},
+					winner: {
+						type: ['string', 'null'],
+						description: 'ID of the winning player'
+					},
+					finalScore: {
+						type: 'object',
+						required: ['leftPlayer', 'rightPlayer'],
+						properties: {
+							leftPlayer: { type: 'number', minimum: 0, description: 'Score of the left player' },
+							rightPlayer: { type: 'number', minimum: 0, description: 'Score of the right player' }
+						}
+					},
+					balls: {
+						type: 'object',
+						properties: {
+							defaultBalls: { type: 'number', minimum: 0, description: 'Number of default balls used' },
+							curveBalls: { type: 'number', minimum: 0, description: 'Number of curve balls used' },
+							multiplyBalls: { type: 'number', minimum: 0, description: 'Number of multiply balls used' },
+							spinBalls: { type: 'number', minimum: 0, description: 'Number of spin balls used' },
+							burstBalls: { type: 'number', minimum: 0, description: 'Number of burst balls used' }
+						}
+					},
+					specialItems: {
+						type: 'object',
+						properties: {
+							bullets: { type: 'number', minimum: 0, description: 'Number of bullets used' },
+							shields: { type: 'number', minimum: 0, description: 'Number of shields used' }
+						}
+					},
+					walls: {
+						type: 'object',
+						properties: {
+							pyramids: { type: 'number', minimum: 0, description: 'Number of pyramid walls' },
+							escalators: { type: 'number', minimum: 0, description: 'Number of escalator walls' },
+							hourglasses: { type: 'number', minimum: 0, description: 'Number of hourglass walls' },
+							lightnings: { type: 'number', minimum: 0, description: 'Number of lightning walls' },
+							maws: { type: 'number', minimum: 0, description: 'Number of maw walls' },
+							rakes: { type: 'number', minimum: 0, description: 'Number of rake walls' },
+							trenches: { type: 'number', minimum: 0, description: 'Number of trench walls' },
+							kites: { type: 'number', minimum: 0, description: 'Number of kite walls' },
+							bowties: { type: 'number', minimum: 0, description: 'Number of bowtie walls' },
+							honeycombs: { type: 'number', minimum: 0, description: 'Number of honeycomb walls' },
+							snakes: { type: 'number', minimum: 0, description: 'Number of snake walls' },
+							vipers: { type: 'number', minimum: 0, description: 'Number of viper walls' },
+							waystones: { type: 'number', minimum: 0, description: 'Number of waystone walls' }
+						}
+					},
+					leftPlayer: {
+						type: 'object',
+						required: ['id', 'score', 'result'],
+						properties: {
+							id: { type: 'string', description: 'ID of the left player' },
+							score: { type: 'number', minimum: 0, description: 'Score of the left player' },
+							result: {
+								type: ['string', 'null'],
+								enum: ['win', 'lose', 'draw', null],
+								description: 'Result for the left player'
+							},
+							hits: { type: 'number', minimum: 0, description: 'Number of hits by the left player' },
+							goalsInFavor: { type: 'number', minimum: 0, description: 'Goals scored by the left player' },
+							goalsAgainst: { type: 'number', minimum: 0, description: 'Goals conceded by the left player' },
+							powerupsPicked: { type: 'number', minimum: 0, description: 'Power-ups picked by the left player' },
+							powerdownsPicked: { type: 'number', minimum: 0, description: 'Power-downs picked by the left player' },
+							ballchangesPicked: { type: 'number', minimum: 0, description: 'Ball changes picked by the left player' }
+						}
+					},
+					rightPlayer: {
+						type: 'object',
+						required: ['id', 'score', 'result'],
+						properties: {
+							id: { type: 'string', description: 'ID of the right player' },
+							score: { type: 'number', minimum: 0, description: 'Score of the right player' },
+							result: {
+								type: ['string', 'null'],
+								enum: ['win', 'lose', 'draw', null],
+								description: 'Result for the right player'
+							},
+							hits: { type: 'number', minimum: 0, description: 'Number of hits by the right player' },
+							goalsInFavor: { type: 'number', minimum: 0, description: 'Goals scored by the right player' },
+							goalsAgainst: { type: 'number', minimum: 0, description: 'Goals conceded by the right player' },
+							powerupsPicked: { type: 'number', minimum: 0, description: 'Power-ups picked by the right player' },
+							powerdownsPicked: { type: 'number', minimum: 0, description: 'Power-downs picked by the right player' },
+							ballchangesPicked: { type: 'number', minimum: 0, description: 'Ball changes picked by the right player' }
+						}
+					},
+					is_tournament: {
+						type: 'boolean',
+						description: 'Whether the game is part of a tournament',
+						default: false
+					},
+					smart_contract_link: {
+						type: ['string', 'null'],
+						description: 'Link to the smart contract',
+						default: ''
+					},
+					contract_address: {
+						type: ['string', 'null'],
+						description: 'Address of the smart contract',
+						default: ''
+					}
+				}
+			}
+		}
+	},
+	response: {
+		201: {
+			description: 'Game saved successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				gameId: { type: 'number', description: 'ID of the saved game' }
+			},
+			example: {
+				success: true,
+				message: 'Game saved successfully',
+				gameId: 123
+			}
+		},
+		400: {
+			description: 'Database constraint error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Database constraint error'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Failed to save game'
+			}
+		}
+	}
 };
 
 const retrieveGamesSchema = {

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
+#    By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/08 10:30:23 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/13 19:28:29 by mcatalan@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,20 +21,54 @@ dev:
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
 #	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up --build
 
+# tunnel:
+# 	@if ! command -v cloudflared >/dev/null 2>&1; then \
+# 		echo "cloudflared not found. Downloading..."; \
+# 		ARCH=$$(uname -m); \
+# 		if [ "$$ARCH" = "x86_64" ]; then \
+# 			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"; \
+# 		elif [ "$$ARCH" = "aarch64" ]; then \
+# 			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"; \
+# 		else \
+# 			echo "Unsupported architecture: $$ARCH"; exit 1; \
+# 		fi; \
+# 		curl -L "$$URL" -o ./cloudflared && chmod +x ./cloudflared; \
+# 		export PATH="$$PWD:$$PATH"; \
+# 		alias cloudflared="$$PWD/cloudflared"; \
+# 		echo "cloudflared installed locally."; \
+# 	fi
+# 	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
+
 tunnel:
 	@if ! command -v cloudflared >/dev/null 2>&1; then \
 		echo "cloudflared not found. Downloading..."; \
 		ARCH=$$(uname -m); \
-		if [ "$$ARCH" = "x86_64" ]; then \
-			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"; \
-		elif [ "$$ARCH" = "aarch64" ]; then \
-			URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"; \
+		OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
+		if [ "$$OS" = "linux" ]; then \
+			if [ "$$ARCH" = "x86_64" ]; then \
+				URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"; \
+			elif [ "$$ARCH" = "aarch64" ]; then \
+				URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"; \
+			else \
+				echo "Unsupported architecture: $$ARCH"; exit 1; \
+			fi; \
+			curl -L "$$URL" -o ./cloudflared; \
+			chmod +x ./cloudflared; \
+		elif [ "$$OS" = "darwin" ]; then \
+			if [ "$$ARCH" = "x86_64" ]; then \
+				URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-amd64.tgz"; \
+			elif [ "$$ARCH" = "arm64" ]; then \
+				URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-arm64.tgz"; \
+			else \
+				echo "Unsupported architecture: $$ARCH"; exit 1; \
+			fi; \
+			curl -L "$$URL" -o ./cloudflared.tgz; \
+			tar -xvzf ./cloudflared.tgz; \
+			chmod +x ./cloudflared; \
+			rm ./cloudflared.tgz; \
 		else \
-			echo "Unsupported architecture: $$ARCH"; exit 1; \
+			echo "Unsupported OS: $$OS"; exit 1; \
 		fi; \
-		curl -L "$$URL" -o ./cloudflared && chmod +x ./cloudflared; \
-		export PATH="$$PWD:$$PATH"; \
-		alias cloudflared="$$PWD/cloudflared"; \
 		echo "cloudflared installed locally."; \
 	fi
 	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
