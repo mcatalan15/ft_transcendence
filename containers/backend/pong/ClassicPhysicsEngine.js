@@ -75,7 +75,6 @@ class ClassicPhysicsEngine {
 			this.gameData.rightPlayer.goalsInFavor++;
             this.gameData.leftPlayer.goalsAgainst++;
 
-			console.log(`🎮 GOAL! Player 2 scores! Score: ${this.gameState.score1} - ${this.gameState.score2}`);
 			this.startBallDelay();
 			return { 
 				scorer: 'player2', 
@@ -92,8 +91,6 @@ class ClassicPhysicsEngine {
 
 			this.gameData.leftPlayer.goalsInFavor++;
             this.gameData.rightPlayer.goalsAgainst++;
-
-			console.log(`🎮 GOAL! Player 1 scores! Score: ${this.gameState.score1} - ${this.gameState.score2}`);
 			this.startBallDelay();
 			return { 
 				scorer: 'player1', 
@@ -142,18 +139,14 @@ class ClassicPhysicsEngine {
 		// Apply time-based movement
 		if (paddleInputs.p1 === -1) {
 			this.gameState.paddle1.y -= paddleMovement;
-			console.log(`🎮 PADDLE1: UP from ${originalP1Y.toFixed(1)} to ${this.gameState.paddle1.y.toFixed(1)} (moved ${paddleMovement.toFixed(2)}px)`);
 		} else if (paddleInputs.p1 === 1) {
 			this.gameState.paddle1.y += paddleMovement;
-			console.log(`🎮 PADDLE1: DOWN from ${originalP1Y.toFixed(1)} to ${this.gameState.paddle1.y.toFixed(1)} (moved ${paddleMovement.toFixed(2)}px)`);
 		}
 	
 		if (paddleInputs.p2 === -1) {
 			this.gameState.paddle2.y -= paddleMovement;
-			console.log(`🎮 PADDLE2: UP from ${originalP2Y.toFixed(1)} to ${this.gameState.paddle2.y.toFixed(1)} (moved ${paddleMovement.toFixed(2)}px)`);
 		} else if (paddleInputs.p2 === 1) {
 			this.gameState.paddle2.y += paddleMovement;
-			console.log(`🎮 PADDLE2: DOWN from ${originalP2Y.toFixed(1)} to ${this.gameState.paddle2.y.toFixed(1)} (moved ${paddleMovement.toFixed(2)}px)`);
 		}
 	
 		// Wall constraints (same as before)

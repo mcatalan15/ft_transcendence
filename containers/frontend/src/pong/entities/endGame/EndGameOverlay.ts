@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 14:14:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 10:20:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,20 +214,28 @@ export class EndgameOverlay extends Entity {
 	}
 
 	private getHeaderSprite(): Sprite | null {
-		const isWinner = isPlayerWinner(this.game);
-		const language = this.game.language || 'en';
-		
 		let assetName: string;
-	
-		console.log(`Creating header sprite for language: ${language}, isWinner: ${isWinner}, isFirefox: ${this.isFirefox}, gameMode: ${this.game.isOnline ? 'online' : 'local'}`);
 		
-		if (this.game.config.classicMode) {
-			assetName = isWinner ? `victoryHeader${language.toUpperCase()}White` : `defeatHeader${language.toUpperCase()}White`;
-		} else {
-			if (isWinner) {
-				assetName = `victoryHeader${language.toUpperCase()}Green`;
+		if (this.game.data.generalResult !== 'draw') {
+			const isWinner = isPlayerWinner(this.game);
+			const language = this.game.language || 'en';	
+		
+			console.log(`Creating header sprite for language: ${language}, isWinner: ${isWinner}, isFirefox: ${this.isFirefox}, gameMode: ${this.game.isOnline ? 'online' : 'local'}`);
+			
+			if (this.game.config.classicMode) {
+				assetName = isWinner ? `victoryHeader${language.toUpperCase()}White` : `defeatHeader${language.toUpperCase()}White`;
 			} else {
-				assetName = `defeatHeader${language.toUpperCase()}Red`;
+				if (isWinner) {
+					assetName = `victoryHeader${language.toUpperCase()}Green`;
+				} else {
+					assetName = `defeatHeader${language.toUpperCase()}Red`;
+				}
+			}
+		} else {
+			if (this.game.config.classicMode) {
+				assetName = `drawHeader${this.game.language.toUpperCase()}White`;
+			} else {
+				assetName = `drawHeader${this.game.language.toUpperCase()}Yellow`;
 			}
 		}
 		
@@ -275,8 +283,6 @@ export class EndgameOverlay extends Entity {
 		const fixedY = 175;
 		const fixedWidth = 1000;
 		const fixedHeight = 400;
-		
-		console.log(`Creating overlay graphics at FIXED position: (${fixedX}, ${fixedY}) size: ${fixedWidth}x${fixedHeight} for ${game.isOnline ? 'online' : 'local'} mode`);
 
 		const background = new Graphics();
 		
@@ -295,7 +301,11 @@ export class EndgameOverlay extends Entity {
 		if (game.config.classicMode) {
 			frameColor = GAME_COLORS.white;
 		} else {
-			frameColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				frameColor = GAME_COLORS.orange;
+			} else {
+				frameColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
 		
 		const frame = new Graphics();
@@ -366,7 +376,7 @@ export class EndgameOverlay extends Entity {
 		return {
 			text: text,
 			x: 405,
-			y: 190,
+			y: 191,
 			style: {
 				fill: { color: GAME_COLORS.black },
 				fontSize: 12,
@@ -381,7 +391,6 @@ export class EndgameOverlay extends Entity {
 	getResultText(): any {
 		const isWinner = isPlayerWinner(this.game);
 		const isDraw = this.game.data.generalResult === 'draw';
-		console.log(`isWinner: ${isWinner}, isDraw: ${isDraw}`);
 		
 		let text: string;
 		let color: number;
@@ -489,10 +498,10 @@ export class EndgameOverlay extends Entity {
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			if (isPlayerWinner(this.game)) {
-				color = GAME_COLORS.green;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
 			} else {
-				color = GAME_COLORS.red;
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
 			}
 		}
 
@@ -523,7 +532,6 @@ export class EndgameOverlay extends Entity {
 	private getBackgroundPoints(x: number, y: number, width: number, height: number): { x: number, y: number }[] {
 		const isWinner = isPlayerWinner(this.game);
 		const language = this.game.language || 'en';
-		const upperOffset = 15;
 		const lowerOffset = 20;
 		
 		const victoryENPoints = [
@@ -629,8 +637,63 @@ export class EndgameOverlay extends Entity {
 			{ x: x + width + 2.2 - 247, y: y - 15 },
 			{ x: x + width + 2.2 - 247, y: y - 6 }
 		];
+
+		const drawENPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 165, y: y - 6 },
+			{ x: x + width + 2.2 - 165, y: y - 15 },
+			{ x: x + width + 2.2 - 175, y: y - 15 },
+			{ x: x + width + 2.2 - 175, y: y - 6 }
+		];
+
+		const drawESPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 97, y: y - 6 },
+			{ x: x + width + 2.2 - 97, y: y - 15 },
+			{ x: x + width + 2.2 - 107, y: y - 15 },
+			{ x: x + width + 2.2 - 107, y: y - 6 }
+		];
+
+		const drawFRPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 55.5, y: y - 6 },
+			{ x: x + width + 2.2 - 55.5, y: y - 15 },
+			{ x: x + width + 2.2 - 65.5, y: y - 15 },
+			{ x: x + width + 2.2 - 65.5, y: y - 6 }
+		];
+
+		const drawCATPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 63, y: y - 6 },
+			{ x: x + width + 2.2 - 63, y: y - 15 },
+			{ x: x + width + 2.2 - 73, y: y - 15 },
+			{ x: x + width + 2.2 - 73, y: y - 6 }
+		];
 	
-		if (isWinner) {
+		if (this.game.data.generalResult === 'draw') {
+			switch (language) {
+				case 'en':
+					return drawENPoints;
+				case 'es':
+					return drawESPoints;
+				case 'fr':
+					return drawFRPoints;
+				default:
+					return drawCATPoints;
+			}
+		} else if (isWinner) {
 			switch (language) {
 				case 'en':
 					return victoryENPoints;
@@ -735,7 +798,17 @@ export class EndgameOverlay extends Entity {
 		const linesPerGroup = 20;
 		const lineLength = 10;
 
-		const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+		let color;
+
+		if (this.game.config.classicMode) {
+			color = GAME_COLORS.white;
+		} else {
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
+		}
 
 		// Top section
 		for (let group = 0; group < numGroups + 1; group++) {
@@ -804,7 +877,11 @@ export class EndgameOverlay extends Entity {
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
 		
 		for (let i = 0; i < 4; i++) {
@@ -835,7 +912,11 @@ export class EndgameOverlay extends Entity {
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
 
 		legend.push({
@@ -884,9 +965,13 @@ export class EndgameOverlay extends Entity {
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
-
+		
 		legend.push({
 			text: "⩔⩔⩔⩔\n" ,
 			x: 0,
@@ -929,12 +1014,17 @@ export class EndgameOverlay extends Entity {
 	createStatsLegend(): Text {		
 		const preText = this.getStatsLegendText();
 		let text;
+		
 		let color;
 
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
 
 		text = {
@@ -974,10 +1064,15 @@ export class EndgameOverlay extends Entity {
 		const stats: Text[] = [];
 	
 		let color;
+
 		if (this.game.config.classicMode) {
 			color = GAME_COLORS.white;
 		} else {
-			color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
 		}
 	
 		const leftPlayerStats: number[] = this.getPlayerStats('left');

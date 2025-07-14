@@ -48,7 +48,15 @@ export class ChatWebSocket {
         if (data.type === 'game_invite_accepted' && data.action === 'navigate_to_pong') {
             this.notifySystemMessage(`Game invitation accepted! Navigating to Pong...`, MessageType.GAME);
             setTimeout(() => {
-                navigate('/pong?invitation=true&inviteId=' + data.inviteId);
+                // Construct URL with player names
+                const urlParams = new URLSearchParams({
+                    invitation: 'true',
+                    inviteId: data.inviteId,
+                    hostName: data.hostName || 'Host',
+                    guestName: data.guestName || 'Guest'
+                });
+                
+                navigate(`/pong?${urlParams.toString()}`);
             }, 1500);
             return;
         }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 13:00:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 10:58:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,9 +307,11 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name|| 'PLAYER 1',
-				score: 0,
-				result: null,
+				name: this.leftPlayer.name || 'PLAYER 1',
+                id: this.leftPlayer.id || 'player1',
+				isDisconnected: false,
+                score: 0,
+                result: null,
 				hits: 0,
 				goalsInFavor: 0,
 				goalsAgainst: 0,
@@ -319,8 +321,10 @@ export class PongGame {
 			},
 			rightPlayer: {
 				name: this.rightPlayer.name || 'PLAYER 2',
-				score: 0,
-				result: null,
+                id: this.rightPlayer.id || 'player2',
+				isDisconnected: false,
+                score: 0,
+                result: null,
 				hits: 0,
 				goalsInFavor: 0,
 				goalsAgainst: 0,
@@ -459,17 +463,18 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void> {
-
-		//TODO: Update to match online game player names consistently
-		this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
-		if (this.config.variant === '1vAI') {
-			this.rightPlayer = { name: "AI-BOT" };
-		} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
-			this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+		if (this.config.mode === 'online') {
+			this.leftPlayer = { name: this.config.hostName || "Host Player" };
+			this.rightPlayer = { name: this.config.guestName || "Guest Player" };
 		} else {
-			this.rightPlayer = { name: this.config.opponent || "Player 2" };
+			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
+			if (this.config.variant === '1vAI') {
+				this.rightPlayer = { name: "AI-BOT" };
+			} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
+				this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+			}
 		}
-
+		
 		this.data.leftPlayer.name = this.leftPlayer.name;
     	this.data.rightPlayer.name = this.rightPlayer.name;
 
@@ -678,11 +683,6 @@ export class PongGame {
 			{ name: 'victoryHeaderFRWhite', url: '/headers/headers_victory_fr_white.svg' },
 			{ name: 'victoryHeaderCATWhite', url: '/headers/headers_victory_cat_white.svg' },
 
-			{ name: 'victoryHeaderENYellow', url: '/headers/headers_victory_en_yellow.svg' },
-			{ name: 'victoryHeaderESYellow', url: '/headers/headers_victory_es_yellow.svg' },
-			{ name: 'victoryHeaderFRYellow', url: '/headers/headers_victory_fr_yellow.svg' },
-			{ name: 'victoryHeaderCATYellow', url: '/headers/headers_victory_cat_yellow.svg' },
-
 			{ name: 'victoryHeaderENGreen', url: '/headers/headers_victory_en_green.svg' },
 			{ name: 'victoryHeaderESGreen', url: '/headers/headers_victory_es_green.svg' },
 			{ name: 'victoryHeaderFRGreen', url: '/headers/headers_victory_fr_green.svg' },
@@ -693,15 +693,20 @@ export class PongGame {
 			{ name: 'defeatHeaderFRWhite', url: '/headers/headers_defeat_fr_white.svg' },
 			{ name: 'defeatHeaderCATWhite', url: '/headers/headers_defeat_cat_white.svg' },
 
-			{ name: 'defeatHeaderENYellow', url: '/headers/headers_defeat_en_yellow.svg' },
-			{ name: 'defeatHeaderESYellow', url: '/headers/headers_defeat_es_yellow.svg' },
-			{ name: 'defeatHeaderFRYellow', url: '/headers/headers_defeat_fr_yellow.svg' },
-			{ name: 'defeatHeaderCATYellow', url: '/headers/headers_defeat_cat_yellow.svg' },
-
 			{ name: 'defeatHeaderENRed', url: '/headers/headers_defeat_en_red.svg' },
 			{ name: 'defeatHeaderESRed', url: '/headers/headers_defeat_es_red.svg' },
 			{ name: 'defeatHeaderFRRed', url: '/headers/headers_defeat_fr_red.svg' },
 			{ name: 'defeatHeaderCATRed', url: '/headers/headers_defeat_cat_red.svg' },
+
+			{ name: 'drawHeaderENWhite', url: '/headers/headers_draw_en_white.svg' },
+			{ name: 'drawHeaderESWhite', url: '/headers/headers_draw_es_white.svg' },
+			{ name: 'drawHeaderFRWhite', url: '/headers/headers_draw_fr_white.svg' },
+			{ name: 'drawHeaderCATWhite', url: '/headers/headers_draw_cat_white.svg' },
+
+			{ name: 'drawHeaderENYellow', url: '/headers/headers_draw_en_yellow.svg' },
+			{ name: 'drawHeaderESYellow', url: '/headers/headers_draw_es_yellow.svg' },
+			{ name: 'drawHeaderFRYellow', url: '/headers/headers_draw_fr_yellow.svg' },
+			{ name: 'drawHeaderCATYellow', url: '/headers/headers_draw_cat_yellow.svg' },
 
 			// Placeholding avatars
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/square4.png' },
@@ -716,9 +721,6 @@ export class PongGame {
 		
 		if (!this.isOnline || !gameState) return;
 	
-		console.log('=== UPDATE FROM SERVER ===');
-		console.log('Game state received:', gameState);
-	
 		try {
 			const physicsSystem = this.systems.find(s => s instanceof PhysicsSystem) as PhysicsSystem;
 			if (physicsSystem && physicsSystem.updateFromServer) {
@@ -730,11 +732,8 @@ export class PongGame {
 			}
 	
 			if (gameState.gameEnded || gameState.winner || gameState.type === 'GAME_END') {
-				console.log('Server indicates game has ended');
 				this.handleServerGameEnd(gameState);
 			}
-	
-			console.log('Server state processed successfully');
 		} catch (error) {
 			console.error('Error updating from server state:', error);
 		}

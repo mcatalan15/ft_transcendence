@@ -11,7 +11,7 @@ const { saveGameToDatabase,
 	getUserByUsername,
  } = require('../db/database');
 
- async function getUserDataHandler(request, reply) {
+async function getUserDataHandler(request, reply) {
     try {
         const { userId } = request.body;
         
@@ -39,12 +39,23 @@ const { saveGameToDatabase,
 
             const userStats = await getUserStats(userId);
             
+            let avatarUrl = 'avatarUnknownSquare';
+
+            if (user.avatar_filename) {
+                const timestamp = Date.now();
+                if (user.avatar_filename.startsWith('/')) {
+                    avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
+                } else {
+                    avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+                }
+            }
+            
             if (!userStats) {
                 console.log(`No stats found for user ${userId}, returning default stats`);
                 const userData = {
                     id: user.id.toString(),
                     name: user.username || user.name || 'PLAYER',
-                    avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                    avatar: avatarUrl, 
                     goalsScored: 0,
                     goalsConceded: 0,
                     tournaments: 0,
@@ -65,7 +76,7 @@ const { saveGameToDatabase,
             const userData = {
                 id: user.id.toString(),
                 name: user.username || user.name || 'PLAYER',
-                avatar: mapAvatarFromDatabase(user.avatar) || 'avatarUnknown',
+                avatar: avatarUrl,
                 goalsScored: userStats.total_goals_scored || 0,
                 goalsConceded: userStats.total_goals_conceded || 0,
                 tournaments: userStats.tournaments_won || 0,
@@ -126,35 +137,6 @@ function calculateRank(stats) {
     console.log(`Calculated ELO rating: winRate=${winRate.toFixed(3)}, totalGames=${totalGames}, wins=${wins}, eloScore=${eloScore.toFixed(1)}, finalELO=${eloRating.toFixed(1)}`);
     
     return parseFloat(eloRating.toFixed(1));
-}
-
-function mapAvatarFromDatabase(dbAvatar) {
-    if (!dbAvatar) return 'avatarUnknown';
-    
-    const avatarMap = {
-        'eva': 'avatarEva',
-        'marc': 'avatarMarc', 
-        'nico': 'avatarNico',
-        'hugo': 'avatarHugo',
-        
-        'square1.png': 'avatarEva',
-        'square2.png': 'avatarMarc',
-        'square3.png': 'avatarNico', 
-        'square4.png': 'avatarHugo',
-
-        'Eva': 'avatarEva',
-        'Marc': 'avatarMarc',
-        'Nico': 'avatarNico',
-        'Hugo': 'avatarHugo',
-        
-        'unknown': 'avatarUnknown',
-        'default': 'avatarUnknown'
-    };
-    
-    const mappedAvatar = avatarMap[dbAvatar] || 'avatarUnknown';
-    console.log(`Mapped avatar '${dbAvatar}' to '${mappedAvatar}'`);
-    
-    return mappedAvatar;
 }
 
 async function saveGameHandler(request, reply) {

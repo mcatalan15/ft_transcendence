@@ -6,31 +6,34 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 12:54:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 10:58:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 export interface GameConfig {
 	mode: 'local' | 'online';
-	variant: '1v1' | '1vAI' | 'tournament';
+	variant: '1v1' | '1vAI';
 	classicMode: boolean;
 	filters: boolean;
 	gameId?: string;
 	
-	players: {
-		id?: string;
+	// Add these new fields for online games
+	hostName?: string;
+	guestName?: string;
+	currentPlayerName?: string;
+	isCurrentPlayerHost?: boolean;
+	
+	players?: {
+		id: string;
 		name: string;
-		type: 'human' | 'ai' | 'remote';
+		type: 'local' | 'remote' | 'ai';
 		side: 'left' | 'right';
-		team?: number;
 	}[];
-
-	player2Id?: string;
 	
 	network?: {
-		roomId?: string;
-		isHost?: boolean;
-		serverUrl?: string;
+		roomId: string;
+		isHost: boolean;
+		serverUrl: string;
 	};
 
 	tournament?: {
@@ -95,6 +98,8 @@ export interface GameData {
 
 	leftPlayer: {
 		name: string;
+		id: string;
+		isDisconnected: boolean;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;
 		hits: number;
@@ -107,6 +112,8 @@ export interface GameData {
 
 	rightPlayer: {
 		name: string;
+		id: string;
+		isDisconnected: boolean;
 		score: number;
 		result: 'win' | 'lose' | 'draw' | null;
 		hits: number;

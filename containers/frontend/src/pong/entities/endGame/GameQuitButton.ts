@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:25:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 09:40:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,17 @@ export class GameQuitButton extends Entity {
     }
 
     private initializeText(): void {
-        const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+        let color;
+
+		if (this.game.config.classicMode) {
+			color = GAME_COLORS.white;
+		} else {
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
+		}
         
         const textStyle = {
             fill: { 
@@ -140,16 +150,16 @@ export class GameQuitButton extends Entity {
 
     private getStrokeColor(): { color: number, alpha: number, width: number } {
         let color;
-        
-        if (this.game.config.classicMode){
-            color = GAME_COLORS.white;
-        } else {
-            if (isPlayerWinner(this.game)) {
-                color = GAME_COLORS.green;
-            } else {
-                color = GAME_COLORS.red;
-            }
-        }
+
+		if (this.game.config.classicMode) {
+			color = GAME_COLORS.white;
+		} else {
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
+		}
 
         return {
             color: color,
@@ -191,11 +201,21 @@ export class GameQuitButton extends Entity {
     private handlePointerLeave(): void {
         if (!this.isClickable) return;
         
+        let color;
+
+		if (this.game.config.classicMode) {
+			color = GAME_COLORS.white;
+		} else {
+			if (this.game.data.generalResult === 'draw') {
+				color = GAME_COLORS.orange;
+			} else {
+				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			}
+		}
+
         this.isHovered = false;
         
         this.createButton();
-
-        const color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
         
         if (this.buttonText) {
             const textColor = this.game.config.classicMode ? GAME_COLORS.white : color;
