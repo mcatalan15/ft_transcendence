@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 10:58:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:39:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ export interface GameConfig {
 	filters: boolean;
 	gameId?: string;
 	
-	// Add these new fields for online games
 	hostName?: string;
 	guestName?: string;
 	currentPlayerName?: string;

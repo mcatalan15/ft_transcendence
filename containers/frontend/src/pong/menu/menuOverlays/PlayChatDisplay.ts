@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/27 12:14:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 17:57:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,13 @@ export class PlayChatDisplay extends Entity {
 	menu: Menu;
 	header: HeaderBar;
 	chatWindowGraphic: Graphics = new Graphics();
-	//! OJO
-	placeHolderText: Text[] = [];
 	
 	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
 		
 		this.menu = menu;
 
-		this.header = new HeaderBar(this.menu, 'nextMatchHeader', 'overlays', 'chat', 1098, 180, 554, 20);
+		this.header = new HeaderBar(this.menu, 'nextMatchHeader', 'overlays', 'HOW TO PLAY', 1098, 180, 554, 20);
 		const headerBar = this.header.getComponent('render') as RenderComponent;
 		this.addComponent(headerBar, 'barRender');
 		const headerText = this.header.getComponent('text') as RenderComponent;
@@ -45,11 +43,11 @@ export class PlayChatDisplay extends Entity {
 		const chatWindowComponent = new RenderComponent(this.chatWindowGraphic);
 		this.addComponent(chatWindowComponent, 'chatWindow');
 
-		this.placeHolderText = this.createPlaceHolderTexts();
+		/* this.placeHolderText = this.createPlaceHolderTexts();
 		for (let i = 0; i < this.placeHolderText.length; i++) {
 			const textComponent = new TextComponent(this.placeHolderText[i]);
 			this.addComponent(textComponent, `placeHolderText${i}`);
-		}
+		} */
 	}
 
 	createPlaceHolderTexts(): Text[] {
@@ -102,11 +100,5 @@ export class PlayChatDisplay extends Entity {
 
 		this.chatWindowGraphic.clear();
 		this.createChatWindow();
-
-		const newPlaceHolderTexts = this.createPlaceHolderTexts();
-		for (let i = 0; i < this.placeHolderText.length; i++) {
-			const placeHolderTextComponent = new TextComponent(newPlaceHolderTexts[i]);
-			this.replaceComponent(`text`, placeHolderTextComponent, `placeHolderText${i}`);
-		}
 	}
 }

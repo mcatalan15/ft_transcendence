@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:06:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:05:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:07:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Assets, Sprite, Texture } from "pixi.js";
 import { PongGame } from "../engine/Game";
 
 export class ImageManager {
-	private static assets: Map<string, Texture> = new Map();
+	static assets: Map<string, Texture> = new Map();
 	private static headerImages: Sprite[] = [];
 
 	static async loadAssets(assetList: Array<{name: string, url: string}>): Promise<void> {

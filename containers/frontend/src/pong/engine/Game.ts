@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 10:58:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 19:09:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig, GameData } from '../utils/GameConfig';
+import { GameConfig, GameData, PlayerData } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -60,6 +60,7 @@ import { SoundManager } from '../managers/SoundManager';
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
 
+// API stuff
 import { getApiUrl } from '../../config/api';
 
 export class PongGame {
@@ -102,6 +103,9 @@ export class PongGame {
 	currentWorld!: World;
 	leftPlayer: any = '';
 	rightPlayer: any = '';
+
+	playerData!: PlayerData;
+	opponentData!: PlayerData;
 
 	isOnline: boolean = false;
 	gameId?: string;
@@ -201,6 +205,8 @@ export class PongGame {
 		if (!this.app.ticker.started) {
 			this.app.ticker.start();
 		}
+
+		await this.apiDataRequest();
 
 		await this.loadImages();
 		await this.createEntities();
@@ -852,6 +858,84 @@ export class PongGame {
 				uiEntity.setScoreText(`${score1} - ${score2}`);
 				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
 			}
+		}
+	}
+
+	// API
+
+	async getUserData(userId: string, token: string): Promise<PlayerData> {
+		try {
+			console.log(`Fetching user data for user ${userId} with token ${token}`);
+			if (!userId || !token) {
+				throw new Error('User ID and token are required to fetch user data');
+			}
+			
+			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
+			console.log(getApiUrl('/games/getUserData'));
+			const response = await fetch(getApiUrl('/games/getUserData'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					userId: userId
+				}),
+				credentials: 'include'
+			});
+	
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+	
+			const data = await response.json();
+			console.log('User data fetched successfully:', data);
+			
+			return data.userData as PlayerData;
+		} catch (error) {
+			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	private async apiDataRequest(): Promise<void> {
+		try {
+			const token = sessionStorage.getItem('token');
+
+			const hostUsername = this.config.hostName;
+			const guestUsername = this.config.guestName;
+
+			const hostRes = await fetch(`/api/profile/${hostUsername}`, {
+				method: 'GET',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			});
+			const hostProfile = await hostRes.json();
+
+			const guestRes = await fetch(`/api/profile/${guestUsername}`, {
+				method: 'GET',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			});
+			const guestProfile = await guestRes.json();
+
+			const hostId = hostProfile.userId;
+			const guestId = guestProfile.userId;
+
+			console.log(`Host ID: ${hostId}, Guest ID: ${guestId}`);
+
+			this.playerData = await this.getUserData(hostId!, token!);
+			this.opponentData = await this.getUserData(guestId!, token!);
+		} catch (error) {
+			console.error('❌ API call failed:', error);
 		}
 	}
 
