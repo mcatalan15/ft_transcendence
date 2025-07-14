@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 12:16:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:57:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1077,10 +1077,10 @@ export class Menu{
 		try {
 			console.log('Testing API call with real user data...');
 			
-			const testUserId = '1'; 
-			const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBsYXllcjEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzUxODgxMjg4LCJleHAiOjE3NTE4ODQ4ODh9._x9yAMOPehBHx3hATN-lXKzJRj2j5_g47cuRn7p4hS8";
+			const testUserId = sessionStorage.getItem('userId'); 
+			const testToken = sessionStorage.getItem('token') 
 			
-			const userData = await this.getUserData(testUserId, testToken);
+			const userData = await this.getUserData(testUserId!, testToken!);
 			this.playerData = userData;
 			console.log('✅ API call successful! Real user data:', userData);
 			console.log('User stats from database:', {
