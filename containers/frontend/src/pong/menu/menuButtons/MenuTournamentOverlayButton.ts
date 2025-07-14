@@ -46,10 +46,9 @@ export class MenuTournamentOverlayButton extends MenuButton {
         this.buttonText.y = this.menu.tournamentOverlayButtonHeight / 2;
     }
 
-    protected onButtonClick(): void {
+	protected onButtonClick(): void {
         console.log("Tournament overlay button clicked");
         console.log(`Button ID: ${this.id}`);
-        
         if (this.id.includes('glossary') || this.id.includes('glosario') || this.id.includes('glossaire') || this.id.includes('glossari')) {
             this.menu.eventQueue.push({
                 type: 'GLOSSARY_CLICK',
@@ -61,14 +60,6 @@ export class MenuTournamentOverlayButton extends MenuButton {
                 type: 'FILTERS_CLICK',
                 target: this.buttonContainer,
                 buttonName: 'tournamentOverlayFiltersButton'
-            });
-        } 
-        // NOUVEAU: Gérer le bouton "Start Match"
-        else if (this.id.includes('startmatch') || this.id.includes('start')) {
-            this.menu.eventQueue.push({
-                type: 'START_MATCH_CLICK',
-                target: this.buttonContainer,
-                buttonName: 'tournamentStartMatchButton'
             });
         }
     }

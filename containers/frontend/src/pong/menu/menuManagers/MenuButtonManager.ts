@@ -533,42 +533,31 @@ export class ButtonManager {
 		menu.readyButton = readyButton;
 	}
 
-static createTournamentOverlayButtons(menu: Menu) {
-    const tournamentOverlayButtonConfigs: menuUtils.MenuButtonConfig[] = [
-        {
-            isClicked: false,
-            text: this.getButtonTexts(menu, 'glossary'),
-            onClick: () => {
-                console.log('Tournament Glossary button clicked');
-                menu.playSound("menuSelect");
-            },
-            color: getThemeColors(menu.config.classicMode).menuBlue,
-            index: 0
-        },
-        {
-            isClicked: false,
-            text: this.getButtonTexts(menu, 'CRTON'),
-            onClick: () => {
-                console.log('Tournament Filters button clicked');
-                menu.playSound("menuSelect");
-            },
-            color: getThemeColors(menu.config.classicMode).menuBlue,
-            index: 1
-        },
-        // NOUVEAU: Bouton Start Match
-        {
-            isClicked: false,
-            text: 'START MATCH',
-            onClick: () => {
-                console.log('Start Match button clicked');
-                menu.playSound("menuSelect");
-            },
-            color: getThemeColors(menu.config.classicMode).menuBlue,
-            index: 2
-        }
-    ];
-
-    const buttonIds: string[] = ['GLOSSARY', 'FILTERS', 'STARTMATCH'];
+	static createTournamentOverlayButtons(menu: Menu) {
+		const tournamentOverlayButtonConfigs: menuUtils.MenuButtonConfig[] = [
+			{
+				isClicked: false,
+				text: this.getButtonTexts(menu, 'glossary'),
+				onClick: () => {
+					console.log('Tournament Glossary button clicked');
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 0
+			},
+			{
+				isClicked: false,
+				text: this.getButtonTexts(menu, 'CRTON'),
+				onClick: () => {
+					console.log('Tournament Filters button clicked');
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 1
+			}
+		];
+	
+		const buttonIds: string[] = ['GLOSSARY', 'FILTERS'];
 	
 		tournamentOverlayButtonConfigs.forEach((config, index) => {
 			const tournamentOverlayButton = new MenuTournamentOverlayButton(

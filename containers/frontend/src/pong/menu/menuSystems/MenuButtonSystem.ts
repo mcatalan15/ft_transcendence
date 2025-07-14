@@ -50,7 +50,6 @@ export class MenuButtonSystem implements System {
 
 		while (this.menu.eventQueue.length > 0) {
 			const event = this.menu.eventQueue.shift() as GameEvent;
-			if (!event) continue;
 			
 			if (event.type === 'START_CLICK') {
 				this.handleStartClick();
@@ -82,24 +81,12 @@ export class MenuButtonSystem implements System {
 				this.resetLayer(event);
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
-			} else if (event.type === 'START_MATCH_CLICK') {
-            	this.handleStartMatchClick();
 			} else {
 				unhandledEvents.push(event);
 			}
 		}
 		
 		this.menu.eventQueue.push(...unhandledEvents);
-	}
-	
-	handleStartMatchClick() {
-		console.log("🚀 Bouton Start Match cliqué !");
-		
-		if (this.menu.config.variant === 'tournament') {
-			console.log("✅ Tournoi actif, démarrage du match...");
-		} else {
-			console.log("❌ Aucun tournoi actif");
-		}
 	}
 
 	handleStartClick(){
@@ -136,6 +123,17 @@ export class MenuButtonSystem implements System {
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 		
+		if (this.menu.config.variant === 'tournament') {
+			this.menu.playButton.setClicked(true);
+			this.menu.tournamentOverlay.show();
+			this.overlayStack.push('tournament');
+			this.setButtonsClickability(false);
+		} else {
+			this.menu.playButton.setClicked(true);
+			this.menu.playOverlay.show();
+			this.overlayStack.push('play');
+			this.setButtonsClickability(false);
+		}
 	}
 
 	handleReadyClick() {
@@ -403,24 +401,23 @@ export class MenuButtonSystem implements System {
 		this.updatePlayButtonState();
 	};
 
-    handleTournamentClick() {
-        this.menu.tournamentButton.setClicked(!this.menu.tournamentButton.getIsClicked());
+	handleTournamentClick() {
+		this.menu.tournamentButton.setClicked(!this.menu.tournamentButton.getIsClicked());
 
-        if (this.menu.duelButton.getIsClicked()) {
-            this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
-        }
+		if (this.menu.duelButton.getIsClicked()) {
+			this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
+		}
 
-        if (this.menu.tournamentButton.getIsClicked()) {    
-            this.menu.config.mode = 'local'; // CHANGÉ: local au lieu d'online pour commencer
-            this.menu.config.variant = 'tournament';
-            
-        }
+		if (this.menu.tournamentButton.getIsClicked()) {    
+			this.menu.config.mode = 'online';
+			this.menu.config.variant = 'tournament';
+		}
 
-        this.menu.tournamentButton.resetButton();
-        this.menu.duelButton.resetButton();
+		this.menu.tournamentButton.resetButton();
+		this.menu.duelButton.resetButton();
 
-        this.updatePlayButtonState();
-    }
+		this.updatePlayButtonState();
+	};
 
 	handleFiltersClicked() {
 		const text = this.menu.filtersButton.getText();

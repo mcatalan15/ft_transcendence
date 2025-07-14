@@ -70,7 +70,6 @@ import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
 
-
 declare global {
     interface Window {
         gc?: () => void;
@@ -1098,5 +1097,4 @@ export class Menu{
 			console.error('❌ API call failed:', error);
 		}
 	}
-	
 }
