@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 17:57:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 20:22:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ export class PlayChatDisplay extends Entity {
 	menu: Menu;
 	header: HeaderBar;
 	chatWindowGraphic: Graphics = new Graphics();
+	//! OJO
+	instructionsText: Text[] = [];
 	
 	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
@@ -39,66 +41,87 @@ export class PlayChatDisplay extends Entity {
 		const headerText = this.header.getComponent('text') as RenderComponent;
 		this.addComponent(headerText, 'barText');
 
-		this.createChatWindow();
+		this.createInstructionsWindow();
 		const chatWindowComponent = new RenderComponent(this.chatWindowGraphic);
 		this.addComponent(chatWindowComponent, 'chatWindow');
 
-		/* this.placeHolderText = this.createPlaceHolderTexts();
-		for (let i = 0; i < this.placeHolderText.length; i++) {
-			const textComponent = new TextComponent(this.placeHolderText[i]);
+		this.instructionsText = this.createInstructionsTexts();
+		for (let i = 0; i < this.instructionsText.length; i++) {
+			const textComponent = new TextComponent(this.instructionsText[i]);
 			this.addComponent(textComponent, `placeHolderText${i}`);
-		} */
+		}
 	}
 
-	createPlaceHolderTexts(): Text[] {
+	createInstructionsTexts(): Text[] {
 		const placeHolderTexts: Text[] = [];
 
 		placeHolderTexts.push({
-			text: "PSCHERB: Te voy a destruir\n" + 
-				"HMUNOZ-G: No lo creo\n" +
-				"PSCHERB: ¡Prepárate!\n" +
-				"HMUNOZ-G: ¡Vamos a ver!\n" +
-				"PSCHERB: ¡Buena suerte!\n" +
-				"HMUNOZ-G: ¡Igualmente!\n", 
+			text: "Find your side of the screen!\n" +
+				"LEFT           RIGHT\n",
 			x: 1230,
-			y: 425,
+			y: 260,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
-				fontSize: 14,
+				fontSize: 12,
 				fontWeight: 'bold' as const,
-				align: 'left' as const,
+				align: 'center' as const,
 				fontFamily: '"Roboto Mono", monospace',
-				lineHeight: 20,
+				lineHeight: 30,
 			},
 		} as Text);
 
 		placeHolderTexts.push({
-			text: "> Type your message here", 
-			x: 1220,
-			y: 505,
+			text: "  W\n" +
+				"  S",
+			x: 1152,
+			y: 405,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
-				fontSize: 14,
+				fontSize: 20,
 				fontWeight: 'bold' as const,
 				align: 'left' as const,
 				fontFamily: '"Roboto Mono", monospace',
-				lineHeight: 20,
+				lineHeight: 200,
+			},
+		} as Text);
+
+		placeHolderTexts.push({
+			text: "  ⬆\n" +
+				"  ⬇",
+			x: 1268,
+			y: 405,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 35,
+				fontWeight: 'bold' as const,
+				align: 'left' as const,
+				fontFamily: '"Roboto Mono", monospace',
+				lineHeight: 200,
 			},
 		} as Text);
 
 		return placeHolderTexts;
 	}
 
-	createChatWindow(): void {
-		this.chatWindowGraphic.rect(1100, 215, 550, 265);
-		this.chatWindowGraphic.rect(1100, 490, 550, 40);
-		this.chatWindowGraphic.stroke({color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3});
+	createInstructionsWindow(): void {
+		//this.chatWindowGraphic.rect(1100, 215, 550, 305);
+		this.chatWindowGraphic.rect(1150, 290, 30, 30);
+		this.chatWindowGraphic.rect(1150, 490, 30, 30);
+		this.chatWindowGraphic.rect(1275, 290, 30, 30);
+		this.chatWindowGraphic.rect(1275, 490, 30, 30);
+		this.chatWindowGraphic.stroke({color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 2});
 	}
 
 	redrawDisplay(): void {
 		this.header.redrawBar(this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue);
 
 		this.chatWindowGraphic.clear();
-		this.createChatWindow();
+		this.createInstructionsWindow();
+
+		const newPlaceHolderTexts = this.createInstructionsTexts();
+		for (let i = 0; i < this.instructionsText.length; i++) {
+			const placeHolderTextComponent = new TextComponent(newPlaceHolderTexts[i]);
+			this.replaceComponent(`text`, placeHolderTextComponent, `placeHolderText${i}`);
+		}
 	}
 }
