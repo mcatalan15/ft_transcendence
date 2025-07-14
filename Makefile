@@ -23,7 +23,7 @@ dev:
 	COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.dev.yml up -d --build
 
 tunnel:
-	@if ! command -v cloudflared >/dev/null 2>&1; then \
+	@if ! ls cloudflared >/dev/null 2>&1; then \
 		echo "cloudflared not found. Downloading..."; \
 		ARCH=$$(uname -m); \
 		if [ "$$ARCH" = "x86_64" ]; then \
@@ -38,7 +38,7 @@ tunnel:
 		alias cloudflared="$$PWD/cloudflared"; \
 		echo "cloudflared installed locally."; \
 	fi
-	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
+	./cloudflared tunnel --url http://localhost:80 --http-host-header localhost
 
 re:
 	$(MAKE) stop

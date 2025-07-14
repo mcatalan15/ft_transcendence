@@ -4,6 +4,7 @@ import { getWsUrl } from '../../config/api';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
 import { UI } from '../entities/UI';
+import { navigate } from '../../utils/router';
 
 export class PongNetworkManager {
 	private wsManager: WebSocketManager;
@@ -17,116 +18,128 @@ export class PongNetworkManager {
 	private inputBuffer: Array<{input: number, timestamp: number}> = [];
 	private lastInputSent: number = 0;
 
-	constructor(game: PongGame, gameId: string) {
+	constructor(game: PongGame | null, gameId: string) {
 		this.game = game;
 		this.gameId = gameId;
 		
-		// Create a new WebSocketManager instance specifically for this game
 		this.wsManager = new WebSocketManager(
-		sessionStorage.getItem('username') ?? 'undefined',
-		getWsUrl('/socket/game') // Base URL, gameId will be appended
+			sessionStorage.getItem('username') ?? 'undefined',
+			getWsUrl('/socket/game')
 		);
 
-		this.game.networkManager = this;
+		// Only set networkManager if game exists
+		if (this.game) {
+			this.game.networkManager = this.wsManager;
+		}
+		
 		this.setupHandlers();
-		this.connect(gameId);
+		
+		// Only connect immediately if we have a gameId (actual game)
+		if (gameId) {
+			this.connect(gameId);
+		}
 	}
 
 	private setupHandlers() {
 		this.wsManager.registerHandler('CONNECTION_SUCCESS', (message) => {
-		console.log('Connected to game WebSocket:', message);
-		
-		// Validate that we have the gameId
-		const gameIdToUse = message.gameId || this.gameId;
-		if (!gameIdToUse) {
-			console.error('No gameId available for identification');
-			return;
-		}
-		
-		// Send identification after successful connection
-		this.wsManager.send({
-			type: 'IDENTIFY',
-			playerId: sessionStorage.getItem('username'),
-			gameId: gameIdToUse
-		});
+			console.log('Connected to game WebSocket:', message);
+			
+			const gameIdToUse = message.gameId || this.gameId;
+			if (gameIdToUse && gameIdToUse !== '') {
+				console.log('Identifying with gameId:', gameIdToUse);
+				this.wsManager.send({
+					type: 'IDENTIFY',
+					playerId: sessionStorage.getItem('username'),
+					gameId: gameIdToUse
+				});
+			} else {
+				console.log('Connected for matchmaking - no gameId to identify with yet');
+			}
 		});
 
 		this.wsManager.registerHandler('IDENTIFY_SUCCESS', (message) => {
-		console.log('Identification successful:', message);
-		// The backend will automatically trigger JOIN_GAME after IDENTIFY
+			console.log('Identification successful:', message);
 		});
 
 		this.wsManager.registerHandler('JOIN_SUCCESS', (message) => {
-		console.log('Successfully joined game:', message);
-		this.playerNumber = message.playerNumber;
-		this.isHost = message.playerNumber === 1;
-		this.hostName = message.hostName;
-		this.guestName = message.guestName;
-		
-		// Update game UI with player names
-		this.updatePlayerNames();
-		this.setupInputHandlers();
-		
-		// Send ready signal
-		this.wsManager.send({
-			type: 'PLAYER_READY',
-			gameId: this.gameId,
-			playerId: sessionStorage.getItem('username')
-		});
+			console.log('Successfully joined game:', message);
+			this.playerNumber = message.playerNumber;
+			this.isHost = message.playerNumber === 1;
+			this.hostName = message.hostName;
+			this.guestName = message.guestName;
+			
+			this.updatePlayerNames();
+			this.setupInputHandlers();
+			
+			this.wsManager.send({
+				type: 'PLAYER_READY',
+				gameId: this.gameId,
+				playerId: sessionStorage.getItem('username')
+			});
 		});
 
 		this.wsManager.registerHandler('JOIN_FAILURE', (message) => {
-		console.error('Failed to join game:', message.reason);
-		
-		// Show error in UI instead of throwing
-		this.showConnectionStatus(`Failed to join game: ${message.reason}`);
-		
-		// Update connection status div to show error
-		const statusDiv = document.getElementById('connection-status');
-		if (statusDiv) {
-			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
-		}
+			console.error('Failed to join game:', message.reason);
+			
+			this.showConnectionStatus(`Failed to join game: ${message.reason}`);
+			
+			const statusDiv = document.getElementById('connection-status');
+			if (statusDiv) {
+				statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+			}
 		});
 
 		this.wsManager.registerHandler('PLAYER_ASSIGNED', (message) => {
-		this.playerNumber = message.playerNumber;
-		this.isHost = message.isHost;
-		this.game.localPlayerNumber = message.playerNumber;
-		
-		console.log('Player assignment:', {
-			playerNumber: this.playerNumber,
-			isHost: this.isHost,
-			role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
-		});
-		
-		this.showPlayerAssignment();
+			this.playerNumber = message.playerNumber;
+			this.isHost = message.isHost;
+			this.game.localPlayerNumber = message.playerNumber;
+			
+			console.log('Player assignment:', {
+				playerNumber: this.playerNumber,
+				isHost: this.isHost,
+				role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
+			});
+			
+			this.showPlayerAssignment();
 		});
 		
 		this.wsManager.registerHandler('PLAYER_CONNECTED', (message) => {
-		console.log('Player connected:', message);
-		this.showConnectionStatus(`Player ${message.playerId} connected (${message.playersConnected}/2)`);
-		});
+			console.log('Player connected:', message);
+			this.showConnectionStatus(`Player ${message.playerId} connected (${message.playersConnected}/2)`);
+			});
 
 		this.wsManager.registerHandler('GAME_JOINED', (message) => {
-		console.log('Successfully joined game:', message);
-		
-		this.playerNumber = message.playerNumber;
-		this.isHost = message.playerNumber === 1;
-		this.game.localPlayerNumber = message.playerNumber;
-		
-		console.log('🎮 DETAILED Player assignment DEBUG:', {
-			playerId: sessionStorage.getItem('username'),
-			playerNumber: this.playerNumber,
-			isHost: this.isHost,
-			gameLocalPlayerNumber: this.game.localPlayerNumber,
-			expectedPaddle: this.isHost ? 'LEFT (paddleL)' : 'RIGHT (paddleR)',
-			controls: this.isHost ? 'W/S keys' : 'Arrow keys',
-			role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
-		});
-		
-		this.showPlayerAssignment();
-		this.setupInputHandlers();
-		});
+			console.log('🎮 === GAME_JOINED RECEIVED ===');
+			console.log('🎮 Message:', message);
+			
+			this.playerNumber = message.playerNumber;
+			this.isHost = message.playerNumber === 1;
+			
+			if (this.game) {
+				this.game.localPlayerNumber = message.playerNumber;
+				console.log('🎮 Set game.localPlayerNumber to:', this.game.localPlayerNumber);
+			} else {
+				console.warn('⚠️ No game instance when GAME_JOINED received');
+			}
+			
+			console.log('🎮 Player assignment:', {
+				playerId: sessionStorage.getItem('username'),
+				playerNumber: this.playerNumber,
+				isHost: this.isHost,
+				expectedPaddle: this.isHost ? 'LEFT (paddleL)' : 'RIGHT (paddleR)',
+			});
+			
+			this.showPlayerAssignment();
+			this.setupInputHandlers();
+			
+			console.log('🎮 Sending PLAYER_READY signal...');
+			this.wsManager.send({
+				type: 'PLAYER_READY',
+				gameId: this.gameId,
+				playerId: sessionStorage.getItem('username')
+			});
+			console.log('🎮 === GAME_JOINED HANDLER END ===');
+			});
 		
 		this.wsManager.registerHandler('GAME_READY', (message) => {
 			console.log('Both players connected, game is ready');
@@ -137,10 +150,19 @@ export class PongNetworkManager {
 			});
 
 		this.wsManager.registerHandler('GAME_START', (message) => {
-			console.log('Game started!');
-			this.game.start();
-			this.game.updateFromServer(message.gameState);
-			this.showConnectionStatus('Game in progress');
+			console.log('🚀 === GAME_START RECEIVED ===');
+			console.log('🚀 Message:', message);
+			if (this.game) {
+				console.log('🚀 Calling game.start()...');
+				this.game.start();
+				if (message.gameState) {
+					this.game.updateFromServer(message.gameState);
+				}
+				this.showConnectionStatus('Game in progress');
+			} else {
+				console.error('❌ No game instance when GAME_START received');
+			}
+			console.log('🚀 === GAME_START HANDLER END ===');
 		});
 		
 		this.wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
@@ -171,6 +193,47 @@ export class PongNetworkManager {
 			
 			this.handleGameEndMessage(message);
 		});
+
+		this.wsManager.registerHandler('MATCHMAKING_SUCCESS', (message) => {
+			console.log('🎮 Match found!', message);
+			
+			this.gameId = message.gameId;
+			this.hostName = message.hostName;
+			this.guestName = message.guestName;
+			
+			const currentUsername = sessionStorage.getItem('username');
+			this.isHost = message.hostName === currentUsername;
+			this.playerNumber = this.isHost ? 1 : 2;
+			
+			console.log('🎮 Matchmaking successful:', {
+				gameId: this.gameId,
+				hostName: this.hostName,
+				guestName: this.guestName,
+				isHost: this.isHost
+			});
+			
+			// Update UI
+			this.showConnectionStatus('Match found! Transitioning to game...');
+			
+			this.transitionToGame();
+		});
+
+		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
+			console.log('🎮 Waiting for opponent...', message);
+			this.gameId = message.gameId;
+			this.showConnectionStatus('Searching for opponent...');
+		});
+	}
+
+	private transitionToGame() {
+		const params = new URLSearchParams({
+			gameId: this.gameId,
+			hostName: this.hostName,
+			guestName: this.guestName,
+			mode: 'online'
+		});
+		
+		navigate(`/pong?${params.toString()}`);
 	}
 
 	handlePlayerDisconnection(id: string) {
@@ -215,13 +278,13 @@ export class PongNetworkManager {
 		// Update the game UI to show player names
 		const playerNamesDiv = document.getElementById('player-names');
 		if (playerNamesDiv) {
-		playerNamesDiv.innerHTML = `
-			<div class="flex justify-between text-white text-lg font-semibold">
-			<div>🏓 ${this.hostName} (Host)</div>
-			<div class="text-gray-400">VS</div>
-			<div>${this.guestName} (Guest) 🏓</div>
-			</div>
-		`;
+			playerNamesDiv.innerHTML = `
+				<div class="flex justify-between text-white text-lg font-semibold">
+				<div>🏓 ${this.hostName} (Host)</div>
+				<div class="text-gray-400">VS</div>
+				<div>${this.guestName} (Guest) 🏓</div>
+				</div>
+			`;
 		}
 	}
 
@@ -439,5 +502,33 @@ export class PongNetworkManager {
 			(endingSystem as any).ended = true;
 			this.game.hasEnded = true;
 		}
+	}
+
+	public async startMatchmaking() {
+		try {
+			console.log('Starting matchmaking...');
+			
+			if (!this.wsManager.socket || this.wsManager.socket.readyState !== WebSocket.OPEN) {
+				await this.wsManager.connect(null); // Connect without gameId for matchmaking
+			}
+			
+			// Send matchmaking request
+			this.wsManager.send({
+				type: 'FIND_MATCH',
+				gameType: '1v1',
+				playerId: sessionStorage.getItem('username')
+			});
+			
+		} catch (error) {
+			console.error('Matchmaking connection failed:', error);
+			throw error;
+		}
+	}
+
+	public cancelMatchmaking() {
+		this.wsManager.send({
+			type: 'CANCEL_MATCHMAKING',
+			playerId: sessionStorage.getItem('username')
+		});
 	}
 }

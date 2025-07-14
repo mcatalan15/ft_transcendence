@@ -160,6 +160,43 @@ class RedisService {
           console.error('Error cleaning up expired games:', error);
       }
     }
+
+    async getWaitingGames(gameType) {
+        try {
+            const gameKeys = await this.client.keys('game:*');
+            const waitingGames = [];
+            
+            for (const key of gameKeys) {
+                const gameData = await this.client.get(key);
+                if (gameData) {
+                    const parsedGame = JSON.parse(gameData);
+                    
+                    if (parsedGame.status === 'waiting' && 
+                        parsedGame.gameType === gameType && 
+                        !parsedGame.guestId) {
+                        waitingGames.push(parsedGame.gameId);
+                    }
+                }
+            }
+            
+            return waitingGames;
+        } catch (error) {
+            console.error('Error getting waiting games:', error);
+            return [];
+        }
+    }
+    
+    async setGameData(gameId, gameData) {
+        try {
+            await this.client.set(`game:${gameId}`, JSON.stringify(gameData));
+            await this.client.expire(`game:${gameId}`, 3600); // 1 hour expiry
+            console.log(`Game ${gameId} data set in Redis`);
+            return true;
+        } catch (error) {
+            console.error('Error setting game data:', error);
+            return false;
+        }
+    }
 }
 
 module.exports = RedisService;

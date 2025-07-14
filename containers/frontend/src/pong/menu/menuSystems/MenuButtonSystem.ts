@@ -34,6 +34,7 @@ import { SpinBallPowerup } from "../../entities/powerups/SpinBallPowerup";
 import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
 import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
 
+import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
 
 export class MenuButtonSystem implements System {
@@ -136,18 +137,36 @@ export class MenuButtonSystem implements System {
 		}
 	}
 
-	handleReadyClick() {
-		console.log('Preparing to start game...');
+	async handleReadyClick() {
+		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
+			try {
+				console.log('Starting online matchmaking...');
+				// Create a PongNetworkManager for matchmaking (no game instance yet)
+				const networkManager = new PongNetworkManager(null, '');
+				await networkManager.startMatchmaking();
+				
+			} catch (error) {
+				console.error('Matchmaking failed:', error);
+				alert('Failed to start online matchmaking. Starting local game instead.');
+				this.startLocalGame();
+			}
+		} else {
+			this.startLocalGame();
+		}
+	}
+
+	private startLocalGame(): void {
+		console.log('Starting local game...');
 		
 		// Clean up menu first
 		this.menu.cleanup();
 		
 		// Deregister menu from GameManager
 		gameManager.destroyGame(this.menu.app.view.id);
-	
+
 		this.setFinalConfig();
-	
-		console.log('Creating new game with config:', this.menu.config);
+
+		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
 		
 		// Register new game with GameManager
