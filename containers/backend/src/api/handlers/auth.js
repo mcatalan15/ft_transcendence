@@ -325,6 +325,7 @@ async function googleHandler(request, reply, fastify) {
 				username: user.username,
 				email: user.email,
 				twoFAEnabled: twoFAEnabled,
+				isNewUser: false
 			});
 		} else {
 			// New user flow
@@ -369,6 +370,22 @@ async function googleHandler(request, reply, fastify) {
 				twoFAEnabled: twoFAEnabled,
 			});
 
+			const refreshToken = jwt.sign(
+				{ id: newUser.id_user },
+				process.env.JWT_REFRESH_SECRET,
+				{ expiresIn: '7d' }
+			);
+
+			await saveRefreshTokenInDatabase(newUser.id_user, refreshToken);
+
+			reply.setCookie('refreshToken', refreshToken, {
+				httpOnly: true,
+				secure: false,
+				sameSite: 'strict',
+				path: '/',
+				maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
+			});
+
 			console.log(`[DEBUG] twoFAEnabled variable:`, twoFAEnabled);
 			console.log(`[DEBUG] typeof twoFAEnabled:`, typeof twoFAEnabled);
 			const responseObj = {
@@ -379,6 +396,7 @@ async function googleHandler(request, reply, fastify) {
 				username: newUser.username,
 				email: newUser.email,
 				twoFAEnabled: twoFAEnabled,
+				isNewUser: true
 			};
 			console.log(`[DEBUG] EXACT response object:`, JSON.stringify(responseObj, null, 2));
 
@@ -390,6 +408,7 @@ async function googleHandler(request, reply, fastify) {
 				username: newUser.username,
 				email: newUser.email,
 				twoFAEnabled: twoFAEnabled,
+				isNewUser: true
 			});
 		}
 	} catch (error) {

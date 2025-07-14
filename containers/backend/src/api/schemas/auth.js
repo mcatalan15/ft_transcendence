@@ -213,7 +213,8 @@ const googleSchema = {
 				userId: { type: 'number', description: 'ID of the user' },
 				username: { type: 'string', description: 'Username of the user' },
 				email: { type: 'string', description: 'Email of the user' },
-				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled'}
+				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled'},
+				isNewUser: { type: 'boolean', description: 'Indicates if the user is new' }
 			},
 			example: {
 				success: true,
@@ -222,7 +223,8 @@ const googleSchema = {
 				userId: 42,
 				username: 'googleuser',
 				email: 'user@gmail.com',
-				twoFAEnabled: '1'
+				twoFAEnabled: '1',
+				isNewUser: false
 			}
 		},
 		201: {
@@ -235,7 +237,8 @@ const googleSchema = {
 				userId: { type: 'number', description: 'ID of the user' },
 				username: { type: 'string', description: 'Username of the user' },
 				email: { type: 'string', description: 'Email of the user' },
-				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
+				twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' },
+				isNewUser: { type: 'boolean', description: 'Indicates if the user is new' }
 			},
 			example: {
 				success: true,
@@ -244,7 +247,8 @@ const googleSchema = {
 				userId: 42,
 				username: 'googleuser',
 				email: 'user@gmail.com',
-				twoFAEnabled: '1'
+				twoFAEnabled: '1',
+				isNewUser: false
 			}
 		},
 		400: {

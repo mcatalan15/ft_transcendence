@@ -20,8 +20,8 @@ services:
 
   nginx:
     ports:
-      - "1080:80"
-      - "1443:443"
+      - "80:80"
+      - "443:443"
     restart: always
     volumes:
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf

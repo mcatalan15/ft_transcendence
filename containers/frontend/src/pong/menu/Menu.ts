@@ -70,8 +70,6 @@ import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
 
-import { TournamentController } from '../tournaments/TournamentController.js';
-
 
 declare global {
     interface Window {
