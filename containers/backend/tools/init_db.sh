@@ -30,11 +30,6 @@ if [ ! -f "$DB_PATH" ]; then
 		avatar_type TEXT DEFAULT 'default' -- 'default', 'uploaded', 'generated'
 	);
 
-	CREATE TABLE IF NOT EXISTS refresh_tokens (
-		user_id INTEGER PRIMARY KEY,
-		token TEXT NOT NULL
-	);
-
 	CREATE TABLE IF NOT EXISTS games (
 		id_game INTEGER PRIMARY KEY AUTOINCREMENT,
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

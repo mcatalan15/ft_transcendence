@@ -516,28 +516,6 @@ async function getGamesHistoryHandler(request, reply) {
                 winner_name,
             };
         }));
-        console.log('Fetching game history from database...');
-        const result = await getGamesHistory(userId, page, limit);
-        console.log('Game history result:', {
-            total: result.total,
-            gamesCount: result.games.length,
-        });
-
-        // Fetch usernames for each game
-        const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
-            const [player1_name, player2_name, winner_name] = await Promise.all([
-                getUsernameById(game.player1_id),
-                getUsernameById(game.player2_id),
-                game.winner_id ? getUsernameById(game.winner_id) : Promise.resolve(null),
-            ]);
-
-            return {
-                ...game,
-                player1_name,
-                player2_name,
-                winner_name,
-            };
-        }));
 
         reply.send({
             success: true,
