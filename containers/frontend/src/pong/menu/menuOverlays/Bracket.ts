@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 16:44:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:42:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ export class Bracket extends Entity {
 				`nameCell_${this.nameCells.length}`,
 				'bracket',
 				this.menu,
-				this.getRandomName(this.nameCells.length + 1),
+				'',
 				x,
 				y,
 				this.CELL_WIDTH,

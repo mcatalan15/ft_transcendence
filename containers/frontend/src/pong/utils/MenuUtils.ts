@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:12:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:50:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ import { MenuXButton } from '../menu/menuButtons/MenuXButton';
 import { MenuOverlayQuitButton } from '../menu/menuButtons/MenuOverlayQuitButton';
 import { MenuReadyButton } from '../menu/menuButtons/MenuReadyButton';
 import { MenuTournamentOverlayButton } from '../menu/menuButtons/MenuTournamentOverlayButton';
+import { MenuBigInputButton } from '../menu/menuButtons/MenuBigInputButton';
 
 export interface ButtonConfig {
 	text: string;
@@ -148,6 +149,15 @@ export function getXButtonPoints(menu: Menu, button: MenuXButton): number[] | un
 			0 - menu.buttonSlant, menu.buttonHeight 
 		];
 	}
+}
+
+export function getBigInputButtonPoints(menu: Menu, button: MenuBigInputButton): number[] | undefined {
+	return [
+		0, 0,
+		menu.bigInputButtonWidth, 0,
+		menu.bigInputButtonWidth , menu.bigInputButtonHeight,
+		0, menu.bigInputButtonHeight
+	];
 }
 
 export function getOverlayQuitButtonPoints(menu: Menu, button: MenuOverlayQuitButton): number[] | undefined {

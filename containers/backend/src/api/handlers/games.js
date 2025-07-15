@@ -673,6 +673,84 @@ async function retrieveGamesHandler(request, reply) {
 	}
 };
 
+async function getUserByUsernameHandler(request, reply) {
+    try {
+        const { username } = request.body;
+        
+        console.log('Received getUserByUsername request for username:', username);
+        
+        if (!username) {
+            return reply.status(400).send({
+                success: false,
+                message: 'username is required'
+            });
+        }
+
+        try {
+            const user = await getUserByUsername(username);
+            
+            if (!user) {
+                console.log(`User ${username} not found in users table`);
+                return reply.status(404).send({
+                    success: false,
+                    message: 'User not found'
+                });
+            }
+
+            console.log('Found user:', user);
+
+            const userStats = await getUserStats(user.id_user);
+            
+            let avatarUrl = 'avatarUnknownSquare';
+
+            if (user.avatar_filename) {
+                const timestamp = Date.now();
+                if (user.avatar_filename.startsWith('/')) {
+                    avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
+                } else {
+                    avatarUrl = `/api/profile/avatar/${user.id_user}?t=${Date.now()}`;
+                }
+            }
+            
+            const userData = {
+                id: user.id_user.toString(),
+                username: user.username,
+                email: user.email,
+                avatar: avatarUrl,
+                goalsScored: userStats?.total_goals_scored || 0,
+                goalsConceded: userStats?.total_goals_conceded || 0,
+                tournaments: userStats?.tournaments_won || 0,
+                wins: userStats?.wins || 0,
+                losses: userStats?.losses || 0,
+                draws: userStats?.draws || 0,
+                rank: userStats ? calculateRank(userStats) : 999
+            };
+
+            console.log('Returning user data:', userData);
+            
+            reply.status(200).send({
+                success: true,
+                userData: userData
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            reply.status(500).send({
+                success: false,
+                message: 'Database error occurred',
+                error: dbError.message
+            });
+        }
+    } catch (error) {
+        console.error('Error in getUserByUsernameHandler:', error);
+        reply.status(500).send({
+            success: false,
+            message: 'Failed to fetch user data',
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
@@ -681,4 +759,5 @@ module.exports = {
 	deployContractHandler,
 	getGamesHistoryHandler,
     saveResultsHandler,
+    getUserByUsernameHandler,
 };

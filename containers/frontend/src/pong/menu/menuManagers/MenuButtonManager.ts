@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 09:31:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 19:11:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ import { getThemeColors } from "../../utils/Utils";
 import * as menuUtils from "../../utils/MenuUtils"
 import { MenuOverlayQuitButton } from "../menuButtons/MenuOverlayQuitButton";
 import { MenuTournamentOverlayButton } from "../menuButtons/MenuTournamentOverlayButton";
+import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
+import { GAME_COLORS } from "../../utils/Types";
+import { MenuInputSystem } from "../menuSystems/MenuInputSystem";
 
 export class ButtonManager {
 	static createMainButtons(menu: Menu) {
@@ -586,6 +589,37 @@ export class ButtonManager {
 				menu.tournamentFiltersButton = tournamentOverlayButton;
 			}
 		});
+	}
+
+	static createPlayInputButton(menu: Menu) {
+		const inputButtonConfig: menuUtils.MenuButtonConfig = {
+			isClicked: false,
+			text: "GUEST?",//this.getButtonTexts(menu, '123456789'),
+			onClick: () => {
+				console.log('InputButton clicked');
+				menu.playSound("menuSelect");
+			},
+			color: getThemeColors(menu.config.classicMode).menuBlue,
+			index: 0
+		};
+	
+		const inputButton = new MenuBigInputButton(
+			'playInputButton',
+			'playInputButton',
+			'menuContainer',
+			menu,
+			inputButtonConfig
+		);
+	
+		const x = 710;
+		const y = 555;
+	
+		inputButton.setPosition(x, y);
+		inputButton.setHidden(true);
+		menu.entities.push(inputButton);
+		menu.menuHidden.addChild(inputButton.getContainer());
+	
+		menu.playInputButton = inputButton;
 	}
 
 	static getButtonTexts(menu: Menu, type: string): string {

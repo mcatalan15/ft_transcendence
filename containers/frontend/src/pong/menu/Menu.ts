@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 18:13:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 19:43:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ import { MenuButton } from './menuButtons/MenuButton';
 import { MenuHalfButton } from './menuButtons/MenuHalfButton';
 import { MenuXButton } from './menuButtons/MenuXButton';
 import { BallButton } from './menuButtons/BallButton';
+import { MenuBigInputButton } from './menuButtons/MenuBigInputButton';
 import { Powerup } from '../entities/powerups/Powerup';
 import { MenuImageManager } from './menuManagers/MenuImageManager';
 
@@ -53,6 +54,7 @@ import { MenuAnimationSystem } from './menuSystems/MenuAnimationSystem';
 import { MenuParticleSystem } from './menuSystems/MenuParticleSystem';
 import { MenuPostProcessingSystem } from './menuSystems/MenuPostProcessingSystem';
 import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
+import { MenuInputSystem } from './menuSystems/MenuInputSystem';
 
 import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
 import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
@@ -140,6 +142,8 @@ export class Menu{
 	readyButtonHeight: number = 75;
 	tournamentOverlayButtonWidth: number = 190;
 	tournamentOverlayButtonHeight: number = 32.5;
+	bigInputButtonWidth: number = 150;
+	bigInputButtonHeight: number = 30;
 
 	// Button Containers
 	startButton!: MenuButton;
@@ -163,6 +167,7 @@ export class Menu{
 	readyButton!: MenuButton;
 	tournamentGlossaryButton!: MenuButton;
 	tournamentFiltersButton!: MenuButton;
+	playInputButton!: MenuBigInputButton;
 
 	// Ornaments
 	frame!: Graphics;
@@ -218,9 +223,14 @@ export class Menu{
 
 	// Player Data
 	playerData: PlayerData | null = null;
+	opponentData: PlayerData | null = null;
 
 	//Browser data
 	isFirefox: boolean = false;
+
+	// Input stuff
+	inputFocus: string | null = null;
+	isProcessingInput: boolean = false;
 
 	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
@@ -330,6 +340,7 @@ export class Menu{
 		await ButtonManager.createOverlayQuitButtons(this);
 		await ButtonManager.createReadyButton(this);
 		await ButtonManager.createTournamentOverlayButtons(this);
+		await ButtonManager.createPlayInputButton(this);
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
@@ -505,6 +516,7 @@ export class Menu{
 		const physicsSystem = new MenuPhysicsSystem(this);
 		const lineSystem = new MenuLineSystem(this);
 		const secretCodeSystem = new SecretCodeSystem(this);
+		const inputSystem = new MenuInputSystem(this);
 		
 		this.systems.push(buttonSystem);
 		this.systems.push(VFXSystem);
@@ -515,6 +527,7 @@ export class Menu{
 		this.systems.push(physicsSystem);
 		this.systems.push(lineSystem);
 		this.systems.push(secretCodeSystem);
+		this.systems.push(inputSystem);
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();

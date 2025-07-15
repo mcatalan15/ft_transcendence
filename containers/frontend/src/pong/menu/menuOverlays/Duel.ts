@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 19:09:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 20:51:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,9 +224,9 @@ export class Duel extends Entity {
 		const nameTags: Text[] = [];
 	
 		let leftName =  this.menu.playerData!.name.toUpperCase() || "PLAYER 1"
-		let rightName;
+		let rightName = '';
 
-		switch (this.menu.language) {
+		/* switch (this.menu.language) {
 			case ('en'): {
 				rightName = "GUEST";
 				break;
@@ -246,7 +246,7 @@ export class Duel extends Entity {
 				rightName = "CONVIDAT";
 				break;
 			}
-		}
+		} */
 	
 		if (this.menu.config.variant === '1vAI') {
 			rightName = "AI-BOT";
@@ -586,31 +586,56 @@ export class Duel extends Entity {
 		}
 	}	
 
-	getRandomName(index: number): string {
-		const names = [
-			"HMUNOZ_G",
-			"MCATALAN", 
-			"VIMAZURO",
-			"GPICO-CO",
-			"ARCEBRIA",
-			"NPONCHON",
-			"EFERRE-M",
-			"HARRISON",
-			"ISABELLA",
-			"JENNIFER",
-			"KATHERIN",
-			"LEONARDO",
-			"MARGARET",
-			"NICHOLAS",
-			"PATRICIA",
-			"QUENTIN_",
-			"REBECCA_",
-			"SAMUEL__",
-			"THEODORE",
-			"VICTORIA"
-		];
+	public updateOpponentData(opponentData: any): void {
+		this.menu.opponentData = opponentData;
 		
-		const nameIndex = Math.floor(index) % names.length;
-		return names[nameIndex];
+		// Update only the right player info without full redraw
+		this.updateRightPlayerInfo();
+		
+		// Only update the right player name tag
+		this.updateRightPlayerNameTag();
+	}
+
+	private updateRightPlayerInfo(): void {
+		if (this.menu.opponentData?.name) {
+			// Update stats for opponent
+			this.getOpponentStats();
+			
+			// Update right stats text (index 3)
+			const newStatsText = this.createStatsTexts();
+			const rightStatsComponent = new TextComponent(newStatsText[3]);
+			this.replaceComponent('text', rightStatsComponent, 'statsText3');
+		}
+	}
+
+	private updateRightPlayerNameTag(): void {
+		if (this.menu.opponentData?.name) {
+			const rightNameTag = this.createNameTags()[1]; // Get the right name tag
+			const nameTagComponent = new TextComponent(rightNameTag);
+			this.replaceComponent('text', nameTagComponent, 'nameTag1');
+		}
+	}
+
+	// Add method to get opponent stats
+	private getOpponentStats(): void {
+		if (!this.menu.opponentData) return;
+		
+		// Store original player stats
+		const originalPlayerStats = [...this.plainStats];
+		
+		// Temporarily switch to opponent data for formatting
+		const tempPlayerData = this.menu.playerData;
+		this.menu.playerData = this.menu.opponentData;
+		
+		this.getPlainStats();
+		
+		// Store opponent stats
+		const opponentStats = [...this.plainStats];
+		
+		// Restore original player data and stats
+		this.menu.playerData = tempPlayerData;
+		this.plainStats = originalPlayerStats;
+		
+		/* this.opponentStats = opponentStats; */
 	}
 }

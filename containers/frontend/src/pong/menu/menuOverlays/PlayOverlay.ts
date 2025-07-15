@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 12:16:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 20:52:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ export class PlayOverlay extends Overlay {
         this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
+        this.inputButton = this.menu.playInputButton;
+        this.setInputButton(this.inputButton);
     }
 
     public redrawTitles(): void {
@@ -74,16 +76,20 @@ export class PlayOverlay extends Overlay {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
         super.show();
-    
+
+        // Prepare avatars with proper initialization
         MenuImageManager.preparePlayAvatarImages(this.menu);
-    
+
+        // Add buttons to overlay
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
         
+        // Show buttons
         this.menu.readyButton.setHidden(false);
         this.menu.tournamentGlossaryButton.setHidden(false);
         this.menu.tournamentFiltersButton.setHidden(false);  
+        this.inputButton.setHidden(false);
     }
 
     public hide(): void {
@@ -94,10 +100,12 @@ export class PlayOverlay extends Overlay {
         this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
+        // Remove manual input button hiding - it's now handled by the base class
         
         this.menu.readyButton.setHidden(true);
         this.menu.tournamentGlossaryButton.setHidden(true);
         this.menu.tournamentFiltersButton.setHidden(true);
+        this.inputButton.setHidden(true);
 
         MenuImageManager.hidePlayAvatarImages(this.menu);
     }

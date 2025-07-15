@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 17:14:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ export abstract class Overlay extends Entity {
     protected background: Graphics;
     protected quitButton?: any;
     protected readyButton?: any;
+    protected inputButton?: any; // Add inputButton property
     protected isContentInitialized: boolean = false;
     protected overlayType: string;
     
@@ -108,6 +109,14 @@ export abstract class Overlay extends Entity {
         }
     }
 
+    // Add method to set input button
+    protected setInputButton(button: any): void {
+        this.inputButton = button;
+        if (button) {
+            button.getContainer().alpha = 0;
+        }
+    }
+
     public show(): void {
         this.isDisplayed = true;
         
@@ -133,6 +142,11 @@ export abstract class Overlay extends Entity {
 
         if (this.quitButton) {
             this.menu.renderLayers.overlayQuits.addChild(this.quitButton.getContainer());
+        }
+
+        // Add input button to render layer if it exists
+        if (this.inputButton) {
+            this.menu.renderLayers.overlays.addChild(this.inputButton.getContainer());
         }
 
         this.fadeIn();
@@ -161,6 +175,11 @@ export abstract class Overlay extends Entity {
 
             if (this.quitButton) {
                 this.menu.menuHidden.addChild(this.quitButton.getContainer());
+            }
+
+            // Hide input button
+            if (this.inputButton) {
+                this.menu.menuHidden.addChild(this.inputButton.getContainer());
             }
         });
     }
@@ -202,6 +221,11 @@ export abstract class Overlay extends Entity {
             if (this.quitButton) {
                 this.menu.menuHidden.addChild(this.quitButton.getContainer());
             }
+
+            // Hide input button
+            if (this.inputButton) {
+                this.menu.menuHidden.addChild(this.inputButton.getContainer());
+            }
     
             this.onHideComplete();
             
@@ -232,6 +256,11 @@ export abstract class Overlay extends Entity {
     
         if (this.quitButton) {
             this.quitButton.getContainer().alpha = 0;
+        }
+
+        // Reset input button alpha
+        if (this.inputButton) {
+            this.inputButton.getContainer().alpha = 0;
         }
         
         if (this.overlayType === 'tournament') {
@@ -286,6 +315,11 @@ export abstract class Overlay extends Entity {
     
             if (this.quitButton) {
                 this.quitButton.getContainer().alpha = this.currentAlpha;
+            }
+
+            // Animate input button alpha
+            if (this.inputButton) {
+                this.inputButton.getContainer().alpha = this.currentAlpha;
             }
     
             if (this.overlayType === 'tournament') {
