@@ -25,17 +25,16 @@ export async function localSignIn(
         
         if (data.success) {
 
-            // Store in sessionStorage
             sessionStorage.setItem('username', data.username || '');
             sessionStorage.setItem('userId', data.userId || '');
 			sessionStorage.setItem('email', data.email || '');
             sessionStorage.setItem('localAuth', 'true');
             sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled || false));
 			if (!data.twoFAEnabled) {
-				showAuth(document.getElementById("app") as HTMLElement);
+				const app = document.getElementById("app");
+				showAuth(app as HTMLElement);
 			}
 			
-            // Return the result object
             return {
                 success: true,
                 message: data.message,
