@@ -20,7 +20,7 @@ if [ ! -f "$DB_PATH" ]; then
 
 	CREATE TABLE IF NOT EXISTS users (
 		id_user INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT NOT NULL UNIQUE,
+		username TEXT NOT NULL UNIQUE COLLATE BINARY,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT,
 		provider TEXT NOT NULL DEFAULT 'local',
