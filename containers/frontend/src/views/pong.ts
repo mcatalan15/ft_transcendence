@@ -147,7 +147,6 @@ export function showPong(container: HTMLElement): void {
         .then(async () => {
             container.innerHTML = '';
             
-            // Preserve your UI elements
             const headerWrapper = new HeaderTest().getElement();
             headerWrapper.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-30');
             container.appendChild(headerWrapper);
@@ -161,7 +160,6 @@ export function showPong(container: HTMLElement): void {
                 
                 if (!currentPlayer) {
                     console.error('❌ No username in session storage');
-                    // You'll need to implement showErrorMessage or handle this appropriately
                     container.innerHTML += '<div class="error">Please login first</div>';
                     return;
                 }
@@ -183,7 +181,6 @@ export function showPong(container: HTMLElement): void {
         })
         .catch(error => {
             console.error('❌ Failed to load Pong:', error);
-            // Handle error appropriately for your UI
             container.innerHTML += '<div class="error">Failed to load game</div>';
         });
 }
