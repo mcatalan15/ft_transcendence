@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 13:57:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:13:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,8 +318,7 @@ export class Menu{
 	async init(classic: boolean, filters: boolean): Promise<void> {
 		this.applyFirefoxOptimizations();
 		
-		//! TEST DEBUG
-		await this.testApiCall();
+		await this.apiDataRequest();
 
 		await this.clearConflictingAssets();
 		await this.loadImages();
@@ -1073,26 +1072,13 @@ export class Menu{
 		}
 	}
 
-	private async testApiCall(): Promise<void> {
-		try {
-			console.log('Testing API call with real user data...');
+	private async apiDataRequest(): Promise<void> {
+		try {		
+			const userId = sessionStorage.getItem('userId'); 
+			const token = sessionStorage.getItem('token') 
 			
-			const testUserId = sessionStorage.getItem('userId'); 
-			const testToken = sessionStorage.getItem('token') 
-			
-			const userData = await this.getUserData(testUserId!, testToken!);
+			const userData = await this.getUserData(userId!, token!);
 			this.playerData = userData;
-			console.log('✅ API call successful! Real user data:', userData);
-			console.log('User stats from database:', {
-				name: userData.name,
-				wins: userData.wins,
-				losses: userData.losses,
-				draws: userData.draws,
-				goalsScored: userData.goalsScored,
-				goalsConceded: userData.goalsConceded,
-				tournaments: userData.tournaments,
-				rank: userData.rank
-			});
 		} catch (error) {
 			console.error('❌ API call failed:', error);
 		}

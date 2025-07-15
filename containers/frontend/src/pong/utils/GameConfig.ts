@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 11:41:01 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/15 12:02:43 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ export interface GameConfig {
 	filters: boolean;
 	gameId?: string;
 	
-	// Add these new fields for online games
 	hostName?: string;
 	guestName?: string;
 	currentPlayerName?: string;

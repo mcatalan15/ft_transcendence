@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 10:20:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:23:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Container, Graphics, Sprite, Text } from "pixi.js";
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 
 import { PongGame } from "../../engine/Game";
 
@@ -718,8 +718,10 @@ export class EndgameOverlay extends Entity {
 		}
 	}
 
-	private createAvatarSprites(): void {
-		const { leftSprite, rightSprite } = this.getAvatarSprites();
+	// Updated methods for EndGameOverlay.ts
+
+	private async createAvatarSprites(): Promise<void> {
+		const { leftSprite, rightSprite } = await this.getAvatarSprites();
 		
 		if (leftSprite) {
 			this.leftAvatarSprite = leftSprite;
@@ -734,8 +736,8 @@ export class EndgameOverlay extends Entity {
 		}
 	}
 
-	private updateAvatarSprites(): void {
-		const { leftSprite, rightSprite } = this.getAvatarSprites();
+	private async updateAvatarSprites(): Promise<void> {
+		const { leftSprite, rightSprite } = await this.getAvatarSprites();
 		
 		if (leftSprite) {
 			const updatedLeftComponent = new RenderComponent(leftSprite);
@@ -750,38 +752,114 @@ export class EndgameOverlay extends Entity {
 		}
 	}
 
-	private getAvatarSprites(): { leftSprite: Sprite | null, rightSprite: Sprite | null } {
+	private async getAvatarSprites(): Promise<{ leftSprite: Sprite | null, rightSprite: Sprite | null }> {
 		const assetSuffix = this.game.config.classicMode ? 'Classic' : 'Square';
 		
-		const leftAvatarName = `avatarUnknown${assetSuffix}`;
-		const rightAvatarName = `avatarUnknown${assetSuffix}`;
+		const leftPlayerData = this.game.playerData;
+		const rightPlayerData = this.game.opponentData;;
 		
-		const leftSprite = ImageManager.createSprite(leftAvatarName);
-		const rightSprite = ImageManager.createSprite(rightAvatarName);
+		const leftSprite = await this.createPlayerAvatarSprite(
+			leftPlayerData?.avatar,
+			`avatarUnknown${assetSuffix}`,
+			580,
+			385,
+			0.225
+		);
 		
-		if (leftSprite) {
-			leftSprite.anchor.set(0.5, 0.5);
-			leftSprite.x = 580;
-			leftSprite.y = 385;
-			leftSprite.alpha = 0;
-			leftSprite.scale.set(0.225);
-			(leftSprite as any).isFixedPosition = true;
-			
-			console.log(`Left avatar positioned at: (${leftSprite.x}, ${leftSprite.y})`);
-		}
-		
-		if (rightSprite) {
-			rightSprite.anchor.set(0.5, 0.5);
-			rightSprite.x = 1220;
-			rightSprite.y = 385;
-			rightSprite.alpha = 0;
-			rightSprite.scale.set(0.225);
-			(rightSprite as any).isFixedPosition = true;
-			
-			console.log(`Right avatar positioned at: (${rightSprite.x}, ${rightSprite.y})`);
-		}
+		const rightSprite = await this.createPlayerAvatarSprite(
+			rightPlayerData?.avatar,
+			`avatarUnknown${assetSuffix}`,
+			1220,
+			385,
+			0.225
+		);
 		
 		return { leftSprite, rightSprite };
+	}
+
+	private async createPlayerAvatarSprite(
+		avatarKey: string | undefined,
+		fallbackAssetName: string,
+		x: number,
+		y: number,
+		scale: number
+	): Promise<Sprite | null> {
+		try {
+			let sprite: Sprite | null = null;
+
+			if (avatarKey && (avatarKey.startsWith('http') || avatarKey.startsWith('/'))) {
+				console.log('Loading custom avatar from URL:', avatarKey);
+
+				let finalUrl: string;
+				if (avatarKey.includes('?')) {
+					finalUrl = `${avatarKey}&t=${Date.now()}`;
+				} else {
+					finalUrl = `${avatarKey}?t=${Date.now()}`;
+				}
+
+				try {
+					const texture = await Assets.load({
+						src: finalUrl,
+						loadParser: 'loadTextures'
+					});
+
+					if (texture) {
+						sprite = new Sprite(texture);
+						sprite.anchor.set(0.5);
+
+						const targetWidth = 360;
+						const targetHeight = 360;
+						const scaleX = targetWidth / texture.width;
+						const scaleY = targetHeight / texture.height;
+						const baseScale = Math.min(scaleX, scaleY);
+
+						sprite.scale.set(baseScale * scale * 2.75);
+					} else {
+						console.error('Texture is null, falling back to default avatar');
+					}
+				} catch (loadError) {
+					console.error('Failed to load texture from URL:', loadError);
+				}
+			} else if (avatarKey && ImageManager.assets && ImageManager.assets.has(avatarKey)) {
+				const texture = ImageManager.assets.get(avatarKey);
+				sprite = new Sprite(texture);
+				sprite.anchor.set(0.5);
+				sprite.scale.set(scale);
+			}
+			if (!sprite) {
+				sprite = ImageManager.createSprite(fallbackAssetName);
+				if (sprite) {
+					sprite.anchor.set(0.5);
+					sprite.scale.set(scale);
+				}
+			}
+
+			// Configure sprite properties
+			if (sprite) {
+				sprite.x = x;
+				sprite.y = y;
+				sprite.alpha = 0;
+				(sprite as any).isFixedPosition = true;
+				console.log(`Avatar positioned at: (${sprite.x}, ${sprite.y})`);
+			}
+
+			return sprite;
+		} catch (error) {
+			console.error('Failed to create player avatar sprite:', error);
+
+			// Return fallback sprite as last resort
+			const fallbackSprite = ImageManager.createSprite(fallbackAssetName);
+			if (fallbackSprite) {
+				fallbackSprite.anchor.set(0.5);
+				fallbackSprite.x = x;
+				fallbackSprite.y = y;
+				fallbackSprite.alpha = 0;
+				fallbackSprite.scale.set(scale);
+				(fallbackSprite as any).isFixedPosition = true;
+			}
+
+			return fallbackSprite;
+		}
 	}
 
 	createOrnamentGraphic() {
