@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/15 11:27:16 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/15 12:40:16 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,7 +72,7 @@ tunnel:
 		fi; \
 		echo "cloudflared installed locally."; \
 	fi
-	./cloudflared tunnel --url http://localhost:80 --http-host-header localhost
+	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
 
 re:
 	$(MAKE) stop
