@@ -1,0 +1,12 @@
+{
+    "title": "Let's play!",
+    "email": "E-mail",
+    "password": "Password",
+    "signIn": "Sign in",
+	  "signUp": "Sign up",
+    "errorAllFields": "All fields are required!",
+    "errorInvalidCredentials": "Invalid email or password.",
+    "success": "Sign-in successful!",
+    "noAccount": "Don't have an account yet?"
+  }
+  

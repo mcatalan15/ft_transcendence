@@ -1,3 +1,13 @@
 .env
 
+.VSCodeCounter
+
 client_secret_49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com.json
+
+ssl/
+**/ssl/
+
+cloudflared
+
+containers/nginx/ssl/server.crt
+containers/nginx/ssl/server.key

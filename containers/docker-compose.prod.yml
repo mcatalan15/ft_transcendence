@@ -1,0 +1,86 @@
+# docker-compose.prod.yml (production config)
+
+services:
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        - NODE_ENV=development  # Use dev mode for Vite
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - transcendence
+
+  nginx:
+    ports:
+      - "1080:80"
+      - "1443:443"
+    restart: always
+    volumes:
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+    networks:
+      - transcendence
+
+  backend:
+    ports:
+      - "3100:3100"
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    volumes:
+      - ./backend:/usr/src/app:consistent
+      - userbase:/usr/src/app/db
+      - /usr/src/app/node_modules
+      - ./frontend/static/avatars:/usr/src/app/public/avatars
+    env_file:
+      - .env
+    networks:
+      - transcendence
+
+  # blockchain:
+  #   environment:
+  #     - NODE_ENV=production
+  #     - AVALANCHE_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+  #     - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+  #     - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+  #   networks:
+  #     - transcendence
+
+  redis:
+    environment:
+      - NODE_ENV=production
+    networks:
+      - transcendence
+
+  adminer:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:1090:1090"
+    networks:
+      - transcendence
+
+  prometheus:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - transcendence
+
+  grafana:
+    # Restrict access in production
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - transcendence

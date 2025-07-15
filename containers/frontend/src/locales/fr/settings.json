@@ -1,0 +1,25 @@
+{
+    "changeNickname": "Changer de pseudo",
+    "current": "Pseudo actuel",
+    "newNickname": "Nouveau pseudo",
+    "updateNickname": "Mettre à jour le pseudo",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "errors": {
+        "nicknameRequired": "Pseudo requis",
+        "nicknameLength": "Le pseudo doit comporter entre 3 et 8 caractères",
+        "nicknameFormat": "Le format du pseudo est invalide",
+        "passwordRequired": "Les champs de mot de passe sont requis",
+        "passwordLength": "Le mot de passe doit comporter entre 6 et 20 caractères",
+        "passwordMismatch": "Les mots de passe ne correspondent pas",
+        "passwordSame": "Le nouveau mot de passe doit être différent du mot de passe actuel",
+        "updateFailed": "Échec de la mise à jour des paramètres. Veuillez réessayer plus tard.",
+        "updateSuccess": "Paramètres mis à jour avec succès",
+        "uploadFailed": "Échec du téléchargement de l'avatar : vérifiez votre fichier et réessayez. L'image doit être un fichier PNG, GIF ou JPEG valide et de moins de 2 Mo.",
+        "loadingFailed": "Erreur lors du chargement du profil",
+        "userNotFound": "Utilisateur non trouvé"
+    }
+}

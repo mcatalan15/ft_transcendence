@@ -1,0 +1,25 @@
+{
+    "changeNickname": "Change Nickname",
+    "current": "Current Nickname",
+    "newNickname": "New Nickname",
+    "updateNickname": "Update Nickname",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updatePassword": "Update Password",
+    "errors": {
+        "nicknameRequired": "Nickname is required",
+        "nicknameLength": "Nickname must be between 3 and 8 characters",
+        "nicknameFormat": "Nickname format is invalid",
+        "passwordRequired": "Password fields are required",
+        "passwordLength": "Password must be between 6 and 20 characters",
+        "passwordMismatch": "Passwords do not match",
+        "passwordSame": "New password must be different from current password",
+        "updateFailed": "Failed to update settings. Please try again later.",
+        "updateSuccess": "Settings updated successfully",
+        "loadingFailed": "Failed to load settings",
+        "userNotFound": "User not found",
+        "uploadFailed": "Failed to upload avatar: check your file and try again. The image must be a valid PNG, GIF or JPEG file and less than 2MB in size."
+    }
+}

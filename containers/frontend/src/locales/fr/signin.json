@@ -1,0 +1,12 @@
+{
+    "title": "Jouons !",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+	  "signUp": "S'enregistrer",
+    "errorAllFields": "Tous les champs sont obligatoires !",
+    "errorInvalidCredentials": "E-mail ou mot de passe incorrect.",
+    "success": "Connexion réussie !",
+	  "noAccount": "Pas encore de compte ?"
+  }
+  

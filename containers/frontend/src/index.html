@@ -1,25 +1,82 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://use.typekit.net/rla1kou.css" />
+
+  <!-- Script to force Typekit to load faster -->
+  <script>
+    (function(d) {
+      var config = {
+        kitId: 'rla1kou',
+        scriptTimeout: 8000, // Longer timeout for Firefox
+        async: true
+      };
+      
+      var h = d.documentElement;
+      var t = setTimeout(function() {
+        h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+        console.log('Font loading timeout - showing content anyway');
+      }, config.scriptTimeout);
+      
+      var tk = d.createElement("script");
+      var f = false;
+      var s = d.getElementsByTagName("script")[0];
+      
+      // Add loading class immediately
+      h.className += " wf-loading";
+      
+      tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
+      tk.async = true;
+      
+      tk.onload = tk.onreadystatechange = function() {
+        var a = this.readyState;
+        if (f || a && a != "complete" && a != "loaded") return;
+        f = true;
+        clearTimeout(t);
+        
+        try {
+          Typekit.load({
+            kitId: config.kitId,
+            scriptTimeout: config.scriptTimeout,
+            active: function() {
+              h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-active";
+            },
+            inactive: function() {
+              h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+              console.log('Font loading failed - using fallback');
+            }
+          });
+        } catch(e) {
+          console.error('Typekit error:', e);
+          h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+        }
+      };
+      
+      tk.onerror = function() {
+        console.error('Typekit script failed to load');
+        clearTimeout(t);
+        h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+      };
+      
+      s.parentNode.insertBefore(tk, s);
+    })(document);
+  </script>
+
   <title>ft_transcendence</title>
   <link rel="icon" type="image/png" href="/favicon.ico" />
-  <link rel="stylesheet" href="styles/styles.css">
+  
+  <style>
+    html, body {
+      background-color: #171717;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
-
-  <script type="module" src="auth/googleSignIn.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async></script>
-
-  <div id="g_id_onload"
-     data-client_id="49814417427-6kej25nd57avgbpp6k7fgphe9pmtshvf.apps.googleusercontent.com"
-     data-context="signin"
-     data-login_uri="https://mrlouf.studio"
-     data-auto_select="true"
-     data-itp_support="true">
-  </div>
   <div id="app" role="main">
-    <div id="game-container"></div>
   </div>
   <script type="module" src="index.js"></script>
 </body>

@@ -1,0 +1,20 @@
+groups:
+- name: backend-server
+  rules:
+  - alert: BackendServerDown
+    expr: up{instance="backend-server:3100"} == 0
+    labels:
+      severity: critical
+    annotations:
+      summary: Backend Server Down
+      description: The backend server is not responding.
+
+- name: redis-server
+  rules:
+  - alert: RedisServerDown
+    expr: up{instance="redis-server:6379"} == 0
+    labels:
+      severity: critical
+    annotations:
+      summary: Redis Server Down
+      description: The Redis server is not responding.

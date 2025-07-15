@@ -1,15 +1,17 @@
 FROM node:23-slim
 
+ENV TZ=Europe/Paris
 WORKDIR /app
 
 COPY package*.json ./
-
-# CSS Tailwind and dependencies
-RUN npm install tailwindcss postcss autoprefixer pixi.js vite \
-	&& npm install --save-dev @types/google.accounts
+RUN npm install
 
 COPY . .
+RUN mkdir -p ./public && \
+    if [ -d ./static ]; then \
+      find ./static -mindepth 1 -maxdepth 1 -exec mv -t ./public {} +; \
+    fi
 
-RUN npm run build
+EXPOSE 5173
 
-CMD ["echo", "Frontend built"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

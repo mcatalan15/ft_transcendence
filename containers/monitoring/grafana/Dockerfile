@@ -1,7 +1,12 @@
 FROM grafana/grafana-enterprise
 
-COPY ./config/grafana.ini /usr/local/share/grafana/conf/defaults.ini
+ENV TZ=Europe/Paris
+
+COPY ./config/grafana.ini /etc/grafana/grafana.ini
+COPY ./config/dashboards/App_health_status.json /etc/grafana/dashboards/App_health_status.json
+COPY ./config/provisioning/datasources/prometheus.yaml /etc/grafana/provisioning/datasources/prometheus.yaml
+COPY ./config/provisioning/dashboards/dashboards.yaml /etc/grafana/provisioning/dashboards/dashboards.yaml
 
 EXPOSE 3100
 
-CMD ["/usr/local/bin/grafana-server", "-homepath", "/usr/local/share/grafana", "-config", "/usr/local/share/grafana/conf/defaults.ini", "web"]
+USER grafana

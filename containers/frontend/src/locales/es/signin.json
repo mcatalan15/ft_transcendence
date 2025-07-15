@@ -1,0 +1,11 @@
+{
+    "title": "¡Vamos a jugar!",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "errorAllFields": "¡Todos los campos son obligatorios!",
+    "errorInvalidCredentials": "Correo electrónico o contraseña inválidos.",
+    "success": "¡Inicio de sesión exitoso!",
+    "noAccount": "¿Aún no tienes una cuenta?"
+}

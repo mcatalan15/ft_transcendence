@@ -1,0 +1,17 @@
+{
+    "title": "C'est parti !",
+    "nickname": "Pseudo",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
+    "signIn": "Se connecter",
+	  "signUp": "S'enregistrer",
+    "errorAllFields": "Tous les champs sont requis !",
+    "errorUsernameLength": "Le pseudo doit comporter entre 3 et 20 caractères !",
+    "errorUsernameChars": "Le pseudo ne doit contenir que des lettres, chiffres et tirets !",
+    "errorPasswordLength": "Le mot de passe doit comporter entre 8 et 20 caractères !",
+    "errorPasswordsMatch": "Les mots de passe ne correspondent pas !",
+    "errorInvalidEmail": "L'adresse e-mail n'est pas valide !",
+    "alreadyAccount": "Déjà enregistré(e) ?",
+    "success": "Enregistrement réussi !"
+}

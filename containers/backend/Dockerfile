@@ -1,21 +1,24 @@
-FROM node:18-alpine3.21
+FROM node:20-alpine
 
-RUN apk add --no-cache sqlite
+ENV TZ=Europe/Paris
+
+RUN apk add --no-cache sqlite python3 py3-bcrypt python3-dev py3-setuptools make g++
 
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json first to leverage Docker's caching
 COPY package*.json ./
 
-RUN npm cache clean --force \
-	&& npm install fastify@^5.0.0 pino-pretty sqlite3 \
-	&& npm install fastify-multipart bcrypt @fastify/cors @fastify/under-pressure \
-	&& npm install prom-client google-auth-library
+RUN npm install
 
 COPY . .
 
-RUN chmod +x tools/init_db.sh
+RUN chmod +x tools/init_db.sh tools/friends.py
+
+RUN mkdir -p /usr/src/app/public/avatars/defaults /usr/src/app/public/avatars/uploads
 
 EXPOSE 3100
+
+RUN npm run build
 
 ENTRYPOINT ["sh", "tools/init_db.sh"]

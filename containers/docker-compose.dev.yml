@@ -1,0 +1,62 @@
+# docker-compose.dev.yml (development config)
+
+services:
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        - NODE_ENV=development
+    environment:
+      - NODE_ENV=development
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    restart: on-failure
+    networks:
+      - transcendence
+
+  # backend:
+  #   volumes:
+  #     - ./backend:/usr/src/app:consistent
+  #     - userbase:/usr/src/app/db
+  #     - /usr/src/app/node_modules
+  #     - ./frontend/static/avatars:/usr/src/app/public/avatars
+  #   networks:
+  #     - transcendence
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    container_name: nginx
+    ports:
+      - "8080:80"  # Expose dev version on different ports (0-1024 are blocked at 42)
+    depends_on:
+      - frontend
+    volumes:
+      - public:/usr/share/nginx/html:ro
+      - certs:/etc/letsencrypt
+    networks:
+      - transcendence
+
+  # blockchain:
+  #   build: ./blockchain
+  #   ports:
+  #     - "3002:3002"  # Expose the deployment API
+  #   environment:
+  #     - FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+  #     - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+  #     - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+  #   networks:
+  #     - transcendence
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+networks:
+  transcendence:

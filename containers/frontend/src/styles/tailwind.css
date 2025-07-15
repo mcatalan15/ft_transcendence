@@ -1,10 +1,39 @@
-/* Import Tailwind's default styles */
+@import url('https://use.typekit.net/rla1kou.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Base styles */
+:root {
+  font-size: 16px;
+}
+
+/* Your core styles */
 body {
-  background-color: #221c17;
+  background-color: #171717;
+  color: #feeee2;
+  min-height: 100vh;
+}
+
+/* Layout utilities */
+.flex-layout {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.flex-layout > * {
+  margin: 0.5rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+/* Your existing styles */
+body {
+  background-color: #171717;
   color: #feeee2;
   display: flex;
   flex-direction: column;
@@ -58,7 +87,7 @@ body {
   transform: translate(-50%, -50%);
   font-family: monospace;
   font-size: 120px;
-  color: #feeee2;
+  color: #1b1612;
   letter-spacing: 10px;
   z-index: 1;
   pointer-events: none;
@@ -76,4 +105,113 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#game-container {
+	width: 1800px;
+	height: 800px;
+  }
+
+  /* src/styles/lobby.css */
+.lobby-container {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 20px;
+	text-align: center;
+  }
+  
+  .lobby-actions {
+	display: flex;
+	flex-direction: column;
+	margin: 20px 0;
+	padding: 10px;
+	border-radius: 4px;
+	background-color: #4CAF50;
+  }
+  
+  .lobby-status.error {
+	background-color: #ffdddd;
+	color: #d00;
+  }
+  
+  /*button {
+	padding: 10px 15px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	background-color: #4CAF50;
+	color: white;
+	font-weight: bold;
+  }*/
+  
+  #back-button {
+	background-color: #ccc;
+	color: #333;
+  }
+  
+  input {
+	padding: 10px;
+	border: 1px solid rgb(3, 0, 0);
+	border-radius: 4px;
+  }
+
+html {
+  /* Eliminamos los prefijos problemáticos y usamos la propiedad estándar */
+  font-size: 100%;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Reemplazamos los gaps con flexbox y grid estándar */
+.flex-gap {
+  display: flex;
+  gap: 1rem;
+}
+
+.grid-gap {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Fallbacks para navegadores antiguos */
+@supports not (gap: 1rem) {
+  .flex-gap > * + * {
+    margin-left: 1rem;
+  }
+
+  .grid-gap > * + * {
+    margin-top: 1rem;
+  }
+}
+
+/* Ajustes básicos */
+html {
+  font-size: 16px;
+}
+
+/* Sistema de gaps simplificado */
+.flex-layout {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.flex-layout > * {
+  margin: 0.5rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+/* Eliminar todas las propiedades problemáticas */
+.lobby-actions,
+.join-game {
+  display: flex;
+  margin: -0.5rem;
+}
+
+.lobby-actions > *,
+.join-game > * {
+  margin: 0.5rem;
 }

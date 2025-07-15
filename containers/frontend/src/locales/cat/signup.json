@@ -1,0 +1,17 @@
+{
+    "title": "Comencem!",
+    "nickname": "Àlies",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "confirmPassword": "Confirmar contrasenya",
+    "signIn": "Iniciar sessió",
+    "signUp": "Registrar-se",
+    "errorAllFields": "Tots els camps són obligatoris!",
+    "errorUsernameLength": "El nom d'usuari ha de tenir entre 3 i 8 caràcters!",
+    "errorUsernameChars": "El nom d'usuari només pot contenir lletres i números!",
+    "errorPasswordLength": "La contrasenya ha de tenir entre 6 i 20 caràcters!",
+    "errorPasswordsMatch": "Les contrasenyes no coincideixen!",
+    "errorInvalidEmail": "Adreça de correu electrònic invàlida!",
+    "alreadyAccount": "Ja tens un compte?",
+    "success": "Registre completat amb èxit!"
+}
