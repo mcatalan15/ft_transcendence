@@ -2,9 +2,9 @@
 	"signIn": "Iniciar sessió",
 	"signUp": "Registrar-se",
 	"language": {
-		"cat": "CAT",
-		"en": "EN",
-		"es": "ES",
-		"fr": "FR"
+	  "cat": "CAT",
+	  "en": "EN",
+	  "es": "ES",
+	  "fr": "FR"
 	}
 }

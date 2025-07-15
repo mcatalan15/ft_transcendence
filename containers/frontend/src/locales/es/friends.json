@@ -1,4 +1,13 @@
 {
     "friendsitleOwn": "Mis amigos",
-    "friendsTitle": "Amigos de {{username}}"
+    "friendsTitle": "Amigos de {{username}}",
+    "searchPlaceholder": "Buscar amigos",
+    "noFriends": "No se encontraron amigos. ¡Ve a hacer algunos en el chat!",
+    "addFailedMsg": "Error al añadir amigo: ",
+    "addFailed": "Error al añadir amigo.",
+    "friendRemoved": "Amigo eliminado: ",
+    "removalFailedMsg": "Error al eliminar amigo: ",
+    "removalFailed": "Error al eliminar amigo.",
+    "friendAddedMsg": "¡{{username}} añadido como amigo!",
+    "friendRemovedMsg": "{{username}} eliminado de amigos."
 }

@@ -1,6 +1,7 @@
 import { navigate } from '../../utils/router';
 import i18n from '../../i18n';
 import { getApiUrl } from '../../config/api';
+import { Pagination } from '../generalComponents/Pagination';
 
 interface Friend {
   id_user: string;
@@ -10,6 +11,11 @@ interface Friend {
 export class FriendsContentRenderer {
   private container: HTMLElement;
   private friendsData: Friend[] = [];
+  private currentPage: number = 0;
+  private friendsPerPage: number = 10;
+  private totalPages: number = 1;
+  private paginationComponent: Pagination | null = null;
+  private filteredFriends: Friend[] = [];
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -36,7 +42,9 @@ export class FriendsContentRenderer {
 
     const overlay = this.createFriendsOverlay();
     const friendsListSection = this.createFriendsListSection();
+    const paginationSection = this.createPaginationSection();
     overlay.appendChild(friendsListSection);
+    overlay.appendChild(paginationSection);
 
     friendsContainer.appendChild(overlay);
     return friendsContainer;
@@ -54,9 +62,17 @@ export class FriendsContentRenderer {
     return overlay;
   }
 
+  private createPaginationSection(): HTMLElement {
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'w-full flex justify-center mt-4';
+    paginationContainer.id = 'pagination-container';
+
+    return paginationContainer;
+  }
+
   private createSearchSection(): HTMLElement {
     const searchContainer = document.createElement('div');
-    searchContainer.className = 'w-full flex justify-end mb-6 mt-4 pr-8';
+    searchContainer.className = 'w-full flex justify-end mb-2 mt-16 pr-36';
 
     const searchWrapper = document.createElement('div');
     searchWrapper.className = 'relative w-full max-w-md';
@@ -72,7 +88,7 @@ export class FriendsContentRenderer {
     searchInput.style.color = '#FFFBEB';
     searchInput.style.fontFamily = '"Roboto Mono", monospace';
     searchInput.style.fontWeight = 'normal';
-    searchInput.style.fontSize = '14px';
+    searchInput.style.fontSize = '12px';
     searchInput.style.padding = '12px 16px';
     searchInput.style.borderRadius = '0px';
     searchInput.style.outline = 'none';
@@ -126,13 +142,68 @@ export class FriendsContentRenderer {
       
       if (data.success) {
         this.friendsData = data.friends;
-        this.renderFriends(this.friendsData);
+        this.filteredFriends = [...this.friendsData];
+        this.totalPages = Math.max(1, Math.ceil(this.filteredFriends.length / this.friendsPerPage));
+
+        if (this.currentPage >= this.totalPages) {
+          this.currentPage = Math.max(0, this.totalPages - 1);
+        }
+
+        this.renderFriendsPage();
+        this.updatePagination();
       } else {
         this.showError('Error loading friends list');
       }
     } catch (error) {
       console.error('Error fetching friends:', error);
       this.showError('Error loading friends list');
+    }
+  }
+  
+  private updatePagination(): void {
+    const paginationContainer = document.getElementById('pagination-container');
+    if (!paginationContainer) {
+      return;
+    }
+    paginationContainer.innerHTML = '';
+    
+    if (this.totalPages <= 1) {
+      return;
+    }
+    
+    if (!this.paginationComponent) {
+      this.paginationComponent = new Pagination({
+        currentPage: this.currentPage,
+        totalPages: this.totalPages,
+        onPageChange: (page) => {
+          this.currentPage = page;
+          this.renderFriendsPage();
+        }
+      });
+    } else {
+      this.paginationComponent.update(this.currentPage, this.totalPages);
+    }
+    
+    paginationContainer.innerHTML = '';
+    paginationContainer.appendChild(this.paginationComponent.getElement());
+  }
+
+  private renderFriendsPage(): void {
+    const startIndex = this.currentPage * this.friendsPerPage;
+    const endIndex = Math.min(startIndex + this.friendsPerPage, this.filteredFriends.length);
+    
+    const friendsToDisplay = this.filteredFriends.slice(startIndex, endIndex);
+    
+    this.renderFriends(friendsToDisplay);
+    
+    if (this.paginationComponent) {
+      this.paginationComponent.update(this.currentPage, this.totalPages);
+      
+      const paginationContainer = document.getElementById('pagination-container');
+      if (paginationContainer) {
+        paginationContainer.innerHTML = '';
+        paginationContainer.appendChild(this.paginationComponent.getElement());
+      }
     }
   }
 
@@ -189,6 +260,7 @@ export class FriendsContentRenderer {
     friendAvatar.className = 'w-16 h-16 md:w-24 md:h-24 object-cover shadow transition duration-200 hover:scale-105';
     friendAvatar.style.border = '3px solid #FFFBEB';
     friendAvatar.style.borderRadius = '0px';
+    friendAvatar.style.padding = '3px';
 
     const friendName = document.createElement('span');
     friendName.className = 'mt-2 text-center truncate max-w-[80px]';
@@ -205,11 +277,15 @@ export class FriendsContentRenderer {
     return friendDiv;
   }
 
-  private filterFriends(searchValue: string): void {
-    const filteredFriends = this.friendsData.filter(friend =>
-      friend.username.toLowerCase().includes(searchValue)
+  public filterFriends(searchValue: string): void {
+    this.filteredFriends = this.friendsData.filter(friend =>
+      friend.username.toLowerCase().includes(searchValue.toLowerCase())
     );
-    this.renderFriends(filteredFriends);
+ 
+    this.currentPage = 0;
+    this.totalPages = Math.max(1, Math.ceil(this.filteredFriends.length / this.friendsPerPage));
+    this.renderFriendsPage();
+    this.updatePagination();
   }
 
   private showError(message: string): void {

@@ -3,6 +3,8 @@ import { HeaderTest } from '../components/generalComponents/testmenu';
 import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
+import { HeadersComponent } from '../components/pongBoxComponents/headersComponent';
+import { CONFIG } from '../config/settings.config';
 
 let currentResizeHandler: (() => void) | null = null;
 
@@ -11,7 +13,6 @@ function createButton(color: string, text: string, action: () => void) {
   btn.type = 'button';
   btn.textContent = text;
   
-  // Mapa de colores para convertir los nombres de color a códigos hexadecimales
   const colorMap: { [key: string]: string } = {
     'cyan': '#22d3ee',
     'pink': '#f472b6',
@@ -20,10 +21,8 @@ function createButton(color: string, text: string, action: () => void) {
     'amber': '#FFFBEB'
   };
   
-  // Obtener el color del mapa o usar el predeterminado si no existe
   const buttonColor = colorMap[color] || '#FFFBEB';
   
-  // Aplicar estilos inline similares a setupGamingLogoutButton
   Object.assign(btn.style, {
     backgroundColor: 'transparent',
     border: `2px solid ${buttonColor}`,
@@ -40,7 +39,6 @@ function createButton(color: string, text: string, action: () => void) {
     minWidth: '80px'
   });
   
-  // Añadir listeners para efectos hover
   btn.addEventListener('mouseenter', () => {
     btn.style.backgroundColor = buttonColor;
     btn.style.color = '#171717';
@@ -56,7 +54,6 @@ function createButton(color: string, text: string, action: () => void) {
 }
 
 export async function showChat(container: HTMLElement): Promise<void> {
-  // Inicializar i18n para la vista de chat
   await i18n.loadNamespaces('chat');
   await i18n.changeLanguage(i18n.language);
   
@@ -82,35 +79,66 @@ export async function showChat(container: HTMLElement): Promise<void> {
       #user-context-menu {
         z-index: 9999 !important;
       }
+      
+      /* Aplicar Roboto Mono a todos los mensajes del chat */
+      #chat-messages * {
+        font-family: "Roboto Mono", monospace !important;
+      }
+      
+      #chat-messages .message-content {
+        font-family: "Roboto Mono", monospace !important;
+        font-size: 14px;
+      }
+      
+      #chat-messages .message-sender {
+        font-family: "Roboto Mono", monospace !important;
+        font-weight: bold;
+      }
+      
+      #chat-messages .message-timestamp {
+        font-family: "Roboto Mono", monospace !important;
+        font-size: 12px;
+      }
     `;
     document.head.appendChild(style);
   }
   
   addBlockedUserStyles();
 
-  // Header
   const headerWrapper = new HeaderTest().getElement();
   headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
   container.appendChild(headerWrapper);
 
-  // Main content wrapper
+  const langSelector = new LanguageSelector(() => showChat(container)).getElement();
+  container.appendChild(langSelector);
+
   const contentWrapper = document.createElement('div');
   contentWrapper.className = `
-    row-start-2 flex items-center justify-center w-full h-full
-    bg-neutral-900
+    row-start-2 flex flex-col items-center justify-center w-full h-full
+    bg-neutral-900 relative
   `.replace(/\s+/g, ' ').trim();
 
-  // Agregar selector de idioma
-        const langSelector = new LanguageSelector(() => showChat(container)).getElement();
-      container.appendChild(langSelector);
+  const headerContainer = document.createElement('div');
+  headerContainer.className = 'w-full relative';
   
-  // Main chat container
+  const svgHeader = createHeader();
+  headerContainer.appendChild(svgHeader);
+  contentWrapper.appendChild(headerContainer);
+  
+  const chatBoxContainer = document.createElement('div');
+  chatBoxContainer.className = 'w-full max-w-[1800px] mx-auto flex justify-center'; 
+  
+Object.assign(chatBoxContainer.style, {
+  marginTop: '45px',
+  position: 'relative'
+});
+
   const chatBox = document.createElement('div');
   chatBox.className = `
-    w-full max-w-[1800px] h-[750px]
-    mx-auto bg-neutral-900 border-4 border-amber-50
+    w-full
+    mx-auto bg-neutral-900 border-l-[8px] border-r-[8px] border-b-[8px] md:border-l-[16px] md:border-r-[16px] md:border-b-[16px] border-amber-50
     flex flex-col overflow-hidden shadow-xl
-    p-6
+    p-6 h-[665px]
   `.replace(/\s+/g, ' ').trim();
 
   // Channel tabs/filters
@@ -132,19 +160,23 @@ export async function showChat(container: HTMLElement): Promise<void> {
     overflow-y-auto p-4 mb-4 min-h-0
   `.replace(/\s+/g, ' ').trim();
   chatContainer.id = 'chat-messages';
+  chatContainer.style.fontFamily = '"Roboto Mono", monospace';
 
   // Input area
   const inputArea = document.createElement('div');
   inputArea.className = 'flex gap-3 items-center';
 
-  // Message type selector
   const typeSelector = document.createElement('select') as HTMLSelectElement;
   typeSelector.className = `
     bg-neutral-800 text-amber-50 border border-amber-50/30
     px-3 py-2 text-sm min-w-[100px]
   `.replace(/\s+/g, ' ').trim();
   
-  // Se añadirán las opciones en updateTranslations()
+  Object.assign(typeSelector.style, {
+    fontFamily: '"Roboto Mono", monospace',
+    fontSize: '12px',
+    textTransform: 'uppercase'
+  });
 
   // Message input
   const messageInput = document.createElement('input') as HTMLInputElement;
@@ -154,8 +186,12 @@ export async function showChat(container: HTMLElement): Promise<void> {
     px-4 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400
   `.replace(/\s+/g, ' ').trim();
   messageInput.id = 'message-input';
+  
+  Object.assign(messageInput.style, {
+    fontFamily: '"Roboto Mono", monospace',
+    fontSize: '12px'
+  });
 
-  // Initialize chat manager
   const chatManager = new ChatManager();
   let activeFilter: MessageType | null = null;
 
@@ -174,30 +210,24 @@ export async function showChat(container: HTMLElement): Promise<void> {
     });
   }
 
-  // Create channel tabs and buttons (se rellenarán en updateTranslations)
   const sendButton = createButton('lime', i18n.t('send', { ns: 'chat' }), () => chatManager.sendMessage());
   sendButton.id = 'send-button';
   
-  const backButton = createButton('pink', i18n.t('back', { ns: 'chat' }), () => navigate('/profile'));
+  const backButton = createButton('pink', i18n.t('back', { ns: 'chat' }), () => navigate('/home'));
   backButton.id = 'back-button';
 
-  // Función para actualizar todas las traducciones
   function updateTranslations() {
-    // Actualizar placeholder
     messageInput.placeholder = i18n.t('typeMessage', { ns: 'chat' });
     
-    // Actualizar selector de tipo de mensaje
     typeSelector.innerHTML = `
       <option value="${MessageType.GENERAL}">${i18n.t('general', { ns: 'chat' })}</option>
       <option value="${MessageType.PRIVATE}">${i18n.t('whispers', { ns: 'chat' })}</option>
       <option value="${MessageType.FRIEND}">${i18n.t('friends', { ns: 'chat' })}</option>
     `;
     
-    // Actualizar botones
     sendButton.textContent = i18n.t('send', { ns: 'chat' });
     backButton.textContent = i18n.t('back', { ns: 'chat' });
     
-    // Limpiar y recrear pestañas de canales
     channelTabs.innerHTML = '';
     channels.forEach(({ type, label, color }) => {
       const tab = createButton(color, i18n.t(label, { ns: 'chat' }), () => {
@@ -209,11 +239,9 @@ export async function showChat(container: HTMLElement): Promise<void> {
       channelTabs.appendChild(tab);
     });
     
-    // Actualizar estado activo de las pestañas
     updateTabStates();
   }
 
-  // Construir la interfaz
   inputArea.appendChild(typeSelector);
   inputArea.appendChild(messageInput);
   inputArea.appendChild(sendButton);
@@ -223,29 +251,55 @@ export async function showChat(container: HTMLElement): Promise<void> {
   chatBox.appendChild(chatContainer);
   chatBox.appendChild(inputArea);
 
-  contentWrapper.appendChild(chatBox);
-  contentWrapper.appendChild(langSelector);
+  chatBoxContainer.appendChild(chatBox);
+  contentWrapper.appendChild(chatBoxContainer);
   container.appendChild(contentWrapper);
 
-  // Inicializar traducciones
   updateTranslations();
 
-  // Initialize chat manager with DOM elements
   chatManager.initialize(chatContainer, messageInput, typeSelector);
 
-  // Configurar el manejador de redimensionamiento
   function handleResize() {
-    // Ajustar el tamaño y posición según sea necesario
+    updateHeaderMargin();
   }
+
+  function updateHeaderMargin() {
+    const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
+    const multiplier = isMobile ? CONFIG.MULTIPLIERS.mobile : CONFIG.MULTIPLIERS.desktop;
+    const border = isMobile ? CONFIG.BORDER_VALUES.mobile : CONFIG.BORDER_VALUES.desktop;
+    
+    const headerOffset = isMobile ? -35 : -70;
+    svgHeader.style.marginTop = `-${border * multiplier + headerOffset}px`;
+  }
+
+  updateHeaderMargin();
 
   currentResizeHandler = handleResize;
   window.addEventListener('resize', handleResize);
 
-  // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     cleanup();
     chatManager.disconnect();
   });
+}
+
+function createHeader(): HTMLElement {
+  const lang = i18n.language || 'en';
+  const svgHeader = new HeadersComponent({
+    type: 'chat',
+    lang,
+    style: {
+      position: 'absolute',
+      top: '-20px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      maxWidth: '1800px',
+      zIndex: '40'
+    }
+  }).getElement();
+  
+  return svgHeader;
 }
 
 function cleanup(): void {

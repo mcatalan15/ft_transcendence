@@ -25,7 +25,7 @@ if [ ! -f "$DB_PATH" ]; then
 		password TEXT,
 		provider TEXT NOT NULL DEFAULT 'local',
 		twoFactorSecret TEXT,
-		twoFactorEnabled BOOLEAN DEFAULT 0,
+		twoFactorEnabled BOOLEAN DEFAULT 0 CHECK (twoFactorEnabled IN (0, 1)),
 		avatar_filename TEXT DEFAULT NULL,
 		avatar_type TEXT DEFAULT 'default' -- 'default', 'uploaded', 'generated'
 	);
@@ -178,10 +178,10 @@ if [ ! -f "$DB_PATH" ]; then
 	);
 
 	CREATE TABLE IF NOT EXISTS game_results (
-		id_game INTEGER PRIMARY KEY,
-		game_data TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(id_game) REFERENCES games(id_game)
+    id_game INTEGER PRIMARY KEY,
+    game_data TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(id_game) REFERENCES games(id_game)
 	);
 
 		-- Create indexes for better performance

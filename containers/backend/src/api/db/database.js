@@ -169,6 +169,23 @@ async function getUserByEmail(email) {
 	});
 }
 
+async function getUsernameById(userId) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            `SELECT username FROM users WHERE id_user = ?`,
+            [userId],
+            (err, row) => {
+                if (err) {
+                    console.error('[DB USERNAME ERROR]', err);
+                    reject(err);
+                } else {
+                    resolve(row ? row.username : null);
+                }
+            }
+        );
+    });
+}
+
 async function getUserById(userId) {
     return new Promise((resolve, reject) => {
         const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
@@ -182,7 +199,7 @@ async function getUserById(userId) {
             }
         });
     });
-}
+}   
 
 async function getUserByUsername(username) {
     return new Promise((resolve, reject) => {

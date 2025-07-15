@@ -3,9 +3,9 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "signIn": "Iniciar sesión",
-	  "signUp": "Registrarse",
+    "signUp": "Registrarse",
     "errorAllFields": "¡Todos los campos son obligatorios!",
-    "errorInvalidCredentials": "Correo o contraseña inválidos.",
-    "success": "Inicio de sesión exitoso."
-  }
-  
+    "errorInvalidCredentials": "Correo electrónico o contraseña inválidos.",
+    "success": "¡Inicio de sesión exitoso!",
+    "noAccount": "¿Aún no tienes una cuenta?"
+}

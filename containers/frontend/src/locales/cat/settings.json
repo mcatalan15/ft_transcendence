@@ -1,0 +1,25 @@
+{
+    "changeNickname": "Canviar àlies",
+    "current": "Àlies actual",
+    "newNickname": "Nou àlies",
+    "updateNickname": "Actualitzar àlies",
+    "changePassword": "Canviar contrasenya",
+    "currentPassword": "Contrasenya actual",
+    "newPassword": "Nova contrasenya",
+    "confirmPassword": "Confirmar contrasenya",
+    "updatePassword": "Actualitzar contrasenya",
+    "errors": {
+        "nicknameRequired": "El àlies és obligatori",
+        "nicknameLength": "El àlies ha de tenir entre 3 i 8 caràcters",
+        "nicknameFormat": "El format del àlies és invàlid",
+        "passwordRequired": "Els camps de contrasenya són obligatoris",
+        "passwordLength": "La contrasenya ha de tenir entre 6 i 20 caràcters",
+        "passwordMismatch": "Les contrasenyes no coincideixen",
+        "passwordSame": "La nova contrasenya ha de ser diferent de l'actual",
+        "updateFailed": "Error en actualitzar els ajustos. Si us plau, torna-ho a provar més tard.",
+        "updateSuccess": "Ajustos actualitzats amb èxit",
+        "loadingFailed": "Error en carregar els ajustos",
+        "userNotFound": "Usuari no trobat",
+        "uploadFailed": "Error en pujar l'avatar: comprova el teu arxiu i torna-ho a provar. La imatge ha de ser un arxiu PNG, GIF o JPEG vàlid i tenir menys de 2MB de mida."
+    }
+}

@@ -2,10 +2,10 @@
     "title": "Juguem!",
     "email": "Correu electrònic",
     "password": "Contrasenya",
-    "signIn": "Inicia sessió",
+    "signIn": "Iniciar sessió",
     "signUp": "Registrar-se",
     "errorAllFields": "Tots els camps són obligatoris!",
-    "errorInvalidCredentials": "Correu o contrasenya incorrectes.",
-    "success": "Sessió iniciada correctament!"
-  }
-  
+    "errorInvalidCredentials": "Correu electrònic o contrasenya invàlids.",
+    "success": "Inici de sessió completat amb èxit!",
+    "noAccount": "Encara no tens un compte?"
+}
