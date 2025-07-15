@@ -11,7 +11,6 @@ const { saveGameToDatabase,
 	updateUserStats,
 	getUserByUsername,
 	calculateUserStats,
-	getUserByUsername,
  } = require('../db/database');
 
 async function getUserDataHandler(request, reply) {
