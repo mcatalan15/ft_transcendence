@@ -3,6 +3,7 @@ import i18n from '../../i18n';
 type MatchRow = {
   date: string;
   opponent: string;
+  winner: string;
   score: string;
   mode: string;
   contract: string;
@@ -52,6 +53,19 @@ export class MatchTableComponent {
             border-bottom: 2px solid #FFFBEB;
             border-radius: 0px;
           ">${i18n.t('opponent', { ns: 'history'})}</th>
+          <th style="
+            padding: 12px 24px; 
+            text-align: left; 
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em;
+            background-color: #FFFBEB;
+            color: #171717;
+            border-bottom: 2px solid #FFFBEB;
+            border-radius: 0px;
+          ">${i18n.t('winner', { ns: 'history'})}</th>
           <th style="
             padding: 12px 24px; 
             text-align: left; 
@@ -115,6 +129,15 @@ export class MatchTableComponent {
                 font-weight: normal;
                 border-radius: 0px;
               ">${row.opponent}</td>
+              <td style="
+                padding: 12px 24px; 
+                white-space: nowrap; 
+                color: #FFFBEB; 
+                font-family: 'Roboto Mono', monospace;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 0px;
+              ">${row.winner}</td>
               <td style="
                 padding: 12px 24px; 
                 white-space: nowrap; 

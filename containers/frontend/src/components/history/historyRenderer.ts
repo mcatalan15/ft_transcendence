@@ -7,6 +7,7 @@ import { CONFIG } from '../../config/settings.config';
 import { setResizeHandler } from '../../views/history';
 import { HistoryContentRenderer } from './historyContentRenderer';
 import { getApiUrl } from '../../config/api';
+import { navigate } from '../../utils/router';
 
 export class HistoryRenderer {
   private container: HTMLElement;
@@ -72,6 +73,12 @@ export class HistoryRenderer {
 	});
     const data = await response.json();
 	console.log(`User ID for ${username}:`, data.userId);
+
+	if (!data || !data.userId) {
+		navigate('/404');
+		return document.createElement('div'); // Return an empty div if no user data
+	}
+
     const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
 
     const contentRenderer = new HistoryContentRenderer(this.container, this.username);

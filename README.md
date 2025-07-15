@@ -5,6 +5,8 @@ _version 16.1_
 
 **ft_transcendence** is a full-stack, single-page web application developed as the final project of the Common Core at 42 Barcelona. It is a modern recreation of the Pong game featuring real-time gameplay, user management, live chat, blockchain integration, secure authentication system, and many more features. The project is built with a microservices architecture using Docker.
 
+<img width="3232" height="1424" alt="image" src="https://github.com/user-attachments/assets/d2c62aca-6fa3-49a7-b0e8-bcc9cc6887ed" />
+
 ---
 
 ## Features
@@ -36,7 +38,7 @@ The project is structured as a set of loosely-coupled microservices, each runnin
 | **nginx**     | Reverse proxy and SSL termination            |
 | **adminer**   | UI to manage the SQLite database             |
 
-All services are orchestrated via **Docker** for easy development and deployment.
+All services are orchestrated via **Docker compose** for easy development and deployment.
 
 ---
 

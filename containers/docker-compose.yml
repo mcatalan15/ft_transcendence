@@ -15,7 +15,7 @@ volumes:
     driver: local
   userbase:
     driver: local
-  certs:  # SSL certificates
+  certs:
     driver: local
 
   redis_data:
