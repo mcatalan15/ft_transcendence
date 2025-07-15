@@ -1,77 +1,133 @@
 const saveGameSchema = {
-    description: 'Save a completed game to the database with player scores and winner information',
-    tags: ['games'],
     body: {
         type: 'object',
-        required: [
-            'player1_id',
-            'player2_id',
-            'player1_name',
-            'player2_name',
-            'player1_score',
-            'player2_score',
-            'winner_name',
-            'player1_is_ai',
-            'player2_is_ai',
-            'game_mode',
-            'is_tournament',
-            'smart_contract_link',
-            'contract_address'
-        ],
+        required: ['gameData'],
         properties: {
-            player1_id: { type: 'number', description: 'ID of player 1' },
-            player2_id: { type: 'number', description: 'ID of player 2' },
-            winner_id: { type: 'number', description: 'ID of the winning player, 0 for tie' },
-            player1_name: { type: 'string', description: 'Name of player 1' },
-            player2_name: { type: 'string', description: 'Name of player 2' },
-            player1_score: { type: 'number', minimum: 0, description: 'Score of player 1' },
-            player2_score: { type: 'number', minimum: 0, description: 'Score of player 2' },
-            winner_name: { type: 'string', description: 'Name of the winning player' },
-            player1_is_ai: { type: 'boolean', description: 'Whether player 1 is AI' },
-            player2_is_ai: { type: 'boolean', description: 'Whether player 2 is AI' },
-            game_mode: { type: 'string', description: 'Mode of the game' },
-            is_tournament: { type: 'boolean', description: 'Whether the game is part of a tournament' },
-            smart_contract_link: { type: 'string', description: 'Link to the smart contract' },
-            contract_address: { type: 'string', description: 'Address of the smart contract' }
+            gameData: {
+                type: 'object',
+                required: ['config', 'createdAt', 'endedAt', 'finalScore', 'balls', 'leftPlayer', 'rightPlayer'],
+                properties: {
+                    config: {
+                        type: 'object',
+                        required: ['mode', 'classicMode', 'variant'],
+                        properties: {
+                            mode: { type: 'string', enum: ['online', 'local', 'tournament'] },
+                            classicMode: { type: 'boolean' },
+                            variant: { type: 'string', enum: ['1v1', '2v2', '3v3', '4v4'] }
+                        }
+                    },
+                    createdAt: { type: ['string', 'null'], format: 'date-time', description: 'Timestamp when the game was created' },
+                    endedAt: { type: ['string', 'null'], format: 'date-time', description: 'Timestamp when the game ended' },
+                    generalResult: { type: ['string', 'null'], enum: ['leftWin', 'rightWin', 'draw', null], default: null },
+                    winner: { type: ['string', 'null'], default: null },
+                    finalScore: {
+                        type: 'object',
+                        required: ['leftPlayer', 'rightPlayer'],
+                        properties: {
+                            leftPlayer: { type: 'number' },
+                            rightPlayer: { type: 'number' }
+                        }
+                    },
+                    balls: {
+                        type: 'object',
+                        required: ['defaultBalls', 'curveBalls', 'multiplyBalls', 'spinBalls', 'burstBalls'],
+                        properties: {
+                            defaultBalls: { type: 'number', minimum: 0 },
+                            curveBalls: { type: 'number', minimum: 0 },
+                            multiplyBalls: { type: 'number', minimum: 0 },
+                            spinBalls: { type: 'number', minimum: 0 },
+                            burstBalls: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    specialItems: {
+                        type: 'object',
+                        properties: {
+                            bullets: { type: 'number', minimum: 0, default: 0 },
+                            shields: { type: 'number', minimum: 0, default: 0 }
+                        },
+                        default: { bullets: 0, shields: 0 }
+                    },
+                    walls: {
+                        type: 'object',
+                        properties: {
+                            pyramids: { type: 'number', minimum: 0, default: 0 },
+                            escalators: { type: 'number', minimum: 0, default: 0 },
+                            hourglasses: { type: 'number', minimum: 0, default: 0 },
+                            lightnings: { type: 'number', minimum: 0, default: 0 },
+                            maws: { type: 'number', minimum: 0, default: 0 },
+                            rakes: { type: 'number', minimum: 0, default: 0 },
+                            trenches: { type: 'number', minimum: 0, default: 0 },
+                            kites: { type: 'number', minimum: 0, default: 0 },
+                            bowties: { type: 'number', minimum: 0, default: 0 },
+                            honeycombs: { type: 'number', minimum: 0, default: 0 },
+                            snakes: { type: 'number', minimum: 0, default: 0 },
+                            vipers: { type: 'number', minimum: 0, default: 0 },
+                            waystones: { type: 'number', minimum: 0, default: 0 }
+                        },
+                        default: {
+                            pyramids: 0, escalators: 0, hourglasses: 0, lightnings: 0,
+                            maws: 0, rakes: 0, trenches: 0, kites: 0,
+                            bowties: 0, honeycombs: 0, snakes: 0, vipers: 0, waystones: 0
+                        }
+                    },
+                    leftPlayer: {
+                        type: 'object',
+                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        properties: {
+                            id: { type: 'string', description: 'Username of the left player' },
+                            score: { type: 'number', minimum: 0 },
+                            result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
+                            hits: { type: 'number', minimum: 0 },
+                            goalsInFavor: { type: 'number', minimum: 0 },
+                            goalsAgainst: { type: 'number', minimum: 0 },
+                            powerupsPicked: { type: 'number', minimum: 0 },
+                            powerdownsPicked: { type: 'number', minimum: 0 },
+                            ballchangesPicked: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    rightPlayer: {
+                        type: 'object',
+                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        properties: {
+                            id: { type: 'string', description: 'Username of the right player' },
+                            score: { type: 'number', minimum: 0 },
+                            result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
+                            hits: { type: 'number', minimum: 0 },
+                            goalsInFavor: { type: 'number', minimum: 0 },
+                            goalsAgainst: { type: 'number', minimum: 0 },
+                            powerupsPicked: { type: 'number', minimum: 0 },
+                            powerdownsPicked: { type: 'number', minimum: 0 },
+                            ballchangesPicked: { type: 'number', minimum: 0 }
+                        }
+                    },
+                    is_tournament: { type: 'boolean', default: false },
+                    smart_contract_link: { type: ['string', 'null'], default: '' },
+                    contract_address: { type: ['string', 'null'], default: '' }
+                }
+            }
         }
     },
     response: {
         201: {
-            description: 'Game saved successfully',
             type: 'object',
             properties: {
                 success: { type: 'boolean' },
                 message: { type: 'string' },
-                gameId: { type: 'number', description: 'ID of the saved game' }
-            },
-            example: {
-                success: true,
-                message: 'Game saved successfully',
-                gameId: 123
+                gameId: { type: 'number' }
             }
         },
         400: {
-            description: 'Database constraint error',
             type: 'object',
             properties: {
                 success: { type: 'boolean' },
                 message: { type: 'string' }
-            },
-            example: {
-                success: false,
-                message: 'Database constraint error'
             }
         },
         500: {
-            description: 'Server error',
             type: 'object',
             properties: {
                 success: { type: 'boolean' },
                 message: { type: 'string' }
-            },
-            example: {
-                success: false,
-                message: 'Failed to save game'
             }
         }
     }

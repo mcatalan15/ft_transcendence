@@ -9,6 +9,7 @@ const { saveGameToDatabase,
 	getUserStats,
 	calculateUserStats,
 	getUserByUsername,
+    getUsernameById
  } = require('../db/database');
 
  async function getUserDataHandler(request, reply) {
@@ -157,7 +158,7 @@ function mapAvatarFromDatabase(dbAvatar) {
     return mappedAvatar;
 }
 
-async function saveGameHandler(request, reply) {
+/*async function saveGameHandler(request, reply) {
 	const {
 		player1_id,
 		player2_id,
@@ -230,6 +231,122 @@ async function saveGameHandler(request, reply) {
 	} catch (error) {
 		console.log('Error saving game:', error);
 
+		if (error.message.includes('SQLITE_CONSTRAINT')) {
+			reply.status(400).send({
+				success: false,
+				message: 'Database constraint error'
+			});
+		} else {
+			reply.status(500).send({
+				success: false,
+				message: 'Failed to save game'
+			});
+		}
+	}
+}*/
+
+async function saveGameHandler(request, reply) {
+	const { gameData } = request.body;
+
+	try {
+		const player1User = await getUserByUsername(gameData.leftPlayer.id);
+		const player2User = await getUserByUsername(gameData.rightPlayer.id);
+		
+		// Check if users exist
+		if (!player1User) {
+			return reply.status(400).send({
+				success: false,
+				message: `Player 1 with username '${gameData.leftPlayer.id}' not found`
+			});
+		}
+		
+		if (!player2User) {
+			return reply.status(400).send({
+				success: false,
+				message: `Player 2 with username '${gameData.rightPlayer.id}' not found`
+			});
+		}
+
+		const player1_id = player1User.id_user;
+		const player2_id = player2User.id_user;
+		
+		// Determine winner ID
+		let winner_id = 0; // Default for draw
+		if (gameData.generalResult === 'leftWin') {
+			winner_id = player1_id;
+		} else if (gameData.generalResult === 'rightWin') {
+			winner_id = player2_id;
+		}
+		// Map GameData to database fields
+		const gameRecord = {
+			
+			player1_id: player1_id,
+			player2_id: player2_id,
+			winner_id: winner_id,
+			player1_score: gameData.finalScore.leftPlayer,
+			player2_score: gameData.finalScore.rightPlayer,
+			game_mode: gameData.config.mode,
+			is_tournament: gameData.is_tournament || false, // Default: false
+			smart_contract_link: gameData.smart_contract_link || '', // Default: empty string
+			contract_address: gameData.contract_address || '', // Default: empty string
+			created_at: gameData.createdAt,
+			ended_at: gameData.endedAt,
+			config_json: JSON.stringify(gameData.config),
+			general_result: gameData.generalResult,
+			// Ball usage
+			default_balls_used: gameData.balls.defaultBalls,
+			curve_balls_used: gameData.balls.curveBalls,
+			multiply_balls_used: gameData.balls.multiplyBalls,
+			spin_balls_used: gameData.balls.spinBalls,
+			burst_balls_used: gameData.balls.burstBalls,
+			// Special items
+			bullets_used: gameData.specialItems.bullets,
+			shields_used: gameData.specialItems.shields,
+			// Walls
+			pyramids_used: gameData.walls.pyramids,
+			escalators_used: gameData.walls.escalators,
+			hourglasses_used: gameData.walls.hourglasses,
+			lightnings_used: gameData.walls.lightnings,
+			maws_used: gameData.walls.maws,
+			rakes_used: gameData.walls.rakes,
+			trenches_used: gameData.walls.trenches,
+			kites_used: gameData.walls.kites,
+			bowties_used: gameData.walls.bowties,
+			honeycombs_used: gameData.walls.honeycombs,
+			snakes_used: gameData.walls.snakes,
+			vipers_used: gameData.walls.vipers,
+			waystones_used: gameData.walls.waystones,
+			// Player 1 stats
+			player1_hits: gameData.leftPlayer.hits,
+			player1_goals_in_favor: gameData.leftPlayer.goalsInFavor,
+			player1_goals_against: gameData.leftPlayer.goalsAgainst,
+			player1_powerups_picked: gameData.leftPlayer.powerupsPicked,
+			player1_powerdowns_picked: gameData.leftPlayer.powerdownsPicked,
+			player1_ballchanges_picked: gameData.leftPlayer.ballchangesPicked,
+			player1_result: gameData.leftPlayer.result,
+			// Player 2 stats
+			player2_hits: gameData.rightPlayer.hits,
+			player2_goals_in_favor: gameData.rightPlayer.goalsInFavor,
+			player2_goals_against: gameData.rightPlayer.goalsAgainst,
+			player2_powerups_picked: gameData.rightPlayer.powerupsPicked,
+			player2_powerdowns_picked: gameData.rightPlayer.powerdownsPicked,
+			player2_ballchanges_picked: gameData.rightPlayer.ballchangesPicked,
+			player2_result: gameData.rightPlayer.result
+		};
+
+		// Save to database
+		const gameId = await saveGameToDatabase(gameRecord, gameData);
+
+		// Update user stats
+		await updateUserStats(gameRecord.player1_id, gameRecord.player2_id, gameData);
+
+		reply.status(201).send({
+			success: true,
+			message: 'Game saved successfully',
+			gameId
+		});
+	} catch (error) {
+		console.log('Error saving game:', error);
 		if (error.message.includes('SQLITE_CONSTRAINT')) {
 			reply.status(400).send({
 				success: false,
@@ -348,61 +465,83 @@ async function deployContractHandler(request, reply) {
 };
 
 async function getGamesHistoryHandler(request, reply) {
-	try {
-		console.log('Entering getGamesHistoryHandler');
-		console.log('Request user:', request.user);
-		//const userId = request.user?.id;
-/* 		console.log('User ID:', userId);
-		if (!userId) {
-			console.log('No userId, returning 401');
-			return reply.code(401).send({
-				success: false,
-				error: 'Authentication required',
-			});
-		} */
+    console.log('Received getGamesHistory request');
+    try {
+        console.log('Entering getGamesHistoryHandler');
+        console.log('Request user:', request.user);
+        const userId = request.user?.id;
+        console.log('User ID:', userId);
+        if (!userId) {
+            console.log('No userId, returning 401');
+            return reply.code(401).send({
+                success: false,
+                error: 'Authentication required',
+            });
+        }
 
-		console.log('Parsing query parameters...');
-		const { page = 0, limit = 8, user = request.user } = request.query;
-		console.log('Query params:', { page, limit, user });
+        console.log('Parsing query parameters...');
+        const { page = 0, limit = 10 } = request.query;
+        console.log('Query params:', { page, limit });
 
-		const response = await getUserByUsername(user);
-		const userId = response?.id_user || user?.id;
+        console.log('Fetching game history from database...');
+        const result = await getGamesHistory(userId, page, limit);
+        console.log('Game history result:', {
+            total: result.total,
+            gamesCount: result.games.length,
+        });
 
-		console.log('Fetching game history from database...');
-		const result = await getGamesHistory(userId, page, limit);
-		console.log('Game history result:', {
-			total: result.total,
-			gamesCount: result.games.length,
-		});
+        // Fetch usernames for each game
+        const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
+            const [player1_name, player2_name, winner_name] = await Promise.all([
+                getUsernameById(game.player1_id),
+                getUsernameById(game.player2_id),
+                game.winner_id ? getUsernameById(game.winner_id) : Promise.resolve(null),
+            ]);
 
-		reply.send({
-			success: true,
-			games: result.games,
-			total: result.total,
-			page: result.page,
-			limit: result.limit,
-			totalPages: result.totalPages,
-			hasNext: result.hasNext,
-			hasPrev: result.hasPrev,
-		});
-		console.log('[DB GAMES HISTORY RESPONSE]', result);
-	} catch (error) {
-		console.error('Error in getGamesHistoryHandler:', {
-			message: error.message,
-			stack: error.stack,
-			name: error.name,
-		});
-		request.log.error('Error fetching game history:', {
-			message: error.message,
-			stack: error.stack,
-			name: error.name,
-		});
-		reply.code(500).send({
-			success: false,
-			error: 'Internal server error',
-			message: error.message || 'Failed to fetch game history',
-		});
-	}
+            return {
+                ...game,
+                player1_name,
+                player2_name,
+                winner_name,
+            };
+        }));
+
+        reply.send({
+            success: true,
+            games: gamesWithUsernames,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            hasNext: result.hasNext,
+            hasPrev: result.hasPrev,
+        });
+        console.log('[DB GAMES HISTORY RESPONSE]', {
+            games: gamesWithUsernames,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            hasNext: result.hasNext,
+            hasPrev: result.hasPrev,
+        });
+    } catch (error) {
+        console.error('Error in getGamesHistoryHandler:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+        request.log.error('Error fetching game history:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+        reply.code(500).send({
+            success: false,
+            error: 'Internal server error',
+            message: error.message || 'Failed to fetch game history',
+        });
+    }
 }
 
 const saveResultsHandler = async (request, reply) => {

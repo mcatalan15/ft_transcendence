@@ -169,6 +169,23 @@ async function getUserByEmail(email) {
 	});
 }
 
+async function getUsernameById(userId) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            `SELECT username FROM users WHERE id_user = ?`,
+            [userId],
+            (err, row) => {
+                if (err) {
+                    console.error('[DB USERNAME ERROR]', err);
+                    reject(err);
+                } else {
+                    resolve(row ? row.username : null);
+                }
+            }
+        );
+    });
+}
+
 async function getUserById(userId) {
     return new Promise((resolve, reject) => {
         const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
@@ -182,7 +199,7 @@ async function getUserById(userId) {
             }
         });
     });
-}
+}   
 
 async function getUserByUsername(username) {
     return new Promise((resolve, reject) => {
@@ -198,92 +215,155 @@ async function getUserByUsername(username) {
     });
 }
 
-async function saveGameToDatabase(
-    player1_id,
-    player2_id,
-    winner_id,
-    player1_name,
-    player2_name,
-    player1_score,
-    player2_score,
-    winner_name,
-    player1_is_ai,
-    player2_is_ai,
-    game_mode,
-    is_tournament,
-    smart_contract_link,
-    contract_address,
-    created_at,
-    ended_at
-) {
-    return new Promise((resolve, reject) => {
-        console.log('saveGameToDatabase called with:', {
-            player1_id, player2_id, winner_id, player1_name, player2_name,
-            player1_score, player2_score, winner_name, player1_is_ai, player2_is_ai,
-            game_mode, is_tournament, smart_contract_link, contract_address,
-            created_at, ended_at
-        });
+async function saveGameToDatabase(gameRecord, gameData) {
+	const db = require('./database'); // Assuming your database connection module
 
-        const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+	// if (!db || typeof db.run !== 'function') {
+    //   reject(new Error('Database not properly initialized'));
+    //   return;
+    // }
+	return new Promise((resolve, reject) => {
+		console.log('saveGameToDatabase called with gameRecord:', gameRecord);
 
-        const query = `
+		const query = `
             INSERT INTO games (
                 player1_id,
                 player2_id,
                 winner_id,
-                player1_name,
-                player2_name,
                 player1_score,
                 player2_score,
-                winner_name,
-                player1_is_ai,
-                player2_is_ai,
                 game_mode,
                 is_tournament,
                 smart_contract_link,
                 contract_address,
                 created_at,
-                ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ended_at,
+                config_json,
+                general_result,
+                default_balls_used,
+                curve_balls_used,
+                multiply_balls_used,
+                spin_balls_used,
+                burst_balls_used,
+                bullets_used,
+                shields_used,
+                pyramids_used,
+                escalators_used,
+                hourglasses_used,
+                lightnings_used,
+                maws_used,
+                rakes_used,
+                trenches_used,
+                kites_used,
+                bowties_used,
+                honeycombs_used,
+                snakes_used,
+                vipers_used,
+                waystones_used,
+                player1_hits,
+                player1_goals_in_favor,
+                player1_goals_against,
+                player1_powerups_picked,
+                player1_powerdowns_picked,
+                player1_ballchanges_picked,
+                player1_result,
+                player2_hits,
+                player2_goals_in_favor,
+                player2_goals_against,
+                player2_powerups_picked,
+                player2_powerdowns_picked,
+                player2_ballchanges_picked,
+                player2_result
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
-        const params = [
-            //game_id,
-            player1_id,
-            player2_id,
-            winner_id,
-            player1_name,
-            player2_name,
-            player1_score || 0,
-            player2_score || 0,
-            winner_name,
-            player1_is_ai ? 1 : 0,
-            player2_is_ai ? 1 : 0,
-            game_mode,
-            is_tournament ? 1 : 0,
-            smart_contract_link,
-            contract_address,
-            created_at || new Date().toISOString(),
-            ended_at
-        ];
+		const params = [
+			gameRecord.player1_id,
+			gameRecord.player2_id,
+			gameRecord.winner_id,
+			gameRecord.player1_score,
+			gameRecord.player2_score,
+			gameRecord.game_mode,
+			gameRecord.is_tournament ? 1 : 0,
+			gameRecord.smart_contract_link,
+			gameRecord.contract_address,
+			gameRecord.created_at,
+			gameRecord.ended_at,
+			gameRecord.config_json,
+			gameRecord.general_result,
+			gameRecord.default_balls_used,
+			gameRecord.curve_balls_used,
+			gameRecord.multiply_balls_used,
+			gameRecord.spin_balls_used,
+			gameRecord.burst_balls_used,
+			gameRecord.bullets_used,
+			gameRecord.shields_used,
+			gameRecord.pyramids_used,
+			gameRecord.escalators_used,
+			gameRecord.hourglasses_used,
+			gameRecord.lightnings_used,
+			gameRecord.maws_used,
+			gameRecord.rakes_used,
+			gameRecord.trenches_used,
+			gameRecord.kites_used,
+			gameRecord.bowties_used,
+			gameRecord.honeycombs_used,
+			gameRecord.snakes_used,
+			gameRecord.vipers_used,
+			gameRecord.waystones_used,
+			gameRecord.player1_hits,
+			gameRecord.player1_goals_in_favor,
+			gameRecord.player1_goals_against,
+			gameRecord.player1_powerups_picked,
+			gameRecord.player1_powerdowns_picked,
+			gameRecord.player1_ballchanges_picked,
+			gameRecord.player1_result,
+			gameRecord.player2_hits,
+			gameRecord.player2_goals_in_favor,
+			gameRecord.player2_goals_against,
+			gameRecord.player2_powerups_picked,
+			gameRecord.player2_powerdowns_picked,
+			gameRecord.player2_ballchanges_picked,
+			gameRecord.player2_result
+		];
 
-        console.log('Executing query with params:', params);
+		console.log('Executing games query with params:', params);
 
-        db.run(query, params, function (err) {
-            if (err) {
-                console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
-                    message: err.message,
-                    code: err.code,
-                    errno: err.errno
-                });
-                reject(err);
-            } else {
-                console.log('Game saved successfully with auto-increment ID:', this.lastID);
-                console.log('Game_id used:', game_id);
-                resolve(this.lastID);
-            }
-        });
-    });
+		db.run(query, params, function (err) {
+			if (err) {
+				console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
+					message: err.message,
+					code: err.code,
+					errno: err.errno
+				});
+				return reject(err);
+			}
+
+			const gameId = this.lastID;
+			console.log('Game saved successfully with ID:', gameId);
+
+			// Insert into game_results table
+			const gameResultsQuery = `
+                INSERT INTO game_results (id_game, game_data)
+                VALUES (?, ?)
+            `;
+			const gameResultsParams = [gameId, JSON.stringify(gameData)];
+
+			db.run(gameResultsQuery, gameResultsParams, function (err) {
+				if (err) {
+					console.error('[DB INSERT ERROR] game_results failed:', {
+						message: err.message,
+						code: err.code,
+						errno: err.errno
+					});
+					return reject(err);
+				}
+
+				console.log('Game data saved to game_results with ID:', gameId);
+				resolve(gameId);
+			});
+		});
+	});
 }
 
 async function getLatestGame() {
@@ -577,10 +657,7 @@ async function changePassword(userId, newHashedPassword) {
 	});
 }
 
-async function  getGamesHistory(userId, page = 0, limit = 8) {
-
-	console.log(`[DB] getGamesHistory called for user ${userId} on page ${page} with limit ${limit}`);
-
+async function getGamesHistory(userId, page = 0, limit = 10) {
 	return new Promise((resolve, reject) => {
 		const offset = page * limit;
 
@@ -609,13 +686,8 @@ async function  getGamesHistory(userId, page = 0, limit = 8) {
 			   player1_id,
 			   player2_id,
 			   winner_id,
-			   player1_name,
-			   player2_name,
 			   player1_score,
 			   player2_score,
-			   winner_name,
-			   player1_is_ai,
-			   player2_is_ai,
 			   COALESCE(game_mode, 'Classic') as game_mode,
 			   smart_contract_link,
 			   contract_address
@@ -813,5 +885,6 @@ module.exports = {
 	getUserProfileStats,
     saveRefreshTokenInDatabase,
     getRefreshTokenFromDatabase,
-    deleteRefreshTokenFromDatabase
+    deleteRefreshTokenFromDatabase,
+    getUsernameById,
 };
