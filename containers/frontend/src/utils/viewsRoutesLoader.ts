@@ -9,7 +9,6 @@ import { showFriends } from '../views/friends';
 import { showChat } from '../views/chat';
 import { showAuth } from '../views/auth';
 import { showSettings } from '../views/settings';
-import { showStats } from '../views/stats';
 import { showHistory } from '../views/history';
 import { show404 } from '../views/404';
 
@@ -25,7 +24,6 @@ const viewsRoutes = {
 	showChat,
 	showAuth,
 	showSettings,
-	showStats,
 	showHistory,
 	show404,
 };

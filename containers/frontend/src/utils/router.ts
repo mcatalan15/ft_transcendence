@@ -117,7 +117,6 @@ async function renderRoute(path: string) {
 			return;
 		
 		case '/404':
-
 			views.show404(app);
 			return;
 

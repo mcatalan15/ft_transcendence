@@ -14,7 +14,7 @@ export class PongBoxComponent {
   constructor(options: PongBoxOptions) {
     this.pongBox = document.createElement('div');
     this.pongBox.className = `
-      w-full max-w-[1800px] h-auto md:h-[665px]
+      w-full max-w-[1800px] h-auto md:h-[750px]
       mx-auto bg-neutral-900 border-l-[8px] border-r-[8px] border-b-[8px] md:border-l-[16px] md:border-r-[16px] md:border-b-[16px] border-amber-50
       flex flex-col md:flex-row overflow-hidden shadow-xl
       min-h-[665px]
