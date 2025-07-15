@@ -87,19 +87,11 @@ export class ProfileRenderer {
       });
 
       if (!response.ok) {
-<<<<<<< HEAD
 		if (response.status === 404) {
 			navigate('/404');
 			return document.createElement('div'); // Return empty div for 404
 		}
         throw new Error(`HTTP error! status: ${response.status}`);
-=======
-        if (response.status === 404) {
-          navigate('/404');
-          return document.createElement('div'); // Return empty div for 404
-        }
-            throw new Error(`HTTP error! status: ${response.status}`);
->>>>>>> 8a5a2ce9 (traduction erreur 404 back to homepage)
       }
 
       const profileData = await response.json();
