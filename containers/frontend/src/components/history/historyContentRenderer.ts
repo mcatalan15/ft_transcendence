@@ -162,6 +162,7 @@ export class HistoryContentRenderer {
     const matchRows = games.map((game) => ({
       date: new Date(game.created_at).toLocaleString(),
       opponent: game.player1_name === currentUser ? game.player2_name : game.player1_name,
+      winner: game.winner_name || 'Draw',
       score: `${game.player1_score} - ${game.player2_score}`,
       mode: game.game_mode || 'Classic',
       contract: game.smart_contract_link
