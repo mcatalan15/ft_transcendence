@@ -66,22 +66,6 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
 		const language = localStorage.getItem('i18nextLng') || 'en';
 		container.appendChild(app.canvas);
 
-/* 		const statusContainer = document.createElement('div');
-		statusContainer.id = 'game-status-container';
-		statusContainer.className = 'absolute top-4 left-1/2 transform -translate-x-1/2 z-50';
-		statusContainer.innerHTML = `
-			<div id="connection-status" class="text-center text-yellow-400 text-lg mb-4">
-				Connecting to game...
-			</div>
-			<div id="player-names" class="text-center mb-4">
-				<!-- Player names will be populated here -->
-			</div>
-			<div id="player-assignment" class="text-center mb-4">
-				<!-- Player assignment will be populated here -->
-			</div>
-		`;
-		container.appendChild(statusContainer); */
-
 		const gameConfig = {
 			mode: 'online' as const,
 			variant: '1v1' as const,
