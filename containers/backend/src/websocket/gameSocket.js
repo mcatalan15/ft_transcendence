@@ -412,24 +412,25 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		try {
 			console.log(`🔍 Finding match for player ${playerId}, game type: ${gameType}`);
 			
-			// Use existing Redis patterns - look for waiting games
 			const waitingGames = await redisService.getWaitingGames(gameType);
 			console.log('🎮 Found waiting games:', waitingGames);
 
 			if (waitingGames && waitingGames.length > 0) {
-				// Join existing game
 				const gameId = waitingGames[0];
 				const gameData = await redisService.getGameData(gameId);
-				
+
+				if (!gameData || gameData.hostId === playerId || gameData.guestId === playerId) {
+					console.error(`❌ Invalid game data for game ${gameId} or player ${playerId} already in game`);
+					return;
+				}
+
 				if (gameData && !gameData.guestId) {
-					// Join as guest
 					gameData.guestId = playerId;
 					gameData.status = 'ready';
 					await redisService.setGameData(gameId, gameData);
 					
 					console.log(`🎮 Player ${playerId} joined game ${gameId} as guest`);
 					
-					// Send success to the joining player (guest)
 					ws.send(JSON.stringify({
 						type: 'MATCHMAKING_SUCCESS',
 						gameId: gameId,
