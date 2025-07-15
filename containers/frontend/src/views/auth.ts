@@ -14,12 +14,11 @@ interface TwoFaVerifyResponse {
 	verified: boolean;
 }
 
-export async function showAuth(container: HTMLElement): Promise<void> {
+export async function showAuth(container: HTMLElement): Promise<boolean> {
 
 	await i18n.loadNamespaces('auth');
   	await i18n.changeLanguage(i18n.language);
 
-	console.log('Hola!');
 	const urlParams = new URLSearchParams(window.location.search);
 	const fromPage = urlParams.get('from');
 	console.log('Current URL:', window.location.href);
@@ -42,16 +41,14 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	if (!actualUserId || !actualUsername || !actualEmail) {
 		console.error('Missing user data in sessionStorage, redirecting to signin');
 		navigate('/signin');
-		return;
+		return false;
 	}
 
-	// Validate 2FA value - should be "0" (enabled) or "1" (disabled)
 	if (actual2FA !== '0' && actual2FA !== '1') {
 		console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
 		actual2FA = '0';
 	}
 
-	// Check if 2FA is enabled (0 = enabled, needs verification)
 	if (actual2FA === '1') {
 		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');
@@ -111,7 +108,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 					}
 					setTimeout(() => {
 						navigate('/home');
-						return;
+						return true;
 					}, 1000);
 				} else {
 					throw new Error(data.message || i18n.t('error.verificationFailed', { ns: 'auth' }));
@@ -120,6 +117,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				verificationStatus.textContent = i18n.t('error.unknownError', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-red-500';
 				verifyBtn.disabled = false;
+				return false;
 			}
 		});
 
@@ -128,8 +126,8 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				verifyBtn.click();
 			}
 		});
+		return true;
 	} else {
-		// 2FA is disabled (0) - show setup
 		console.log('Showing signup success and initiating 2FA setup');
 		const message = document.createElement('p');
 		message.textContent = i18n.t('2FASetupMessage', { ns: 'auth' });
@@ -190,7 +188,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				console.error(errorMessage);
 				qrCodeDisplay.textContent = errorMessage;
 				secretKeySpan.textContent = errorMessage;
-				return;
+				return false;
 			}
 
 			try {
@@ -212,6 +210,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				console.error('Failed to load QR code: ', error);
 				qrCodeDisplay.textContent = `${i18n.t('error.failedLoading', { ns: 'auth' })} ${error.message}`;
 				secretKeySpan.textContent = `${i18n.t('error.error', { ns: 'auth' })} ${error.message}`;
+				return false;
 			}
 		};
 
@@ -250,24 +249,27 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 						sessionStorage.setItem('token', data.token);
 						console.log('Updated authToken in sessionStorage (Setup):', data.token ? 'Present' : 'Missing');
 					}
-					// Set to "0" (enabled) after successful verification
 					sessionStorage.setItem('twoFAEnabled', '1');
 					console.log('Updated twoFAEnabled in sessionStorage to "1" (enabled) after setup.');
 					tokenInput.disabled = true;
-					window.location.href = '/home';
+					//window.location.href = '/home';
+					return true;
 				} else {
 					verificationStatus.textContent = i18n.t(data.message || 'error.verificationFailed', { ns: 'auth' });
 					verificationStatus.style.color = 'red';
+					return false;
 				}
 			} catch (error: any) {
 				console.error('Error verifying 2FA token:', error);
 				verificationStatus.textContent = i18n.t('error.errorDuringVerification', { ns: 'auth' }) + error.message;
 				verificationStatus.style.color = 'red';
+				return false;
 			}
 		});
 	}
 
 	container.appendChild(authDiv);
+	return true;
 }
 
 function setupGamingButton(button: HTMLButtonElement, color: 'amber' | 'lime' | 'cyan' | 'pink'): void {
