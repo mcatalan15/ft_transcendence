@@ -27,15 +27,13 @@ export async function loadGames(
       'Content-Type': 'application/json',
     },
   });
-
+  
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   const data = await response.json();
-
-  console.log('Games fetched:', data);
-
+  console.log('History response:', data);
   return {
     games: data.games || [],
     totalGames: data.total || 0,

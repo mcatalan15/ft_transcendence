@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PowerupSpawner.ts                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 15:02:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/13 21:25:27 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ export class PowerupSpawner {
 		
 		game.renderLayers.powerup.addChild(render.graphic);
 		
-		game.data.specialItmes.shields++;
+		game.data.specialItems.shields++;
 		console.log(`spawned shield:${shield.x}`);
 	}
 
@@ -272,7 +272,7 @@ export class PowerupSpawner {
 
 		game.renderLayers.powerup.addChild(bulletRender.graphic);
 
-		game.data.specialItmes.bullets++;
+		game.data.specialItems.bullets++;
 		console.log(`spawned bullet going:${bullet.direction}`);
 	}
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 10:58:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/15 11:40:48 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,7 @@ export class PongGame {
 	prepareGameData() {
 		this.data = {
 			config: this.config,
-			createdAt: new Date().toString(),
+			createdAt: new Date().toISOString(),
 			endedAt: null,
 			generalResult: null,
 			winner: null,
@@ -285,7 +285,7 @@ export class PongGame {
 				burstBalls: 0,
 			},
 
-			specialItmes: {
+			specialItems: {
 				bullets: 0,
 				shields: 0
 			},
@@ -803,9 +803,15 @@ export class PongGame {
 			const requestBody = {
 				gameData: this.data
 			};
-	
-			console.log('Making API call to /api/games/results');
-			const response = await fetch(getApiUrl('/games/results'), {
+			
+			const gameData = {
+				...this.data,
+				createdAt: this.data.createdAt instanceof Date ? this.data.createdAt.toISOString() : this.data.createdAt,
+				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
+			};
+			// console.log('Making API call to /api/games/results');
+			console.log('Making API call to /api/games');
+			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
