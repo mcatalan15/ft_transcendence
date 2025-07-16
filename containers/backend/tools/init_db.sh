@@ -20,12 +20,12 @@ if [ ! -f "$DB_PATH" ]; then
 
 	CREATE TABLE IF NOT EXISTS users (
 		id_user INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT NOT NULL UNIQUE,
+		username TEXT NOT NULL UNIQUE COLLATE BINARY,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT,
 		provider TEXT NOT NULL DEFAULT 'local',
 		twoFactorSecret TEXT,
-		twoFactorEnabled BOOLEAN DEFAULT 0,
+		twoFactorEnabled BOOLEAN DEFAULT 0 CHECK (twoFactorEnabled IN (0, 1)),
 		avatar_filename TEXT DEFAULT NULL,
 		avatar_type TEXT DEFAULT 'default' -- 'default', 'uploaded', 'generated'
 	);
@@ -43,13 +43,8 @@ if [ ! -f "$DB_PATH" ]; then
 		player1_id INTEGER,
 		player2_id INTEGER,
 		winner_id INTEGER,
-		player1_name TEXT NOT NULL,
-		player2_name TEXT NOT NULL,
 		player1_score INTEGER DEFAULT 0,
 		player2_score INTEGER DEFAULT 0,
-		winner_name TEXT,
-		player1_is_ai BOOLEAN DEFAULT 0,
-		player2_is_ai BOOLEAN DEFAULT 0,
 		game_mode TEXT,
 		general_result TEXT CHECK(general_result IN ('leftWin', 'rightWin', 'draw')) DEFAULT NULL,
 		-- Game configuration will be stored as JSON string
@@ -183,18 +178,35 @@ if [ ! -f "$DB_PATH" ]; then
 	);
 
 	CREATE TABLE IF NOT EXISTS game_results (
-		id_game INTEGER PRIMARY KEY,
-		game_data TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(id_game) REFERENCES games(id_game)
+    id_game INTEGER PRIMARY KEY,
+    game_data TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(id_game) REFERENCES games(id_game)
 	);
 
 		-- Create indexes for better performance
-    CREATE INDEX IF NOT EXISTS idx_games_player1_id ON games(player1_id);
-    CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
-    CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
+	CREATE INDEX IF NOT EXISTS idx_games_player1_id ON games(player1_id);
+	CREATE INDEX IF NOT EXISTS idx_games_player2_id ON games(player2_id);
+	CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
 
-	-- Add more initialization logic as needed
+	-- Creation of ButiBot and Guest
+	-- Insert ButiBot user if not exists
+	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
+	SELECT 'ButiBot', 'ButiBot@example.com', 'Hola1234', 'local', 0, 'default'
+	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'ButiBot');
+
+	-- Insert guest user if not exists
+	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
+	SELECT 'guest', 'guest@example.com', 'Hola1234', 'local', 0, 'default'
+	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'guest');
+
+-- Insert user_stats for ButiBot if not exists
+	INSERT OR IGNORE INTO user_stats (id_user)
+	SELECT id_user FROM users WHERE username = 'ButiBot';
+
+	-- Insert user_stats for guest if not exists
+	INSERT OR IGNORE INTO user_stats (id_user)
+	SELECT id_user FROM users WHERE username = 'guest';
 EOF
 
     echo "Database created at $DB_PATH"

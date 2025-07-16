@@ -89,13 +89,17 @@ def create_games(n):
         print("Need at least 2 users to simulate games.")
         conn.close()
         sys.exit(1)
+    
+    smart_contract_link = "https://testnet.snowtrace.io/address/	0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6/contract/43113/readContract?chainid=43113"
+    contract_address = "0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6"
+
 
     for _ in range(n):
         # Randomly pick two distinct players
         player1_id, player2_id = random.sample(users, 2)
 
         # Random game mode
-        game_modes = ['classic', 'arcade', 'time_attack']
+        game_modes = ['online', 'local', 'ai']
         game_mode = random.choice(game_modes)
 
         # Simulate game stats
@@ -168,7 +172,7 @@ def create_games(n):
                 player1_id, player2_id, winner_id,
                 player1_score, player2_score,
                 game_mode, general_result,
-                config_json,
+                config_json, smart_contract_link, contract_address,
                 default_balls_used, curve_balls_used, multiply_balls_used,
                 spin_balls_used, burst_balls_used,
                 bullets_used, shields_used,
@@ -184,12 +188,12 @@ def create_games(n):
                 player2_powerups_picked, player2_powerdowns_picked, player2_ballchanges_picked,
                 player2_result,
                 ended_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             player1_id, player2_id, winner_id,
             player1_score, player2_score,
             game_mode, general_result,
-            config_json,
+            config_json, smart_contract_link, contract_address,
             ball_usage['default_balls_used'], ball_usage['curve_balls_used'], ball_usage['multiply_balls_used'],
             ball_usage['spin_balls_used'], ball_usage['burst_balls_used'],
             special_items['bullets_used'], special_items['shields_used'],
@@ -598,7 +602,7 @@ def create_tournament_game(c, tournament_id, player1_id, player2_id):
             player2_powerups_picked, player2_powerdowns_picked, player2_ballchanges_picked,
             player2_result,
             ended_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         1,  # is_tournament = True
         player1_id, player2_id, winner_id,

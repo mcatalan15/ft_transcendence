@@ -160,15 +160,13 @@ services:
     container_name: grafana
     ports:
       - "127.0.0.1:3001:3000"
-    env_file:
-      - .env
     restart: always
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
+      - GF_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - UID=1000
       - GID=1000
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
     networks:
       - transcendence
 

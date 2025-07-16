@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/15 12:40:16 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/16 12:09:09 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,8 @@ prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
-	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
-    docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
+#	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
+	docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
 
 dev:
 	@bash ./scripts/setup_dev.sh
@@ -106,7 +106,7 @@ nuke:
 	-docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
 	-docker rm -f $(docker ps -aq)
 	-docker rmi -f $(docker images -aq)
-	-docker volume rm $(docker volume ls -q)
+	-docker volume rm $(docker volume ls)
 	-docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
 	-docker builder prune -af
 	-docker system prune -af --volumes
