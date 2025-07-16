@@ -82,7 +82,7 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string', description: 'JWT token generated from a secret' },
+        // token: { type: 'string', description: 'JWT token generated from a secret' },
         userId: { type: 'number', description: 'ID of the newly registered user' },    // <--- ADD THIS
         username: { type: 'string', description: 'Username of the new user' }, // <--- ADD THIS
 		email: { type: 'string', description: 'Email of the new user' },
@@ -91,7 +91,7 @@ const signinSchema = {
       example: {
         success: true,
         message: 'User registered successfully',
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
+        // token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzQ2NjMwOTIxLCJleHAiOjE3NDY2MzA5MjF9.o-1eIW8lMLPdPynK5lx8BfoYSAfTj8gJaNqFGgTL6ik',
 		userId: 42,
 		username: 'test-user',
 		email: 'cucufu@gmail.com',
@@ -104,7 +104,7 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string' || null },
+        // token: { type: 'string' || null },
 		usernumber: {type: 'string' || null },
 		userId: { type: 'number', description: 'ID of the user' },
 		twoFAEnabled: { type: 'number', description: ' 1 not enabled 0 enabled' }
@@ -112,7 +112,7 @@ const signinSchema = {
       example: {
         success: false,
         message: 'User not found',
-        token: null,
+        // token: null,
 		username: 'pepe123',
 		userId: 2,
 		twoFAEnabled: '1'
@@ -124,13 +124,13 @@ const signinSchema = {
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
-        token: { type: 'string' || null },
+        // token: { type: 'string' || null },
 		user: {type: 'string' || null }
       },
       example: {
         success: false,
         message: 'Internal server error',
-        token: null,
+        // token: null,
 		user: null
       }
     }
@@ -430,6 +430,56 @@ const refreshTokenSchema = {
 	}
 };
 
+const get2FAStatusSchema = {
+	description: 'Fetches the 2FA status for a user.',
+	tags: ['authentication'],
+	params: {
+		type: 'object',
+		properties: {
+			userId: { type: 'number', description: 'ID of the user' }
+		},
+		required: ['userId']
+	},
+	response: {
+		200: {
+			description: '2FA status fetched successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				twoFAEnabled: { type: 'boolean', description: 'Indicates if 2FA is enabled for the user' }
+			},
+			example: {
+				success: true,
+				twoFAEnabled: true
+			}
+		},
+		400: {
+			description: 'Bad request - invalid user ID provided',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid user ID provided'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Internal server error'
+			}
+		}
+	}
+};
+
 module.exports = {
   signupSchema,
   signinSchema,
@@ -437,5 +487,6 @@ module.exports = {
   googleSchema,
   setupTwoFaSchema,
   verifyTwoFaSchema,
-  refreshTokenSchema
+  refreshTokenSchema,
+  get2FAStatusSchema,
 };

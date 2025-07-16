@@ -28,15 +28,15 @@ export async function localSignIn(
             sessionStorage.setItem('username', data.username || '');
             sessionStorage.setItem('userId', data.userId || '');
             sessionStorage.setItem('email', data.email || '');
-            sessionStorage.setItem('token', data.token || '');
-            sessionStorage.setItem('localAuth', 'true');
+            // sessionStorage.setItem('token', data.token || '');
+            // sessionStorage.setItem('localAuth', 'true');
             sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled || false));
 
             // Return the result object
             return {
                 success: true,
                 message: data.message,
-                token: data.token,
+                // token: data.token,
                 user: data.username
             };
         } else {

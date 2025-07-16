@@ -101,9 +101,10 @@ export function showSignIn(container: HTMLElement): void {
           } else
             errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
         } else {
-          alert(i18n.t('success', { ns: 'signin' }));
-          navigate('/home');
-          return;
+            alert(i18n.t('success', { ns: 'signin' }));
+        //   navigate('/home');
+            navigate('/auth');
+            return;
         }
       };
 

@@ -37,21 +37,57 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	const actualUsername = sessionStorage.getItem('username');
 	const actualEmail = sessionStorage.getItem('email');
 	let actual2FA = sessionStorage.getItem('twoFAEnabled');
-	console.log(`[auth.ts] twoFAEnabled: ${actual2FA}`);
-
-	if (!actualUserId || !actualUsername || !actualEmail) {
-		console.error('Missing user data in sessionStorage, redirecting to signin');
-		navigate('/signin');
-		return;
+	// API call to get 2FA status
+	// const numUserID = Number(actualUserId);
+	try {
+		const response = await fetch(getApiUrl(`/auth/status/${actualUserId}`), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+		});
+		
+		console.log('Fetching auth status from API...');
+		console.log(`api/auth/status response: ${response.status} ${response.statusText}`);
+		
+		if (response.ok) {
+			const data = await response.json();
+			
+			// Extract 2FA values as variables
+			const twoFAEnabled = data.twoFAEnabled;
+			const twoFASecret = data.twoFASecret;
+			
+			// Console log the values to check them
+			console.log('[auth.ts] 2FA Enabled:', twoFAEnabled);
+			console.log('[auth.ts] 2FA Secret:', twoFASecret);
+			
+			// Update the actual2FA variable based on API response
+			actual2FA = twoFAEnabled ? '1' : '0';
+			console.log('[auth.ts] Updated actual2FA:', actual2FA);
+		} else {
+			console.error('Failed to fetch 2FA status:', response.statusText);
+			// Fall back to sessionStorage value if API fails
+		}
+		
+	} catch (error) {
+		console.error('Error calling 2FA status API:', error);
+		// Fall back to sessionStorage value if API fails
 	}
+	// console.log(`[auth.ts] twoFAEnabled: ${actual2FA}`);
 
-	// Validate 2FA value - should be "0" (enabled) or "1" (disabled)
-	if (actual2FA !== '0' && actual2FA !== '1') {
-		console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
-		actual2FA = '0';
-	}
+	// if (!actualUserId || !actualUsername || !actualEmail) {
+	// 	console.error('Missing user data in sessionStorage, redirecting to signin');
+	// 	navigate('/signin');
+	// 	return;
+	// }
 
-	// Check if 2FA is enabled (0 = enabled, needs verification)
+	// // Validate 2FA value - should be "0" (enabled) or "1" (disabled)
+	// if (actual2FA !== '0' && actual2FA !== '1') {
+	// 	console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
+	// 	actual2FA = '0';
+	// }
+
 	if (actual2FA === '1') {
 		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');

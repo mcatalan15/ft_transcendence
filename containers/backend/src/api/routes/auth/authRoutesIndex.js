@@ -5,7 +5,8 @@ const {
 	googleSchema,
 	setupTwoFaSchema,
 	verifyTwoFaSchema,
-	refreshTokenSchema
+	refreshTokenSchema,
+	get2FAStatusSchema
  } = require('../../schemas/auth');
  
 const { 
@@ -15,7 +16,8 @@ const {
 	googleHandler,
 	setupTwoFa,
 	verifyTwoFa,
-	refreshTokenHandler
+	refreshTokenHandler,
+	get2FAStatusHandler,
  } = require('../../handlers/auth');
 
 module.exports = async function (fastify, options) {
@@ -27,6 +29,7 @@ module.exports = async function (fastify, options) {
   fastify.post('/api/auth/google', { schema: googleSchema }, googleHandler);
   fastify.post('/api/auth/setup', { schema: setupTwoFaSchema }, setupTwoFa);
   fastify.post('/api/auth/verify', { schema: verifyTwoFaSchema }, verifyTwoFa);
+  fastify.get('/api/auth/status/:userId', { schema: get2FAStatusSchema }, get2FAStatusHandler);
   fastify.post('/api/auth/refresh', { schema: refreshTokenSchema }, refreshTokenHandler);
 
   };
