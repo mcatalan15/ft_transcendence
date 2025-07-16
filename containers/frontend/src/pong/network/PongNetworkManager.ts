@@ -225,7 +225,7 @@ export class PongNetworkManager {
 		});
 	}
 
-	private transitionToGame() {
+	private async transitionToGame() {
 		const params = new URLSearchParams({
 			gameId: this.gameId,
 			hostName: this.hostName,
@@ -233,6 +233,8 @@ export class PongNetworkManager {
 			mode: 'online'
 		});
 		
+		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+		await sleep(1000); 
 		navigate(`/pong?${params.toString()}`);
 	}
 
