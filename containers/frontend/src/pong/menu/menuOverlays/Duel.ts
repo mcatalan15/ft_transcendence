@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 19:24:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 20:55:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -705,6 +705,32 @@ export class Duel extends Entity {
 					fontFamily: '"Roboto Mono", monospace',
 				},
 			} as Text);
+
+			const opponentStatsTextComponent = new TextComponent(this.opponentStatsTexts[this.opponentStatsTexts.length - 1]);
+			this.replaceComponent('text', opponentStatsTextComponent, `opponentStatsText${this.opponentStatsTexts.length - 1}`);
+			console.log(this.menu.renderLayers.overlays.children)
+			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			// Check if it's a Text object by checking renderPipeId
+			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			// Type guard: check if the child has a text property
+			if ('text' in child && typeof child.text === 'string' && child.text.includes('???')) {
+				this.menu.renderLayers.overlays.removeChild(child);
+				break;
+			}
+		}
+}
+			this.menu.renderLayers.overlays.addChild(opponentStatsTextComponent.getRenderable());
+			
+			/* const rectangle = new Graphics();
+			rectangle.rect(605, 185, 360, 360);
+			rectangle.fill(GAME_COLORS.red);
+			const rectangleComponent = new RenderComponent(rectangle);
+			this.addComponent(rectangleComponent, 'opponentAvatarFrame');
+			this.menu.renderLayers.overlayQuits.addChild(rectangleComponent.graphic); */
 			
 			console.log(this.opponentStatsTexts);
 		}

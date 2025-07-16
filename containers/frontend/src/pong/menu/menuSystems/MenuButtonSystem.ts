@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 18:01:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 21:00:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ export class MenuButtonSystem implements System {
 			this.menu.playOverlay.show();
 			this.overlayStack.push('play');
 			this.setButtonsClickability(false);
+			this.menu.playInputButton.resetButton();
 		}
 	}
 
