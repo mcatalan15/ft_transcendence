@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:44:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:16:58 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,24 @@ export class MenuButtonSystem implements System {
 				console.log('Starting online matchmaking...');
 				const networkManager = new PongNetworkManager(null, '');
 				await networkManager.startMatchmaking();
+				this.menu.readyButton.setClickable(false);
+				this.menu.readyButton.setClicked(true);
 				
+				// Fake loading animation
+				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+				while (this.menu.readyButton.getIsClicked()) {
+					this.menu.readyButton.updateText('∙');
+					await sleep(500);
+					this.menu.readyButton.updateText('∙∙');
+					await sleep(500);
+					this.menu.readyButton.updateText('∙∙∙');
+					await sleep(500);
+					this.menu.readyButton.updateText('∙∙∙∙');
+					await sleep(500);
+					this.menu.readyButton.updateText('∙∙∙∙∙');
+					await sleep(500);
+				}
+				this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -334,6 +351,9 @@ export class MenuButtonSystem implements System {
 				gameManager.destroyGame(this.menu.app.view.id);
 				window.location.href = '/pong';
 			}
+			this.menu.readyButton.resetButton();
+			this.menu.readyButton.setClicked(false);
+			this.menu.readyButton.setClickable(true);
 			const playIndex = this.overlayStack.indexOf('play');
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
@@ -342,10 +362,22 @@ export class MenuButtonSystem implements System {
 			this.menu.playButton.setClicked(false);
 			this.menu.playButton.resetButton();
 			this.menu.glossaryButton.resetButton();
+			
 			if (this.menu.config.variant === 'tournament') {
 				this.menu.tournamentOverlay.hide();
 			} else {
 				this.menu.playOverlay.hide();
+				this.menu.readyButton.updateText('READY');
+			}
+
+			this.menu.opponentData = null;
+
+			this.menu.hasOngoingTournament = false;
+			this.menu.tournamentConfig = null;
+			this.menu.tournamentManager.clearTournament();
+
+			for (let button of this.menu.tournamentInputButtons) {
+				button.resetButton();
 			}
 
 			this.menu.opponentData = null;

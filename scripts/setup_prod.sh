@@ -11,10 +11,7 @@ if ! [[ "$PASSWORD" =~ [A-Z] ]] || ! [[ "$PASSWORD" =~ [a-z] ]] || ! [[ "$PASSWO
   PASSWORD=$(echo "${PASSWORD:0:17}A1z")
 fi
 
-echo $PASSWORD
-
-# Correction importante: ne pas utiliser de variable d'environnement ici
-GRAFANA_ADMIN_PASSWORD=$PASSWORD
+export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'
