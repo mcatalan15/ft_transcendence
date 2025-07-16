@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 19:06:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:47:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,4 +147,36 @@ export class MenuBigInputButton extends MenuButton {
 			};
 		}
 	}
+
+	public resetButton(): void {
+        this.isStateChanging = true;
+        this.isHovered = false;
+        this.resetButtonState();
+        this.isStateChanging = false;
+		this.updateText('GUEST?');
+		this.setClickable(true);
+    }
+
+	protected resetButtonState(): void {
+        this.buttonGraphic.clear();
+        const points = this.getButtonPoints();
+        this.buttonGraphic.poly(points);
+        
+        const strokeColor = this.getStrokeColor();
+        
+        this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
+        this.buttonGraphic.stroke(strokeColor);
+        
+        if (this.buttonText) {
+            const themeColor = this.menu.config.classicMode ? 
+                getThemeColors(this.menu.config.classicMode).white : 
+                this.config.color;
+            
+            let textAlpha: number = 1;
+            
+            this.buttonText.style.fill = { color: themeColor, alpha: textAlpha };
+        }
+        
+        this.resetOrnamentColor();
+    }
 }

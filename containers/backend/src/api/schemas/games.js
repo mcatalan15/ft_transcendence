@@ -704,26 +704,30 @@ const getUserByUsernameSchema = {
                     type: 'object',
                     properties: {
                         id: { type: 'string', description: 'User ID' },
-                        username: { type: 'string', description: 'Username' },
-                        email: { type: 'string', description: 'User email' },
+                        name: { type: 'string', description: 'User display name' }, // Changed from 'username'
                         avatar: { type: 'string', description: 'User avatar URL' },
+                        type: { type: 'string', enum: ['human', 'ai'], description: 'Player type' }, // Added
+                        side: { type: 'string', enum: ['left', 'right'], description: 'Player side' }, // Added
                         goalsScored: { type: 'number', description: 'Total goals scored by the user' },
                         goalsConceded: { type: 'number', description: 'Total goals conceded by the user' },
                         tournaments: { type: 'number', description: 'Number of tournaments won' },
                         wins: { type: 'number', description: 'Number of matches won' },
                         losses: { type: 'number', description: 'Number of matches lost' },
                         draws: { type: 'number', description: 'Number of matches drawn' },
-                        rank: { type: 'number', description: 'User rank' }
-                    }
+                        rank: { type: 'number', description: 'User rank' },
+                        totalPlayers: { type: 'number', description: 'Total number of players (optional)' } // Added optional field
+                    },
+                    required: ['id', 'name', 'avatar', 'type', 'side', 'goalsScored', 'goalsConceded', 'tournaments', 'wins', 'losses', 'draws', 'rank'] // Updated required fields
                 }
             },
             example: {
                 success: true,
                 userData: {
                     id: '12345',
-                    username: 'player123',
-                    email: 'player@example.com',
+                    name: 'player123', // Changed from 'username'
                     avatar: '/api/profile/avatar/12345?t=1234567890',
+                    type: 'human', // Added
+                    side: 'right', // Added
                     goalsScored: 10,
                     goalsConceded: 5,
                     tournaments: 2,

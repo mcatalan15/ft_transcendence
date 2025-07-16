@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/16 13:46:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,8 +313,7 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name || 'PLAYER 1',
-                id: this.leftPlayer.id || 'player1',
+                name: this.leftPlayer.id || 'player1',
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -326,8 +325,7 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-				name: this.rightPlayer.name || 'PLAYER 2',
-                id: this.rightPlayer.id || 'player2',
+                name: this.rightPlayer.id || 'player2',
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -341,6 +339,7 @@ export class PongGame {
 		};
 
 		console.log(this.data.createdAt);
+		console.log('Game data prepared:', this.data);
 	}
 
 	initSounds(): void {
@@ -476,8 +475,8 @@ export class PongGame {
 			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 			if (this.config.variant === '1vAI') {
 				this.rightPlayer = { name: "AI-BOT" };
-			} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
-				this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+			} else if (this.config.variant === '1v1') {
+				this.rightPlayer = { name: this.config.guestName || "GUEST" };
 			}
 		}
 		

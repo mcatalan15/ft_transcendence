@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 20:52:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:41:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,5 +108,7 @@ export class PlayOverlay extends Overlay {
         this.inputButton.setHidden(true);
 
         MenuImageManager.hidePlayAvatarImages(this.menu);
+
+        this.menu.playInputButton.resetButton();
     }
 }

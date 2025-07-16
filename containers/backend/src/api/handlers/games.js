@@ -714,9 +714,10 @@ async function getUserByUsernameHandler(request, reply) {
             
             const userData = {
                 id: user.id_user.toString(),
-                username: user.username,
-                email: user.email,
+                name: user.username,
                 avatar: avatarUrl,
+                type: 'human',
+                side: 'right',
                 goalsScored: userStats?.total_goals_scored || 0,
                 goalsConceded: userStats?.total_goals_conceded || 0,
                 tournaments: userStats?.tournaments_won || 0,

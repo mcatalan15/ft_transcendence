@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 20:50:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 13:51:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,12 +106,10 @@ export class MenuInputSystem implements System {
     }
 
     private updateButtonText(): void {
-        // If input is empty after backspace, show placeholder
         const displayText = this.currentInput.length > 0 ? this.currentInput : 'GUEST?';
         this.menu.playInputButton.updateText(displayText);
     }
 
-    // Cleanup when system is no longer needed
     destroy(): void {
         document.removeEventListener('keydown', this.keydownHandler);
     }
@@ -119,6 +117,8 @@ export class MenuInputSystem implements System {
 	async processPlayInputSubmission(event: GameEvent): Promise<void> {
 		const userName = event.target.getText();
 		const token = sessionStorage.getItem('token');
+		this.menu.storedGuestName = userName;
+		this.menu.playInputButton.updateText(userName.toUpperCase());
 
 		try {
 			const response = await fetch('/api/games/getUserByUsername', {

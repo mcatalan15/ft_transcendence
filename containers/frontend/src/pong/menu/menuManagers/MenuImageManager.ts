@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 20:52:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:34:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1032,22 +1032,22 @@ export class MenuImageManager {
 	}
 
 	static async updateRightPlayerAvatar(menu: Menu): Promise<void> {
-	// Find and remove only the right avatar (index 1 if it exists)
-	const rightAvatarIndex = this.playAvatars.findIndex(avatar => avatar && avatar.x === 785);
-	
-	if (rightAvatarIndex !== -1) {
-		const rightAvatar = this.playAvatars[rightAvatarIndex];
-		if (rightAvatar && rightAvatar.parent) {
-			rightAvatar.parent.removeChild(rightAvatar);
+		// Find and remove only the right avatar (index 1 if it exists)
+		const rightAvatarIndex = this.playAvatars.findIndex(avatar => avatar && avatar.x === 785);
+		
+		if (rightAvatarIndex !== -1) {
+			const rightAvatar = this.playAvatars[rightAvatarIndex];
+			if (rightAvatar && rightAvatar.parent) {
+				rightAvatar.parent.removeChild(rightAvatar);
+			}
+			if (rightAvatar) {
+				rightAvatar.destroy();
+			}
+			this.playAvatars.splice(rightAvatarIndex, 1);
 		}
-		if (rightAvatar) {
-			rightAvatar.destroy();
-		}
-		this.playAvatars.splice(rightAvatarIndex, 1);
-	}
 
-	// Create new right avatar
-	let rightAvatar;
+		// Create new right avatar
+		let rightAvatar;
 		if (menu.opponentData?.avatar) {
 			try {
 				rightAvatar = await this.createPlayerAvatarFromAsset(

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 12:56:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 13:49:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ export class MenuButtonSystem implements System {
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				// Create a PongNetworkManager for matchmaking (no game instance yet)
 				const networkManager = new PongNetworkManager(null, '');
 				await networkManager.startMatchmaking();
 				
@@ -158,10 +157,8 @@ export class MenuButtonSystem implements System {
 	private startLocalGame(): void {
 		console.log('Starting local game...');
 		
-		// Clean up menu first
 		this.menu.cleanup();
 		
-		// Deregister menu from GameManager
 		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
@@ -312,7 +309,6 @@ export class MenuButtonSystem implements System {
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
 			if (tournamentIndex > -1) this.overlayStack.splice(tournamentIndex, 1);
-			
 			this.setButtonsClickability(this.overlayStack.length === 0);
 			this.menu.playButton.setClicked(false);
 			this.menu.playButton.resetButton();
@@ -322,6 +318,8 @@ export class MenuButtonSystem implements System {
 			} else {
 				this.menu.playOverlay.hide();
 			}
+
+			this.menu.opponentData = null;
 		}
 	}
 
@@ -774,6 +772,25 @@ export class MenuButtonSystem implements System {
 			} else if (this.menu.duelButton.getIsClicked()) {
 				this.menu.config.variant = '1v1';
 			}
+		}
+
+		this.menu.config.players![0].name = sessionStorage.getItem('username') || 'Player 1';
+		if (this.menu.opponentData) {
+			console.log('Opponent data found:', this.menu.opponentData);
+			console.log('Setting opponent name to:', this.menu.opponentData.name);
+			console.log('Setting opponent id to:', this.menu.opponentData.id);
+			this.menu.config.players![1].name = this.menu.opponentData.name || 'GUEST';
+		} else {
+			if (this.menu.storedGuestName) {
+				this.menu.config.players![1].name = this.menu.storedGuestName;
+			} else {
+				this.menu.config.players![1].name = 'GUEST';
+			}
+		}
+
+		if (this.menu.config.mode === 'local' && this.menu.config.variant === '1v1') {
+			this.menu.config.hostName = this.menu.config.players![0].name;
+			this.menu.config.guestName = this.menu.config.players![1].name;
 		}
 	}
 }

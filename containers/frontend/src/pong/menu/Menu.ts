@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 19:43:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 13:49:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,7 @@ export class Menu{
 	// Player Data
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
+	storedGuestName: string | null = null;
 
 	//Browser data
 	isFirefox: boolean = false;
