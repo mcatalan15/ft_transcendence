@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 12:41:31 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 19:23:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,12 @@ export class PlayOverlay extends Overlay {
         this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
-        this.inputButton = this.menu.playInputButton;
-        this.setInputButton(this.inputButton);
+
+        if (this.menu.config.variant === '1v1') {
+            console.log('CUCUCUFUFUADFUOIAUDIOF');
+            this.inputButton = this.menu.playInputButton;
+            this.setInputButton(this.inputButton);
+        }
     }
 
     public redrawTitles(): void {
@@ -72,20 +76,29 @@ export class PlayOverlay extends Overlay {
         }
     }
 
-    public show(): void {
+    public async show(): Promise<void> {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
+        
+        // Prepare avatars BEFORE starting the animation, but don't add them to the scene yet
+        await MenuImageManager.preparePlayAvatarImages(this.menu);
+        
+        // Ensure all avatars start with alpha 0 (they should already be 0 from preparePlayAvatarImages)
+        const avatars = MenuImageManager.getAllPlayAvatarImages();
+        
+        avatars.forEach(avatar => {
+            if (avatar) {
+                avatar.alpha = 0;
+            }
+        });
+
+        // Now start the animation - all elements including avatars will start at alpha 0
         super.show();
 
-        // Prepare avatars with proper initialization
-        MenuImageManager.preparePlayAvatarImages(this.menu);
-
-        // Add buttons to overlay
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
         
-        // Show buttons
         this.menu.readyButton.setHidden(false);
         this.menu.tournamentGlossaryButton.setHidden(false);
         this.menu.tournamentFiltersButton.setHidden(false);  

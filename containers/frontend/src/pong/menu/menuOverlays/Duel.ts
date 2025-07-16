@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 20:51:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 19:24:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,18 @@ export class Duel extends Entity {
 	vsText: Text = new Text();
 	nameTags: Text[] = [];
 	statsTexts: Text[] = [];
-	plainStats: string[] = [];
+	playerStatsTexts: Text[] = [];
+	opponentStatsTexts: Text[] = [];
+	playerStats: string[] = [];
+	opponentStats: string[] = [];
 
 	constructor(menu: Menu, id: string, layer: string) {
 		super(id, layer);
 		
 		this.menu = menu;
 
-		this.getPlainStats()
+		this.getPlayerStats();
+		this.getOpponentStats();
 
 		this.createDuelGraphic();
 
@@ -57,10 +61,16 @@ export class Duel extends Entity {
 			this.addComponent(nameTagComponent, `nameTag${i}`);
 		}
 
-		this.statsTexts = this.createStatsTexts();
+		this.playerStatsTexts = this.createStatsTexts("player");
 		for (let i = 0; i < this.statsTexts.length; i++) {
-			const statsTextComponent = new TextComponent(this.statsTexts[i]);
-			this.addComponent(statsTextComponent, `statsText${i}`);
+			const playerStatsTextComponent = new TextComponent(this.statsTexts[i]);
+			this.addComponent(playerStatsTextComponent, `playerStatsText${i}`);
+		}
+
+		this.opponentStatsTexts = this.createStatsTexts("opponent");
+		for (let i = 0; i < this.statsTexts.length; i++) {
+			const opponentStatsTextComponent = new TextComponent(this.statsTexts[i]);
+			this.addComponent(opponentStatsTextComponent, `opponentStatsText${i}`);
 		}
 
 		this.dashedLines = this.createDashedLines();
@@ -82,34 +92,64 @@ export class Duel extends Entity {
 		this.addComponent(lowerRoundLegendTextComponent, 'lowerRoundLegendText');
 	}
 
-	getPlainStats(){
-		this.plainStats = [];
+	getPlayerStats(){
+		this.playerStats = [];
 		
 		const tournamentsStat = this.menu.playerData?.tournaments || 0;
-		this.plainStats.push(this.formatStat(tournamentsStat, 'number'));
+		this.playerStats.push(this.formatStat(tournamentsStat, 'number'));
 	
 		const goalsScoredStat = this.menu.playerData?.goalsScored || 0;
-		this.plainStats.push(this.formatStat(goalsScoredStat, 'number'));
+		this.playerStats.push(this.formatStat(goalsScoredStat, 'number'));
 	
 		const goalsConcededStat = this.menu.playerData?.goalsConceded || 0;
-		this.plainStats.push(this.formatStat(goalsConcededStat, 'number'));
+		this.playerStats.push(this.formatStat(goalsConcededStat, 'number'));
 	
 		const winsStat = this.menu.playerData?.wins || 0;
-		this.plainStats.push(this.formatStat(winsStat, 'number'));
+		this.playerStats.push(this.formatStat(winsStat, 'number'));
 	
 		const lossesStat = this.menu.playerData?.losses || 0;
-		this.plainStats.push(this.formatStat(lossesStat, 'number'));
+		this.playerStats.push(this.formatStat(lossesStat, 'number'));
 	
 		const drawsStat = this.menu.playerData?.draws || 0;
-		this.plainStats.push(this.formatStat(drawsStat, 'number'));
+		this.playerStats.push(this.formatStat(drawsStat, 'number'));
 	
-		const winLossRatioStat = this.calculateWinLossRatio();
-		this.plainStats.push(this.formatStat(winLossRatioStat, 'ratio'));
+		const winLossRatioStat = this.calculateWinLossRatio('player');
+		this.playerStats.push(this.formatStat(winLossRatioStat, 'ratio'));
 	
 		const rankStat = this.menu.playerData?.rank || 0;
-		this.plainStats.push(this.formatStat(rankStat, 'rank'));
+		this.playerStats.push(this.formatStat(rankStat, 'rank'));
 	
-		console.log('Formatted stats:', this.plainStats);
+		console.log('Formatted stats:', this.playerStats);
+	}
+
+	getOpponentStats(){
+		this.opponentStats = [];
+		
+		const tournamentsStat = this.menu.opponentData?.tournaments || 0;
+		this.opponentStats.push(this.formatStat(tournamentsStat, 'number'));
+	
+		const goalsScoredStat = this.menu.opponentData?.goalsScored || 0;
+		this.opponentStats.push(this.formatStat(goalsScoredStat, 'number'));
+	
+		const goalsConcededStat = this.menu.opponentData?.goalsConceded || 0;
+		this.opponentStats.push(this.formatStat(goalsConcededStat, 'number'));
+	
+		const winsStat = this.menu.opponentData?.wins || 0;
+		this.opponentStats.push(this.formatStat(winsStat, 'number'));
+	
+		const lossesStat = this.menu.opponentData?.losses || 0;
+		this.opponentStats.push(this.formatStat(lossesStat, 'number'));
+	
+		const drawsStat = this.menu.opponentData?.draws || 0;
+		this.opponentStats.push(this.formatStat(drawsStat, 'number'));
+	
+		const winLossRatioStat = this.calculateWinLossRatio('opponent');
+		this.opponentStats.push(this.formatStat(winLossRatioStat, 'ratio'));
+	
+		const rankStat = this.menu.opponentData?.rank || 0;
+		this.opponentStats.push(this.formatStat(rankStat, 'rank'));
+	
+		console.log('Formatted opponent stats:', this.opponentStats);
 	}
 
 	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
@@ -151,21 +191,34 @@ export class Duel extends Entity {
 		}
 	}
 	
-	calculateWinLossRatio(): number {
-		const wins = this.menu.playerData?.wins || 0;
-		const losses = this.menu.playerData?.losses || 0;
-	
-		if (losses === 0) {
-			return wins > 0 ? 100 : 0.00;
+	calculateWinLossRatio(who: string): number {
+		let wins;
+		let losses;
+		
+		if (who === 'player') {
+			wins = this.menu.playerData?.wins || 0;
+			losses = this.menu.playerData?.losses || 0;
+		
+			if (losses === 0) {
+				return wins > 0 ? 100 : 0.00;
+			}
+		} else if (who === 'opponent') {
+			wins = this.menu.opponentData?.wins || 0;
+			losses = this.menu.opponentData?.losses || 0;
+		
+			if (losses === 0) {
+				return wins > 0 ? 100 : 0.00;
+			}
 		}
 	
-		return parseFloat((wins / losses).toFixed(2));
+		return parseFloat((wins! / losses!).toFixed(2));
 	}
 
-	createStatsTexts(): Text[] {
-		const statsTexts: Text[] = [];
+	createStatsTexts(who: string): Text[] {
+		const playerStatsTexts: Text[] = [];
+		const opponentStatsTexts: Text[] = [];
 
-		statsTexts.push({
+		playerStatsTexts.push({
 			text: this.getStatsTextInLanguage(),
 			x: 340,
 			y: 600,
@@ -178,8 +231,8 @@ export class Duel extends Entity {
 			},
 		} as Text);
 
-		statsTexts.push({
-			text: this.getStatsValuesInLanguage(true), 
+		playerStatsTexts.push({
+			text: this.getStatsValuesInLanguage("player", true), 
 			x: 340,
 			y: 600,
 			style: {
@@ -191,7 +244,7 @@ export class Duel extends Entity {
 			},
 		} as Text);
 
-		statsTexts.push({
+		opponentStatsTexts.push({
 			text: this.getStatsTextInLanguage(), 
 			x: 785,
 			y: 600,
@@ -204,8 +257,8 @@ export class Duel extends Entity {
 			},
 		} as Text);
 		
-		statsTexts.push({
-			text: this.getStatsValuesInLanguage(false),
+		opponentStatsTexts.push({
+			text: this.getStatsValuesInLanguage("oponent", this.menu.opponentData ? true : false),
 			x: 785,
 			y: 600,
 			style: {
@@ -217,41 +270,49 @@ export class Duel extends Entity {
 			},
 		} as Text);
 
-		return (statsTexts);
+		return (who === "player" ? playerStatsTexts : opponentStatsTexts);
 	}
 
 	createNameTags(): Text[] {
 		const nameTags: Text[] = [];
-	
-		let leftName =  this.menu.playerData!.name.toUpperCase() || "PLAYER 1"
-		let rightName = '';
 
-		/* switch (this.menu.language) {
-			case ('en'): {
-				rightName = "GUEST";
-				break;
-			}
+		let leftName = this.menu.playerData!.name!.toUpperCase() || "PLAYER 1";
+		
+		// Check for both name and username fields, prioritize name
+		let rightName = this.menu.config.mode === 'online' ? "PLAYER 2" : "";
 
-			case ('es'): {
-				rightName = "INVITADE";
-				break;
-			}
+		console.log('createNameTags - opponentData:', this.menu.opponentData);
+		console.log('createNameTags - rightName after check:', rightName);
 
-			case ('fr'): {
-				rightName = "INVITÉ";
-				break;
+		// If no opponent data, set appropriate default based on variant
+		if (!rightName) {
+			if (this.menu.config.variant === '1vAI') {
+				rightName = "AI-BOT";
+			} else {
+				// Set default guest name based on language
+				switch (this.menu.language) {
+					case ('es'): {
+						rightName = "INVITADO";
+						break;
+					}
+					case ('fr'): {
+						rightName = "INVITÉ";
+						break;
+					}
+					case ('cat'): {
+						rightName = "CONVIDAT";
+						break;
+					}
+					default: {
+						rightName = "";
+						break;
+					}
+				}
 			}
-
-			case ('cat'): {
-				rightName = "CONVIDAT";
-				break;
-			}
-		} */
-	
-		if (this.menu.config.variant === '1vAI') {
-			rightName = "AI-BOT";
 		}
-	
+
+		console.log('createNameTags - final rightName:', rightName);
+
 		nameTags.push({
 			text: leftName, 
 			x: 340,
@@ -264,7 +325,7 @@ export class Duel extends Entity {
 				fontFamily: '"Roboto Mono", monospace',
 			},
 		} as Text);
-	
+
 		nameTags.push({
 			text: rightName, 
 			x: 785,
@@ -277,7 +338,7 @@ export class Duel extends Entity {
 				fontFamily: '"Roboto Mono", monospace',
 			},
 		} as Text);
-	
+
 		return nameTags;
 	}
 
@@ -481,8 +542,11 @@ export class Duel extends Entity {
 		const roundComponent = new RenderComponent(this.roundGraphic);
 		this.addComponent(roundComponent, 'roundGraphic');
 	}
-
 	redrawDuel(): void {
+		console.log('🎯🎯🎯🎯redrawDuel called');
+
+		this.getOpponentStats();
+		
 		this.duelGraphic.clear();
 	
 		this.roundGraphic.clear();
@@ -519,10 +583,16 @@ export class Duel extends Entity {
 			this.replaceComponent('text', nameTagComponent, `nameTag${i}`);
 		}
 
-		const newStatsTexts = this.createStatsTexts();
-		for (let i = 0; i < this.statsTexts.length; i++) {
-			const statsTextComponent = new TextComponent(newStatsTexts[i]);
-			this.replaceComponent('text', statsTextComponent, `statsText${i}`);
+		const newPlayerStatsTexts = this.createStatsTexts('player');
+		for (let i = 0; i < this.playerStatsTexts.length; i++) {
+			const newPlayerStatsTextComponent = new TextComponent(newPlayerStatsTexts[i]);
+			this.replaceComponent('text', newPlayerStatsTextComponent, `playerStatsText${i}`);
+		}
+
+		const newOpponentStatsTexts = this.createStatsTexts('opponent');
+		for (let i = 0; i < this.opponentStatsTexts.length; i++) {
+			const newOpponentStatsTextComponent = new TextComponent(newOpponentStatsTexts[i]);
+			this.replaceComponent('text', newOpponentStatsTextComponent, `opponentStatsText${i}`);
 		}
 	}
 
@@ -546,23 +616,44 @@ export class Duel extends Entity {
 		}
 	};
 
-	getStatsValuesInLanguage(known: boolean): string {
+	getStatsValuesInLanguage(who: string, known: boolean): string {
+		console.log('getStatsValuesInLanguage called with:', who, known, this.menu.opponentData);
 		if (known) {
-			switch (this.menu.language) {
-				case ('es'): {
-					return (`       ${this.plainStats[0]}             ${this.plainStats[1]}               ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}       ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
-				}
+			if (who === "player") {
+				switch (this.menu.language) {
+					case ('es'): {
+						return (`       ${this.playerStats[0]}             ${this.playerStats[1]}               ${this.playerStats[2]}\n         ${this.playerStats[3]}        ${this.playerStats[4]}       ${this.playerStats[5]}       ${this.playerStats[6]}   ${this.playerStats[7]}`);
+					}
 
-				case ('fr'): {
-					return (`        ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}          ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
-				}
+					case ('fr'): {
+						return (`        ${this.playerStats[0]}           ${this.playerStats[1]}             ${this.playerStats[2]}\n         ${this.playerStats[3]}        ${this.playerStats[4]}          ${this.playerStats[5]}       ${this.playerStats[6]}   ${this.playerStats[7]}`);
+					}
 
-				case ('cat'): {
-					return (`        ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n         ${this.plainStats[3]}        ${this.plainStats[4]}      ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+					case ('cat'): {
+						return (`        ${this.playerStats[0]}           ${this.playerStats[1]}             ${this.playerStats[2]}\n         ${this.playerStats[3]}        ${this.playerStats[4]}      ${this.playerStats[5]}       ${this.playerStats[6]}   ${this.playerStats[7]}`);
+					}
+					
+					default: {
+						return (`           ${this.playerStats[0]}           ${this.playerStats[1]}             ${this.playerStats[2]}\n    ${this.playerStats[3]}      ${this.playerStats[4]}     ${this.playerStats[5]}       ${this.playerStats[6]}   ${this.playerStats[7]}`);
+					}
 				}
-				
-				default: {
-					return (`           ${this.plainStats[0]}           ${this.plainStats[1]}             ${this.plainStats[2]}\n    ${this.plainStats[3]}      ${this.plainStats[4]}     ${this.plainStats[5]}       ${this.plainStats[6]}   ${this.plainStats[7]}`);
+			} else {
+				switch (this.menu.language) {
+					case ('es'): {
+						return (`       ${this.opponentStats[0]}             ${this.opponentStats[1]}               ${this.opponentStats[2]}\n         ${this.opponentStats[3]}        ${this.opponentStats[4]}       ${this.opponentStats[5]}       ${this.opponentStats[6]}   ${this.opponentStats[7]}`);
+					}
+
+					case ('fr'): {
+						return (`        ${this.opponentStats[0]}           ${this.opponentStats[1]}             ${this.opponentStats[2]}\n         ${this.opponentStats[3]}        ${this.opponentStats[4]}          ${this.opponentStats[5]}       ${this.opponentStats[6]}   ${this.opponentStats[7]}`);
+					}
+
+					case ('cat'): {
+						return (`        ${this.opponentStats[0]}           ${this.opponentStats[1]}             ${this.opponentStats[2]}\n         ${this.opponentStats[3]}        ${this.opponentStats[4]}      ${this.opponentStats[5]}       ${this.opponentStats[6]}   ${this.opponentStats[7]}`);
+					}
+
+					default: {
+						return (`           ${this.opponentStats[0]}           ${this.opponentStats[1]}             ${this.opponentStats[2]}\n    ${this.opponentStats[3]}      ${this.opponentStats[4]}     ${this.opponentStats[5]}       ${this.opponentStats[6]}   ${this.opponentStats[7]}`);
+					}
 				}
 			}
 		} else {
@@ -586,56 +677,36 @@ export class Duel extends Entity {
 		}
 	}	
 
+
 	public updateOpponentData(opponentData: any): void {
+		console.log('updateOpponentData called with:', opponentData);
+		
 		this.menu.opponentData = opponentData;
+		console.log('Menu opponent data set to:', this.menu.opponentData);
 		
-		// Update only the right player info without full redraw
 		this.updateRightPlayerInfo();
-		
-		// Only update the right player name tag
-		this.updateRightPlayerNameTag();
 	}
 
 	private updateRightPlayerInfo(): void {
 		if (this.menu.opponentData?.name) {
-			// Update stats for opponent
 			this.getOpponentStats();
+
+			this.opponentStatsTexts.pop();
+
+			this.opponentStatsTexts.push({
+				text: this.getStatsValuesInLanguage("oponent", this.menu.opponentData ? true : false),
+				x: 785,
+				y: 600,
+				style: {
+					fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
+					fontSize: 8,
+					fontWeight: '900' as const,
+					align: 'center' as const,
+					fontFamily: '"Roboto Mono", monospace',
+				},
+			} as Text);
 			
-			// Update right stats text (index 3)
-			const newStatsText = this.createStatsTexts();
-			const rightStatsComponent = new TextComponent(newStatsText[3]);
-			this.replaceComponent('text', rightStatsComponent, 'statsText3');
+			console.log(this.opponentStatsTexts);
 		}
-	}
-
-	private updateRightPlayerNameTag(): void {
-		if (this.menu.opponentData?.name) {
-			const rightNameTag = this.createNameTags()[1]; // Get the right name tag
-			const nameTagComponent = new TextComponent(rightNameTag);
-			this.replaceComponent('text', nameTagComponent, 'nameTag1');
-		}
-	}
-
-	// Add method to get opponent stats
-	private getOpponentStats(): void {
-		if (!this.menu.opponentData) return;
-		
-		// Store original player stats
-		const originalPlayerStats = [...this.plainStats];
-		
-		// Temporarily switch to opponent data for formatting
-		const tempPlayerData = this.menu.playerData;
-		this.menu.playerData = this.menu.opponentData;
-		
-		this.getPlainStats();
-		
-		// Store opponent stats
-		const opponentStats = [...this.plainStats];
-		
-		// Restore original player data and stats
-		this.menu.playerData = tempPlayerData;
-		this.plainStats = originalPlayerStats;
-		
-		/* this.opponentStats = opponentStats; */
 	}
 }

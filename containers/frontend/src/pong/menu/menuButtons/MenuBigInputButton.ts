@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 12:47:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:41:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,13 +148,15 @@ export class MenuBigInputButton extends MenuButton {
 		}
 	}
 
-	public resetButton(): void {
+	public resetButton(shouldRewrite: boolean = true): void {
         this.isStateChanging = true;
         this.isHovered = false;
         this.resetButtonState();
         this.isStateChanging = false;
-		this.updateText('GUEST?');
-		this.setClickable(true);
+		if (shouldRewrite) {
+			this.updateText('GUEST?');
+			this.setClickable(true);
+		}
     }
 
 	protected resetButtonState(): void {

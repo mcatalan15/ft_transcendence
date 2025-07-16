@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 13:49:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 18:01:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -117,7 +118,7 @@ export class MenuButtonSystem implements System {
 		this.menu.redrawFrame();
 	}
 
-	handlePlayClick(){
+	async handlePlayClick(){
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
@@ -131,6 +132,7 @@ export class MenuButtonSystem implements System {
 			this.setButtonsClickability(false);
 		} else {
 			this.menu.playButton.setClicked(true);
+			await this.menu.playOverlay.setAllRenderablesAlpha(0);
 			this.menu.playOverlay.show();
 			this.overlayStack.push('play');
 			this.setButtonsClickability(false);

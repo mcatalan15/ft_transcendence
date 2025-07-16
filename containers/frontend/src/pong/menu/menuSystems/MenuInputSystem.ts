@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 13:51:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:47:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ export class MenuInputSystem implements System {
 			const event = this.menu.eventQueue.shift() as GameEvent;
 			
 			if (event.type === 'PLAY_INPUT_SUBMITTED') {
-				this.processPlayInputSubmission(event);
+				this.menu.playInputButton.resetButton(false);
+                this.processPlayInputSubmission(event);
 			} else {
 				unhandledEvents.push(event);
 			}
@@ -52,7 +53,6 @@ export class MenuInputSystem implements System {
     }
 
     private handleKeyInput(event: KeyboardEvent): void {
-        // Handle Enter key to finish input
         if (event.code === 'Enter') {
             console.log('Input finished:', this.currentInput);
             this.menu.isProcessingInput = false;
@@ -87,17 +87,13 @@ export class MenuInputSystem implements System {
             return;
         }
 
-        // Get the actual character from the key press
         const key = event.key;
 
-        // Only allow letters, numbers, and hyphen
         if (/^[a-z0-9-]$/.test(key)) {
-            // If current text is the placeholder, clear it first
             if (this.menu.playInputButton.getText() === 'GUEST?') {
                 this.currentInput = '';
             }
 
-            // Only add if we haven't reached max length (8)
             if (this.currentInput.length < 8) {
                 this.currentInput += key;
                 this.updateButtonText();

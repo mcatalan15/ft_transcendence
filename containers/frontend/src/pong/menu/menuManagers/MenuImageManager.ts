@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 12:34:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 19:20:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,81 +366,82 @@ export class MenuImageManager {
 	}
 
 	static async createPlayerAvatarFromAsset(avatarKey: string, menu: Menu): Promise<Sprite | null> {
-	try {
-		console.log('Creating player avatar from:', avatarKey);
+		try {
+			console.log('Creating player avatar from:', avatarKey);
 
-		if (avatarKey.startsWith('http') || avatarKey.startsWith('/')) {
-			console.log('Loading custom avatar from URL:', avatarKey);
+			if (avatarKey.startsWith('http') || avatarKey.startsWith('/')) {
+				console.log('Loading custom avatar from URL:', avatarKey);
 
-			let finalUrl: string;
-			if (avatarKey.includes('?')) {
-				finalUrl = `${avatarKey}&t=${Date.now()}`;
+				let finalUrl: string;
+				if (avatarKey.includes('?')) {
+					finalUrl = `${avatarKey}&t=${Date.now()}`;
+				} else {
+					finalUrl = `${avatarKey}?t=${Date.now()}`;
+				}
+
+				console.log('Loading avatar from:', finalUrl);
+				
+				try {
+					const texture = await Assets.load({
+						src: finalUrl,
+						loadParser: 'loadTextures'
+					});
+					
+					console.log('Loaded texture:', texture);
+					
+					if (!texture) {
+						console.error('Texture is null, falling back to default avatar');
+						return this.createSimpleImage(
+							menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
+							0, 0, menu, 0.35
+						);
+					}
+					
+					const sprite = new Sprite(texture);
+					sprite.anchor.set(0.5);
+					
+					const targetWidth = 360;
+					const targetHeight = 360;
+					
+					const scaleX = targetWidth / texture.width;
+					const scaleY = targetHeight / texture.height;
+					const scale = Math.min(scaleX, scaleY);
+					
+					sprite.scale.set(scale * 0.95);
+					
+					sprite.alpha = 0;
+					return sprite;
+				} catch (loadError) {
+					console.error('Failed to load texture from URL:', loadError);
+					return this.createSimpleImage(
+						menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
+						0, 0, menu, 0.35
+					);
+				}
 			} else {
-				finalUrl = `${avatarKey}?t=${Date.now()}`;
-			}
-
-			console.log('Loading avatar from:', finalUrl);
-			
-			try {
-				const texture = await Assets.load({
-					src: finalUrl,
-					loadParser: 'loadTextures'
-				});
-				
-				console.log('Loaded texture:', texture);
-				
-				if (!texture) {
-					console.error('Texture is null, falling back to default avatar');
+				if (!this.assets.has(avatarKey)) {
+					console.warn(`Avatar asset ${avatarKey} not found, using fallback`);
 					return this.createSimpleImage(
 						menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
 						0, 0, menu, 0.35
 					);
 				}
 				
+				const texture = this.assets.get(avatarKey);
 				const sprite = new Sprite(texture);
 				sprite.anchor.set(0.5);
-				
-				const targetWidth = 360;
-				const targetHeight = 360;
-				
-				const scaleX = targetWidth / texture.width;
-				const scaleY = targetHeight / texture.height;
-				const scale = Math.min(scaleX, scaleY);
-				
-				sprite.scale.set(scale * 0.95);
-				
+				sprite.scale.set(0.35);
 				sprite.alpha = 0;
 				return sprite;
-			} catch (loadError) {
-				console.error('Failed to load texture from URL:', loadError);
-				return this.createSimpleImage(
-					menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
-					0, 0, menu, 0.35
-				);
 			}
-		} else {
-			if (!this.assets.has(avatarKey)) {
-				console.warn(`Avatar asset ${avatarKey} not found, using fallback`);
-				return this.createSimpleImage(
-					menu.config.classicMode ? 'avatarUnknownClassic' : 'avatarUnknownSquare',
-					0, 0, menu, 0.35
-				);
-			}
-			
-			const texture = this.assets.get(avatarKey);
-			const sprite = new Sprite(texture);
-			sprite.anchor.set(0.5);
-			sprite.scale.set(0.35);
-			sprite.alpha = 0;
-			return sprite;
+		} catch (error) {
+			console.error('Failed to create player avatar:', error);
+			return null;
 		}
-	} catch (error) {
-		console.error('Failed to create player avatar:', error);
-		return null;
 	}
-}
 
 	static async preparePlayAvatarImages(menu: Menu): Promise<void> {
+		// Clean up existing avatars
 		this.playAvatars.forEach(avatar => {
 			if (avatar && avatar.parent) {
 				avatar.parent.removeChild(avatar);
@@ -451,6 +452,7 @@ export class MenuImageManager {
 		});
 		this.playAvatars = [];
 
+		// Create player avatar (left)
 		if (menu.playerData?.avatar) {
 			console.log('Loading player avatar:', menu.playerData.avatar);
 			try {
@@ -461,7 +463,8 @@ export class MenuImageManager {
 				if (leftAvatar) {
 					leftAvatar.x = 335;
 					leftAvatar.y = 365;
-					menu.renderLayers.overlays.addChild(leftAvatar);
+					leftAvatar.alpha = 0; // Start with alpha 0
+					// Don't add to scene here - let the overlay system handle it
 					this.playAvatars.push(leftAvatar);
 				}
 			} catch (error) {
@@ -474,7 +477,7 @@ export class MenuImageManager {
 					0.35
 				);
 				if (fallbackAvatar) {
-					menu.renderLayers.overlays.addChild(fallbackAvatar);
+					fallbackAvatar.alpha = 0;
 					this.playAvatars.push(fallbackAvatar);
 				}
 			}
@@ -487,11 +490,12 @@ export class MenuImageManager {
 				0.35
 			);
 			if (defaultLeftAvatar) {
-				menu.renderLayers.overlays.addChild(defaultLeftAvatar);
+				defaultLeftAvatar.alpha = 0;
 				this.playAvatars.push(defaultLeftAvatar);
 			}
 		}
 
+		// Create opponent avatar (right)
 		let rightAvatar;
 		if (menu.opponentData?.avatar) {
 			try {
@@ -502,32 +506,41 @@ export class MenuImageManager {
 				if (rightAvatar) {
 					rightAvatar.x = 785;
 					rightAvatar.y = 365;
-					menu.renderLayers.overlays.addChild(rightAvatar);
+					rightAvatar.alpha = 0;
 					this.playAvatars.push(rightAvatar);
 				}
 			} catch (error) {
 				console.error('Failed to load opponent avatar, using fallback:', error);
 				rightAvatar = this.createRightPlayerFallback(menu);
+				if (rightAvatar) {
+					rightAvatar.alpha = 0;
+					this.playAvatars.push(rightAvatar);
+				}
 			}
 		} else {
 			rightAvatar = this.createRightPlayerFallback(menu);
-		}
-
-		if (rightAvatar) {
-			menu.renderLayers.overlays.addChild(rightAvatar);
-			this.playAvatars.push(rightAvatar);
+			if (rightAvatar) {
+				rightAvatar.alpha = 0;
+				this.playAvatars.push(rightAvatar);
+			}
 		}
 	}
 
 	private static createRightPlayerFallback(menu: Menu): Sprite | null {
+		console.log('Creating right player fallback');
 		const rightAvatarData = this.getRightPlayerAvatarData(menu);
-		return this.createSimpleImage(
+		console.log('Right avatar data:', rightAvatarData);
+
+		const avatar = this.createSimpleImage(
 			rightAvatarData.name,
 			rightAvatarData.x,
 			rightAvatarData.y,
 			menu,
 			0.35
 		);
+		
+		console.log('Created fallback avatar:', avatar);
+		return avatar;
 	}
 
 	private static getRightPlayerAvatarData(menu: Menu): { name: string, x: number, y: number } {
@@ -1032,7 +1045,6 @@ export class MenuImageManager {
 	}
 
 	static async updateRightPlayerAvatar(menu: Menu): Promise<void> {
-		// Find and remove only the right avatar (index 1 if it exists)
 		const rightAvatarIndex = this.playAvatars.findIndex(avatar => avatar && avatar.x === 785);
 		
 		if (rightAvatarIndex !== -1) {
@@ -1046,7 +1058,6 @@ export class MenuImageManager {
 			this.playAvatars.splice(rightAvatarIndex, 1);
 		}
 
-		// Create new right avatar
 		let rightAvatar;
 		if (menu.opponentData?.avatar) {
 			try {
@@ -1057,12 +1068,10 @@ export class MenuImageManager {
 				if (rightAvatar) {
 					rightAvatar.x = 785;
 					rightAvatar.y = 365;
-					// Set initial alpha to 0 for fade in animation
 					rightAvatar.alpha = 0;
 					menu.renderLayers.overlays.addChild(rightAvatar);
 					this.playAvatars.push(rightAvatar);
 					
-					// Animate fade in
 					this.animateAvatarFadeIn(rightAvatar);
 				}
 			} catch (error) {
@@ -1074,19 +1083,16 @@ export class MenuImageManager {
 		}
 
 		if (rightAvatar && !menu.renderLayers.overlays.children.includes(rightAvatar)) {
-			// Set initial alpha to 0 for fade in animation
 			rightAvatar.alpha = 0;
 			menu.renderLayers.overlays.addChild(rightAvatar);
 			this.playAvatars.push(rightAvatar);
 			
-			// Animate fade in
 			this.animateAvatarFadeIn(rightAvatar);
 		}
 	}
 
-	// Helper method for fade in animation
 	private static animateAvatarFadeIn(avatar: any): void {
-		const fadeInDuration = 300; // milliseconds
+		const fadeInDuration = 300;
 		const startTime = Date.now();
 		
 		const animate = () => {
