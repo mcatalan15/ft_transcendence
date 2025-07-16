@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 19:23:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 20:40:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ export class PlayOverlay extends Overlay {
         this.setQuitButton(this.menu.playQuitButton);
 
         if (this.menu.config.variant === '1v1') {
-            console.log('CUCUCUFUFUADFUOIAUDIOF');
             this.inputButton = this.menu.playInputButton;
             this.setInputButton(this.inputButton);
         }
@@ -80,10 +79,10 @@ export class PlayOverlay extends Overlay {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
         
-        // Prepare avatars BEFORE starting the animation, but don't add them to the scene yet
         await MenuImageManager.preparePlayAvatarImages(this.menu);
+		MenuImageManager.bringAvatarsToFront(this.menu);
         
-        // Ensure all avatars start with alpha 0 (they should already be 0 from preparePlayAvatarImages)
+
         const avatars = MenuImageManager.getAllPlayAvatarImages();
         
         avatars.forEach(avatar => {
@@ -92,7 +91,6 @@ export class PlayOverlay extends Overlay {
             }
         });
 
-        // Now start the animation - all elements including avatars will start at alpha 0
         super.show();
 
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
@@ -113,7 +111,6 @@ export class PlayOverlay extends Overlay {
         this.menu.menuHidden.addChild(this.menu.readyButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
-        // Remove manual input button hiding - it's now handled by the base class
         
         this.menu.readyButton.setHidden(true);
         this.menu.tournamentGlossaryButton.setHidden(true);

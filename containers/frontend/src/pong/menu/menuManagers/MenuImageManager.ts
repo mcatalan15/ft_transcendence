@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 19:20:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 20:40:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1145,5 +1145,20 @@ export class MenuImageManager {
 		this.isAnimating = false;
 		
 		this.assets.clear();
+	}
+
+	static bringAvatarsToFront(menu: Menu): void {
+		this.playAvatars.forEach((avatar, index) => {
+			if (avatar && avatar.parent) {
+				avatar.parent.removeChild(avatar);
+				menu.renderLayers.overlays.addChild(avatar);
+				
+				avatar.zIndex = 1000 + index;
+			}
+		});
+		
+		if (menu.renderLayers.overlays.sortableChildren !== undefined) {
+			menu.renderLayers.overlays.sortableChildren = true;
+		}
 	}
 }

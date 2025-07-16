@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 19:23:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 20:41:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,6 @@ export abstract class Overlay extends Entity {
 	}
 
 	private getAllCurrentElements(): any[] {
-		console.log('Getting all current elements for overlay:', this.id);
 		const elements: any[] = [];
 		
 		elements.push(this.background);
@@ -263,7 +262,6 @@ export abstract class Overlay extends Entity {
 
 		if (this.overlayType === 'play') {
 			const playAvatars = MenuImageManager.getAllPlayAvatarImages();
-			console.log(`Play avatars length: ${playAvatars.length}`);
 			playAvatars.forEach((avatar: any) => {
 				if (avatar) {
 					//console.log('Adding play avatar to elements:', avatar);
