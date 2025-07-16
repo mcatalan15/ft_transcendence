@@ -30,7 +30,7 @@ export async function localSignIn(
             sessionStorage.setItem('email', data.email || '');
             // sessionStorage.setItem('token', data.token || '');
             // sessionStorage.setItem('localAuth', 'true');
-            sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled || false));
+            // sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled || false));
 
             // Return the result object
             return {
