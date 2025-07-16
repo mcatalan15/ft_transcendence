@@ -11,7 +11,7 @@
     "errors": {
         "nicknameRequired": "Pseudo requis",
         "nicknameLength": "Le pseudo doit comporter entre 3 et 8 caractères",
-        "nicknameFormat": "Le format du pseudo est invalide",
+        "nicknameFormat": "Le pseudo ne peut comporter que des lettres minuscules, des chiffres et des tirets",
         "passwordRequired": "Les champs de mot de passe sont requis",
         "passwordLength": "Le mot de passe doit comporter entre 6 et 20 caractères",
         "passwordMismatch": "Les mots de passe ne correspondent pas",

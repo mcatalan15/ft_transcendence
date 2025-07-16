@@ -272,18 +272,11 @@ async function googleHandler(request, reply, fastify) {
 
 		console.log(`[Google Auth] Attempting to authenticate user with email: ${email}`);
 
-		// Try to get the user directly
 		let user = await getUserByEmail(email);
 
 		if (user) {
 			// Existing user flow
-			console.log(`[Google Auth - Existing User] User found - ID: ${user.id_user}, Email: ${user.email}`);
-			console.log(`[Google Auth - Existing User] Raw twoFactorEnabled value: ${user.twoFactorEnabled} (type: ${typeof user.twoFactorEnabled})`);
-
 			const twoFAEnabled = user.twoFactorEnabled;
-
-			console.log(`[Google Auth - Existing User] Processed 2FA status: ${twoFAEnabled} (DB value: ${user.twoFactorEnabled})`);
-
 			const authToken = jwt.sign({
 				id: user.id_user,
 				twoFAEnabled: twoFAEnabled,
@@ -300,7 +293,7 @@ async function googleHandler(request, reply, fastify) {
 			});
 
 			const refreshToken = jwt.sign(
-				{ id: user.id_user }, // or userId for signup
+				{ id: user.id_user },
 				process.env.JWT_REFRESH_SECRET,
 				{ expiresIn: '7d' }
 			);
@@ -311,11 +304,9 @@ async function googleHandler(request, reply, fastify) {
 				httpOnly: true,
 				secure: false,
 				sameSite: 'strict',
-				path: '/', // or '/auth'
+				path: '/',
 				maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
 			});
-			
-			console.log(`[Google Auth - Existing User] Sending response with 2FA: ${twoFAEnabled}`);
 
 			return reply.status(200).send({
 				success: true,
@@ -329,17 +320,24 @@ async function googleHandler(request, reply, fastify) {
 			});
 		} else {
 			// New user flow
-			console.log(`[Google Auth - New User] User with email ${email} does not exist. Creating new user.`);
-
 			const parts = name.toLowerCase().split(' ');
 			const firstInitial = parts[0].charAt(0);
 			const lastName = parts[parts.length - 1];
-			const nickname = `${firstInitial}${lastName}`;
+			let nickname = `${firstInitial}${lastName}`;
 			const defaultAvatarId = Math.floor(Math.random() * 4) + 1;
 			const avatarFilename = `default_${defaultAvatarId}.png`;
 
-			await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
-			console.log(`[Google Auth - New User] User saved to database`);
+			try {
+				await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
+			} catch (error) {
+				if (error.message.includes('Username or email already exists')) {
+					// If the user already exists, change their nick and hope it does not exist because I don't want to loop infinitely
+					nickname = nickname + "-";
+					await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
+				} else {
+					throw error;
+				}
+			}
 
 			// Get the newly created user
 			const newUser = await getUserByEmail(email);
@@ -347,13 +345,7 @@ async function googleHandler(request, reply, fastify) {
 				throw new Error('Failed to retrieve newly created user');
 			}
 
-			console.log(`[Google Auth - New User] Retrieved new user - ID: ${newUser.id_user}`);
-			console.log(`[Google Auth - New User] Raw twoFactorEnabled value: ${newUser.twoFactorEnabled} (type: ${typeof newUser.twoFactorEnabled})`);
-
-			// FIXED: SQLite logic - 0 = enabled (true), 1 = disabled (false)
-			// New users have default value 1 (disabled/false)
 			const twoFAEnabled = newUser.twoFactorEnabled;
-			console.log(`[Google Auth - New User] Processed 2FA status: ${twoFAEnabled} (DB value: ${newUser.twoFactorEnabled})`);
 
 			const authToken = jwt.sign({
 				id: newUser.id_user,
@@ -386,8 +378,6 @@ async function googleHandler(request, reply, fastify) {
 				maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
 			});
 
-			console.log(`[DEBUG] twoFAEnabled variable:`, twoFAEnabled);
-			console.log(`[DEBUG] typeof twoFAEnabled:`, typeof twoFAEnabled);
 			const responseObj = {
 				success: true,
 				message: 'User registered successfully',
@@ -398,7 +388,6 @@ async function googleHandler(request, reply, fastify) {
 				twoFAEnabled: twoFAEnabled,
 				isNewUser: true
 			};
-			console.log(`[DEBUG] EXACT response object:`, JSON.stringify(responseObj, null, 2));
 
 			return reply.status(201).send({
 				success: true,
@@ -412,7 +401,6 @@ async function googleHandler(request, reply, fastify) {
 			});
 		}
 	} catch (error) {
-		console.error('[Google Auth] Error:', error);
 		return reply.status(401).send({
 			success: false,
 			message: 'Invalid Token',

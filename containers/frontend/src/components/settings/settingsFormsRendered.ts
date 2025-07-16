@@ -242,7 +242,7 @@ export class SettingsFormsRenderer {
       MessageManager.showError(i18n.t('settings:errors.nicknameLength'));
       return;
     }
-    if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(newNickname)) {
+    if (!/^(?=[a-z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-z0-9-]+$/.test(newNickname)) {
       MessageManager.showError(i18n.t('settings:errors.nicknameFormat'));
       return;
     }

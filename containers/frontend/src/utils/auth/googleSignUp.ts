@@ -61,7 +61,7 @@ export function setupGoogleSignUp(): void {
                     console.log('Value after setting:', sessionStorage.getItem('twoFAEnabled'));
 
                     setTimeout(() => {
-                        if (data.isNewUser || data.twoFAEnabled === 1) {
+                        if (/* data.isNewUser || data.twoFAEnabled === 1 */false) {
                             // New user or 2FA disabled - go to auth setup
                             navigate('/auth');
                         } else {

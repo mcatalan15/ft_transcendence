@@ -35,7 +35,7 @@ function render(container: HTMLElement): void {
   const renderer = new SettingsRenderer(
     container, 
     () => showSettings(container),
-    updateProfile  // Pasamos la función de actualización
+    updateProfile
   );
   renderer.render();
   

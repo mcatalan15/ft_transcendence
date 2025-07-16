@@ -10,13 +10,7 @@ export async function localSignUp(username: string, email: string, password: str
 			credentials: 'include'
 		});
 
-		console.log('[localSignUp] Response status:', response.status);
-		console.log('[localSignUp] Response headers:', Object.fromEntries(response.headers.entries()));
-
 		const data = await response.json();
-		console.log('[localSignUp] Backend response data:', data);
-		console.log('[localSignUp] data.userId type:', typeof data.userId, 'value:', data.userId);
-		console.log('[localSignUp] data.username type:', typeof data.username, 'value:', data.username);
 
 		if (!response.ok || !data.success) {
 			return {
@@ -42,7 +36,6 @@ export async function localSignUp(username: string, email: string, password: str
 			token: data.token
 		};
 
-		console.log('[localSignUp] Returning result:', result);
 		return result;
 
 	} catch (error) {

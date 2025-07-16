@@ -1,6 +1,6 @@
 {
     "title": "Let's start!",
-    "nickname": "Nickname",
+    "nickname": "Nickname in lowercase",
     "email": "E-mail",
     "password": "Password",
     "confirmPassword": "Confirm Password",
@@ -8,7 +8,7 @@
 	  "signUp": "Sign up",
     "errorAllFields": "All fields are required!",
     "errorUsernameLength": "Username must be between 3 and 8 characters long!",
-    "errorUsernameChars": "Username can only contain letters and numbers!",
+    "errorUsernameChars": "Username can only contain lowercases, numbers and hyphens!",
     "errorPasswordLength": "Password must be between 6 and 20 characters long!",
     "errorPasswordsMatch": "Passwords do not match!",
     "errorInvalidEmail": "Invalid email address!",
