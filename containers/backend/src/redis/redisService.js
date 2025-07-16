@@ -1,3 +1,4 @@
+// redisService.js - Complete fixed version
 const { createClient } = require('redis');
 
 class RedisService {
