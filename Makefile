@@ -6,7 +6,7 @@
 #    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/16 12:09:09 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/17 10:31:35 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,6 @@ prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
-#	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
-	docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
 
 dev:
 	@bash ./scripts/setup_dev.sh
