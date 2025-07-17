@@ -1,7 +1,9 @@
 {
     "date": "Fecha",
     "opponent": "Oponente",
+    "winner": "Ganador",
     "score": "Puntuación",
     "mode": "Modo",
-    "contract": "Contrato"
+    "contract": "Contrato",
+    "draw": "Empate"
 }

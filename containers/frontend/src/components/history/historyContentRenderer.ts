@@ -52,7 +52,6 @@ export class HistoryContentRenderer {
     overlay.className = 'relative p-6 gap-6 flex flex-col items-center';
     
     overlay.style.backgroundColor = '#171717';
-    //overlay.style.border = '3px solid #FFFBEB';
     overlay.style.borderRadius = '0px';
     overlay.style.width = '100%';
     overlay.style.maxWidth = '1000px';
@@ -162,7 +161,7 @@ export class HistoryContentRenderer {
     const matchRows = games.map((game) => ({
       date: new Date(game.created_at).toLocaleString(),
       opponent: game.player1_name === currentUser ? game.player2_name : game.player1_name,
-      winner: game.winner_name || 'Draw',
+      winner: game.winner_name ? `${i18n.t('draw', { ns: 'history'})}` : game.winner_name,
       score: `${game.player1_score} - ${game.player2_score}`,
       mode: game.game_mode || 'Classic',
       contract: game.smart_contract_link

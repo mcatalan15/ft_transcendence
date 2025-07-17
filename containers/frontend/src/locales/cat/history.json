@@ -1,7 +1,9 @@
 {
     "date": "Data",
     "opponent": "Oponent",
+    "winner": "Guanyador",
     "score": "Puntuació",
     "mode": "Manera",
-    "contract": "Contracte"
+    "contract": "Contracte",
+    "draw": "Empat"
 }
