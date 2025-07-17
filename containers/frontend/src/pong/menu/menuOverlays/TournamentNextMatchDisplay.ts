@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 19:51:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 22:34:04 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,6 +383,7 @@ export class TournamentNextMatchDisplay extends Entity {
 
 	public updateLeftPlayerInfo(playerData: any, name: string): void {
 		this.vsText[2].text = name.toUpperCase();
+		this.vsText[2].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
 		const leftNameComponent = new TextComponent(this.vsText[2]);
 		this.replaceComponent('text', leftNameComponent, 'vsText2');
 	
@@ -392,6 +393,8 @@ export class TournamentNextMatchDisplay extends Entity {
 		} else {
 			this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
 		}
+
+		this.statsTexts[1].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
 	
 		const leftStatsComponent = new TextComponent(this.statsTexts[1]);
 		this.replaceComponent('text', leftStatsComponent, 'statsText1');
@@ -412,6 +415,7 @@ export class TournamentNextMatchDisplay extends Entity {
 	
 	public updateRightPlayerInfo(playerData: any, name: string): void {
 		this.vsText[3].text = name.toUpperCase();
+		this.vsText[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
 		const rightNameComponent = new TextComponent(this.vsText[3]);
 		this.replaceComponent('text', rightNameComponent, 'vsText3');
 	
@@ -421,6 +425,8 @@ export class TournamentNextMatchDisplay extends Entity {
 		} else {
 			this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
 		}
+
+		this.statsTexts[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
 	
 		const rightStatsComponent = new TextComponent(this.statsTexts[3]);
 		this.replaceComponent('text', rightStatsComponent, 'statsText3');

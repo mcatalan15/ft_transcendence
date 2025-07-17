@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 20:22:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 22:02:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ import { ButtonSystem } from '../systems/ButtonSystem';
 import { BallSpawner } from '../spawners/BallSpawner'
 import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
+import { TournamentManager } from '../../utils/TournamentManager';
 
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
@@ -122,9 +123,10 @@ export class PongGame {
 
 	isFirefox: boolean = false;
 
+	tournamentManager!: TournamentManager;
 	tournamentConfig: TournamentConfig | null = null;
 
-	constructor(app: Application, config: GameConfig, language: string, tournamentConfig: TournamentConfig | null = null, isFirefox?: boolean) {
+	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
 		this.language = language;
 		this.app = app;
@@ -194,11 +196,6 @@ export class PongGame {
             console.log('Game initialized with Firefox optimizations');
             this.applyGameFirefoxOptimizations();
         }
-
-		if (tournamentConfig) {
-			this.tournamentConfig = tournamentConfig;
-			console.log('Tournament config initialized:', this.tournamentConfig);
-		}
 	}
 
 	private applyGameFirefoxOptimizations(): void {
@@ -475,7 +472,7 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void> {
-		if (this.config.mode === 'online') {
+		if (this.config.mode === 'online' || this.config.variant === 'tournament') {
 			this.leftPlayer = { name: this.config.hostName || "Host Player" };
 			this.rightPlayer = { name: this.config.guestName || "Guest Player" };
 		} else {
@@ -951,7 +948,7 @@ export class PongGame {
 		}
 	}
 
-	async cleanup(): Promise<void> {
+	async cleanup(stopTicker: boolean = true): Promise<void> {
 		try {            
 			console.log('Starting game cleanup...');
 			
@@ -966,7 +963,7 @@ export class PongGame {
 				this.networkManager.disconnect();
 			}
 
-			if (this.app?.ticker?.started) {
+			if (stopTicker && this.app?.ticker?.started) {
 				this.app.ticker.stop();
 			}
 			

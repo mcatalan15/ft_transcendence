@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 20:27:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 22:21:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ import { AboutOverlay } from './menuOverlays/AboutOverlay';
 import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
+import { TournamentManager } from '../../utils/TournamentManager';
 
 declare global {
     interface Window {
@@ -231,6 +232,7 @@ export class Menu{
 	storedGuestName: string | null = null;
 
 	// Tournament Data
+	tournamentManager!: TournamentManager;
 	hasOngoingTournament: boolean = false;
 	tournamentConfig!: TournamentConfig | null;
 	tournamentInputButtons: MenuSmallInputButton[] = [];
@@ -242,7 +244,7 @@ export class Menu{
 	inputFocus: string | null = null;
 	isProcessingInput: boolean = false;
 
-	constructor(app: Application, language: string, tournamentConfig: TournamentConfig | null = null, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
+	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
@@ -316,8 +318,7 @@ export class Menu{
 
 		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
 		this.initSounds();
-
-		//! GAME CONFIGURATION TO BE FED IN MENU, SENT TO BACKEND
+		
 		this.config = {
 			mode: 'local',
 			variant: '1v1',
@@ -332,24 +333,6 @@ export class Menu{
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
 			this.preconfiguration = preconfiguration!;
-		}
-
-		if (tournamentConfig) {
-			this.tournamentConfig = tournamentConfig;
-			this.hasOngoingTournament = true;
-			console.log(`Received tournament config:`, this.tournamentConfig);
-		}
-
-		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
-			// Refresh the tournament
-			// Go to the tournament overlay?
-		}
-
-		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
-			// Show the tournament finished overlay
-			// Show the tournament winner
-			// Change ready button to finish tournament button
-			// Process results and deployments
 		}
 	}
 
@@ -395,6 +378,50 @@ export class Menu{
 		/* if (this.preconfiguration) {
 			this.manageOnlineInvitationGame();
 		} */
+
+		if (this.tournamentManager.getHasActiveTournament()) {
+			this.hasOngoingTournament = true;
+			this.tournamentConfig = this.tournamentManager.getTournamentConfig();
+		}
+
+		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
+			console.log('🎉 Ongoing tournament detected, initializing tournament overlay');
+
+			const startEvent: GameEvent = {
+				type: 'START_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(startEvent);
+
+			const rankedEvent: GameEvent = {
+				type: 'RANKED_CLICK',
+				target: this.onlineButton,
+			};
+	
+			this.eventQueue.push(rankedEvent);
+			
+			const tournamentEvent: GameEvent = {
+				type: 'TOURNAMENT_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(tournamentEvent)
+
+			const playEvent: GameEvent = {
+				type: 'PLAY_CLICK',
+				target: this.playButton,
+			};
+	
+			this.eventQueue.push(playEvent);
+		}
+
+		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
+			// Show the tournament finished overlay
+			// Show the tournament winner
+			// Change ready button to finish tournament button
+			// Process results and deployments
+		}
 	}
 
 	manageOnlineInvitationGame() {

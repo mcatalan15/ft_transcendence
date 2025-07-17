@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:14:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 19:40:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 21:21:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ export class MenuTournamentSystem implements System {
 		if (this.menu.readyButton.getIsClickable() === false) {
 			this.menu.readyButton.setClickable(true);
 		}
+
+		this.menu.tournamentManager.startTournament(this.menu.app.view.id, this.menu.tournamentConfig!);
 
 		this.menu.tournamentConfig!.nextMatch.matchOrder = 1;
 

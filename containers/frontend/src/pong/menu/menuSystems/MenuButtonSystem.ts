@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 20:22:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 21:59:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
 import { MenuImageManager } from "../menuManagers/MenuImageManager";
+import { TournamentManager } from "../../../utils/TournamentManager";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -173,7 +174,8 @@ export class MenuButtonSystem implements System {
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
-		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language, this.menu.tournamentConfig);
+		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
+		game.tournamentManager = this.menu.tournamentManager;
 		
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 		
@@ -437,7 +439,7 @@ export class MenuButtonSystem implements System {
 		}
 
 		if (this.menu.tournamentButton.getIsClicked()) {    
-			this.menu.config.mode = 'online';
+			this.menu.config.mode = 'local';
 			this.menu.config.variant = 'tournament';
 		}
 
@@ -780,6 +782,7 @@ export class MenuButtonSystem implements System {
 			this.menu.config.mode = 'online';
 			if (this.menu.tournamentButton.getIsClicked()) {
 				this.menu.config.variant = 'tournament';
+				this.menu.config.mode = 'local';
 			} else if (this.menu.duelButton.getIsClicked()) {
 				this.menu.config.variant = '1v1';
 			}
