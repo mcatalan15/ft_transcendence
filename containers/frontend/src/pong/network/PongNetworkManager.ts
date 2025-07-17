@@ -4,6 +4,7 @@ import { getWsUrl } from '../../config/api';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
 import { navigate } from '../../utils/router';
+import { Menu } from '../menu/Menu';
 
 export class PongNetworkManager {
 	private wsManager: WebSocketManager;
@@ -13,12 +14,14 @@ export class PongNetworkManager {
 	private hostName: string = '';
 	private guestName: string = '';
 	private gameId: string = '';
+	private menu: Menu | null = null;
 
 	private inputBuffer: Array<{input: number, timestamp: number}> = [];
 	private lastInputSent: number = 0;
 
-	constructor(game: PongGame | null, gameId: string) {
+	constructor(game: PongGame | null, gameId: string, menu?: Menu) {
 		this.game = game;
+		this.menu = menu;
 		this.gameId = gameId;
 		
 		this.wsManager = new WebSocketManager(
@@ -26,14 +29,12 @@ export class PongNetworkManager {
 			getWsUrl('/socket/game')
 		);
 
-		// Only set networkManager if game exists
 		if (this.game) {
 			this.game.networkManager = this.wsManager;
 		}
 		
 		this.setupHandlers();
 		
-		// Only connect immediately if we have a gameId (actual game)
 		if (gameId) {
 			this.connect(gameId);
 		}
@@ -149,6 +150,8 @@ export class PongNetworkManager {
 
 		this.wsManager.registerHandler('MATCHMAKING_SUCCESS', (message) => {
 
+			this.menu?.readyButton.setClicked(false);
+
 			this.gameId = message.gameId;
 			this.hostName = message.hostName;
 			this.guestName = message.guestName;
@@ -157,7 +160,11 @@ export class PongNetworkManager {
 			this.isHost = message.hostName === currentUsername;
 			this.playerNumber = this.isHost ? 1 : 2;
 			
+			/* this.menu?.readyButton.setClicked(true); */
 			this.transitionToGame();
+ /* 			this.menu?.eventQueue.push({ 
+				type: 'MATCH_FOUND',
+			}); */
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
@@ -174,8 +181,6 @@ export class PongNetworkManager {
 			mode: 'online'
 		});
 		
-		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-		await sleep(1000); 
 		navigate(`/pong?${params.toString()}`);
 	}
 
@@ -206,8 +211,6 @@ export class PongNetworkManager {
 		} catch (error) {
 		console.error('Failed to connect to game:', error);
 		
-		// Show connection error in UI
-		this.showConnectionStatus(`Connection failed: ${error.message}`);
 		const statusDiv = document.getElementById('connection-status');
 		if (statusDiv) {
 			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
@@ -394,7 +397,7 @@ export class PongNetworkManager {
 	public cancelMatchmaking() {
 		this.wsManager.send({
 			type: 'CANCEL_MATCHMAKING',
-			playerId: sessionStorage.getItem('username')
+			playerId: sessionStorage.getItem('userId')
 		});
 	}
 }

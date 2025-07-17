@@ -33,8 +33,6 @@ export function navigate(path: string) {
 
 async function renderRoute(path: string) {
 	if (!app) return;
-
-	console.log('🧹 Cleaning up games before route change...');
 	
 	app.innerHTML = '';
 

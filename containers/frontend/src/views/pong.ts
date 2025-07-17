@@ -6,7 +6,6 @@ import i18n from '../i18n';
 import { navigate } from '../utils/router';
 
 async function initDirectOnlineGame(container: HTMLElement, inviteId: string, currentPlayer: string) {
-	console.log('🎮 Initializing direct online game from invitation:', { inviteId, currentPlayer });
     
     try {
         const { PongGame } = await import('../pong/engine/Game');
@@ -27,13 +26,13 @@ async function initDirectOnlineGame(container: HTMLElement, inviteId: string, cu
         const hostName = urlParams.get('hostName') || 'Host';
         const guestName = urlParams.get('guestName') || 'Guest';
         
-        console.log('🎮 Player names from URL:', { hostName, guestName, currentPlayer });
+        console.log('Player names from URL:', { hostName, guestName, currentPlayer });
 
         // Determine if current player is host or guest
         const isHost = hostName === currentPlayer;
         const opponentName = isHost ? guestName : hostName;
 
-        console.log('🎮 Game roles determined:', { 
+        console.log('Game roles determined:', { 
             currentPlayer, 
             isHost, 
             opponentName,
@@ -100,24 +99,19 @@ async function initDirectOnlineGame(container: HTMLElement, inviteId: string, cu
                 serverUrl: 'ws://localhost:8080/socket/game',
             },
         };
-
-        console.log('🎮 Creating PongGame with online config:', config);
         
         const pongGame = new PongGame(app, config, language, isFirefox);
         await pongGame.init();
 		
-		console.log('🎮 Creating PongNetworkManager...');
 		const networkManager = new PongNetworkManager(pongGame, inviteId);
 		
 		(window as any).currentPongGame = pongGame;
 		(window as any).currentNetworkManager = networkManager;
-		
-		console.log('✅ Direct online Pong game initialized successfully');
 
 		gameManager.registerGame(container.id, pongGame, networkManager, app);
 		
 	} catch (error) {
-		console.error('❌ Failed to initialize direct online game:', error);
+		console.error('Failed to initialize direct online game:', error);
     
     	const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
 		
@@ -155,11 +149,11 @@ export function showPong(container: HTMLElement): void {
             container.appendChild(langSelector);
 
             if (isFromInvitation && inviteId) {
-                console.log('🎮 Direct online game via invitation detected, bypassing menu');
+                console.log('Direct online game via invitation detected, bypassing menu');
                 const currentPlayer = sessionStorage.getItem('username');
                 
                 if (!currentPlayer) {
-                    console.error('❌ No username in session storage');
+                    console.error('No username in session storage');
                     container.innerHTML += '<div class="error">Please login first</div>';
                     return;
                 }
@@ -168,7 +162,7 @@ export function showPong(container: HTMLElement): void {
                 return;
             }
 
-            console.log('🎮 Normal pong initialization via menu');
+            console.log('Normal pong initialization via menu');
             const preconfiguration: Preconfiguration = {
                 mode: 'local',
                 variant: '1v1',
@@ -180,7 +174,7 @@ export function showPong(container: HTMLElement): void {
             initGame(container, preconfiguration);
         })
         .catch(error => {
-            console.error('❌ Failed to load Pong:', error);
+            console.error('Failed to load Pong:', error);
             container.innerHTML += '<div class="error">Failed to load game</div>';
         });
 }
