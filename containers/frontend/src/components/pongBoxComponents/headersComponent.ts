@@ -5,6 +5,8 @@ type HeadersComponentOptions = {
   style?: Partial<CSSStyleDeclaration>;
 };
 
+const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
 export class HeadersComponent {
   private element: HTMLImageElement;
 
@@ -21,7 +23,7 @@ export class HeadersComponent {
       transform: 'translateX(-50%)',
       position: 'absolute',
       width: '100%',
-      maxWidth: '1800px',
+      maxWidth: !isFirefox ? '1818px' : '1800px',
       height: 'auto',
       zIndex: '30',
       pointerEvents: 'none',

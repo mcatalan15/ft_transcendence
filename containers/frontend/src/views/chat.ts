@@ -5,6 +5,8 @@ import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
 import { HeadersComponent } from '../components/pongBoxComponents/headersComponent';
 import { CONFIG } from '../config/settings.config';
+import { ResponsiveLayout } from '../components/layouts/ResponsiveLayout';
+import { RESPONSIVE_CONFIG } from '../config/responsive.config';
 
 let currentResizeHandler: (() => void) | null = null;
 
@@ -57,90 +59,58 @@ export async function showChat(container: HTMLElement): Promise<void> {
   await i18n.loadNamespaces('chat');
   await i18n.changeLanguage(i18n.language);
   
-  container.innerHTML = '';
-  container.className = 'grid grid-rows-[auto_1fr] h-screen overflow-hidden';
-
-  function addBlockedUserStyles() {
-    if (document.getElementById('blocked-user-styles')) return;
-    
-    const style = document.createElement('style');
-    style.id = 'blocked-user-styles';
-    style.textContent = `
-      .blocked-user-message {
-        opacity: 0.3;
-        filter: grayscale(80%);
-      }
-      .blocked-user-indicator::after {
-        content: " (blocked)";
-        color: #ef4444;
-        font-size: 0.75rem;
-        font-weight: normal;
-      }
-      #user-context-menu {
-        z-index: 9999 !important;
-      }
-      
-      /* Aplicar Roboto Mono a todos los mensajes del chat */
-      #chat-messages * {
-        font-family: "Roboto Mono", monospace !important;
-      }
-      
-      #chat-messages .message-content {
-        font-family: "Roboto Mono", monospace !important;
-        font-size: 14px;
-      }
-      
-      #chat-messages .message-sender {
-        font-family: "Roboto Mono", monospace !important;
-        font-weight: bold;
-      }
-      
-      #chat-messages .message-timestamp {
-        font-family: "Roboto Mono", monospace !important;
-        font-size: 12px;
-      }
-    `;
-    document.head.appendChild(style);
+  const layout = new ResponsiveLayout(container);
+  layout.initialize(() => showChat(container));
+  
+  const svgHeader = layout.addHeader('chat', i18n.language || 'en');
+  
+  const mainContainer = layout.getContentContainer();
+  if (mainContainer) {
+    mainContainer.style.paddingTop = '0';
+    mainContainer.style.marginTop = '0'; 
   }
   
-  addBlockedUserStyles();
-
-  const headerWrapper = new HeaderTest().getElement();
-  headerWrapper.classList.add('row-start-1', 'w-full', 'z-30');
-  container.appendChild(headerWrapper);
-
-  const langSelector = new LanguageSelector(() => showChat(container)).getElement();
-  container.appendChild(langSelector);
-
-  const contentWrapper = document.createElement('div');
-  contentWrapper.className = `
-    row-start-2 flex flex-col items-center justify-center w-full h-full
-    bg-neutral-900 relative
-  `.replace(/\s+/g, ' ').trim();
-
-  const headerContainer = document.createElement('div');
-  headerContainer.className = 'w-full relative';
+  const chatMainContent = createChatMainContent(container);
   
-  const svgHeader = createHeader();
-  headerContainer.appendChild(svgHeader);
-  contentWrapper.appendChild(headerContainer);
-  
-  const chatBoxContainer = document.createElement('div');
-  chatBoxContainer.className = 'w-full max-w-[1800px] mx-auto flex justify-center'; 
-  
-Object.assign(chatBoxContainer.style, {
-  marginTop: '45px',
-  position: 'relative'
-});
-
   const chatBox = document.createElement('div');
   chatBox.className = `
-    w-full
-    mx-auto bg-neutral-900 border-l-[8px] border-r-[8px] border-b-[8px] md:border-l-[16px] md:border-r-[16px] md:border-b-[16px] border-amber-50
+    w-full mx-auto
+    bg-neutral-900 
+    border-l-[3px] border-r-[3px] border-b-[3px]
+    sm:border-l-[6px] sm:border-r-[6px] sm:border-b-[6px]
+    md:border-l-[8px] md:border-r-[8px] md:border-b-[8px]
+    lg:border-l-[12px] lg:border-r-[12px] lg:border-b-[12px]
+    border-amber-50
     flex flex-col overflow-hidden shadow-xl
-    p-6 h-[665px]
   `.replace(/\s+/g, ' ').trim();
+  
+  chatBox.style.marginTop = '10px';
+  chatBox.style.position = 'relative';
+  chatBox.style.zIndex = '10';
+  
+  chatBox.appendChild(chatMainContent);
+  
+  const contentBoxWrapper = document.createElement('div');
+  contentBoxWrapper.className = 'relative flex flex-col items-center w-full';
+  contentBoxWrapper.style.paddingTop = '30px';
+  
+  layout.applyConsistentBoxDimensions(chatBox);
+  
+  contentBoxWrapper.appendChild(chatBox);
+  mainContainer.appendChild(contentBoxWrapper);
+  
 
+  if (svgHeader) {
+    const headerTopOffset = -27; 
+    svgHeader.style.marginTop = `${headerTopOffset}px`;
+    svgHeader.style.zIndex = '40';
+  }
+}
+
+function createChatMainContent(container: HTMLElement) {
+  const chatMainContent = document.createElement('div');
+  chatMainContent.className = 'w-full h-full flex flex-col p-4';
+  
   // Channel tabs/filters
   const channelTabs = document.createElement('div');
   channelTabs.className = 'flex gap-2 mb-4 flex-wrap';
@@ -153,7 +123,6 @@ Object.assign(chatBoxContainer.style, {
     { type: MessageType.SERVER, label: 'server', color: 'amber' },
   ];
 
-  // Chat messages area
   const chatContainer = document.createElement('div');
   chatContainer.className = `
     flex-1 bg-neutral-800 border border-neutral-600
@@ -162,7 +131,6 @@ Object.assign(chatBoxContainer.style, {
   chatContainer.id = 'chat-messages';
   chatContainer.style.fontFamily = '"Roboto Mono", monospace';
 
-  // Input area
   const inputArea = document.createElement('div');
   inputArea.className = 'flex gap-3 items-center';
 
@@ -178,7 +146,6 @@ Object.assign(chatBoxContainer.style, {
     textTransform: 'uppercase'
   });
 
-  // Message input
   const messageInput = document.createElement('input') as HTMLInputElement;
   messageInput.type = 'text';
   messageInput.className = `
@@ -247,40 +214,18 @@ Object.assign(chatBoxContainer.style, {
   inputArea.appendChild(sendButton);
   inputArea.appendChild(backButton);
 
-  chatBox.appendChild(channelTabs);
-  chatBox.appendChild(chatContainer);
-  chatBox.appendChild(inputArea);
-
-  chatBoxContainer.appendChild(chatBox);
-  contentWrapper.appendChild(chatBoxContainer);
-  container.appendChild(contentWrapper);
+  chatMainContent.appendChild(channelTabs);
+  chatMainContent.appendChild(chatContainer);
+  chatMainContent.appendChild(inputArea);
 
   updateTranslations();
-
   chatManager.initialize(chatContainer, messageInput, typeSelector);
 
-  function handleResize() {
-    updateHeaderMargin();
-  }
-
-  function updateHeaderMargin() {
-    const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
-    const multiplier = isMobile ? CONFIG.MULTIPLIERS.mobile : CONFIG.MULTIPLIERS.desktop;
-    const border = isMobile ? CONFIG.BORDER_VALUES.mobile : CONFIG.BORDER_VALUES.desktop;
-    
-    const headerOffset = isMobile ? -35 : -70;
-    svgHeader.style.marginTop = `-${border * multiplier + headerOffset}px`;
-  }
-
-  updateHeaderMargin();
-
-  currentResizeHandler = handleResize;
-  window.addEventListener('resize', handleResize);
-
   window.addEventListener('beforeunload', () => {
-    cleanup();
     chatManager.disconnect();
   });
+
+  return chatMainContent;
 }
 
 function createHeader(): HTMLElement {
@@ -290,7 +235,7 @@ function createHeader(): HTMLElement {
     lang,
     style: {
       position: 'absolute',
-      top: '-20px',
+      top: '-27px',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
