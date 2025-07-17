@@ -28,8 +28,14 @@ module.exports = async function (fastify, options) {
   fastify.post('/api/auth/logout', { schema: logoutSchema }, logoutHandler);
   fastify.post('/api/auth/google', { schema: googleSchema }, googleHandler);
   fastify.post('/api/auth/setup', { schema: setupTwoFaSchema }, setupTwoFa);
+
+  console.log('[Routes] About to register /api/auth/verify route...');
   fastify.post('/api/auth/verify', { schema: verifyTwoFaSchema }, verifyTwoFa);
+  console.log('[Routes] Successfully registered /api/auth/verify route');
+
   fastify.get('/api/auth/status/:userId', { schema: get2FAStatusSchema }, get2FAStatusHandler);
   fastify.post('/api/auth/refresh', { schema: refreshTokenSchema }, refreshTokenHandler);
+
+    console.log('[Routes] All auth routes registered');
 
   };

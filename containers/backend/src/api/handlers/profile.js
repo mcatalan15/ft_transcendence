@@ -16,7 +16,8 @@ const bcrypt = require('bcrypt');
 
 async function getUserProfile(request, reply) {
     try {
-        const sessionUser = request.session.get('user');
+		const sessionUser = request.user;
+        // const sessionUser = request.session.get('user');
         const requestedUsername = request.params.username;
 
         let targetUser;

@@ -338,51 +338,118 @@ const setupTwoFaSchema = {
 };
 
 const verifyTwoFaSchema = {
-	description: 'Verifies the 2FA token entered by the user.',
-	tags: ['authentication'],
-	body: {
-		type: 'object',
-		properties: {
-		  userId: { type: 'number', description: 'The ID of the registered user.' },
-		  token: { type: 'string', description: 'The token of the user'}
-		},
-		required: ['userId', 'token']
-	},
-	response: {
-		200: {
-			description: 'Code successfully verified',
-			type: 'object',
-			properties: {
-				message: { type: 'string' },
-				verified: { type: 'boolean' }
-			},
-			example: {
-				message: '2FA token verified successfully!',
-				verified: true
-			}
-		},
-		400: {
-			description: 'Bad request - invalid user data provided',
-			type: 'object',
-			properties: {
-				message: { type: 'string' }
-			},
-			example: {
-				message: 'Invalid 2FA token.'
-			}
-		},
-		500: {
-			description: 'Server error',
-			type: 'object',
-			properties: {
-				message: { type: 'string' }
-			},
-			example: {
-				message: 'Failed to verify 2FA token.'
-			}
-		}
-	}
+    description: 'Verifies the 2FA token entered by the user.',
+    tags: ['authentication'],
+    body: {
+        type: 'object',
+        properties: {
+          userId: { type: 'number', description: 'The ID of the registered user.' },
+          token: { type: 'string', description: 'The token of the user'}
+        },
+        required: ['userId', 'token']
+    },
+    response: {
+        200: {
+            description: 'Code successfully verified',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                verified: { type: 'boolean' },
+                token: { type: 'string', description: 'JWT access token' },
+                userId: { type: 'number', description: 'ID of the user' },
+                username: { type: 'string', description: 'Username of the user' },
+                email: { type: 'string', description: 'Email of the user' },
+                twoFAEnabled: { type: 'boolean', description: '2FA enabled status' }
+            },
+            example: {
+                success: true,
+                message: '2FA token verified successfully!',
+                verified: true,
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                userId: 3,
+                username: 'mcatalan',
+                email: 'mcatalan@gmail.com',
+                twoFAEnabled: true
+            }
+        },
+        400: {
+            description: 'Bad request - invalid user data provided',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                verified: { type: 'boolean' }
+            },
+            example: {
+                success: false,
+                message: 'Invalid 2FA token.',
+                verified: false
+            }
+        },
+        500: {
+            description: 'Server error',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                verified: { type: 'boolean' }
+            },
+            example: {
+                success: false,
+                message: 'Failed to verify 2FA token.',
+                verified: false
+            }
+        }
+    }
 };
+
+// const verifyTwoFaSchema = {
+// 	description: 'Verifies the 2FA token entered by the user.',
+// 	tags: ['authentication'],
+// 	body: {
+// 		type: 'object',
+// 		properties: {
+// 		  userId: { type: 'number', description: 'The ID of the registered user.' },
+// 		  token: { type: 'string', description: 'The token of the user'}
+// 		},
+// 		required: ['userId', 'token']
+// 	},
+// 	response: {
+// 		200: {
+// 			description: 'Code successfully verified',
+// 			type: 'object',
+// 			properties: {
+// 				message: { type: 'string' },
+// 				verified: { type: 'boolean' }
+// 			},
+// 			example: {
+// 				message: '2FA token verified successfully!',
+// 				verified: true
+// 			}
+// 		},
+// 		400: {
+// 			description: 'Bad request - invalid user data provided',
+// 			type: 'object',
+// 			properties: {
+// 				message: { type: 'string' }
+// 			},
+// 			example: {
+// 				message: 'Invalid 2FA token.'
+// 			}
+// 		},
+// 		500: {
+// 			description: 'Server error',
+// 			type: 'object',
+// 			properties: {
+// 				message: { type: 'string' }
+// 			},
+// 			example: {
+// 				message: 'Failed to verify 2FA token.'
+// 			}
+// 		}
+// 	}
+// };
 
 const refreshTokenSchema = {
 	description: 'Renews the user\'s authentication token using a valid refresh token extracted from the cookies.',

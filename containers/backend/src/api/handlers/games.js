@@ -14,104 +14,204 @@ const { saveGameToDatabase,
  } = require('../db/database');
 
 async function getUserDataHandler(request, reply) {
-    try {
-        const { userId } = request.body;
-        
-        console.log('Received getUserData request for userId:', userId);
-        
-        if (!userId) {
-            return reply.status(400).send({
-                success: false,
-                message: 'userId is required'
-            });
-        }
-
-        try {
-            const user = await getUserById(userId);
-            
-            if (!user) {
-                console.log(`User ${userId} not found in users table`);
-                return reply.status(404).send({
-                    success: false,
-                    message: 'User not found'
-                });
-            }
-
-            console.log('Found user:', user);
-
-            const userStats = await getUserStats(userId);
-            
-            let avatarUrl = 'avatarUnknownSquare';
-
-            if (user.avatar_filename) {
-                const timestamp = Date.now();
-                if (user.avatar_filename.startsWith('/')) {
-                    avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
-                } else {
-                    avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
-                }
-            }
-            
-            if (!userStats) {
-                console.log(`No stats found for user ${userId}, returning default stats`);
-                const userData = {
-                    id: user.id.toString(),
-                    name: user.username || user.name || 'PLAYER',
-                    avatar: avatarUrl, 
-                    goalsScored: 0,
-                    goalsConceded: 0,
-                    tournaments: 0,
-                    wins: 0,
-                    losses: 0,
-                    draws: 0,
-                    rank: 999
-                };
-
-                console.log('Returning user with default stats:', userData);
-                
-                return reply.status(200).send({
-                    success: true,
-                    userData: userData
-                });
-            }
-
-            const userData = {
-                id: user.id.toString(),
-                name: user.username || user.name || 'PLAYER',
-                avatar: avatarUrl,
-                goalsScored: userStats.total_goals_scored || 0,
-                goalsConceded: userStats.total_goals_conceded || 0,
-                tournaments: userStats.tournaments_won || 0,
-                wins: userStats.wins || 0,
-                losses: userStats.losses || 0,
-                draws: userStats.draws || 0,
-                rank: calculateRank(userStats) || 999
-            };
-
-            console.log('Returning real user data:', userData);
-            
-            reply.status(200).send({
-                success: true,
-                userData: userData
-            });
-
-        } catch (dbError) {
-            console.error('Database error:', dbError);
-            reply.status(500).send({
-                success: false,
-                message: 'Database error occurred',
-                error: dbError.message
-            });
-        }
-    } catch (error) {
-        console.error('Error in getUserDataHandler:', error);
-        reply.status(500).send({
-            success: false,
-            message: 'Failed to fetch user data',
-            error: error.message
-        });
+  try {
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('[getUserDataHandler] No token provided');
+      return reply.status(401).send({ success: false, message: 'No token provided' });
     }
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { userId } = request.body;
+    console.log('[getUserDataHandler] Received request for userId:', userId);
+
+    if (!userId) {
+      return reply.status(400).send({
+        success: false,
+        message: 'userId is required'
+      });
+    }
+
+    if (decoded.id !== parseInt(userId) && !decoded.isAdmin) {
+      console.log('[getUserDataHandler] Unauthorized access attempt', { userId, requester: decoded.id });
+      return reply.status(403).send({ success: false, message: 'Unauthorized: Cannot access another user\'s data' });
+    }
+
+    const user = await getUserById(userId);
+    if (!user) {
+      console.log(`[getUserDataHandler] User ${userId} not found in users table`);
+      return reply.status(404).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    console.log('[getUserDataHandler] Found user:', user);
+
+    const userStats = await getUserStats(userId);
+    let avatarUrl = 'avatarUnknownSquare';
+
+    if (user.avatar_filename) {
+      const timestamp = Date.now();
+      if (user.avatar_filename.startsWith('/')) {
+        avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
+      } else {
+        avatarUrl = `/api/profile/avatar/${userId}?t=${timestamp}`;
+      }
+    }
+
+    if (!userStats) {
+      console.log(`[getUserDataHandler] No stats found for user ${userId}, returning default stats`);
+      const userData = {
+        id: user.id.toString(),
+        name: user.username || user.name || 'PLAYER',
+        avatar: avatarUrl,
+        goalsScored: 0,
+        goalsConceded: 0,
+        tournaments: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        rank: 999
+      };
+      console.log('[getUserDataHandler] Returning user with default stats:', userData);
+      return reply.status(200).send({
+        success: true,
+        userData
+      });
+    }
+
+    const userData = {
+      id: user.id.toString(),
+      name: user.username || user.name || 'PLAYER',
+      avatar: avatarUrl,
+      goalsScored: userStats.total_goals_scored || 0,
+      goalsConceded: userStats.total_goals_conceded || 0,
+      tournaments: userStats.tournaments_won || 0,
+      wins: userStats.wins || 0,
+      losses: userStats.losses || 0,
+      draws: userStats.draws || 0,
+      rank: calculateRank(userStats) || 999
+    };
+
+    console.log('[getUserDataHandler] Returning real user data:', userData);
+    return reply.status(200).send({
+      success: true,
+      userData
+    });
+  } catch (error) {
+    console.error('[getUserDataHandler] Error:', {
+      message: error.message,
+      stack: error.stack,
+      userId: request.body?.userId
+    });
+    return reply.status(500).send({
+      success: false,
+      message: error.message || 'Failed to fetch user data'
+    });
+  }
 }
+
+// async function getUserDataHandler(request, reply) {
+//     try {
+//         const { userId } = request.body;
+        
+//         console.log('Received getUserData request for userId:', userId);
+        
+//         if (!userId) {
+//             return reply.status(400).send({
+//                 success: false,
+//                 message: 'userId is required'
+//             });
+//         }
+
+//         try {
+//             const user = await getUserById(userId);
+            
+//             if (!user) {
+//                 console.log(`User ${userId} not found in users table`);
+//                 return reply.status(404).send({
+//                     success: false,
+//                     message: 'User not found'
+//                 });
+//             }
+
+//             console.log('Found user:', user);
+
+//             const userStats = await getUserStats(userId);
+            
+//             let avatarUrl = 'avatarUnknownSquare';
+
+//             if (user.avatar_filename) {
+//                 const timestamp = Date.now();
+//                 if (user.avatar_filename.startsWith('/')) {
+//                     avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
+//                 } else {
+//                     avatarUrl = `/api/profile/avatar/${userId}?t=${Date.now()}`;
+//                 }
+//             }
+            
+//             if (!userStats) {
+//                 console.log(`No stats found for user ${userId}, returning default stats`);
+//                 const userData = {
+//                     id: user.id.toString(),
+//                     name: user.username || user.name || 'PLAYER',
+//                     avatar: avatarUrl, 
+//                     goalsScored: 0,
+//                     goalsConceded: 0,
+//                     tournaments: 0,
+//                     wins: 0,
+//                     losses: 0,
+//                     draws: 0,
+//                     rank: 999
+//                 };
+
+//                 console.log('Returning user with default stats:', userData);
+                
+//                 return reply.status(200).send({
+//                     success: true,
+//                     userData: userData
+//                 });
+//             }
+
+//             const userData = {
+//                 id: user.id.toString(),
+//                 name: user.username || user.name || 'PLAYER',
+//                 avatar: avatarUrl,
+//                 goalsScored: userStats.total_goals_scored || 0,
+//                 goalsConceded: userStats.total_goals_conceded || 0,
+//                 tournaments: userStats.tournaments_won || 0,
+//                 wins: userStats.wins || 0,
+//                 losses: userStats.losses || 0,
+//                 draws: userStats.draws || 0,
+//                 rank: calculateRank(userStats) || 999
+//             };
+
+//             console.log('Returning real user data:', userData);
+            
+//             reply.status(200).send({
+//                 success: true,
+//                 userData: userData
+//             });
+
+//         } catch (dbError) {
+//             console.error('Database error:', dbError);
+//             reply.status(500).send({
+//                 success: false,
+//                 message: 'Database error occurred',
+//                 error: dbError.message
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error in getUserDataHandler:', error);
+//         reply.status(500).send({
+//             success: false,
+//             message: 'Failed to fetch user data',
+//             error: error.message
+//         });
+//     }
+// }
 
 function calculateRank(stats) {
     if (!stats) {

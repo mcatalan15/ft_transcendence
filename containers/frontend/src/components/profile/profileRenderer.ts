@@ -76,12 +76,17 @@ export class ProfileRenderer {
 
   private async createPongBox(): Promise<HTMLElement> {
     try {
+		console.log('Creating PongBox for user:', this.username);
+		console.log('Render token: ', sessionStorage.getItem('token'));
+		const token = sessionStorage.getItem('token');
       const response = await fetch(this.username ? 
         getApiUrl(`/profile/${this.username}`) : 
         getApiUrl('/profile'), {
+
         credentials: 'include',
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+		  'Authorization': `Bearer ${token}`,
         }
       });
 

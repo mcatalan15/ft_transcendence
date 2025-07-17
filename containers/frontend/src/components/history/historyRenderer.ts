@@ -63,7 +63,7 @@ export class HistoryRenderer {
   private async createPongBox(): Promise<HTMLElement> {
     const currentUser = sessionStorage.getItem('username') || '';
 	const username = this.username === currentUser ? currentUser : this.username;
-
+	console.log(`Creating PongBox for user: ${username}`);
 	const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
 		credentials: 'include',
 		headers: {

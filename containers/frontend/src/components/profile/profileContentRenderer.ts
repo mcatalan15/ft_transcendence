@@ -29,6 +29,7 @@ export class ProfileContentRenderer {
     mainContent.className = 'w-full h-full flex flex-row';
 
     try {
+	  console.log()
       const data = await this.fetchProfileData();
       const statsColumn = this.createStatsColumn(data);
       const buttonsColumn = this.createButtonsColumn(data);
@@ -43,15 +44,22 @@ export class ProfileContentRenderer {
     return mainContent;
   }
 
+
   private async fetchProfileData(): Promise<ProfileData> {
+	  console.log('Render token: ', sessionStorage.getItem('token'));
     const apiEndpoint = this.username ? 
       getApiUrl(`/profile/${this.username}`) : 
       getApiUrl('/profile');
-
-    const response = await fetch(apiEndpoint, {
+	
+	const token = sessionStorage.getItem('token');
+    
+	//log of the token
+	console.log('Token:', token);
+	const response = await fetch(apiEndpoint, {
       credentials: 'include',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+		'Authorization': `Bearer ${token}`,
       }
     });
 

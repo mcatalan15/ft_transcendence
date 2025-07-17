@@ -21,7 +21,7 @@ export function startRouter(container: HTMLElement) {
 }
 
 let lastNavigation = 0;
-const NAVIGATION_COOLDOWN = 3; // ms
+const NAVIGATION_COOLDOWN = 0; // ms
 
 export function navigate(path: string) {
     const now = Date.now();
@@ -87,8 +87,11 @@ async function renderRoute(path: string) {
 
 		case '/logout':
 			if (await isUserAuthenticated()) {
+				console.log('Logging out user...', sessionStorage.getItem('username'));
+				await new Promise(resolve => setTimeout(resolve, 5));
 				logUserOut();
 			}
+
 			navigate('/');
 			return;
 

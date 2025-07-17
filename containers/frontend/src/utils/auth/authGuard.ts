@@ -1,5 +1,5 @@
-import * as jwt from 'jwt-decode';
-// import jwtDecode from 'jwt-decode';
+// import * as jwt from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { getApiUrl } from '../../config/api';
 
 // export async function isUserAuthenticated(): Promise<boolean> {
@@ -47,34 +47,99 @@ import { getApiUrl } from '../../config/api';
 export async function isUserAuthenticated(): Promise<boolean> {
   const token = sessionStorage.getItem('token');
 
+  console.log('[authGuard] Retrieved token from sessionStorage:', token);
+  console.log('[authGuard] Token type:', typeof token);
+  console.log('[authGuard] Token length:', token?.length);
+
   if (!token) {
     console.warn('No access token found in sessionStorage');
     return false;
   }
 
+  const tokenParts = token.split('.');
+  console.log('[authGuard] Token parts count:', tokenParts.length);
+  console.log('[authGuard] Token parts:', tokenParts.map(part => part.substring(0, 20) + '...'));
+
   // Validate token format
   if (token.split('.').length !== 3) {
+    console.error('[authGuard] Invalid token format - expected 3 parts, got:', tokenParts.length);
+    console.error('[authGuard] Full token:', token);
     console.error('Invalid token format:', token);
     sessionStorage.removeItem('token');
     return false;
   }
 
   try {
-    const decodedToken: any = jwt(token);
+    // Change this line:
+    const decodedToken: any = jwtDecode(token);
+    console.log('[authGuard] Decoded token:', decodedToken);
     const currentTime = Date.now() / 1000;
+    console.log('[authGuard] Current time:', currentTime);
+    console.log('[authGuard] Token exp:', decodedToken.exp);
 
     if (!decodedToken.exp || decodedToken.exp < currentTime) {
       console.warn('Token expired:', decodedToken.exp, 'Current time:', currentTime);
       return await tryRefreshToken();
     }
 
+    console.log('[authGuard] Token is valid');
     return true;
   } catch (error) {
+    console.error('[authGuard] Error decoding token:', error);
+    console.error('[authGuard] Problematic token:', token);
     console.error('Error decoding token:', error);
     sessionStorage.removeItem('token');
     return false;
   }
 }
+
+// export async function isUserAuthenticated(): Promise<boolean> {
+//   const token = sessionStorage.getItem('token');
+
+//   console.log('[authGuard] Retrieved token from sessionStorage:', token);
+//   console.log('[authGuard] Token type:', typeof token);
+//   console.log('[authGuard] Token length:', token?.length);
+
+//   if (!token) {
+//     console.warn('No access token found in sessionStorage');
+//     return false;
+//   }
+
+//   const tokenParts = token.split('.');
+//   console.log('[authGuard] Token parts count:', tokenParts.length);
+//   console.log('[authGuard] Token parts:', tokenParts.map(part => part.substring(0, 20) + '...'));
+
+//   // Validate token format
+//   if (token.split('.').length !== 3) {
+// 	console.error('[authGuard] Invalid token format - expected 3 parts, got:', tokenParts.length);
+//     console.error('[authGuard] Full token:', token);
+//     console.error('Invalid token format:', token);
+//     sessionStorage.removeItem('token');
+//     return false;
+//   }
+
+//   try {
+//     const decodedToken: any = jwt(token);
+// 	console.log('[authGuard] Decoded token:', decodedToken);
+//     const currentTime = Date.now() / 1000;
+// 	console.log('[authGuard] Current time:', currentTime);
+//     console.log('[authGuard] Token exp:', decodedToken.exp);
+
+//     if (!decodedToken.exp || decodedToken.exp < currentTime) {
+//       console.warn('Token expired:', decodedToken.exp, 'Current time:', currentTime);
+//       return await tryRefreshToken();
+//     }
+
+// 	console.log('[authGuard] Token is valid');
+//     return true;
+//   } catch (error) {
+// 	console.error('[authGuard] Error decoding token:', error);
+//     console.error('[authGuard] Problematic token:', token);
+//     console.error('Error decoding token:', error);
+//     sessionStorage.removeItem('token');
+//     return false;
+//   }
+// }
 
 async function tryRefreshToken(): Promise<boolean> {
   try {

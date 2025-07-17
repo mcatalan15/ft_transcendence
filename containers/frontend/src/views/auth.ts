@@ -33,7 +33,8 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	const authDiv = document.createElement('div');
 	authDiv.className = 'h-screen flex items-center justify-center bg-neutral-900';
 
-	const actualUserId = sessionStorage.getItem('userId');
+	const actualUserId = Number(sessionStorage.getItem('userId'));
+	// const actualUserId = sessionStorage.getItem('userId');
 	const actualUsername = sessionStorage.getItem('username');
 	const actualEmail = sessionStorage.getItem('email');
 	let actual2FA = sessionStorage.getItem('twoFAEnabled');
@@ -122,7 +123,10 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 
 		verifyBtn.addEventListener('click', async () => {
 			const token = tokenInput.value.trim();
+			console.log('[auth.ts] Starting 2FA verification with token:', token);
+
 			if (!/^\d{6}$/.test(token)) {
+				console.log('[auth.ts] Invalid token format');
 				verificationStatus.textContent = i18n.t('error.enterValidCode', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-red-500';
 				return;
@@ -132,27 +136,84 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				verifyBtn.disabled = true;
 				verificationStatus.textContent = i18n.t('verifying', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-gray-500';
+				
+				console.log('[auth.ts] Making request to /auth/verify with:', { userId: actualUserId, token });
+        		console.log('[auth.ts] actualUserId type:', typeof actualUserId);
+       			console.log('[auth.ts] actualUserId value:', actualUserId);
+
+				console.log('[auth.ts] Making request to /auth/verify with:', { userId: actualUserId, token });
+
+
 				const response = await fetch(getApiUrl('/auth/verify'), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),
 				});
+				
+				
+
+				if (!response.ok) {
+					console.error('[auth.ts] Response not ok:', response.status, response.statusText);
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+
+				console.log('[auth.ts] Response status:', response.status);
+    			console.log('[auth.ts] Response ok:', response.ok);
 
 				const data = await response.json();
+
+				console.log('[auth.ts] Raw response data:', data);
+      			console.log('[auth.ts] data.token:', data.token);
+        		console.log('[auth.ts] data.token type:', typeof data.token);
+        		console.log('[auth.ts] data.verified:', data.verified);
+        		console.log('[auth.ts] JSON.stringify(data):', JSON.stringify(data));
+
+
+
 				if (response.ok && data.verified) {
+            		console.log('[auth.ts] Verification successful - processing token');
 					verificationStatus.textContent = i18n.t('verificationSuccess', { ns: 'auth' });
 					verificationStatus.className = 'text-sm text-center text-green-500';
 					if (data.token) {
+						console.log('[auth.ts] Token found in response:', data.token);
 						sessionStorage.setItem('token', data.token);
+						console.log('[auth.ts] Stored token in sessionStorage:', sessionStorage.getItem('token'));
+					} else {
+						console.error('[auth.ts] No token in response! data.token is:', data.token);
+						console.error('[auth.ts] Full response data:', data);
 					}
+					// Also store other user data
+					if (data.userId) {
+						sessionStorage.setItem('userId', String(data.userId));
+						console.log('[auth.ts] Stored userId:', data.userId);
+					}
+					if (data.username) {
+						sessionStorage.setItem('username', data.username);
+						console.log('[auth.ts] Stored username:', data.username);
+					}
+					if (data.email) {
+						sessionStorage.setItem('email', data.email);
+						console.log('[auth.ts] Stored email:', data.email);
+					}
+					if (data.twoFAEnabled) {
+						sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled));
+						console.log('[auth.ts] Stored twoFAEnabled:', data.twoFAEnabled);
+					}
+					console.log('[auth.ts] refreshToken:', data.refreshToken);
+					console.log('[auth.ts] About to navigate to /home');
 					setTimeout(() => {
 						navigate('/home');
 						return;
 					}, 1000);
 				} else {
+					console.error('[auth.ts] Verification failed:', data.message);
+
 					throw new Error(data.message || i18n.t('error.verificationFailed', { ns: 'auth' }));
 				}
 			} catch (error) {
+				
+				console.error('[auth.ts] Error during verification:', error);
+
 				verificationStatus.textContent = i18n.t('error.unknownError', { ns: 'auth' });
 				verificationStatus.className = 'text-sm text-center text-red-500';
 				verifyBtn.disabled = false;
@@ -165,6 +226,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 			}
 		});
 	} else {
+		
 		// 2FA is disabled (0) - show setup
 		console.log('Showing signup success and initiating 2FA setup');
 		const message = document.createElement('p');
@@ -270,27 +332,62 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 			}
 
 			try {
+				console.log('[auth.ts] This is actualUserId:', actualUserId, ' type:', typeof actualUserId);
 				const response = await fetch(getApiUrl('/auth/verify'), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),
 				});
 
-				const data: TwoFaVerifyResponse & { token?: string, twoFAEnabled?: number } = await response.json();
-				console.log('Frontend (Setup) received from /api/auth/verify:', data);
+
+				if (!response.ok) {
+					console.error('[auth.ts] Response not ok:', response.status, response.statusText);
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+
+				console.log('[auth.ts] Response status:', response.status);
+    			console.log('[auth.ts] Response ok:', response.ok);
+
+				const data  = await response.json();
+
+				console.log('[auth.ts] Raw response data:', data);
+      			console.log('[auth.ts] data.token:', data.token);
+        		console.log('[auth.ts] data.token type:', typeof data.token);
+        		console.log('[auth.ts] data.verified:', data.verified);
+        		console.log('[auth.ts] JSON.stringify(data):', JSON.stringify(data));
 
 				if (response.ok && data.verified) {
 					verificationStatus.textContent = i18n.t('verificationSuccessProceed', { ns: 'auth' });
 					verificationStatus.style.color = 'green';
 					if (data.token) {
+						console.log('[auth.ts] Token found in response:', data.token);
 						sessionStorage.setItem('token', data.token);
-						console.log('Updated authToken in sessionStorage (Setup):', data.token ? 'Present' : 'Missing');
+						console.log('[auth.ts] Stored token in sessionStorage:', sessionStorage.getItem('token'));
+					} else {
+						console.error('[auth.ts] No token in response! data.token is:', data.token);
+						console.error('[auth.ts] Full response data:', data);
 					}
-					// Set to "0" (enabled) after successful verification
-					sessionStorage.setItem('twoFAEnabled', '1');
-					console.log('Updated twoFAEnabled in sessionStorage to "1" (enabled) after setup.');
-					tokenInput.disabled = true;
-					window.location.href = '/home';
+					if (data.userId) {
+						sessionStorage.setItem('userId', String(data.userId));
+						console.log('[auth.ts] Stored userId:', data.userId);
+					}
+					if (data.username) {
+						sessionStorage.setItem('username', data.username);
+						console.log('[auth.ts] Stored username:', data.username);
+					}
+					if (data.email) {
+						sessionStorage.setItem('email', data.email);
+						console.log('[auth.ts] Stored email:', data.email);
+					}
+					if (data.twoFAEnabled) {
+						sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled));
+						console.log('[auth.ts] Stored twoFAEnabled:', data.twoFAEnabled);
+					}
+					console.log('[auth.ts] refreshToken:', data.refreshToken);
+					console.log('[auth.ts] About to navigate to /home');
+					setTimeout(() => {
+						navigate('/home');
+					}, 1000);
 				} else {
 					verificationStatus.textContent = i18n.t(data.message || 'error.verificationFailed', { ns: 'auth' });
 					verificationStatus.style.color = 'red';
