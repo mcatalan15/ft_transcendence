@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:07:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 21:59:20 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -962,7 +962,9 @@ export class PongGame {
 			
 			if (this.networkManager) {
 				console.log('Disconnecting network manager...');
+				this.networkManager.cancelMatchmaking();
 				this.networkManager.disconnect();
+				this.networkManager.close();
 			}
 
 			if (stopTicker && this.app?.ticker?.started) {

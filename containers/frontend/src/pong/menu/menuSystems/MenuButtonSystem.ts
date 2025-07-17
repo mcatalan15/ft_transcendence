@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 17:16:58 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/17 21:16:01 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
-import { MenuImageManager } from "../menuManagers/MenuImageManager";
-import { TournamentManager } from "../../../utils/TournamentManager";
+import { navigate } from "../../../utils/router";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
 	private overlayStack: string[] = [];
 	private glossaryOpenedBy: 'main' | 'overlay' | null = null;
+	private networkManager: PongNetworkManager | null = null;
 
 	constructor(menu: Menu) {
 		this.menu = menu;
@@ -83,10 +83,17 @@ export class MenuButtonSystem implements System {
 			} else if (event.type.endsWith('BACK')) {
 				this.resetLayer(event);
 				if (event.type === 'PLAY_BACK') {
-					await this.handleCancelMatchmaking();
+					this.networkManager?.cancelMatchmaking();
+					this.menu.readyButton.resetButton();
 				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
+			} else if (event.type === 'MATCH_FOUND') {
+				this.handleMatchFound();
+			} else if (event.type === '1V1_READY_CLICK') {
+				this.handle1v1ReadyClick();
+			} else if (event.type === 'BOTH_READY') {
+				this.handleBothReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
@@ -155,26 +162,24 @@ export class MenuButtonSystem implements System {
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				const networkManager = new PongNetworkManager(null, '');
-				await networkManager.startMatchmaking();
+				// Create a PongNetworkManager for matchmaking (no game instance yet)
+				this.networkManager = new PongNetworkManager(null, '', this.menu);
+				await this.networkManager.startMatchmaking();
 				this.menu.readyButton.setClickable(false);
 				this.menu.readyButton.setClicked(true);
 
 				// Fake loading animation
 				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+				this.menu.readyButton.updateText('');
 				while (this.menu.readyButton.getIsClicked()) {
-					this.menu.readyButton.updateText('∙');
-					await sleep(500);
-					this.menu.readyButton.updateText('∙∙');
-					await sleep(500);
-					this.menu.readyButton.updateText('∙∙∙');
-					await sleep(500);
-					this.menu.readyButton.updateText('∙∙∙∙');
-					await sleep(500);
-					this.menu.readyButton.updateText('∙∙∙∙∙');
+					if (this.menu.readyButton.getText().length < 3) {
+						this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+					} else if (this.menu.readyButton.getText().length >= 3) {
+						this.menu.readyButton.updateText('');
+					}
 					await sleep(500);
 				}
-				this.menu.readyButton.updateText('READY');
+				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -185,39 +190,24 @@ export class MenuButtonSystem implements System {
 		}
 	}
 
-	private async handleCancelMatchmaking() {
-		if (this.networkManager) {
-			try {
-				await this.networkManager.cancelMatchmaking();
-				this.networkManager = null;
-			} catch (error) {
-				console.error('Error cancelling matchmaking:', error);
-			}
-		}
-		this.menu.readyButton.resetButton();
-		this.menu.readyButton.updateText('READY');
-		this.menu.readyButton.setClickable(true);
-		this.menu.readyButton.setClicked(false);
-	}
-
 	private handle1v1ReadyClick() {
-		// TODO
+		
 	}
 
-	private handleBothReadyClick() { }
+	private handleBothReadyClick() {}
 
 	private startLocalGame(): void {
 		console.log('Starting local game...');
-
+		
 		this.menu.cleanup();
-
+		
 		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
-
+		
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 
 		game.init();
@@ -579,29 +569,18 @@ export class MenuButtonSystem implements System {
 		this.menu.duelButton.setHidden(false);
 		this.menu.tournamentButton.setHidden(true);
 
-		this.menu.startXButton.setHidden(true);
+		this.menu.startXButton.setHidden(true); 
 	}
 
 	handleMatchFound() {
-		
+		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
 		/* if (this.menu.readyButton.getIsClicked()) {
 			navigate(`/pong?${params.toString()}`);
 		} */
-
-    this.menu.readyButton.setClicked(false);
-	// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
-    
-    // Update ready button text based on role
-    if (this.networkManager?.getIsHost()) {
-        this.menu.readyButton.updateText('GO!');
-        this.menu.readyButton.setClickable(true);
-    } else {
-        this.menu.readyButton.updateText('WAITING...');
-        this.menu.readyButton.setClickable(false);
-    }
-    
-    console.log('PlayOverlay updated with match data');
-}
+	
+		this.menu.readyButton.updateText('GO!');
+		console.log('did I make it this far?');
+	}
 
 	handleClassicClicked() {
 		this.menu.config.classicMode = !this.menu.config.classicMode;
