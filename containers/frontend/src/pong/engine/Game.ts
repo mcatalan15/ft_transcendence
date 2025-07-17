@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:46:02 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:46:31 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ export class PongGame {
 		await this.initDust();
 		if (!this.config.classicMode) this.soundManager.startMusic();
 
-		this.app.ticker.add((ticker: any) => {
+		this.app.ticker.add((ticker) => {
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};
