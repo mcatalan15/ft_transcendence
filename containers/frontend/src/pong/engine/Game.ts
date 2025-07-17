@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:46:02 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ export class PongGame {
 		await this.initDust();
 		if (!this.config.classicMode) this.soundManager.startMusic();
 
-		this.app.ticker.add((ticker) => {
+		this.app.ticker.add((ticker: any) => {
 			const frameData: FrameData = {
 				deltaTime: ticker.deltaTime
 			};
@@ -859,10 +859,8 @@ export class PongGame {
 			if (this.config.classicMode) {
 				uiEntity.setClassicScoreText(score1.toString(), 'left');
 				uiEntity.setClassicScoreText(score2.toString(), 'right');
-				console.log(`🎮 UI: Classic score updated from server - left=${score1}, right=${score2}`);
 			} else {
 				uiEntity.setScoreText(`${score1} - ${score2}`);
-				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
 			}
 		}
 	}
@@ -941,7 +939,7 @@ export class PongGame {
 			this.playerData = await this.getUserData(hostId!, token!);
 			this.opponentData = await this.getUserData(guestId!, token!);
 		} catch (error) {
-			console.error('❌ API call failed:', error);
+			console.error('API call failed:', error);
 		}
 	}
 
@@ -957,7 +955,7 @@ export class PongGame {
 			
 			if (this.networkManager) {
 				console.log('Disconnecting network manager...');
-				this.networkManager.disconnect();
+				this.networkManager.close();
 			}
 
 			if (this.app?.ticker?.started) {
