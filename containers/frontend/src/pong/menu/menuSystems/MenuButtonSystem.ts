@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 21:00:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:33:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ export class MenuButtonSystem implements System {
 		this.menu.IAButton.setHidden(!this.menu.IAButton.getIsHidden());
 		this.menu.duelButton.setHidden(!this.menu.duelButton.getIsHidden());
 		this.menu.startXButton.setHidden(!this.menu.startXButton.getIsHidden());
+		this.menu.tournamentButton.setHidden(!this.menu.tournamentButton.getIsHidden());
 
 		this.menu.menuContainer.addChild(this.menu.onlineButton.getContainer());
 		this.menu.menuContainer.addChild(this.menu.localButton.getContainer());

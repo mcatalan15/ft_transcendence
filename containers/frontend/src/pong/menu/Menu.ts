@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 13:49:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:38:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { GameConfig, Preconfiguration, PlayerData } from '../utils/GameConfig';
+import { GameConfig, Preconfiguration, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -31,6 +31,7 @@ import { MenuHalfButton } from './menuButtons/MenuHalfButton';
 import { MenuXButton } from './menuButtons/MenuXButton';
 import { BallButton } from './menuButtons/BallButton';
 import { MenuBigInputButton } from './menuButtons/MenuBigInputButton';
+import { MenuSmallInputButton } from './menuButtons/MenuSmallInputButton';
 import { Powerup } from '../entities/powerups/Powerup';
 import { MenuImageManager } from './menuManagers/MenuImageManager';
 
@@ -144,6 +145,8 @@ export class Menu{
 	tournamentOverlayButtonHeight: number = 32.5;
 	bigInputButtonWidth: number = 150;
 	bigInputButtonHeight: number = 30;
+	smallInputButtonWidth: number = 145;
+	smallInputButtonHeight: number = 25;
 
 	// Button Containers
 	startButton!: MenuButton;
@@ -225,6 +228,11 @@ export class Menu{
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
 	storedGuestName: string | null = null;
+
+	// Tournament Data
+	hasOngoingTournament: boolean = false;
+	tournamentConfig!: TournamentConfig;
+	tournamentInputButtons: MenuSmallInputButton[] = [];
 
 	//Browser data
 	isFirefox: boolean = false;
@@ -315,14 +323,26 @@ export class Menu{
 			classicMode: false,
 			filters: true,
 			players: [
-				{ name: 'Player 1', type: 'human', side: 'left' },
-				{ name: 'Player 2', type: 'human', side: 'right' }
+				{ id: '', name: 'Player 1', type: 'local', side: 'left' },
+				{ id: '', name: 'Player 2', type: 'local', side: 'right' }
 			]
 		};
 		
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
 			this.preconfiguration = preconfiguration!;
+		}
+
+		if (this.hasOngoingTournament && !this.tournamentConfig.isFinished) {
+			// Refresh the tournament
+			// Go to the tournament overlay?
+		}
+
+		if (this.hasOngoingTournament && this.tournamentConfig.isFinished) {
+			// Show the tournament finished overlay
+			// Show the tournament winner
+			// Change ready button to finish tournament button
+			// Process results and deployments
 		}
 	}
 
@@ -342,6 +362,7 @@ export class Menu{
 		await ButtonManager.createReadyButton(this);
 		await ButtonManager.createTournamentOverlayButtons(this);
 		await ButtonManager.createPlayInputButton(this);
+		await ButtonManager.createTournamentInputButtons(this);
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();

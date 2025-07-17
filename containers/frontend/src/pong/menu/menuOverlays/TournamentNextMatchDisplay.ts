@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 19:14:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 09:32:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,7 +261,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: this.menu.playerData!.name.toUpperCase() || "PLAYER 1", 
+			text: /* this.menu.playerData!.name.toUpperCase() || */ "WAITING", 
 			x: 1225,
 			y: 487.5,
 			style: {
@@ -274,7 +274,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: this.menu.playerData!.name.toUpperCase() || "PLAYER 2", 
+			text: /* this.menu.playerData!.name.toUpperCase() ||  */"WAITING", 
 			x: 1525,
 			y: 490,
 			style: {

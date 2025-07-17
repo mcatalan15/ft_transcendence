@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 18:20:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:15:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,6 +349,12 @@ export abstract class BaseButton extends Entity {
 
     public setHidden(hidden: boolean): void {
         this.isHidden = hidden;
+        if (hidden) {
+            this.buttonContainer.eventMode = 'none';
+            this.buttonContainer.cursor = 'default';
+        } else {
+            this.setClickable(this.isClickable);
+        }
     }
 
     public setClicked(clicked: boolean): void {

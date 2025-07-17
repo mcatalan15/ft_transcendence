@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 13:38:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 09:39:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,4 +132,61 @@ export interface PlayerData {
 	draws: number;
 	rank: number;
 	totalPlayers?: number;
+}
+
+export interface TournamentConfig {
+	tournamentId?: string | number;
+	isFinished: boolean;
+
+	currentPhase?: number | 1 | 2 | 3 | 4;
+
+	nextMatch: {
+		leftPlayerName: string;
+		rightPlayerName: string;
+	}
+
+	registeredPlayerNames: {
+		player1: string;
+		player2: string;
+
+		player3: string;
+		player4: string;
+
+		player5: string;
+		player6: string;
+
+		player7: string;
+		player8: string;
+	}
+
+	firstRoundPlayers: {
+		player1: string;
+		player2: string;
+
+		player3: string;
+		player4: string;
+
+		player5: string;
+		player6: string;
+
+		player7: string;
+		player8: string;
+	}
+
+	secondRoundPlayers: {
+		player1: string;
+		player2: string;
+
+		player3: string;
+		player4: string;
+	}
+
+	thirdRoundPlayers: {
+		player1: string;
+		player2: string;
+	}
+
+	winner: string;
+
+	finalTournamentData?: {}
 }

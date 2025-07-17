@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 20:41:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:29:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ import { AnimationComponent } from "../../components/AnimationComponent";
 import { RenderComponent } from "../../components/RenderComponent";
 import { TextComponent } from "../../components/TextComponent";
 
+import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
+import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
+
 import { GAME_COLORS } from "../../utils/Types";
 
 export interface OverlayContent {
@@ -35,7 +38,8 @@ export abstract class Overlay extends Entity {
 	protected background: Graphics;
 	protected quitButton?: any;
 	protected readyButton?: any;
-	protected inputButton?: any; // Add inputButton property
+	protected inputButton?: MenuBigInputButton;
+	protected tournamentInputButtons: MenuSmallInputButton[] = [];
 	protected isContentInitialized: boolean = false;
 	protected overlayType: string;
 	
@@ -58,7 +62,7 @@ export abstract class Overlay extends Entity {
 		this.background.x = 75;
 		this.background.y = 75;
 		this.background.fill({ color: backgroundColor, alpha: 1 });
-		this.background.stroke({ color: strokeColor, width: 3 });
+		//this.background.stroke({ color: strokeColor, width: 3 });
 		this.background.alpha = 0;
 
 		const renderComponent = new RenderComponent(this.background);
@@ -109,13 +113,23 @@ export abstract class Overlay extends Entity {
 		}
 	}
 
-	// Add method to set input button
-	protected setInputButton(button: any): void {
+	protected setPlayInputButton(button: MenuBigInputButton): void {
 		this.inputButton = button;
 		if (button) {
 			button.getContainer().alpha = 0;
 		}
 	}
+
+	protected setTournamentInputButtons(buttons: MenuSmallInputButton[]): void {
+        this.tournamentInputButtons = buttons;
+        for (const button of buttons) {
+            if (button) {
+                this.menu.renderLayers.overlays.addChild(button.getContainer());
+                button.getContainer().alpha = 0;
+                button.setHidden(true);
+            }
+        }
+    }
 
 	public show(): void {
 		this.isDisplayed = true;
@@ -143,8 +157,18 @@ export abstract class Overlay extends Entity {
 		if (this.quitButton) {
 			this.menu.renderLayers.overlayQuits.addChild(this.quitButton.getContainer());
 		}
+
 		if (this.inputButton && this.menu.config.variant === '1v1' && this.menu.config.mode !== 'online') {
 			this.menu.renderLayers.overlays.addChild(this.inputButton.getContainer());
+		}
+
+		if (this.tournamentInputButtons && this.menu.config.variant === 'tournament') {
+			this.tournamentInputButtons.forEach(button => {
+				if (button) {
+					this.menu.renderLayers.overlays.addChild(button.getContainer());
+					button.getContainer().alpha = 0;
+				}
+			});
 		}
 
 		this.fadeIn();
@@ -177,6 +201,14 @@ export abstract class Overlay extends Entity {
 
 			if (this.inputButton) {
 				this.menu.menuHidden.addChild(this.inputButton.getContainer());
+			}
+
+			if (this.tournamentInputButtons) {
+				this.tournamentInputButtons.forEach(button => {
+					if (button) {
+						this.menu.menuHidden.addChild(button.getContainer());
+					}
+				});
 			}
 		});
 	}
@@ -256,8 +288,17 @@ export abstract class Overlay extends Entity {
 		if (this.quitButton) {
 			elements.push(this.quitButton.getContainer());
 		}
+
 		if (this.inputButton) {
 			elements.push(this.inputButton.getContainer());
+		}
+
+		if (this.tournamentInputButtons) {
+			this.tournamentInputButtons.forEach(button => {
+				if (button) {
+					elements.push(button.getContainer());
+				}
+			});
 		}
 
 		if (this.overlayType === 'play') {
@@ -409,6 +450,8 @@ export abstract class Overlay extends Entity {
 		this.background.fill({ color: 0x151515, alpha: 1 });
 		this.background.moveTo(0, 57.2);
 		this.background.lineTo(0, 610);
+		this.background.lineTo(780, 610);
+		this.background.moveTo(870, 610);
 		this.background.lineTo(1635, 610);
 		this.background.lineTo(1635, 57.2);
 		this.background.stroke({ color: color, width: 3 });

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 16:50:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 09:46:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,16 @@ export function getBigInputButtonPoints(menu: Menu, button: MenuBigInputButton):
 		menu.bigInputButtonWidth, 0,
 		menu.bigInputButtonWidth , menu.bigInputButtonHeight,
 		0, menu.bigInputButtonHeight
+	];
+}
+
+export function getSmallInputButtonPoints(menu: Menu, button: MenuButton): number[] | undefined {
+
+	return [
+		0, 0,
+		menu.smallInputButtonWidth, 0,
+		menu.smallInputButtonWidth , menu.smallInputButtonHeight,
+		0, menu.smallInputButtonHeight 
 	];
 }
 

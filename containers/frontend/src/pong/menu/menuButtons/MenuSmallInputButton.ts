@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MenuBigInputButton.ts                              :+:      :+:    :+:   */
+/*   MenuSmallInputButton.ts                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:34:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:41:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,14 @@ import { MenuButton } from "./MenuButton";
 import { ButtonStyle } from "./BaseButton";
 
 import { getThemeColors } from "../../utils/Utils";
-import { getBigInputButtonPoints } from "../../utils/MenuUtils";
+import { getSmallInputButtonPoints } from "../../utils/MenuUtils";
+import { GAME_COLORS } from "../../utils/Types";
 
-export class MenuBigInputButton extends MenuButton {
+export class MenuSmallInputButton extends MenuButton {
+	isFilled: boolean = false;
+	
 	protected getButtonPoints(): number[] {
-		return getBigInputButtonPoints(this.menu, this)!;
+		return getSmallInputButtonPoints(this.menu, this)!;
 	}
 
 	protected getButtonDimensions(): { width: number, height: number } {
@@ -31,7 +34,7 @@ export class MenuBigInputButton extends MenuButton {
 
 	protected getTextStyle(): ButtonStyle {
 		return {
-			fontSize: 30,
+			fontSize: 20,
 			fontFamily: 'monospace',
 			fontWeight: 'bold',
 			padding: 1.5
@@ -64,8 +67,9 @@ export class MenuBigInputButton extends MenuButton {
 	}
 
 	protected onButtonClick(): void {
+		console.log(`Button clicked: ${this.config.text}`);
 		this.menu.playInputButton.buttonText!.alpha = 0.5
-		this.menu.inputFocus = 'playInputButton';
+		this.menu.inputFocus = this.config.text;
 		this.menu.isProcessingInput = true;
 	}
 
@@ -97,7 +101,7 @@ export class MenuBigInputButton extends MenuButton {
 		
 		const themeColor = this.menu.config.classicMode ? 
 			getThemeColors(this.menu.config.classicMode).white : 
-			this.config.color;
+			GAME_COLORS.menuBlue;
 		
 		return {
 			color: themeColor,
@@ -176,5 +180,7 @@ export class MenuBigInputButton extends MenuButton {
             
             this.buttonText.style.fill = { color: themeColor, alpha: textAlpha };
         }
+        
+        this.resetOrnamentColor();
     }
 }

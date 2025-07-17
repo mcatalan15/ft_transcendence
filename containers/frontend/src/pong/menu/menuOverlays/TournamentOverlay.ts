@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 16:41:45 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:21:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,10 @@ export class TournamentOverlay extends Overlay {
         MenuImageManager.createTournamentAvatars(this.menu);
 
         this.setQuitButton(this.menu.playQuitButton);
+        
+        if (this.menu.tournamentInputButtons && this.menu.tournamentInputButtons.length > 0) {
+            this.setTournamentInputButtons(this.menu.tournamentInputButtons);
+        }
     }
 
     public redrawTitles(): void {
@@ -88,8 +92,17 @@ export class TournamentOverlay extends Overlay {
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(false);
+
         this.menu.tournamentGlossaryButton.setHidden(false);
-        this.menu.tournamentFiltersButton.setHidden(false);  
+        this.menu.tournamentFiltersButton.setHidden(false);
+
+        this.quitButton!.setHidden(false);
+        this.quitButton!.setClickable(true);
+
+        for (let i = 0; i < this.tournamentInputButtons.length; i++) {
+            this.tournamentInputButtons[i].setHidden(false);
+            this.tournamentInputButtons[i].setClickable(true);
+        }
     }
     
     public hide(): void {
@@ -106,5 +119,13 @@ export class TournamentOverlay extends Overlay {
         this.menu.tournamentFiltersButton.setHidden(true);
     
         MenuImageManager.hideTournamentAvatarImages(this.menu);
+
+        this.quitButton!.setHidden(true);
+        this.quitButton!.setClickable(false);
+
+        for (let i = 0; i < this.tournamentInputButtons.length; i++) {
+            this.tournamentInputButtons[i].setHidden(true);
+            this.tournamentInputButtons[i].setClickable(false);
+        }
     }
 }
