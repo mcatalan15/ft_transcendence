@@ -23,7 +23,7 @@ export class HeadersComponent {
       transform: 'translateX(-50%)',
       position: 'absolute',
       width: '100%',
-      maxWidth: !isFirefox ? '1818px' : '1800px',
+      maxWidth: !isFirefox ? '1817.5px' : '1800px',
       height: 'auto',
       zIndex: '30',
       pointerEvents: 'none',

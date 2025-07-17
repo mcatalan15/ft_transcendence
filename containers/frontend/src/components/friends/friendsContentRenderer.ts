@@ -9,7 +9,7 @@ interface Friend {
 }
 
 export class FriendsContentRenderer {
-  private container: HTMLElement;
+  //private container: HTMLElement;
   private friendsData: Friend[] = [];
   private currentPage: number = 0;
   private friendsPerPage: number = 10;
@@ -17,9 +17,9 @@ export class FriendsContentRenderer {
   private paginationComponent: Pagination | null = null;
   private filteredFriends: Friend[] = [];
 
-  constructor(container: HTMLElement) {
-    this.container = container;
-  }
+  //constructor(container: HTMLElement) {
+    //this.container = container;
+  //}
 
   render(): HTMLElement {
     const mainContent = document.createElement('div');
