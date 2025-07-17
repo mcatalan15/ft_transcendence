@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 16:12:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:08:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,7 +365,7 @@ export class MenuImageManager {
 		});
 	}
 
-	static async createPlayerAvatarFromAsset(avatarKey: string, menu: Menu): Promise<Sprite | null> {
+	static async createPlayerAvatarFromAsset(avatarKey: string, menu: Menu, tournament: boolean = false): Promise<Sprite | null> {
 		try {
 			console.log('Creating player avatar from:', avatarKey);
 
@@ -400,8 +400,15 @@ export class MenuImageManager {
 					const sprite = new Sprite(texture);
 					sprite.anchor.set(0.5);
 					
-					const targetWidth = 360;
-					const targetHeight = 360;
+					let targetWidth, targetHeight;
+					
+					if (tournament) {
+						targetWidth = 240;
+						targetHeight = 240;
+					} else {
+						targetWidth = 360;
+						targetHeight = 360;
+					}
 					
 					const scaleX = targetWidth / texture.width;
 					const scaleY = targetHeight / texture.height;
@@ -1191,5 +1198,71 @@ export class MenuImageManager {
 				avatar.interactiveChildren = false;
 			}
 		});
+	}
+
+	static async updateTournamentPlayerAvatars(
+		menu: Menu,
+		leftPlayerData: any,
+		rightPlayerData: any
+	): Promise<void> {
+		if (leftPlayerData?.avatar) {
+			try {
+				const leftAvatar = await this.createPlayerAvatarFromAsset(
+					leftPlayerData.avatar,
+					menu,
+					true
+				);
+				if (leftAvatar) {
+					leftAvatar.x = 1225.5;
+					leftAvatar.y = 344.5;
+					leftAvatar.alpha = 0;
+					
+					const oldLeftIndex = this.tournamentAvatars.findIndex(a => a.x === 1225.5);
+					if (oldLeftIndex !== -1) {
+						const oldLeft = this.tournamentAvatars[oldLeftIndex];
+						if (oldLeft && oldLeft.parent) {
+							oldLeft.parent.removeChild(oldLeft);
+						}
+						this.tournamentAvatars.splice(oldLeftIndex, 1);
+					}
+					
+					menu.renderLayers.overlays.addChild(leftAvatar);
+					this.tournamentAvatars.push(leftAvatar);
+					this.animateAvatarFadeIn(leftAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load left player avatar:', error);
+			}
+		}
+		
+		if (rightPlayerData?.avatar) {
+			try {
+				const rightAvatar = await this.createPlayerAvatarFromAsset(
+					rightPlayerData.avatar,
+					menu,
+					true
+				);
+				if (rightAvatar) {
+					rightAvatar.x = 1524.5;
+					rightAvatar.y = 344.5;
+					rightAvatar.alpha = 0;
+					
+					const oldRightIndex = this.tournamentAvatars.findIndex(a => a.x === 1524.5);
+					if (oldRightIndex !== -1) {
+						const oldRight = this.tournamentAvatars[oldRightIndex];
+						if (oldRight && oldRight.parent) {
+							oldRight.parent.removeChild(oldRight);
+						}
+						this.tournamentAvatars.splice(oldRightIndex, 1);
+					}
+					
+					menu.renderLayers.overlays.addChild(rightAvatar);
+					this.tournamentAvatars.push(rightAvatar);
+					this.animateAvatarFadeIn(rightAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load right player avatar:', error);
+			}
+		}
 	}
 }

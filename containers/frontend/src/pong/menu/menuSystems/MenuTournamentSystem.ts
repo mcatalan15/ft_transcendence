@@ -6,13 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:14:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:29:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:40:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { System } from "../../engine/System";
 import { GameEvent } from "../../utils/Types";
 import { Menu } from "../Menu";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 export class MenuTournamentSystem implements System {
 	menu: Menu;
@@ -53,8 +54,39 @@ export class MenuTournamentSystem implements System {
 		const nextPlayers = this.getNextTournamentPlayers(order);
 		this.menu.tournamentConfig!.nextMatch.leftPlayerName = nextPlayers.player1;
 		this.menu.tournamentConfig!.nextMatch.rightPlayerName = nextPlayers.player2;
-
+	
 		console.log(`Preparing next match: ${nextPlayers.player1} vs ${nextPlayers.player2}`);
+		
+		const leftPlayerData = this.getPlayerDataByName(nextPlayers.player1!);
+		const rightPlayerData = this.getPlayerDataByName(nextPlayers.player2!);
+		
+		if (this.menu.tournamentOverlay?.nextMatchDisplay) {
+			this.menu.tournamentOverlay.nextMatchDisplay.eraseTournamentPlayerInfo();
+			this.menu.tournamentOverlay.nextMatchDisplay.updateLeftPlayerInfo(leftPlayerData, this.menu.tournamentConfig!.nextMatch.leftPlayerName!);
+			this.menu.tournamentOverlay.nextMatchDisplay.updateRightPlayerInfo(rightPlayerData, this.menu.tournamentConfig!.nextMatch.rightPlayerName!);
+			
+			MenuImageManager.updateTournamentPlayerAvatars(
+				this.menu, 
+				leftPlayerData, 
+				rightPlayerData
+			);
+		}
+	}
+
+	private getPlayerDataByName(playerName: string): any {
+		if (!playerName || !this.menu.tournamentConfig) return null;
+		
+		const playerData = this.menu.tournamentConfig.registeredPlayerData;
+		
+		// Find which player this name belongs to
+		for (let i = 1; i <= 8; i++) {
+			const player = playerData[`player${i}Data` as keyof typeof playerData];
+			if (player && player.name === playerName) {
+				return player;
+			}
+		}
+		
+		return null;
 	}
 
 	getNextTournamentPlayers(order: number) {

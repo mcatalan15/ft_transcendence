@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:10:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:51:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ export class TournamentOverlay extends Overlay {
         }
     }
 
+    public getNextMatchDisplay(): TournamentNextMatchDisplay {
+    return this.nextMatchDisplay;
+}
+
     public show(): void {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
@@ -128,6 +132,7 @@ export class TournamentOverlay extends Overlay {
         for (let i = 0; i < this.tournamentInputButtons.length; i++) {
             this.tournamentInputButtons[i].setHidden(true);
             this.tournamentInputButtons[i].setClickable(false);
+            this.tournamentInputButtons[i].isFilled = false;
         }
     }
 }

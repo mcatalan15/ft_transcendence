@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 20:55:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:34:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -543,8 +543,6 @@ export class Duel extends Entity {
 		this.addComponent(roundComponent, 'roundGraphic');
 	}
 	redrawDuel(): void {
-		console.log('🎯🎯🎯🎯redrawDuel called');
-
 		this.getOpponentStats();
 		
 		this.duelGraphic.clear();
@@ -712,25 +710,17 @@ export class Duel extends Entity {
 			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
 			const child = this.menu.renderLayers.overlays.children[i];
 			
-			// Check if it's a Text object by checking renderPipeId
 			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
-			const child = this.menu.renderLayers.overlays.children[i];
-			
-			// Type guard: check if the child has a text property
-			if ('text' in child && typeof child.text === 'string' && child.text.includes('???')) {
-				this.menu.renderLayers.overlays.removeChild(child);
-				break;
+				const child = this.menu.renderLayers.overlays.children[i];
+				
+				if ('text' in child && typeof child.text === 'string' && child.text.includes('???')) {
+					this.menu.renderLayers.overlays.removeChild(child);
+					break;
+				}
 			}
-		}
 }
 			this.menu.renderLayers.overlays.addChild(opponentStatsTextComponent.getRenderable());
-			
-			/* const rectangle = new Graphics();
-			rectangle.rect(605, 185, 360, 360);
-			rectangle.fill(GAME_COLORS.red);
-			const rectangleComponent = new RenderComponent(rectangle);
-			this.addComponent(rectangleComponent, 'opponentAvatarFrame');
-			this.menu.renderLayers.overlayQuits.addChild(rectangleComponent.graphic); */
+
 			
 			console.log(this.opponentStatsTexts);
 		}

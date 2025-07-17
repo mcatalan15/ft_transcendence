@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:25:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 20:27:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ export class Menu{
 	inputFocus: string | null = null;
 	isProcessingInput: boolean = false;
 
-	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
+	constructor(app: Application, language: string, tournamentConfig: TournamentConfig | null = null, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
 		this.app = app;
 		this.width = app.screen.width;
@@ -332,6 +332,12 @@ export class Menu{
 		if (hasPreConfiguration) {
 			this.hasPreconfig = true;
 			this.preconfiguration = preconfiguration!;
+		}
+
+		if (tournamentConfig) {
+			this.tournamentConfig = tournamentConfig;
+			this.hasOngoingTournament = true;
+			console.log(`Received tournament config:`, this.tournamentConfig);
 		}
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {

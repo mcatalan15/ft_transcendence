@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:22:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:51:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,31 +62,33 @@ export class TournamentNextMatchDisplay extends Entity {
 		}
 	}
 
-	getPlainStats(){
+	getPlainStats(playerData?: any){
 		this.plainStats = [];
 		
-		const tournamentsStat = this.menu.playerData?.tournaments || 0;
+		const data = playerData || this.menu.playerData;
+	
+		const tournamentsStat = data?.tournaments || 0;
 		this.plainStats.push(this.formatStat(tournamentsStat, 'number'));
 	
-		const goalsScoredStat = this.menu.playerData?.goalsScored || 0;
+		const goalsScoredStat = data?.goalsScored || 0;
 		this.plainStats.push(this.formatStat(goalsScoredStat, 'number'));
 	
-		const goalsConcededStat = this.menu.playerData?.goalsConceded || 0;
+		const goalsConcededStat = data?.goalsConceded || 0;
 		this.plainStats.push(this.formatStat(goalsConcededStat, 'number'));
 	
-		const winsStat = this.menu.playerData?.wins || 0;
+		const winsStat = data?.wins || 0;
 		this.plainStats.push(this.formatStat(winsStat, 'number'));
 	
-		const lossesStat = this.menu.playerData?.losses || 0;
+		const lossesStat = data?.losses || 0;
 		this.plainStats.push(this.formatStat(lossesStat, 'number'));
 	
-		const drawsStat = this.menu.playerData?.draws || 0;
+		const drawsStat = data?.draws || 0;
 		this.plainStats.push(this.formatStat(drawsStat, 'number'));
 	
-		const winLossRatioStat = this.calculateWinLossRatio();
+		const winLossRatioStat = this.calculateWinLossRatio(data);
 		this.plainStats.push(this.formatStat(winLossRatioStat, 'ratio'));
 	
-		const rankStat = this.menu.playerData?.rank || 0;
+		const rankStat = data?.rank || 0;
 		this.plainStats.push(this.formatStat(rankStat, 'rank'));
 	
 		console.log('Formatted stats:', this.plainStats);
@@ -131,9 +133,10 @@ export class TournamentNextMatchDisplay extends Entity {
 		}
 	}
 	
-	calculateWinLossRatio(): number {
-		const wins = this.menu.playerData?.wins || 0;
-		const losses = this.menu.playerData?.losses || 0;
+	calculateWinLossRatio(playerData?: any): number {
+		const data = playerData || this.menu.playerData;
+		const wins = data?.wins || 0;
+		const losses = data?.losses || 0;
 	
 		if (losses === 0) {
 			return wins > 0 ? 100 : 0.00;
@@ -366,5 +369,73 @@ export class TournamentNextMatchDisplay extends Entity {
 		
 		this.avatarFrames.clear();
 		this.createAvatarFrames();
+	}
+
+	public eraseTournamentPlayerInfo(){
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && (child.text.includes('???') || child.text.includes('WAITING'))) {
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	}
+
+	public updateLeftPlayerInfo(playerData: any, name: string): void {
+		this.vsText[2].text = name.toUpperCase();
+		const leftNameComponent = new TextComponent(this.vsText[2]);
+		this.replaceComponent('text', leftNameComponent, 'vsText2');
+	
+		if (playerData) {
+			this.getPlainStats(playerData);
+			this.statsTexts[1].text = this.getStatsValuesInLanguage(true);
+		} else {
+			this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
+		}
+	
+		const leftStatsComponent = new TextComponent(this.statsTexts[1]);
+		this.replaceComponent('text', leftStatsComponent, 'statsText1');
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && 
+				(child.text.includes('???') || child.text === 'WAITING') &&
+				child.x >= 1100 && child.x <= 1350) {
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	
+		this.menu.renderLayers.overlays.addChild(leftNameComponent.getRenderable());
+		this.menu.renderLayers.overlays.addChild(leftStatsComponent.getRenderable());
+	}
+	
+	public updateRightPlayerInfo(playerData: any, name: string): void {
+		this.vsText[3].text = name.toUpperCase();
+		const rightNameComponent = new TextComponent(this.vsText[3]);
+		this.replaceComponent('text', rightNameComponent, 'vsText3');
+	
+		if (playerData) {
+			this.getPlainStats(playerData);
+			this.statsTexts[3].text = this.getStatsValuesInLanguage(true);
+		} else {
+			this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
+		}
+	
+		const rightStatsComponent = new TextComponent(this.statsTexts[3]);
+		this.replaceComponent('text', rightStatsComponent, 'statsText3');
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && 
+				(child.text.includes('???') || child.text === 'WAITING') &&
+				child.x >= 1400 && child.x <= 1650) { // Right side bounds
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	
+		this.menu.renderLayers.overlays.addChild(rightNameComponent.getRenderable());
+		this.menu.renderLayers.overlays.addChild(rightStatsComponent.getRenderable());
 	}
 }

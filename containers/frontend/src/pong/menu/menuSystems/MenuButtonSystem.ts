@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:06:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 20:22:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ export class MenuButtonSystem implements System {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
+		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 		
@@ -172,7 +173,7 @@ export class MenuButtonSystem implements System {
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
-		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
+		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language, this.menu.tournamentConfig);
 		
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 		
@@ -784,23 +785,26 @@ export class MenuButtonSystem implements System {
 			}
 		}
 
-		this.menu.config.players![0].name = sessionStorage.getItem('username') || 'Player 1';
-		if (this.menu.opponentData) {
-			console.log('Opponent data found:', this.menu.opponentData);
-			console.log('Setting opponent name to:', this.menu.opponentData.name);
-			console.log('Setting opponent id to:', this.menu.opponentData.id);
-			this.menu.config.players![1].name = this.menu.opponentData.name || 'GUEST';
+		if (this.menu.config.variant === 'tournament') {
+			console.log('Setting up tournament configuration BEFORE START...');
+			this.menu.config.hostName = this.menu.tournamentConfig?.nextMatch.leftPlayerName!;
+			this.menu.config.guestName= this.menu.tournamentConfig?.nextMatch.rightPlayerName!;
 		} else {
-			if (this.menu.storedGuestName) {
-				this.menu.config.players![1].name = this.menu.storedGuestName;
+			this.menu.config.players![0].name = sessionStorage.getItem('username') || 'Player 1';
+			if (this.menu.opponentData) {
+				this.menu.config.players![1].name = this.menu.opponentData.name || 'GUEST';
 			} else {
-				this.menu.config.players![1].name = 'GUEST';
+				if (this.menu.storedGuestName) {
+					this.menu.config.players![1].name = this.menu.storedGuestName;
+				} else {
+					this.menu.config.players![1].name = 'GUEST';
+				}
 			}
-		}
 
-		if (this.menu.config.mode === 'local' && this.menu.config.variant === '1v1') {
-			this.menu.config.hostName = this.menu.config.players![0].name;
-			this.menu.config.guestName = this.menu.config.players![1].name;
+			if (this.menu.config.mode === 'local' && this.menu.config.variant === '1v1') {
+				this.menu.config.hostName = this.menu.config.players![0].name;
+				this.menu.config.guestName = this.menu.config.players![1].name;
+			}
 		}
 	}
 }

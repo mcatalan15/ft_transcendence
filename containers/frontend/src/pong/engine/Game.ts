@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 13:46:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 20:22:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig, GameData, PlayerData } from '../utils/GameConfig';
+import { GameConfig, GameData, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -122,7 +122,9 @@ export class PongGame {
 
 	isFirefox: boolean = false;
 
-	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
+	tournamentConfig: TournamentConfig | null = null;
+
+	constructor(app: Application, config: GameConfig, language: string, tournamentConfig: TournamentConfig | null = null, isFirefox?: boolean) {
 		this.config = config;
 		this.language = language;
 		this.app = app;
@@ -192,6 +194,11 @@ export class PongGame {
             console.log('Game initialized with Firefox optimizations');
             this.applyGameFirefoxOptimizations();
         }
+
+		if (tournamentConfig) {
+			this.tournamentConfig = tournamentConfig;
+			console.log('Tournament config initialized:', this.tournamentConfig);
+		}
 	}
 
 	private applyGameFirefoxOptimizations(): void {
