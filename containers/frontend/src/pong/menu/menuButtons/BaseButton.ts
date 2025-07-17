@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:15:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 12:26:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,5 +371,9 @@ export abstract class BaseButton extends Entity {
             this.buttonContainer.eventMode = 'none';
             this.buttonContainer.cursor = 'default';
         }
+    }
+
+    public setHovered(hovered: boolean): void {
+        this.isHovered = hovered;
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 20:40:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 16:12:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -927,13 +927,13 @@ export class MenuImageManager {
 		avatar.scale.set(0.175);
 		avatar.alpha = 0;
 		
-		avatar.eventMode = 'static';
-		avatar.cursor = 'pointer';
+		avatar.eventMode = 'none';
+		avatar.cursor = 'default';
 		
 		const originalScale = 0.175;
 		const hoverScale = 0.19;
 		const clickScale = 0.16;
-
+	
 		avatar.on('pointerdown', () => {
 			avatar.scale.set(clickScale);
 			
@@ -942,7 +942,7 @@ export class MenuImageManager {
 				window.open(url, '_blank');
 				console.log(`${name} avatar clicked - opening ${url}`);
 			}, 100);
-
+	
 			if (menu.sounds && menu.sounds.menuSelect) {
 				menu.sounds.menuSelect.play();
 			}
@@ -950,7 +950,6 @@ export class MenuImageManager {
 		
 		avatar.on('pointerenter', () => {
 			avatar.scale.set(hoverScale);
-
 			avatar.tint = 0xF0F0F0;
 			
 			if (menu.sounds && menu.sounds.menuMove) {
@@ -1153,12 +1152,44 @@ export class MenuImageManager {
 				avatar.parent.removeChild(avatar);
 				menu.renderLayers.overlays.addChild(avatar);
 				
-				avatar.zIndex = 1000 + index;
+				//avatar.zIndex = 1000 + index;
 			}
 		});
 		
 		if (menu.renderLayers.overlays.sortableChildren !== undefined) {
 			menu.renderLayers.overlays.sortableChildren = true;
 		}
+	}
+
+	static enableAvatarInteractivity(): void {
+		this.avatarImages.forEach(avatar => {
+			if (avatar) {
+				avatar.eventMode = 'static';
+				avatar.cursor = 'pointer';
+			}
+		});
+		this.classicAvatarImages.forEach(avatar => {
+			if (avatar) {
+				avatar.eventMode = 'static';
+				avatar.cursor = 'pointer';
+			}
+		});
+	}
+	
+	static disableAvatarInteractivity(): void {
+		this.avatarImages.forEach(avatar => {
+			if (avatar) {
+				avatar.eventMode = 'none';
+				avatar.cursor = 'default';
+				avatar.interactiveChildren = false;
+			}
+		});
+		this.classicAvatarImages.forEach(avatar => {
+			if (avatar) {
+				avatar.eventMode = 'none';
+				avatar.cursor = 'default';
+				avatar.interactiveChildren = false;
+			}
+		});
 	}
 }

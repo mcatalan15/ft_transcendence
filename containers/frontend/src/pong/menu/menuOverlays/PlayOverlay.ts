@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:20:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:10:44 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,10 @@ export class PlayOverlay extends Overlay {
         this.updateOverlayTexts();
         
         await MenuImageManager.preparePlayAvatarImages(this.menu);
-		MenuImageManager.bringAvatarsToFront(this.menu);
+        super.show();
+    
+        MenuImageManager.bringAvatarsToFront(this.menu);
         
-
         const avatars = MenuImageManager.getAllPlayAvatarImages();
         
         avatars.forEach(avatar => {
@@ -90,9 +91,7 @@ export class PlayOverlay extends Overlay {
                 avatar.alpha = 0;
             }
         });
-
-        super.show();
-
+    
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
@@ -100,12 +99,12 @@ export class PlayOverlay extends Overlay {
         this.menu.readyButton.setHidden(false);
         this.menu.tournamentGlossaryButton.setHidden(false);
         this.menu.tournamentFiltersButton.setHidden(false);
-
+    
         this.quitButton!.setHidden(false);
         this.quitButton!.setClickable(true);
         
         this.inputButton!.setHidden(false);
-        this.inputButton!.setClickable(true)
+        this.inputButton!.setClickable(true);
     }
 
     public hide(): void {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:21:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:10:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,13 +92,14 @@ export class TournamentOverlay extends Overlay {
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(false);
-
+        this.menu.readyButton.setClickable(false); // Add this line to make it not clickable
+    
         this.menu.tournamentGlossaryButton.setHidden(false);
         this.menu.tournamentFiltersButton.setHidden(false);
-
+    
         this.quitButton!.setHidden(false);
         this.quitButton!.setClickable(true);
-
+    
         for (let i = 0; i < this.tournamentInputButtons.length; i++) {
             this.tournamentInputButtons[i].setHidden(false);
             this.tournamentInputButtons[i].setClickable(true);
@@ -115,14 +116,15 @@ export class TournamentOverlay extends Overlay {
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(true);
+        this.menu.readyButton.setClickable(true); // Reset to clickable when hidden
         this.menu.tournamentGlossaryButton.setHidden(true);
         this.menu.tournamentFiltersButton.setHidden(true);
     
         MenuImageManager.hideTournamentAvatarImages(this.menu);
-
+    
         this.quitButton!.setHidden(true);
         this.quitButton!.setClickable(false);
-
+    
         for (let i = 0; i < this.tournamentInputButtons.length; i++) {
             this.tournamentInputButtons[i].setHidden(true);
             this.tournamentInputButtons[i].setClickable(false);

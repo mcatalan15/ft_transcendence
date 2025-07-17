@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:33:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:06:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,10 @@ export class MenuButtonSystem implements System {
 			this.menu.tournamentOverlay.show();
 			this.overlayStack.push('tournament');
 			this.setButtonsClickability(false);
+			
+			for (const button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			}
 		} else {
 			this.menu.playButton.setClicked(true);
 			await this.menu.playOverlay.setAllRenderablesAlpha(0);
@@ -170,7 +174,6 @@ export class MenuButtonSystem implements System {
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
 		
-		// Register new game with GameManager
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 		
 		game.init();
@@ -324,6 +327,9 @@ export class MenuButtonSystem implements System {
 			}
 
 			this.menu.opponentData = null;
+
+			this.menu.hasOngoingTournament = false;
+			this.menu.tournamentConfig = null;
 		}
 	}
 
@@ -717,7 +723,7 @@ export class MenuButtonSystem implements System {
 		(this.menu.paddleR as Paddle).redrawFullPaddle(true, 'powerdown');
 	}
 
-	setButtonsClickability(clickable: boolean): void {       
+	setButtonsClickability(clickable: boolean, tournament: boolean = false): void {       
 		this.menu.startButton.setClickable(clickable);
 		this.menu.optionsButton.setClickable(clickable);
 		this.menu.glossaryButton.setClickable(clickable);

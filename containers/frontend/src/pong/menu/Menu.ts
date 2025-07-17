@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:38:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:25:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ import { MenuParticleSystem } from './menuSystems/MenuParticleSystem';
 import { MenuPostProcessingSystem } from './menuSystems/MenuPostProcessingSystem';
 import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
 import { MenuInputSystem } from './menuSystems/MenuInputSystem';
+import { MenuTournamentSystem } from './menuSystems/MenuTournamentSystem';
 
 import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
 import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
@@ -231,7 +232,7 @@ export class Menu{
 
 	// Tournament Data
 	hasOngoingTournament: boolean = false;
-	tournamentConfig!: TournamentConfig;
+	tournamentConfig!: TournamentConfig | null;
 	tournamentInputButtons: MenuSmallInputButton[] = [];
 
 	//Browser data
@@ -333,12 +334,12 @@ export class Menu{
 			this.preconfiguration = preconfiguration!;
 		}
 
-		if (this.hasOngoingTournament && !this.tournamentConfig.isFinished) {
+		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
 			// Refresh the tournament
 			// Go to the tournament overlay?
 		}
 
-		if (this.hasOngoingTournament && this.tournamentConfig.isFinished) {
+		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
 			// Show the tournament finished overlay
 			// Show the tournament winner
 			// Change ready button to finish tournament button
@@ -539,6 +540,7 @@ export class Menu{
 		const lineSystem = new MenuLineSystem(this);
 		const secretCodeSystem = new SecretCodeSystem(this);
 		const inputSystem = new MenuInputSystem(this);
+		const tournamentSystem = new MenuTournamentSystem(this);
 		
 		this.systems.push(buttonSystem);
 		this.systems.push(VFXSystem);
@@ -550,6 +552,7 @@ export class Menu{
 		this.systems.push(lineSystem);
 		this.systems.push(secretCodeSystem);
 		this.systems.push(inputSystem);
+		this.systems.push(tournamentSystem);
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();
@@ -1067,6 +1070,72 @@ export class Menu{
 				window.gc!();
 			}, 10000);
 		}
+	}
+
+	public initTournamentConfiguration() {
+		console.log('Initializing tournament configuration...');
+
+		this.tournamentConfig =  {
+			isPrepared: false,
+			isFinished: false,
+			classicMode: this.config.classicMode? true : false,
+
+			currentPhase: 1,
+
+			nextMatch: {
+				matchOrder: 0,
+				leftPlayerName: null,
+				rightPlayerName: null,
+			},
+
+			registeredPlayerNames: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+				player5: null,
+				player6: null,
+				player7: null,
+				
+			},
+
+			registeredPlayerData: {
+				player1Data: null,
+				player2Data: null,
+				player3Data: null,
+				player4Data: null,
+				player5Data: null,
+				player6Data: null,
+				player7Data: null,
+				player8Data: null,
+			},
+
+			firstRoundPlayers: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+				player5: null,
+				player6: null,
+				player7: null,
+				player8: null,
+			},
+
+			secondRoundPlayers: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+			},
+
+			thirdRoundPlayers: {
+				player1: null,
+				player2: null,
+			},
+
+			winner: null,
+
+		} as TournamentConfig;
 	}
 
 	// API CALL

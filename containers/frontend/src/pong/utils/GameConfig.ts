@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 09:39:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 17:24:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ export interface GameConfig {
 	filters: boolean;
 	gameId?: string;
 	
-	hostName?: string;
-	guestName?: string;
+	hostName?: string | null ;
+	guestName?: string | null ;
 	currentPlayerName?: string;
 	isCurrentPlayerHost?: boolean;
 	
@@ -136,57 +136,71 @@ export interface PlayerData {
 
 export interface TournamentConfig {
 	tournamentId?: string | number;
+	isPrepared: boolean;
 	isFinished: boolean;
+	classicMode:boolean;
 
-	currentPhase?: number | 1 | 2 | 3 | 4;
+	currentPhase?: number | 1 | 2 | 3 | 4 ;
 
 	nextMatch: {
-		leftPlayerName: string;
-		rightPlayerName: string;
+		matchOrder: number;
+		leftPlayerName: string | null;
+		rightPlayerName: string | null;
 	}
 
 	registeredPlayerNames: {
-		player1: string;
-		player2: string;
+		player1: string | null;
+		player2: string | null;
 
-		player3: string;
-		player4: string;
+		player3: string | null;
+		player4: string | null;
 
-		player5: string;
-		player6: string;
+		player5: string | null;
+		player6: string | null;
 
-		player7: string;
-		player8: string;
+		player7: string | null;
+		player8: string | null;
+	}
+
+	registeredPlayerData: {
+		player1Data: PlayerData | null;
+		player2Data: PlayerData | null;
+		player3Data: PlayerData | null;
+		player4Data: PlayerData | null;
+		player5Data: PlayerData | null;
+		player6Data: PlayerData | null;
+		player7Data: PlayerData | null;
+		player8Data: PlayerData | null;
 	}
 
 	firstRoundPlayers: {
-		player1: string;
-		player2: string;
+		player1: string | null;
+		player2: string | null;
 
-		player3: string;
-		player4: string;
+		player3: string | null;
+		player4: string | null;
 
-		player5: string;
-		player6: string;
+		player5: string | null;
+		player6: string | null;
 
-		player7: string;
-		player8: string;
+		player7: string | null;
+		player8: string | null;
 	}
 
 	secondRoundPlayers: {
-		player1: string;
-		player2: string;
+		player1: string | null;
+		player2: string | null;
 
-		player3: string;
-		player4: string;
+		player3: string | null;
+		player4: string | null;
 	}
 
 	thirdRoundPlayers: {
-		player1: string;
-		player2: string;
+		player1: string | null;
+		player2: string | null;
 	}
 
-	winner: string;
+	winner: string | null;
 
 	finalTournamentData?: {}
 }

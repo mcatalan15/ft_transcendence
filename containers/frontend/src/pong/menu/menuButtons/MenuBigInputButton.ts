@@ -6,13 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:34:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 12:38:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { MenuButton } from "./MenuButton";
 
 import { ButtonStyle } from "./BaseButton";
+
+import { MenuInputSystem } from "../menuSystems/MenuInputSystem";
 
 import { getThemeColors } from "../../utils/Utils";
 import { getBigInputButtonPoints } from "../../utils/MenuUtils";
@@ -64,8 +66,18 @@ export class MenuBigInputButton extends MenuButton {
 	}
 
 	protected onButtonClick(): void {
-		this.menu.playInputButton.buttonText!.alpha = 0.5
-		this.menu.inputFocus = 'playInputButton';
+		const inputSystem = this.menu.systems.find(
+			system => system instanceof MenuInputSystem
+		) as MenuInputSystem;
+		
+		if (inputSystem) {
+			inputSystem.setCurrentInputButton(this);
+		}
+		
+		if (this.buttonText) {
+			this.buttonText.alpha = 0.5;
+		}
+		this.menu.inputFocus = this.getButtonId();
 		this.menu.isProcessingInput = true;
 	}
 
@@ -177,4 +189,8 @@ export class MenuBigInputButton extends MenuButton {
             this.buttonText.style.fill = { color: themeColor, alpha: textAlpha };
         }
     }
+
+	public unhover() {
+		this.handlePointerLeave();
+	}
 }

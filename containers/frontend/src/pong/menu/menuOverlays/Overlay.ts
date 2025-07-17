@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:29:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 16:12:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ export abstract class Overlay extends Entity {
 		this.fadeIn();
 	}
 
-	public hide(): void {
+	public hide(onComplete?: () => void): void {
 		this.fadeOut(() => {
 			this.isDisplayed = false;
 			
@@ -185,7 +185,7 @@ export abstract class Overlay extends Entity {
 				if (render && render.graphic) {
 					this.menu.menuHidden.addChild(render.graphic);
 				}
-
+	
 				if (entity.getAllRenderables && typeof entity.getAllRenderables === 'function') {
 					entity.getAllRenderables().forEach((renderable: any) => {
 						if (renderable) {
@@ -194,15 +194,15 @@ export abstract class Overlay extends Entity {
 					});
 				}
 			});
-
+	
 			if (this.quitButton) {
 				this.menu.menuHidden.addChild(this.quitButton.getContainer());
 			}
-
+	
 			if (this.inputButton) {
 				this.menu.menuHidden.addChild(this.inputButton.getContainer());
 			}
-
+	
 			if (this.tournamentInputButtons) {
 				this.tournamentInputButtons.forEach(button => {
 					if (button) {
@@ -210,6 +210,10 @@ export abstract class Overlay extends Entity {
 					}
 				});
 			}
+	
+			this.onHideComplete();
+			
+			if (onComplete) onComplete();
 		});
 	}
 
@@ -251,7 +255,6 @@ export abstract class Overlay extends Entity {
 				this.menu.menuHidden.addChild(this.quitButton.getContainer());
 			}
 
-			// Hide input button
 			if (this.inputButton) {
 				this.menu.menuHidden.addChild(this.inputButton.getContainer());
 			}
@@ -305,7 +308,6 @@ export abstract class Overlay extends Entity {
 			const playAvatars = MenuImageManager.getAllPlayAvatarImages();
 			playAvatars.forEach((avatar: any) => {
 				if (avatar) {
-					//console.log('Adding play avatar to elements:', avatar);
 					if (!avatar.parent) {
 						this.menu.renderLayers.overlays.addChild(avatar);
 					}
