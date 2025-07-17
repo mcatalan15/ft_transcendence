@@ -54,7 +54,6 @@ export async function showHome(container: HTMLElement): Promise<void> {
     container.appendChild(contentWrapper);
       
       const mainContainer = document.createElement('div');
-      //mainContainer.className = 'fixed inset-0 bg-neutral-900 text-amber-50 overflow-visible justify-center pt-40';
       mainContainer.className = 'fixed inset-x-0 top-20 bottom-0 bg-neutral-900 text-amber-50 overflow-visible flex items-center justify-center';
       container.appendChild(mainContainer);
       

@@ -92,7 +92,7 @@ export async function showChat(container: HTMLElement): Promise<void> {
   
   const contentBoxWrapper = document.createElement('div');
   contentBoxWrapper.className = 'relative flex flex-col items-center w-full';
-  contentBoxWrapper.style.paddingTop = '30px';
+  contentBoxWrapper.style.paddingTop = '25px';
   
   layout.applyConsistentBoxDimensions(chatBox);
   
@@ -228,7 +228,7 @@ function createChatMainContent(container: HTMLElement) {
   return chatMainContent;
 }
 
-function createHeader(): HTMLElement {
+/*function createHeader(): HTMLElement {
   const lang = i18n.language || 'en';
   const svgHeader = new HeadersComponent({
     type: 'chat',
@@ -245,14 +245,14 @@ function createHeader(): HTMLElement {
   }).getElement();
   
   return svgHeader;
-}
+}*/
 
-function cleanup(): void {
+/*function cleanup(): void {
   if (currentResizeHandler) {
     window.removeEventListener('resize', currentResizeHandler);
     currentResizeHandler = null;
   }
-}
+}*/
 
 export function setResizeHandler(handler: (() => void) | null): void {
   currentResizeHandler = handler;
