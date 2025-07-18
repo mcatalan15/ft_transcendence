@@ -25,6 +25,7 @@ const { saveUserToDatabase,
 	getRefreshTokenFromDatabase,
 	deleteRefreshTokenFromDatabase
 } = require('../db/database');
+const { get } = require('http');
 
 async function signupHandler(request, reply) {
 	const { username, email, password } = request.body;
@@ -615,6 +616,23 @@ async function isRefreshTokenValid(userId, refreshToken) {
 	return storedToken === refreshToken;
 }
 
+async function get2FAStatusHandler(request, reply) {
+	try {
+		const { userId } = request.params; // Extract userId from URL parameters
+		const user = await getUserById(userId);
+		if (!user) {
+			throw new Error(`User with ID ${userId} not found`);
+		}
+		return {
+			twoFAEnabled: user.twoFactorEnabled === 1, // Convert to boolean
+			twoFASecret: user.twoFactorSecret || null, // Return secret if exists
+		};
+	} catch (error) {
+		console.error(`Error fetching 2FA status for user ${userId}:`, error);
+		throw new Error('Failed to fetch 2FA status');
+	}
+}
+
 module.exports = {
 	signupHandler,
 	signinHandler,
@@ -622,5 +640,6 @@ module.exports = {
 	googleHandler,
 	setupTwoFa,
 	verifyTwoFa,
-	refreshTokenHandler
+	refreshTokenHandler,
+	get2FAStatusHandler,
 };

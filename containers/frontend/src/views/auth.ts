@@ -28,7 +28,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	console.log('UserId:', sessionStorage.getItem('userId'));
 	console.log('Username:', sessionStorage.getItem('username'));
 /* 	console.log('Email:', sessionStorage.getItem('email')); */
-	console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
+	// console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
 
 	const authDiv = document.createElement('div');
 	authDiv.className = 'h-screen flex items-center justify-center bg-neutral-900';
@@ -36,8 +36,8 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	const actualUserId = sessionStorage.getItem('userId');
 	const actualUsername = sessionStorage.getItem('username');
 	const actualEmail = sessionStorage.getItem('email');
-	let actual2FA = sessionStorage.getItem('twoFAEnabled');
-	console.log(`[auth.ts] twoFAEnabled: ${actual2FA}`);
+	// let actual2FA = sessionStorage.getItem('twoFAEnabled');
+	// console.log(`[auth.ts] twoFAEnabled: ${actual2FA}`);
 
 	if (!actualUserId || !actualUsername || !actualEmail) {
 		console.error('Missing user data in sessionStorage, redirecting to signin');
@@ -46,12 +46,46 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	}
 
 	// Validate 2FA value - should be "0" (enabled) or "1" (disabled)
-	if (actual2FA !== '0' && actual2FA !== '1') {
-		console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
-		actual2FA = '0';
-	}
+	// if (actual2FA !== '0' && actual2FA !== '1') {
+		// console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
+		// actual2FA = '0';
+	// }
 
 	// Check if 2FA is enabled (0 = enabled, needs verification)
+	console.log(`Checking 2FA status using /api/auth/status/${actualUserId}`);
+	let actual2FA = '0';
+	try {
+		const response = await fetch(getApiUrl(`/auth/status/${actualUserId}`), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+		});
+
+		console.log('Fetching auth status from API...');
+		console.log(`api/auth/status response: ${response.status} ${response.statusText}`);
+		if (response.ok) {
+			const data = await response.json();
+
+			// Extract 2FA values as variables
+			const twoFAEnabled = data.twoFAEnabled;
+			const twoFASecret = data.twoFASecret;
+
+			// Update the actual2FA variable based on API response
+			actual2FA = twoFAEnabled  === true ? '1' : '0';
+			console.log('[auth.ts] actual2FA:', actual2FA);
+			console.log('[auth.ts] Type of actual2FA:', typeof actual2FA);
+		} else {
+			console.error('Failed to fetch 2FA status:', response.statusText);
+			// Fall back to sessionStorage value if API fails
+		}
+
+	} catch (error) {
+		console.error('Error calling 2FA status API:', error);
+		// Fall back to sessionStorage value if API fails
+	}
+
 	if (actual2FA === '1') {
 		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');

@@ -557,7 +557,7 @@ async function getTwoFactorSecret(userId) {
 async function enableTwoFactor(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        const params = [secret, 0, userId];
+        const params = [secret, 1, userId];
 
         db.run(query, params, function (err) {
             if (err) {

@@ -430,6 +430,57 @@ const refreshTokenSchema = {
 	}
 };
 
+const get2FAStatusSchema = {
+	description: 'Fetches the 2FA status for a user.',
+	tags: ['authentication'],
+	params: {
+		type: 'object',
+		properties: {
+			userId: { type: 'number', description: 'ID of the user' }
+		},
+		required: ['userId']
+	},
+	response: {
+		200: {
+			description: '2FA status fetched successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				twoFAEnabled: { type: 'boolean', description: 'Indicates if 2FA is enabled for the user' }
+			},
+			example: {
+				success: true,
+				twoFAEnabled: true
+			}
+		},
+		400: {
+			description: 'Bad request - invalid user ID provided',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Invalid user ID provided'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Internal server error'
+			}
+		}
+	}
+};
+
+
 module.exports = {
   signupSchema,
   signinSchema,
@@ -437,5 +488,6 @@ module.exports = {
   googleSchema,
   setupTwoFaSchema,
   verifyTwoFaSchema,
-  refreshTokenSchema
+  refreshTokenSchema,
+  get2FAStatusSchema
 };
