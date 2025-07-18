@@ -101,7 +101,8 @@ export function showSignIn(container: HTMLElement): void {
           }
           else if (result.message === 'body/email must match format "email"') {
             errorMessageDiv.textContent = i18n.t('errorInvalidEmailFormat', { ns: 'signin' });
-          } else
+          } 
+          else
             errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
         } else {
           alert(i18n.t('success', { ns: 'signin' }));
