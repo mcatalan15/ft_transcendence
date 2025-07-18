@@ -797,6 +797,7 @@ async function verifyTwoFa(request, reply) {
 			}
 
 			// Crear JWT token DESPUÉS de verificación 2FA exitosa
+			console.log('User data:', user);
 			const authToken = jwt.sign({
 				id: user.id_user,
 				username: user.username,
@@ -815,9 +816,12 @@ async function verifyTwoFa(request, reply) {
 			);
 
 			// Guardar refresh token en DB
+			console.log('Saving refresh token for user:', user.id_user, 'Token:', refreshToken);
 			await saveRefreshTokenInDatabase(user.id_user, refreshToken);
+			console.log('Refresh token saved to database');
 
 			// Establecer cookie del refresh token
+			console.log('Setting refreshToken cookie:', refreshToken);
 			reply.setCookie('refreshToken', refreshToken, {
 				httpOnly: true,
 				secure: false,
@@ -825,6 +829,7 @@ async function verifyTwoFa(request, reply) {
 				path: '/',
 				maxAge: 7 * 24 * 60 * 60 // 7 days in seconds
 			});
+			console.log('refreshToken cookie set');
 
 			// Actualizar sesión
 			request.session.set('token', authToken);
@@ -836,6 +841,7 @@ async function verifyTwoFa(request, reply) {
 				twoFAVerified: true
 			});
 
+			console.log('Returning response with authToken:', authToken);
 			reply.code(200).send({
 				message: '2FA token verified successfully!',
 				verified: true,
@@ -916,7 +922,13 @@ async function refreshTokenHandler(request, reply) {
 }
 
 async function isRefreshTokenValid(userId, refreshToken) {
+	console.log('Checking refresh token for userId:', userId);
+	if (!userId) {
+		console.error('userId is undefined in isRefreshTokenValid');
+		return false;
+	}
 	const storedToken = await getRefreshTokenFromDatabase(userId);
+	console.log('Stored token:', storedToken, 'Provided token:', refreshToken);
 	return storedToken === refreshToken;
 }
 

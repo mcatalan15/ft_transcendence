@@ -188,7 +188,7 @@ async function getUsernameById(userId) {
 
 async function getUserById(userId) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
+        const query = `SELECT id_user, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
         db.get(query, [userId], (err, row) => {
             if (err) {
                 console.error('Database error in getUserById:', err);
