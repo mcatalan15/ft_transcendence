@@ -2,6 +2,7 @@ import { loadGames, GameHistory } from '../../utils/matchHistory/gameUtils';
 import { MatchTableComponent } from './table';
 import { Pagination } from '../generalComponents/Pagination';
 import i18n from '../../i18n';
+import { navigate } from '../../utils/router';
 
 export class HistoryContentRenderer {
   private currentPage: number = 0;
@@ -153,18 +154,46 @@ export class HistoryContentRenderer {
   private updateTable(games: GameHistory[]): void {
     if (games.length === 0) {
       this.matchTableComponent.updateData([]);
-      return;
-
-    }
-
-    if (games.length === 0) {
-      const emptyMessage = document.createElement('div');
-      emptyMessage.textContent = i18n.t('noGames', { ns: 'history' }) || 'No games found';
-      emptyMessage.className = 'col-span-full text-center py-8';
-      emptyMessage.style.color = '#FFFBEB';
-      emptyMessage.style.fontFamily = '"Roboto Mono", monospace';
-      emptyMessage.style.fontSize = '14px';
-      emptyMessage.style.opacity = '0.7';
+      
+      const tableContainer = document.querySelector('.w-full.flex.flex-col.items-center.gap-4');
+      if (tableContainer) {
+        const existingMessage = tableContainer.querySelector('.no-games-message');
+        if (existingMessage) {
+          existingMessage.remove();
+        }
+        
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'col-span-full text-center py-8 no-games-message';
+        emptyMessage.style.color = '#FFFBEB';
+        emptyMessage.style.fontFamily = '"Roboto Mono", monospace';
+        emptyMessage.style.fontSize = '14px';
+        emptyMessage.style.opacity = '0.7';
+        
+        const fullText = i18n.t('noGames', { ns: 'history' }) || 'No games found. Try playing Pong first!';
+        
+        const parts = fullText.split(/(Pong)/);
+        
+        parts.forEach((part: string) => {
+          if (part === 'Pong') {
+            const pongLink: HTMLAnchorElement = document.createElement('a');
+            pongLink.textContent = 'Pong';
+            pongLink.href = '#';
+            pongLink.className = 'text-amber-400 hover:underline cursor-pointer';
+            pongLink.style.color = '#fbbf24';
+            pongLink.onclick = (e: MouseEvent) => {
+              e.preventDefault();
+              navigate('/pong');
+            };
+            emptyMessage.appendChild(pongLink);
+          } else {
+            const textNode: Text = document.createTextNode(part);
+            emptyMessage.appendChild(textNode);
+          }
+        });
+        
+        tableContainer.appendChild(emptyMessage);
+      }
+      
       return;
     }
 

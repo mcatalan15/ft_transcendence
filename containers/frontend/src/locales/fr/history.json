@@ -5,5 +5,6 @@
     "score": "Score",
     "mode": "Mode",
     "contract": "Contrat",
-    "draw": "Match nul"
+    "draw": "Match nul",
+    "noGames": "Aucune partie trouvée. Va jouer au Pong !"
 }
