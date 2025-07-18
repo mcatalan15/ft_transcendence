@@ -48,12 +48,12 @@ export class MenuButtonSystem implements System {
 		this.menu = menu;
 	}
 
-	update(): void {
+	async update(): Promise<void> {
 		const unhandledEvents = [];
 
 		while (this.menu.eventQueue.length > 0) {
 			const event = this.menu.eventQueue.shift() as GameEvent;
-			
+
 			if (event.type === 'START_CLICK') {
 				this.handleStartClick();
 			} else if (event.type === 'OPTIONS_CLICK') {
@@ -82,17 +82,20 @@ export class MenuButtonSystem implements System {
 				this.resetLayer(event);
 			} else if (event.type.endsWith('BACK')) {
 				this.resetLayer(event);
+				if (event.type === 'PLAY_BACK') {
+					await this.handleCancelMatchmaking();
+				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
 		}
-		
+
 		this.menu.eventQueue.push(...unhandledEvents);
 	}
 
-	handleStartClick(){
+	handleStartClick() {
 		//Hide Start Button
 		this.menu.startButton.setHidden(true);
 		this.menu.menuHidden.addChild(this.menu.startButton.getContainer());
@@ -120,28 +123,14 @@ export class MenuButtonSystem implements System {
 		this.menu.redrawFrame();
 	}
 
-	async handlePlayClick(){
-		this.menu.optionsButton.setClickable(false);
-		this.menu.glossaryButton.setClickable(false);
-		this.menu.aboutButton.setClickable(false);
-		this.menu.filtersButton.setClickable(false);
-		this.menu.classicButton.setClickable(false);
-		this.menu.playButton.setClickable(false);
-		this.menu.localButton.setClickable(false);
-		this.menu.onlineButton.setClickable(false);
-		this.menu.IAButton.setClickable(false);
-		this.menu.duelButton.setClickable(false);
-		this.menu.tournamentButton.setClickable(false);
-		this.menu.startXButton.setClickable(false);
-		this.menu.ballButton.setClickable(false);
-		
+	handlePlayClick() {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
 		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
-		
+
 		if (this.menu.config.variant === 'tournament') {
 			this.menu.playButton.setClicked(true);
 			this.menu.tournamentOverlay.show();
@@ -170,7 +159,7 @@ export class MenuButtonSystem implements System {
 				await networkManager.startMatchmaking();
 				this.menu.readyButton.setClickable(false);
 				this.menu.readyButton.setClicked(true);
-				
+
 				// Fake loading animation
 				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 				while (this.menu.readyButton.getIsClicked()) {
@@ -196,21 +185,41 @@ export class MenuButtonSystem implements System {
 		}
 	}
 
+	private async handleCancelMatchmaking() {
+		if (this.networkManager) {
+			try {
+				await this.networkManager.cancelMatchmaking();
+				this.networkManager = null;
+			} catch (error) {
+				console.error('Error cancelling matchmaking:', error);
+			}
+		}
+		this.menu.readyButton.resetButton();
+		this.menu.readyButton.updateText('READY');
+		this.menu.readyButton.setClickable(true);
+		this.menu.readyButton.setClicked(false);
+	}
+
+	private handle1v1ReadyClick() {
+		// TODO
+	}
+
+	private handleBothReadyClick() { }
+
 	private startLocalGame(): void {
 		console.log('Starting local game...');
-		
+
 		this.menu.cleanup();
-		
-		//gameManager.destroyGame(this.menu.app.view.id);
+
+		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
-		game.tournamentManager = this.menu.tournamentManager;
-		
+
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
-		
+
 		game.init();
 	}
 
@@ -269,7 +278,7 @@ export class MenuButtonSystem implements System {
 		this.setButtonsClickability(false);
 	}
 
-	resetLayer(event: GameEvent){
+	resetLayer(event: GameEvent) {
 		if (event.type.includes('START')) {
 			this.resetStartOptions();
 
@@ -323,7 +332,7 @@ export class MenuButtonSystem implements System {
 			if (index > -1) {
 				this.overlayStack.splice(index, 1);
 			}
-			
+
 			this.menu.tournamentFiltersButton.setClickable(true);
 			this.menu.tournamentGlossaryButton.setClickable(true);
 			this.menu.readyButton.setClickable(true);
@@ -333,16 +342,16 @@ export class MenuButtonSystem implements System {
 				this.menu.glossaryButton.setClicked(false);
 				this.menu.glossaryButton.resetButton();
 			}
-			
+
 			this.menu.glossaryOverlay.hide();
 			this.glossaryOpenedBy = null;
 		} else if (event.type.includes('ABOUT')) {
 			this.setButtonsClickability(true);
-			
+
 			this.menu.aboutButton.setClicked(false);
 
 			this.menu.aboutButton.resetButton();
-			
+
 			this.menu.aboutOverlay.hide();
 
 			this.setButtonsClickability(true);
@@ -358,11 +367,12 @@ export class MenuButtonSystem implements System {
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
 			if (tournamentIndex > -1) this.overlayStack.splice(tournamentIndex, 1);
+
 			this.setButtonsClickability(this.overlayStack.length === 0);
 			this.menu.playButton.setClicked(false);
 			this.menu.playButton.resetButton();
 			this.menu.glossaryButton.resetButton();
-			
+
 			if (this.menu.config.variant === 'tournament') {
 				this.menu.tournamentOverlay.hide();
 			} else {
@@ -394,7 +404,7 @@ export class MenuButtonSystem implements System {
 
 	handleLocalClick() {
 		this.menu.localButton.setClicked(!this.menu.localButton.getIsClicked());
-		
+
 		if (this.menu.onlineButton.getIsClicked()) {
 			this.menu.onlineButton.setClicked(!this.menu.onlineButton.getIsClicked());
 		}
@@ -494,8 +504,8 @@ export class MenuButtonSystem implements System {
 			this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
 		}
 
-		if (this.menu.tournamentButton.getIsClicked()) {    
-			this.menu.config.mode = 'local';
+		if (this.menu.tournamentButton.getIsClicked()) {
+			this.menu.config.mode = 'online';
 			this.menu.config.variant = 'tournament';
 		}
 
@@ -508,7 +518,7 @@ export class MenuButtonSystem implements System {
 	handleFiltersClicked() {
 		const text = this.menu.filtersButton.getText();
 		let isClicked = this.menu.filtersButton.getIsClicked();
-	
+
 		if (isClicked) {
 			this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
 			this.menu.tournamentFiltersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
@@ -527,7 +537,7 @@ export class MenuButtonSystem implements System {
 			this.menu.menuContainer.filters = this.menu.baseFilters;
 			this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
 			this.menu.renderLayers.overlayQuits.filters = this.menu.baseFilters;
-			
+
 			if (this.menu.config.classicMode) {
 				this.menu.renderLayers.powerups.filters = this.menu.powerupClassicFilters;
 				this.menu.renderLayers.powerdowns.filters = this.menu.powerupClassicFilters;
@@ -540,7 +550,7 @@ export class MenuButtonSystem implements System {
 
 			this.menu.config.filters = true;
 		}
-	
+
 		this.menu.filtersButton.setClicked(!this.menu.filtersButton.getIsClicked());
 		this.menu.filtersButton.resetButton();
 		this.menu.tournamentFiltersButton.setClicked(!this.menu.tournamentFiltersButton.getIsClicked());
@@ -569,24 +579,45 @@ export class MenuButtonSystem implements System {
 		this.menu.duelButton.setHidden(false);
 		this.menu.tournamentButton.setHidden(true);
 
-		this.menu.startXButton.setHidden(true); 
+		this.menu.startXButton.setHidden(true);
 	}
+
+	handleMatchFound() {
+		
+		/* if (this.menu.readyButton.getIsClicked()) {
+			navigate(`/pong?${params.toString()}`);
+		} */
+
+    this.menu.readyButton.setClicked(false);
+	// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+    
+    // Update ready button text based on role
+    if (this.networkManager?.getIsHost()) {
+        this.menu.readyButton.updateText('GO!');
+        this.menu.readyButton.setClickable(true);
+    } else {
+        this.menu.readyButton.updateText('WAITING...');
+        this.menu.readyButton.setClickable(false);
+    }
+    
+    console.log('PlayOverlay updated with match data');
+}
 
 	handleClassicClicked() {
 		this.menu.config.classicMode = !this.menu.config.classicMode;
 		this.menu.ballAmount = 0;
-	
+
 		const text = this.menu.classicButton.getText();
 		const isClicked = this.menu.classicButton.getIsClicked();
-	
+
 		if (isClicked) {
 			this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
 		} else if (!isClicked) {
 			this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
 		}
-	
+
 		this.menu.classicButton.setClicked(!this.menu.classicButton.getIsClicked());
-	
+
 		const menu = this.menu;
 
 		const entitiesToRemove: string[] = [];
@@ -603,7 +634,7 @@ export class MenuButtonSystem implements System {
 
 		this.resetButtons();
 
-	
+
 		if (menu.title) {
 			menu.title.updateBlockingVisibility();
 		}
@@ -611,7 +642,7 @@ export class MenuButtonSystem implements System {
 		const titleORender = this.menu.titleO.getComponent('render') as RenderComponent;
 
 		if (this.menu.config.classicMode) {
-			this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());       
+			this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());
 			this.menu.renderLayers.logo.addChild(titleORender.graphic);
 			this.menu.glossaryOverlay.changeStrokeColor(GAME_COLORS.white);
 
@@ -668,7 +699,7 @@ export class MenuButtonSystem implements System {
 
 			case ('es'): {
 				if (mode === 'ON') {
-				return text.substring(0, text.indexOf('SÍ')) + 'NO';
+					return text.substring(0, text.indexOf('SÍ')) + 'NO';
 				} else if (mode === 'OFF') {
 					return text.substring(0, text.indexOf('NO')) + 'SÍ';
 				}
@@ -698,24 +729,24 @@ export class MenuButtonSystem implements System {
 
 	public updatePlayButtonState(): void {
 		let shouldBeClickable = false;
-		
+
 		if (this.menu.localButton.getIsClicked()) {
 			shouldBeClickable = this.menu.IAButton.getIsClicked() || this.menu.duelButton.getIsClicked();
 		} else if (this.menu.onlineButton.getIsClicked()) {
 			shouldBeClickable = this.menu.tournamentButton.getIsClicked() || this.menu.duelButton.getIsClicked();
 		}
-		
+
 		const playButton = this.menu.playButton;
 		const wasClickable = playButton.getIsClickable();
-		
+
 		if (wasClickable !== shouldBeClickable) {
 			playButton.setClickable(shouldBeClickable);
-			
+
 			if (shouldBeClickable) {
 				playButton.getContainer().eventMode = 'static';
 				playButton.getContainer().cursor = 'pointer';
 				playButton.setClicked(false);
-				
+
 				playButton.getContainer().removeAllListeners();
 				playButton.setupEventHandlers();
 			} else {
@@ -724,7 +755,7 @@ export class MenuButtonSystem implements System {
 				playButton.setClicked(true);
 				playButton.getContainer().removeAllListeners();
 			}
-			
+
 			playButton.resetButton();
 		}
 	}
@@ -749,7 +780,7 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.resetButton();
 		this.menu.tournamentGlossaryButton.resetButton();
 		this.menu.tournamentFiltersButton.resetButton();
-		
+
 		this.menu.playOrnament.resetOrnament();
 		this.menu.startOrnament.resetOrnament();
 		this.menu.optionsOrnament.resetOrnament();
@@ -782,7 +813,7 @@ export class MenuButtonSystem implements System {
 		(this.menu.paddleR as Paddle).redrawFullPaddle(true, 'powerdown');
 	}
 
-	setButtonsClickability(clickable: boolean, tournament: boolean = false): void {       
+	setButtonsClickability(clickable: boolean): void {
 		this.menu.startButton.setClickable(clickable);
 		this.menu.optionsButton.setClickable(clickable);
 		this.menu.glossaryButton.setClickable(clickable);
@@ -797,7 +828,7 @@ export class MenuButtonSystem implements System {
 		this.menu.startXButton.setClickable(clickable);
 		this.menu.optionsXButton.setClickable(clickable);
 		this.menu.ballButton.setClickable(clickable);
-		
+
 		if (clickable) {
 			this.updatePlayButtonState();
 		} else {
@@ -807,7 +838,7 @@ export class MenuButtonSystem implements System {
 
 	cleanup(): void {
 		this.menu.eventQueue = [];
-		
+
 		if (this.menu.startButton) this.menu.startButton.resetButton();
 		if (this.menu.playButton) this.menu.playButton.resetButton();
 		if (this.menu.optionsButton) this.menu.optionsButton.resetButton();

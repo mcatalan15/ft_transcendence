@@ -205,17 +205,10 @@ export class PongNetworkManager {
 			this.isHost = message.hostName === currentUsername;
 			this.playerNumber = this.isHost ? 1 : 2;
 			
-			console.log('🎮 Matchmaking successful:', {
-				gameId: this.gameId,
-				hostName: this.hostName,
-				guestName: this.guestName,
-				isHost: this.isHost
+			/* this.menu?.readyButton.setClicked(true); */
+			this.menu?.eventQueue.push({ 
+				type: 'MATCH_FOUND',
 			});
-			
-			// Update UI
-			this.showConnectionStatus('Match found! Transitioning to game...');
-			
-			this.transitionToGame();
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
@@ -527,10 +520,15 @@ export class PongNetworkManager {
 		}
 	}
 
-	public cancelMatchmaking() {
+	public async cancelMatchmaking() {
 		this.wsManager.send({
 			type: 'CANCEL_MATCHMAKING',
 			playerId: sessionStorage.getItem('username')
 		});
+		this.disconnect();
+	}
+
+	public getIsHost(): boolean {
+		return this.isHost;
 	}
 }
