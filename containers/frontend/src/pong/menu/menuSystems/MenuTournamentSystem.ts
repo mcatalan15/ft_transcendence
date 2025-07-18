@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:14:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 21:21:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:57:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,16 @@ export class MenuTournamentSystem implements System {
 
 			if (event.type === 'START_TOURNAMENT') {
 				this.startTournament();
+			} else if (event.type === 'PREPARE_NEXT_MATCH') {
+				this.prepareCurrentMatch();
 			} else {
 				unhandledEvents.push(event);
 			}
-
-			this.menu.eventQueue.push(...unhandledEvents);
 		}
-	}
 
+		// Push unhandled events back to queue
+		this.menu.eventQueue.push(...unhandledEvents);
+	}
 
 	startTournament() {
 		console.log('Starting tournament...');
@@ -52,27 +54,71 @@ export class MenuTournamentSystem implements System {
 		this.prepareNextMatch(this.menu.tournamentConfig!.nextMatch.matchOrder);
 	}
 
+	/**
+	 * Prepares the current match display based on the tournament's current state
+	 */
+	prepareCurrentMatch() {
+		if (!this.menu.tournamentManager.getHasActiveTournament() || !this.menu.tournamentConfig) {
+			console.log('No active tournament to prepare match for');
+			return;
+		}
+
+		const currentMatchOrder = this.menu.tournamentConfig.nextMatch.matchOrder;
+		console.log(`Preparing current match with order: ${currentMatchOrder}`);
+		
+		this.prepareNextMatch(currentMatchOrder);
+	}
+
+	/**
+	 * Prepares the next match display for the given match order
+	 */
 	prepareNextMatch(order: number) {
 		const nextPlayers = this.getNextTournamentPlayers(order);
+		
+		// Update the tournament config with next match info
 		this.menu.tournamentConfig!.nextMatch.leftPlayerName = nextPlayers.player1;
 		this.menu.tournamentConfig!.nextMatch.rightPlayerName = nextPlayers.player2;
 	
-		console.log(`Preparing next match: ${nextPlayers.player1} vs ${nextPlayers.player2}`);
+		console.log(`Preparing match ${order}: ${nextPlayers.player1} vs ${nextPlayers.player2}`);
 		
+		// Get player data for both players
 		const leftPlayerData = this.getPlayerDataByName(nextPlayers.player1!);
 		const rightPlayerData = this.getPlayerDataByName(nextPlayers.player2!);
 		
+		// Update the display if it exists
 		if (this.menu.tournamentOverlay?.nextMatchDisplay) {
 			this.menu.tournamentOverlay.nextMatchDisplay.eraseTournamentPlayerInfo();
 			this.menu.tournamentOverlay.nextMatchDisplay.updateLeftPlayerInfo(leftPlayerData, this.menu.tournamentConfig!.nextMatch.leftPlayerName!);
 			this.menu.tournamentOverlay.nextMatchDisplay.updateRightPlayerInfo(rightPlayerData, this.menu.tournamentConfig!.nextMatch.rightPlayerName!);
 			
+			// Update avatars
 			MenuImageManager.updateTournamentPlayerAvatars(
 				this.menu, 
 				leftPlayerData, 
 				rightPlayerData
 			);
 		}
+	}
+
+	/**
+	 * Advances to the next match in the tournament
+	 */
+	advanceToNextMatch() {
+		if (!this.menu.tournamentConfig) return;
+
+		const currentOrder = this.menu.tournamentConfig.nextMatch.matchOrder;
+		const nextOrder = currentOrder + 1;
+		
+		// Check if tournament is complete
+		if (nextOrder > 7) { // Assuming 7 total matches in 8-player tournament
+			console.log('Tournament complete!');
+			this.menu.tournamentConfig.isFinished = true;
+			return;
+		}
+
+		// Update match order and prepare next match
+		this.menu.tournamentConfig.nextMatch.matchOrder = nextOrder;
+		this.prepareNextMatch(nextOrder);
 	}
 
 	private getPlayerDataByName(playerName: string): any {

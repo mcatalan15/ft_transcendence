@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:46:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:05:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ export class EndingSystem implements System {
 
 		if (this.game.tournamentManager.getHasActiveTournament() && (this.game.data.leftPlayer.result === 'win' || this.game.data.rightPlayer.result === 'win')) {
 			const winnerName = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : this.game.data.rightPlayer.name;
+
+			this.prepareNextPlayers();
 			
 			switch (this.game.tournamentManager.getTournamentConfig()?.currentMatch) {
 				case (1): {
@@ -147,6 +149,52 @@ export class EndingSystem implements System {
 					this.game.tournamentManager.getTournamentConfig()!.tournamentWinner = winnerName;
 					break;
 				}
+			}
+		}
+	}
+
+	prepareNextPlayers(): void {
+		switch (this.game.tournamentManager.getTournamentConfig()?.currentMatch) {
+			case (1): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player3;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player4;
+				break;
+			}
+
+			case (2): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player5;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player6;
+				break;
+			}
+
+			case (3): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player7;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.firstRoundPlayers.player8;
+				break;
+			}
+
+			case (4): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player1;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player2;
+				break;
+			}
+
+			case (5): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player3;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player4;
+				break;
+			}
+
+			case (6): {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = this.game.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player1;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = this.game.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player2;
+				break;
+			}
+
+			default: {
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.leftPlayerName = null;
+				this.game.tournamentManager.getTournamentConfig()!.nextMatch.rightPlayerName = null;
+				break;
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:46:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:56:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,7 +385,6 @@ export class Menu{
 		}
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
-			console.log('🎉 Ongoing tournament detected, initializing tournament overlay');
 
 			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
 				const optionsEvent: GameEvent = {
@@ -430,6 +429,13 @@ export class Menu{
 			};
 	
 			this.eventQueue.push(playEvent);
+
+			const prepareNextMatchEvent: GameEvent = {
+				type: 'PREPARE_NEXT_MATCH',
+				target: null,
+			};
+			
+			this.eventQueue.push(prepareNextMatchEvent);
 		}
 
 		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {

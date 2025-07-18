@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:47:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:09:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:58:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ export class TournamentManager {
 	private hasActiveTournament: boolean = false;
 	private activeTournament: TournamentConfig | null = null;
 	private containerId: string | null = null;
+	private currentMatch: number = 0;
+	private totalMatches: number = 7; // 8 players = 7 matches total
 
 	constructor(app: Application) {
 		this.containerId = app.view.id;
@@ -26,6 +28,7 @@ export class TournamentManager {
 		this.hasActiveTournament = true;
 		this.activeTournament = config;
 		this.containerId = containerId;
+		this.currentMatch = 0; // Reset match counter
 		console.log(`Tournament started for container ${containerId}:`, config);
 	}
 
@@ -44,6 +47,8 @@ export class TournamentManager {
 		console.log(`Tournament completed for container ${this.containerId}`);
 		this.activeTournament = null;
 		this.containerId = null;
+		this.hasActiveTournament = false;
+		this.currentMatch = 0;
 	}
 
 	public hasTournament(): boolean {
@@ -58,6 +63,7 @@ export class TournamentManager {
 		this.hasActiveTournament = false;
 		this.activeTournament = null;
 		this.containerId = null;
+		this.currentMatch = 0;
 		console.log('Tournament state completely cleared');
 	}
 
@@ -67,5 +73,41 @@ export class TournamentManager {
 
 	public getTournamentConfig(): TournamentConfig | null {
 		return this.activeTournament;
+	}
+
+	public startMatch(): void {
+		this.currentMatch++;
+		console.log(`Starting match ${this.currentMatch} of ${this.totalMatches}`);
+	}
+	
+	public isTournamentComplete(): boolean {
+		return this.currentMatch >= this.totalMatches;
+	}
+
+	public getCurrentMatch(): number {
+		return this.currentMatch;
+	}
+
+	public getTotalMatches(): number {
+		return this.totalMatches;
+	}
+
+	/**
+	 * Advances to the next match and returns true if tournament is still ongoing
+	 */
+	public advanceMatch(): boolean {
+		if (this.currentMatch < this.totalMatches) {
+			this.currentMatch++;
+			console.log(`Advanced to match ${this.currentMatch} of ${this.totalMatches}`);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the current match order from the tournament config
+	 */
+	public getCurrentMatchOrder(): number {
+		return this.activeTournament?.nextMatch?.matchOrder || 1;
 	}
 }

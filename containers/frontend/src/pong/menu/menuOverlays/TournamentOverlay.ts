@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:23:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:00:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,18 @@ export class TournamentOverlay extends Overlay {
 }
 
 	public show(): void {
+		if (this.menu.tournamentManager.getHasActiveTournament()) {
+			const prepareMatchEvent = {
+				type: 'PREPARE_NEXT_MATCH',
+				target: null,
+			};
+			this.menu.eventQueue.push(prepareMatchEvent);
+		}
+		
 		this.changeStrokeColor(this.getStrokeColor());
 		this.updateOverlayTexts();
 		super.show();
-	
+
 		MenuImageManager.prepareTournamentAvatarImages(this.menu);
 		
 		this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
@@ -101,12 +109,12 @@ export class TournamentOverlay extends Overlay {
 		} else {
 			this.menu.readyButton.setClickable(false);
 		}
-	
+
 		this.menu.tournamentGlossaryButton.setHidden(false);
 		this.menu.tournamentFiltersButton.setHidden(false);
-	
+
 		this.quitButton!.setHidden(false);
-	
+
 		if (!this.menu.tournamentManager.getHasActiveTournament()) {
 			for (let i = 0; i < this.tournamentInputButtons.length; i++) {
 				this.tournamentInputButtons[i].setHidden(false);

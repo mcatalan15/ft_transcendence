@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:24:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:40:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ export class MenuButtonSystem implements System {
 		
 		this.menu.cleanup();
 		
-		gameManager.destroyGame(this.menu.app.view.id);
+		//gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
