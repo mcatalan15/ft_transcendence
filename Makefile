@@ -102,10 +102,10 @@ fclean:
 nuke:
 	@read -p "This will result in total Docker destruction, remove all cache, containers, images, etc. Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
 	-docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
-	-docker rm -f $(docker ps -aq)
-	-docker rmi -f $(docker images -aq)
-	-docker volume rm $(docker volume ls)
-	-docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
+	-docker rm -f $$(docker ps -aq)
+	-docker rmi -f $$(docker images -aq)
+	-docker volume rm $$(docker volume ls)
+	-docker network rm $$(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
 	-docker builder prune -af
 	-docker system prune -af --volumes
 
