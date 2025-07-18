@@ -118,7 +118,7 @@ export async function showHome(container: HTMLElement): Promise<void> {
           }
         });
 
-        bounceBall(bounceBtn, animationLayer, 'bg-amber-400', 70, true);
+        bounceBall(bounceBtn, animationLayer, 'bg-amber-400', 42, true);
       }
     ;
 }
