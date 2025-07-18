@@ -134,6 +134,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),
+					credentials: 'include' // Include cookies in the request
 				});
 
 				const data = await response.json();
@@ -272,6 +273,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId: actualUserId, token }),
+					credentials: 'include' // Include cookies in the request
 				});
 
 				const data: TwoFaVerifyResponse & { token?: string, twoFAEnabled?: number } = await response.json();

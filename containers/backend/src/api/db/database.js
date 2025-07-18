@@ -872,6 +872,7 @@ async function getUserProfileStats(userId) {
 }
 
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
+	console.log(`Saving refresh token for user ${userId}: ${refreshToken}`);
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
                       ON CONFLICT(user_id) DO UPDATE SET token = ?`;
@@ -887,6 +888,7 @@ async function saveRefreshTokenInDatabase(userId, refreshToken) {
                 });
                 reject(err);
             } else {
+				console.log(`Refresh token saved successfully for user ${userId}`);
                 resolve(true);
             }
         });
