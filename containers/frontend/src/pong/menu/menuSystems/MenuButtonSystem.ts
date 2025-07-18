@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 21:59:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:24:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -333,6 +333,7 @@ export class MenuButtonSystem implements System {
 
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
+			this.menu.tournamentManager.clearTournament();
 		}
 	}
 

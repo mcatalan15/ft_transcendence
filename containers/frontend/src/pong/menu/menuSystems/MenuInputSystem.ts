@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:08:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 09:55:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ export class MenuInputSystem implements System {
 		
 		const displayText = this.currentInput.length > 0 
 			? this.currentInput 
-			: "name?";
+			: this.getEmptyInputFallback();
 				
 		this.currentInputButton.updateText(displayText);
 	}
@@ -374,5 +374,25 @@ export class MenuInputSystem implements System {
         this.menu.eventQueue.push(startTournamentEvent);
 
 		console.log('Tournament is ready to start with the following configuration:', this.menu.tournamentConfig!);
+	}
+
+	private getEmptyInputFallback(): string {
+		switch (this.menu.language) {
+			case ('en'): {
+				return 'name?';
+			}
+
+			case ('es'): {
+				return 'nombre?';
+			}
+
+			case ('fr'): {
+				return 'nom?';
+			}
+
+			default: {
+				return 'nom?';
+			}
+		}
 	}
 }

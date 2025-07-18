@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EndingSystem.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:37 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:46:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,54 @@ export class EndingSystem implements System {
 			this.game.data.leftPlayer.result = 'draw';
 			this.game.data.rightPlayer.result = 'draw';
 			this.ended = true;
+		}
+
+		if (this.game.tournamentManager.getHasActiveTournament() && (this.game.data.leftPlayer.result === 'win' || this.game.data.rightPlayer.result === 'win')) {
+			const winnerName = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : this.game.data.rightPlayer.name;
+			
+			switch (this.game.tournamentManager.getTournamentConfig()?.currentMatch) {
+				case (1): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match1Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player1 = winnerName;
+					break;
+				}
+
+				case (2): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match2Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player2 = winnerName;
+					break;
+				}
+
+				case (3): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match3Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player3 = winnerName;
+					break;
+				}
+
+				case (4): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match4Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player4 = winnerName;
+					break;
+				}
+
+				case (5): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match5Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player1 = winnerName;
+					break;
+				}
+
+				case (6): {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match6Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player2 = winnerName;
+					break;
+				}
+
+				default: {
+					this.game.tournamentManager.getTournamentConfig()!.matchWinners.match7Winner = winnerName;
+					this.game.tournamentManager.getTournamentConfig()!.tournamentWinner = winnerName;
+					break;
+				}
+			}
 		}
 	}
 

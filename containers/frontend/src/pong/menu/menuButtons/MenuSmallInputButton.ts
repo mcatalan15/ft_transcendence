@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 15:01:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 09:49:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ export class MenuSmallInputButton extends MenuButton {
         this.resetButtonState();
         this.isStateChanging = false;
         if (shouldRewrite) {
-            this.updateText('Player ' + this.getButtonId().charAt(this.getButtonId().length - 1));
+            this.updateText('Player-' + this.getButtonId().charAt(this.getButtonId().length - 1));
         }
 
         if (this.isHidden) {

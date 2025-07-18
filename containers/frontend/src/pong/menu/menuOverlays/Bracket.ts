@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 16:42:00 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:47:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ import { RenderComponent } from "../../components/RenderComponent";
 import { TextComponent } from "../../components/TextComponent";
 
 import { GAME_COLORS } from "../../utils/Types";
+import { PlayerKey } from "../../utils/GameConfig";
 
 export class Bracket extends Entity {
 	menu: Menu;
@@ -164,7 +165,7 @@ export class Bracket extends Entity {
 		this.createTierCells(1, this.BASE_X + (this.TIER_SPACING * 3), bracketCenterY, 0);
 	}
 
-	private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
+	/* private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
 		const totalHeight = (playerCount - 1) * verticalSpacing;
 		const startY = centerY - (totalHeight / 2);
 		
@@ -177,6 +178,50 @@ export class Bracket extends Entity {
 				'bracket',
 				this.menu,
 				'',
+				x,
+				y,
+				this.CELL_WIDTH,
+				this.CELL_HEIGHT,
+				i,
+			));
+		}
+	} */
+
+	private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
+		const totalHeight = (playerCount - 1) * verticalSpacing;
+		const startY = centerY - (totalHeight / 2);
+		
+		for (let i = 0; i < playerCount; i++) {
+			const x = baseX;
+			const y = startY + (i * verticalSpacing);
+
+			let playerName;
+
+			if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 8) {
+				const key = `player${i + 1}` as PlayerKey;
+				playerName = this.menu.tournamentManager.getTournamentConfig()!.registeredPlayerNames[key];
+			} else if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 4) {
+				switch (i) {
+					case 0: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player1; break;
+					case 1: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player2; break;
+					case 2: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player3; break;
+					case 3: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player4; break;
+				}
+			}  else if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 2) {
+				switch (i) {
+					case 0: playerName = this.menu.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player1; break;
+					case 1: playerName = this.menu.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player2; break;
+				}
+
+			} else {
+				playerName = '';
+			}
+			
+			this.nameCells.push(new NameCell(
+				`nameCell_${this.nameCells.length}`,
+				'bracket',
+				this.menu,
+				playerName!,
 				x,
 				y,
 				this.CELL_WIDTH,

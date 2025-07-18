@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:47:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 21:23:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:09:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ export class TournamentManager {
 		this.hasActiveTournament = false;
 		this.activeTournament = null;
 		this.containerId = null;
+		console.log('Tournament state completely cleared');
 	}
 
 	public getHasActiveTournament(): boolean {

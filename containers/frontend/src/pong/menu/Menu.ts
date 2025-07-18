@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 22:21:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:46:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,6 +386,22 @@ export class Menu{
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
 			console.log('🎉 Ongoing tournament detected, initializing tournament overlay');
+
+			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
+				const optionsEvent: GameEvent = {
+					type: 'OPTIONS_CLICK',
+					target: this.optionsButton,
+				};
+
+				this.eventQueue.push(optionsEvent);
+
+				const classicEvent: GameEvent = {
+					type: 'CLASSIC_CLICK',
+					target: this.classicButton,
+				};
+
+				this.eventQueue.push(classicEvent);
+			}
 
 			const startEvent: GameEvent = {
 				type: 'START_CLICK',
@@ -1090,19 +1106,27 @@ export class Menu{
 		
 		console.log('Applying Firefox-specific optimizations...');
 		
-		// Reduce particle density
 		this.maxBalls = Math.floor(this.maxBalls * 0.7);
 		
-		// Disable some intensive visual effects
 		this.app.ticker.maxFPS = 60;
 		this.app.ticker.minFPS = 30;
-		
-		// Force garbage collection more frequently (if available)
+
 		if (window.gc) {
 			setInterval(() => {
 				window.gc!();
 			}, 10000);
 		}
+	}
+
+	public cancelTournament(): void {
+		this.hasOngoingTournament = false;
+		this.tournamentConfig = null;
+		this.tournamentManager.clearTournament();
+
+		this.tournamentInputButtons.forEach(button => {
+			button.updateText(`Player-${button.getButtonId().split('_').pop()}`);
+			button.isFilled = false;
+		});
 	}
 
 	public initTournamentConfiguration() {
@@ -1114,6 +1138,17 @@ export class Menu{
 			classicMode: this.config.classicMode? true : false,
 
 			currentPhase: 1,
+			currentMatch: 1,
+			
+			matchWinners: {
+				match1Winner: null,
+				match2Winner: null,
+				match3Winner: null,
+				match4Winner: null,
+				match5Winner: null,
+				match6Winner: null,
+				match7Winner: null,
+			},
 
 			nextMatch: {
 				matchOrder: 0,
@@ -1166,7 +1201,7 @@ export class Menu{
 				player2: null,
 			},
 
-			winner: null,
+			tournamentWinner: null,
 
 		} as TournamentConfig;
 	}

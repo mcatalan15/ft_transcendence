@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 17:24:40 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:46:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,13 +134,26 @@ export interface PlayerData {
 	totalPlayers?: number;
 }
 
+export type PlayerKey = `player${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`;
+
 export interface TournamentConfig {
 	tournamentId?: string | number;
 	isPrepared: boolean;
 	isFinished: boolean;
 	classicMode:boolean;
 
-	currentPhase?: number | 1 | 2 | 3 | 4 ;
+	currentPhase?: 1 | 2 | 3 | 4 ;
+	currentMatch?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+	matchWinners: {
+		match1Winner: string | null;
+		match2Winner: string | null;
+		match3Winner: string | null;
+		match4Winner: string | null;
+		match5Winner: string | null;
+		match6Winner: string | null;
+		match7Winner: string | null;
+	}
 
 	nextMatch: {
 		matchOrder: number;
@@ -149,17 +162,17 @@ export interface TournamentConfig {
 	}
 
 	registeredPlayerNames: {
-		player1: string | null;
-		player2: string | null;
+		player1: string | PlayerKey | null;
+		player2: string | PlayerKey | null;
 
-		player3: string | null;
-		player4: string | null;
+		player3: string | PlayerKey | null;
+		player4: string | PlayerKey | null;
 
-		player5: string | null;
-		player6: string | null;
+		player5: string | PlayerKey | null;
+		player6: string | PlayerKey | null;
 
-		player7: string | null;
-		player8: string | null;
+		player7: string | PlayerKey | null;
+		player8: string | PlayerKey | null;
 	}
 
 	registeredPlayerData: {
@@ -200,7 +213,7 @@ export interface TournamentConfig {
 		player2: string | null;
 	}
 
-	winner: string | null;
+	tournamentWinner: string | null;
 
 	finalTournamentData?: {}
 }
