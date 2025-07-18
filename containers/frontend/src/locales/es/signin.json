@@ -6,6 +6,7 @@
     "signUp": "Registrarse",
     "errorAllFields": "¡Todos los campos son obligatorios!",
     "errorInvalidCredentials": "Correo electrónico o contraseña inválidos.",
+    "errorInvalidEmailFormat": "Formato de correo electrónico inválido.",
     "success": "¡Inicio de sesión exitoso!",
     "noAccount": "¿Aún no tienes una cuenta?"
 }

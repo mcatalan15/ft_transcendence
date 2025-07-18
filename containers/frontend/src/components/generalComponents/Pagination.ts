@@ -1,9 +1,3 @@
-/*interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}*/
-
 export class Pagination {
   private element: HTMLElement;
   private props: {

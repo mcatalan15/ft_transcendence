@@ -1,7 +1,9 @@
 {
     "date": "Date",
     "opponent": "Adversaire",
+    "winner": "Vainqueur",
     "score": "Score",
     "mode": "Mode",
-    "contract": "Contrat"
+    "contract": "Contrat",
+    "draw": "Match nul"
 }

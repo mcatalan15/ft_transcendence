@@ -3,10 +3,11 @@
     "email": "E-mail",
     "password": "Mot de passe",
     "signIn": "Se connecter",
-	  "signUp": "S'enregistrer",
+	"signUp": "S'enregistrer",
     "errorAllFields": "Tous les champs sont obligatoires !",
     "errorInvalidCredentials": "E-mail ou mot de passe incorrect.",
+    "errorInvalidEmailFormat": "Format d'e-mail invalide.",
     "success": "Connexion réussie !",
-	  "noAccount": "Pas encore de compte ?"
+	"noAccount": "Pas encore de compte ?"
   }
   

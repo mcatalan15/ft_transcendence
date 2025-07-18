@@ -25,17 +25,9 @@ async function initializeI18n(): Promise<void> {
 function render(container: HTMLElement): void {
   cleanup();
 
-  const updateProfile = () => {
-    const pongBoxElement = renderer.getPongBoxElement();
-    if (pongBoxElement) {
-      ProfileLoader.loadUserProfile(pongBoxElement);
-    }
-  };
-
   const renderer = new SettingsRenderer(
     container, 
-    () => showSettings(container),
-    updateProfile
+    () => showSettings(container)
   );
   renderer.render();
   
