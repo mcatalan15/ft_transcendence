@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const ClassicGameSession = require('../../pong/ClassicGameSession'); 
+const ClassicGameSession = require('../../pong/ClassicGameSession');
 
 function setupGameWebSocket(wss, redisService, gameManager) {
 	const activeGames = new Map();
@@ -33,7 +33,8 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					case 'IDENTIFY':
 						playerId = data.playerId;
 						gameId = data.gameId || gameId;
-						
+
+						// Store the WebSocket connection for this player
 						playerConnections.set(playerId, ws);
 
 						console.log(`Player ${playerId} identified for game ${gameId}`);
@@ -43,7 +44,8 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 							playerId: playerId,
 							gameId: gameId
 						}));
-					
+
+						// Only attempt to join game if we have a valid gameId
 						if (gameId && gameId !== '' && gameId !== 'undefined' && gameId !== 'null') {
 							console.log(`Attempting to join game ${gameId} for player ${playerId}`);
 							await handleJoinGame({ playerId, gameId }, ws, activeGames, redisService);
@@ -77,20 +79,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						break;
 
 					case 'CANCEL_MATCHMAKING':
-						console.log(`Player ${data.playerId} cancelled matchmaking`);
-						if (data.playerId) {
-							playerConnections.delete(data.playerId);
-							for (const game of activeGames.entries()) {
-								console.log(game);
-								if (game.players.has(data.playerId)) {
-									activeGames.delete(game);
-									if (game.players.size === 0) {
-										activeGames.delete(game);
-									}
-								}
-							}
-						}
-						console.log(activeGames);
+						handleCancelMatchmaking(data, redisService, activeGames, playerConnections);
 						break;
 
 					default:
@@ -112,7 +101,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			if (playerId) {
 				playerConnections.delete(playerId);
 			}
-			
+
 			handlePlayerDisconnect(playerId, gameId, activeGames, playerConnections);
 		});
 
@@ -249,6 +238,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					console.log(`🚀 Marking player ${pid} as ready`);
 					player.ready = true;
 				});
+
 				startGame(gameId, activeGames);
 			} else {
 				console.log(`⏳ Not auto-starting: status=${gameData.status}, players=${connectedPlayers}/2`);
@@ -364,39 +354,39 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		if (!playerId) return;
 
 		console.log(`Handling disconnect for player ${playerId}`);
-		
+
 		// Remove from player connections if provided
 		if (playerConnections) {
 			playerConnections.delete(playerId);
 		}
-		
+
 		// Find and clean up ALL games this player was in
 		const gamesToDelete = [];
-		
+
 		for (const [currentGameId, game] of activeGames.entries()) {
 			if (game.players && game.players.has(playerId)) {
 				console.log(`Found player ${playerId} in game ${currentGameId}`);
-				
+
 				// Remove player from this game
 				game.players.delete(playerId);
-				
+
 				// Broadcast disconnect message to remaining players
 				broadcastToGame(currentGameId, {
 					type: 'PLAYER_DISCONNECTED',
 					playerId: playerId
 				}, activeGames);
-				
+
 				// Mark game for cleanup
 				gamesToDelete.push(currentGameId);
 			}
 		}
-		
+
 		// End all games the player was in
 		for (const gameIdToDelete of gamesToDelete) {
 			console.log(`Ending game ${gameIdToDelete} due to player ${playerId} disconnect`);
 			endGame(gameIdToDelete, activeGames);
 		}
-}
+	}
 
 	function broadcastToGame(gameId, message, activeGames) {
 		const game = activeGames.get(gameId);
@@ -440,7 +430,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			if (waitingGames && waitingGames.length > 0) {
 				const gameId = waitingGames[0];
 				const gameData = await redisService.getGameData(gameId);
-				
+
 				if (gameData && !gameData.guestId && gameData.hostId !== playerId) {
 					gameData.guestId = playerId;
 					gameData.status = 'ready';
@@ -478,15 +468,15 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 				gameType: gameType,
 				createdAt: new Date().toISOString()
 			};
-			
+
 			await redisService.setGameData(gameId, gameData);
-			
+
 			ws.send(JSON.stringify({
 				type: 'MATCHMAKING_WAITING',
 				gameId: gameId,
 				message: 'Waiting for opponent...'
 			}));
-			
+
 		} catch (error) {
 			console.error('Matchmaking error:', error);
 			ws.send(JSON.stringify({

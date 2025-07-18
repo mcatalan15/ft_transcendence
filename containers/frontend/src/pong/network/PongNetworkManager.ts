@@ -208,10 +208,9 @@ export class PongNetworkManager {
 			this.playerNumber = this.isHost ? 1 : 2;
 			
 			/* this.menu?.readyButton.setClicked(true); */
-			this.transitionToGame();
- /* 			this.menu?.eventQueue.push({ 
+			this.menu?.eventQueue.push({ 
 				type: 'MATCH_FOUND',
-			}); */
+			});
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
@@ -522,7 +521,7 @@ export class PongNetworkManager {
 	public async cancelMatchmaking() {
 		this.wsManager.send({
 			type: 'CANCEL_MATCHMAKING',
-			playerId: sessionStorage.getItem('userId')
+			playerId: sessionStorage.getItem('username')
 		});
 		this.disconnect();
 	}
