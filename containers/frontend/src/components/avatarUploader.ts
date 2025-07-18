@@ -2,6 +2,8 @@ import { CONFIG } from '../config/settings.config';
 import { AvatarElementBuilder } from './avatarElementBuilder';
 import { AvatarFileHandler } from './avatarFileHandler';
 import { getApiUrl } from '../config/api';
+import { getAvatarUrlWithToken } from '../utils/avatar/avatarUtils';
+
 
 export class AvatarUploader {
   private pongBoxElement: HTMLElement;
@@ -41,7 +43,7 @@ export class AvatarUploader {
   }
 
   private setAvatarSource(avatarImg: HTMLImageElement): void {
-    avatarImg.src = `${getApiUrl('/profile/avatar')}/${this.userId}?t=${Date.now()}`;
+    avatarImg.src = getAvatarUrlWithToken(this.userId);
   }
 
   private setupFileHandler(elements: any, avatarImg: HTMLImageElement): void {

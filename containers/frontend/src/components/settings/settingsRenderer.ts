@@ -8,6 +8,7 @@ import { setResizeHandler } from '../../views/settings';
 import { SettingsFormsRenderer } from './settingsFormsRendered';
 import { getApiUrl } from '../../config/api';
 import { MessageManager } from '../../utils/messageManager';
+import { getAvatarUrlWithToken } from "../../utils/avatar/avatarUtils";
 
 export class SettingsRenderer {
   private container: HTMLElement;
@@ -84,7 +85,7 @@ export class SettingsRenderer {
         throw new Error(i18n.t("errors.userNotFound", { ns: "settings" }) || "User not found");
       }
 
-      const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
+      const avatarUrl = getAvatarUrlWithToken(userId);
       const formsRenderer = new SettingsFormsRenderer(
         this.container, 
         username, 

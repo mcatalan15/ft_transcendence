@@ -138,7 +138,8 @@ async function avatarUploadHandler(request, reply) {
 			});
 		}
 
-		const user = request.session.get('user');
+		// const user = request.session.get('user');
+		const user = request.user;
 
 		if (!user) {
 			return reply.status(401).send({
@@ -147,7 +148,7 @@ async function avatarUploadHandler(request, reply) {
 			});
 		}
 		
-		const userId = user.userId || user.id;
+		const userId = user.userId; //|| user.id;
 
 		if (!userId) {
 			return reply.status(401).send({
@@ -184,6 +185,11 @@ async function avatarUploadHandler(request, reply) {
 			success: false,
 			message: 'Failed to upload avatar',
 			error: error.message
+		});
+		// ADDEd
+		return reply.stats(500).send({
+			success: false,
+			message: error.message || 'Failed to upload avatar'
 		});
 	}
 }
@@ -279,7 +285,7 @@ async function getUserOnlineStatus(request, reply) {
 
 async function updateNicknameHandler(request, reply) {
 	try {
-		const sessionUser = request.session.get('user');
+		const sessionUser = request.user;
 		const newNickname = request.body.nickname;
 
 		console.log('Session user:', sessionUser);
@@ -300,14 +306,14 @@ async function updateNicknameHandler(request, reply) {
 		}
 
 		const existingUser = await getUserByUsername(newNickname);
-		if (existingUser && existingUser.id_user !== sessionUser.userId) {
+		if (existingUser && existingUser.id_user !== sessionUser.id) {
 			return reply.status(400).send({
 				success: false,
 				message: 'Nickname already exists'
 			});
 		}
 
-		const updatedUser = await updateNickname(sessionUser.userId, newNickname);
+		const updatedUser = await updateNickname(sessionUser.id, newNickname);
 		
 		if (!updatedUser) {
 			return reply.status(500).send({

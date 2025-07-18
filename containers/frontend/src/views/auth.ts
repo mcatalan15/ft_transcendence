@@ -19,7 +19,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	await i18n.loadNamespaces('auth');
   	await i18n.changeLanguage(i18n.language);
 
-	console.log('Hola!');
 	const urlParams = new URLSearchParams(window.location.search);
 	const fromPage = urlParams.get('from');
 	console.log('Current URL:', window.location.href);
@@ -28,7 +27,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	console.log('UserId:', sessionStorage.getItem('userId'));
 	console.log('Username:', sessionStorage.getItem('username'));
 /* 	console.log('Email:', sessionStorage.getItem('email')); */
-	console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
+	console.log('Auth Token:', sessionStorage.getItem('token'));
 
 	const authDiv = document.createElement('div');
 	authDiv.className = 'h-screen flex items-center justify-center bg-neutral-900';

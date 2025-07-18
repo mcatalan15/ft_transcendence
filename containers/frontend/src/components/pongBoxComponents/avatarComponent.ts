@@ -1,5 +1,6 @@
 import { CAMERA_SVG, CAMERA_BUTTON_STYLES, STATUS_BUTTON_STYLES } from '../../config/settings.config';
 import { getApiUrl } from '../../config/api';
+import { getAvatarUrlWithToken } from '../../utils/avatar/avatarUtils';
 import i18n from '../../i18n';
 
 export class AvatarComponent {
@@ -73,8 +74,17 @@ export class AvatarComponent {
         const formData = new FormData();
         formData.append('avatar', file);
         try {
+          const token = sessionStorage.getItem('token');
+          if (!token) {
+            alert('Authentication required');
+            return;
+          }
+
           const response = await fetch(getApiUrl('/profile/avatar'), {
             method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
             credentials: 'include',
             body: formData
           });
@@ -87,8 +97,8 @@ export class AvatarComponent {
             const match = this.avatarImg.src.match(/\/avatar\/([^/?]+)/);
             const userId = match ? match[1] : sessionStorage.getItem('userId');
             if (userId) {
-              const timestamp = Date.now();
-              this.avatarImg.src = `${getApiUrl('/profile/avatar')}/${userId}?t=${timestamp}`;
+            //   const timestamp = Date.now();
+              this.avatarImg.src = getAvatarUrlWithToken(userId);
             }
           }
         } catch (error) {
@@ -101,7 +111,16 @@ export class AvatarComponent {
 
   private async updateOnlineStatus(userId: string, statusButton: HTMLElement): Promise<void> {
     try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        console.error('No token found in sessionStorage');
+        return;
+      }
+
       const response = await fetch(getApiUrl(`/profile/status/${userId}`), {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         credentials: 'include'
       });
 

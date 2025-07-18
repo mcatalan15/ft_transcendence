@@ -7,6 +7,7 @@ import { CONFIG } from "../../config/settings.config";
 import { setResizeHandler } from "../../views/friends";
 import { FriendsContentRenderer } from "./friendsContentRenderer";
 import { getApiUrl } from "../../config/api";
+import { getAvatarUrlWithToken } from "../../utils/avatar/avatarUtils";
 
 export class FriendsRenderer {
   private container: HTMLElement;
@@ -61,7 +62,7 @@ export class FriendsRenderer {
   private createPongBox(): HTMLElement {
     const username = sessionStorage.getItem('username') || '';
     const userId = sessionStorage.getItem('userId') || 'defaultUserId';
-    const avatarUrl = `${getApiUrl('/profile/avatar')}/${userId}?t=${Date.now()}`;
+    const avatarUrl = getAvatarUrlWithToken(userId);
 
     const friendsContentContainer = document.createElement('div');
     friendsContentContainer.id = 'friends-content-container';

@@ -282,41 +282,86 @@ export class ProfileContentRenderer {
     return btn;
   }
 
-  private async handleFriendAction(data: ProfileData): Promise<void> {
-    try {
-      const endpoint = data.isFriend ? '/friends/remove' : '/friends/add';
-      const method = data.isFriend ? 'DELETE' : 'POST';
+//   private async handleFriendAction(data: ProfileData): Promise<void> {
+//     try {
+// 		const token = sessionStorage('token');
+//       const endpoint = data.isFriend ? '/friends/remove' : '/friends/add';
+//       const method = data.isFriend ? 'DELETE' : 'POST';
       
-      const response = await fetch(getApiUrl(endpoint), {
-        method: method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: this.username })
-      });
+//       const response = await fetch(getApiUrl(endpoint), {
+//         method: method,
+//         credentials: 'include',
+//         headers: {
+//           'Content-Type': 'application/json',
+// 			'Authorization': `Bearer ${token}`
+//         },
+//         body: JSON.stringify({ username: this.username })
+//       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update friend status');
-      }
+//       if (!response.ok) {
+//         throw new Error('Failed to update friend status');
+//       }
 
-      data.isFriend = !data.isFriend;
+//       data.isFriend = !data.isFriend;
       
-      const column = this.createButtonsColumn(data);
-      const oldColumn = this.container.querySelector('div[class*="w-1/2"]:last-of-type');
-      if (oldColumn && oldColumn.parentNode) {
-        oldColumn.parentNode.replaceChild(column, oldColumn);
-      }
+//       const column = this.createButtonsColumn(data);
+//       const oldColumn = this.container.querySelector('div[class*="w-1/2"]:last-of-type');
+//       if (oldColumn && oldColumn.parentNode) {
+//         oldColumn.parentNode.replaceChild(column, oldColumn);
+//       }
 
-      if (data.isFriend) {
-        MessageManager.showSuccess(i18n.t('friendAdded', { ns: 'profile' }));
-      } else {
-        MessageManager.showError(i18n.t('friendRemoved', { ns: 'profile' }));
-      }
+//       if (data.isFriend) {
+//         MessageManager.showSuccess(i18n.t('friendAdded', { ns: 'profile' }));
+//       } else {
+//         MessageManager.showError(i18n.t('friendRemoved', { ns: 'profile' }));
+//       }
 
-    } catch (error) {
-      console.error('Error updating friend status:', error);
-      MessageManager.showError(i18n.t('friendshipStatusError', { ns: 'profile' }));
-    }
-  }
+//     } catch (error) {
+//       console.error('Error updating friend status:', error);
+//       MessageManager.showError(i18n.t('friendshipStatusError', { ns: 'profile' }));
+//     }
+//   }
+// }
+
+	private async handleFriendAction(data: ProfileData): Promise<void> {
+		try {
+			const token = sessionStorage.getItem('token');
+			console.log('Friend action token:', token);
+			if (!token) {
+				console.error('No token found in sessionStorage');
+				navigate('/signin');
+				throw new Error('No token found');
+			}
+			const endpoint = data.isFriend ? '/friends/remove' : '/friends/add';
+			const method = data.isFriend ? 'DELETE' : 'POST';
+			console.log(`Sending ${method} to ${getApiUrl(endpoint)} with username: ${this.username}`);
+			const response = await fetch(getApiUrl(endpoint), {
+				method: method,
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`,
+				},
+				body: JSON.stringify({ username: this.username }),
+			});
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				console.error('Friend action error response:', errorData);
+				throw new Error(`Failed to update friend status: ${errorData.message || 'Unknown error'}`);
+			}
+			data.isFriend = !data.isFriend;
+			const column = this.createButtonsColumn(data);
+			const oldColumn = this.container.querySelector('div[class*="w-1/2"]:last-of-type');
+			if (oldColumn && oldColumn.parentNode) {
+				oldColumn.parentNode.replaceChild(column, oldColumn);
+			}
+			if (data.isFriend) {
+				MessageManager.showSuccess(i18n.t('friendAdded', { ns: 'profile' }));
+			} else {
+				MessageManager.showError(i18n.t('friendRemoved', { ns: 'profile' }));
+			}
+		} catch (error) {
+			console.error('Error updating friend status:', error);
+			MessageManager.showError(i18n.t('friendshipStatusError', { ns: 'profile' }));
+		}
+	}
 }

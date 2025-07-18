@@ -270,11 +270,19 @@ export function showBlockchain(container: HTMLElement): void {
 			}
 
 			try {
+				const token = sessionStorage.getItem('token');
+				if (!token) {
+					console.error('No token found in sessionStorage');
+					alert('Authentication required');
+					return;
+				}
+
 				// Save game data
 				const response = await fetch(getApiUrl('/games'), {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`,
 					},
 					body: JSON.stringify({
 						player1_id: player1Id,

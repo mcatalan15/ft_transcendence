@@ -650,135 +650,251 @@ async function setupTwoFa(request, reply) {
 
 async function verifyTwoFa(request, reply) {
 	console.log('[verifyTwoFa] FUNCTION CALLED - Start of function');
-  console.log('[verifyTwoFa] Request URL:', request.url);
-  console.log('[verifyTwoFa] Request method:', request.method);
-  console.log('[verifyTwoFa] Request headers:', request.headers);
-  const { userId, token } = request.body;
-  const id_user = userId;
+	console.log('[verifyTwoFa] Request URL:', request.url);
+	console.log('[verifyTwoFa] Request method:', request.method);
+	console.log('[verifyTwoFa] Request headers:', request.headers);
+	const { userId, token } = request.body;
 	console.log('[verifyTwoFa] Input:', { userId, token });
-  // Validate input
-  if (typeof userId !== 'number' || !token || !/^\d{6}$/.test(token)) {
-    return reply.code(400).send({
-      success: false,
-      message: 'Invalid user ID or 2FA token provided.',
-      verified: false,
-    });
-  }
 
-  try {
-    // Get user
-    const user = await getUserById(userId);
-    if (!user) {
-      return reply.code(404).send({
-        success: false,
-        message: 'User not found.',
-        verified: false,
-      });
-    }
-	console.log('[verifyTwoFa] User found:', user);
-    // Verify 2FA code
-    const verified = await verifyTwoFaToken(userId, token); // Assuming this uses speakeasy.totp.verify
-    if (!verified) {
-      return reply.code(400).send({
-        success: false,
-        message: 'Invalid 2FA token.',
-        verified: false,
-      });
-    }
+	// Validate input
+	if (typeof userId !== 'number' || !token || !/^\d{6}$/.test(token)) {
+		return reply.code(400).send({
+			success: false,
+			message: 'Invalid user ID or 2FA token provided.',
+			verified: false,
+		});
+	}
 
-    // Generate access token
-	console.log('############################################################################################');
-	console.log('[verifyTwoFa] accessToken generaation:', user);
-	console.log('[verifyTwoFa] User ID:', user.id);
-	console.log('[verifyTwoFa] User ID (id_user):', user.id_user);
-	console.log('[verifyTwoFa] User username:', user.username);
-	console.log('[verifyTwoFa] User email:', user.email);
-	console.log('[verifyTwoFa] User twoFAEnabled:', user.twoFAEnabled);
-	console.log('[verifyTwoFa] User twoFAVerified:', user.twoFAVerified);
-	console.log('[verifyTwoFa] user.id_user:', user.id_user);
-	console.log('############################################################################################');
-    const accessToken = jwt.sign(
-      {
-        id: user.id_user,
-        username: user.username,
-        email: user.email,
-        twoFAEnabled: true,
-        twoFAVerified: true,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN || '15m', // Short-lived, e.g., 15 minutes
-      }
-    );
-	console.log('[verifyTwoFa] Generated accessToken:', accessToken);
-    console.log('[verifyTwoFa] Token parts:', accessToken.split('.').length);
+	try {
+		// Get user
+		const user = await getUserById(userId);
+		if (!user) {
+			return reply.code(404).send({
+				success: false,
+				message: 'User not found.',
+				verified: false,
+			});
+		}
+		console.log('[verifyTwoFa] User found:', user);
+		// Verify 2FA code
+		const verified = await verifyTwoFaToken(userId, token);
+		if (!verified) {
+			return reply.code(400).send({
+				success: false,
+				message: 'Invalid 2FA token.',
+				verified: false,
+			});
+		}
 
-    // Generate refresh token
-    const refreshToken = jwt.sign(
-      { id: user.id_user },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' } // Long-lived, e.g., 7 days
-    );
-	console.log('[verifyTwoFa] Generated refreshToken:', refreshToken);
-    // Save refresh token in database
-    await saveRefreshTokenInDatabase(user.id_user, refreshToken);
+		// Generate access token
+		console.log('############################################################################################');
+		console.log('[verifyTwoFa] accessToken generation:', user);
+		console.log('[verifyTwoFa] User ID:', user.id_user);
+		console.log('[verifyTwoFa] User username:', user.username);
+		console.log('[verifyTwoFa] User email:', user.email);
+		console.log('[verifyTwoFa] User twoFAEnabled:', user.twoFAEnabled);
+		console.log('[verifyTwoFa] User twoFAVerified:', user.twoFAVerified);
+		console.log('############################################################################################');
+		const accessToken = jwt.sign(
+			{
+				id: user.id_user,
+				username: user.username,
+				email: user.email,
+				twoFAEnabled: true,
+				twoFAVerified: true,
+			},
+			process.env.JWT_SECRET,
+			{
+				expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+			}
+		);
+		console.log('[verifyTwoFa] Generated accessToken:', accessToken);
+		console.log('[verifyTwoFa] Token parts:', accessToken.split('.').length);
 
-    // Set refresh token in HTTP-only cookie
-    reply.setCookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-    });
+		// Generate refresh token
+		const refreshToken = jwt.sign(
+			{ id: user.id_user },
+			process.env.JWT_REFRESH_SECRET,
+			{ expiresIn: '7d' }
+		);
+		console.log('[verifyTwoFa] Generated refreshToken:', refreshToken);
+		// Save refresh token in database
+		await saveRefreshTokenInDatabase(user.id_user, refreshToken);
 
-    // Update server-side session (optional, remove if not needed)
-	console.log('[verifyTwoFa] Setting session data');
-    request.session.set('token', accessToken);
-    request.session.set('user', {
-      userId: user.id_user,
-      username: user.username,
-      email: user.email,
-      twoFAEnabled: true,
-      twoFAVerified: true,
-    });
+		// Set refresh token in HTTP-only cookie
+		reply.setCookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 7 * 24 * 60 * 60,
+		});
 
-    // Send response to frontend
-	const responseData = {
-      success: true,
-      message: '2FA token verified successfully!',
-      verified: true,
-      token: accessToken,
-      userId: user.id_user, 
-      username: user.username,
-      email: user.email,
-      twoFAEnabled: true,
-    };
-    
-    console.log('[verifyTwoFa] Sending response:', responseData);
-    
-    return reply.code(200).send(responseData);
-	console.log('[verifyTwoFa] ABOUT TO SEND RESPONSE:', responseData);
-  	console.log('[verifyTwoFa] Response will be sent with code 200');
-    // return reply.code(200).send({
-    //   success: true,
-    //   message: '2FA token verified successfully!',
-    //   verified: true,
-    //   token: accessToken,
-    //   userId: user.id,
-    //   username: user.username,
-    //   email: user.email,
-    //   twoFAEnabled: true,
-    // });
-  } catch (error) {
-    console.error('Error verifying 2FA token for user:', userId, error);
-    return reply.code(500).send({
-      success: false,
-      message: 'Failed to verify 2FA token.',
-      verified: false,
-    });
-  }
+		// Update server-side session (optional, remove if not needed)
+		console.log('[verifyTwoFa] Setting session data');
+		request.session.set('token', accessToken);
+		request.session.set('user', {
+			id: user.id_user,
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: true,
+			twoFAVerified: true,
+		});
+
+		// Send response to frontend
+		const responseData = {
+			success: true,
+			message: '2FA token verified successfully!',
+			verified: true,
+			token: accessToken,
+			userId: user.id_user,
+			username: user.username,
+			email: user.email,
+			twoFAEnabled: true,
+		};
+		console.log('[verifyTwoFa] Sending response:', responseData);
+		return reply.code(200).send(responseData);
+	} catch (error) {
+		console.error('Error verifying 2FA token for user:', userId, error);
+		return reply.code(500).send({
+			success: false,
+			message: 'Failed to verify 2FA token.',
+			verified: false,
+		});
+	}
 }
+
+// async function verifyTwoFa(request, reply) {
+// 	console.log('[verifyTwoFa] FUNCTION CALLED - Start of function');
+//   console.log('[verifyTwoFa] Request URL:', request.url);
+//   console.log('[verifyTwoFa] Request method:', request.method);
+//   console.log('[verifyTwoFa] Request headers:', request.headers);
+//   const { userId, token } = request.body;
+//   const id_user = userId;
+// 	console.log('[verifyTwoFa] Input:', { userId, token });
+//   // Validate input
+//   if (typeof userId !== 'number' || !token || !/^\d{6}$/.test(token)) {
+//     return reply.code(400).send({
+//       success: false,
+//       message: 'Invalid user ID or 2FA token provided.',
+//       verified: false,
+//     });
+//   }
+
+//   try {
+//     // Get user
+//     const user = await getUserById(userId);
+//     if (!user) {
+//       return reply.code(404).send({
+//         success: false,
+//         message: 'User not found.',
+//         verified: false,
+//       });
+//     }
+// 	console.log('[verifyTwoFa] User found:', user);
+//     // Verify 2FA code
+//     const verified = await verifyTwoFaToken(userId, token); // Assuming this uses speakeasy.totp.verify
+//     if (!verified) {
+//       return reply.code(400).send({
+//         success: false,
+//         message: 'Invalid 2FA token.',
+//         verified: false,
+//       });
+//     }
+
+//     // Generate access token
+// 	console.log('############################################################################################');
+// 	console.log('[verifyTwoFa] accessToken generaation:', user);
+// 	console.log('[verifyTwoFa] User ID:', user.id);
+// 	console.log('[verifyTwoFa] User ID (id_user):', user.id_user);
+// 	console.log('[verifyTwoFa] User username:', user.username);
+// 	console.log('[verifyTwoFa] User email:', user.email);
+// 	console.log('[verifyTwoFa] User twoFAEnabled:', user.twoFAEnabled);
+// 	console.log('[verifyTwoFa] User twoFAVerified:', user.twoFAVerified);
+// 	console.log('[verifyTwoFa] user.id_user:', user.id_user);
+// 	console.log('############################################################################################');
+//     const accessToken = jwt.sign(
+//       {
+//         id: user.id_user,
+//         username: user.username,
+//         email: user.email,
+//         twoFAEnabled: true,
+//         twoFAVerified: true,
+//       },
+//       process.env.JWT_SECRET,
+//       {
+//         expiresIn: process.env.JWT_EXPIRES_IN || '15m', // Short-lived, e.g., 15 minutes
+//       }
+//     );
+// 	console.log('[verifyTwoFa] Generated accessToken:', accessToken);
+//     console.log('[verifyTwoFa] Token parts:', accessToken.split('.').length);
+
+//     // Generate refresh token
+//     const refreshToken = jwt.sign(
+//       { id: user.id_user },
+//       process.env.JWT_REFRESH_SECRET,
+//       { expiresIn: '7d' } // Long-lived, e.g., 7 days
+//     );
+// 	console.log('[verifyTwoFa] Generated refreshToken:', refreshToken);
+//     // Save refresh token in database
+//     await saveRefreshTokenInDatabase(user.id_user, refreshToken);
+
+//     // Set refresh token in HTTP-only cookie
+//     reply.setCookie('refreshToken', refreshToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === 'production',
+//       sameSite: 'strict',
+//       path: '/',
+//       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+//     });
+
+//     // Update server-side session (optional, remove if not needed)
+// 	console.log('[verifyTwoFa] Setting session data');
+//     request.session.set('token', accessToken);
+//     request.session.set('user', {
+//       userId: user.id_user,
+//       username: user.username,
+//       email: user.email,
+//       twoFAEnabled: true,
+//       twoFAVerified: true,
+//     });
+
+//     // Send response to frontend
+// 	const responseData = {
+//       success: true,
+//       message: '2FA token verified successfully!',
+//       verified: true,
+//       token: accessToken,
+//       userId: user.id_user, 
+//       username: user.username,
+//       email: user.email,
+//       twoFAEnabled: true,
+//     };
+    
+//     console.log('[verifyTwoFa] Sending response:', responseData);
+    
+//     return reply.code(200).send(responseData);
+// 	console.log('[verifyTwoFa] ABOUT TO SEND RESPONSE:', responseData);
+//   	console.log('[verifyTwoFa] Response will be sent with code 200');
+//     // return reply.code(200).send({
+//     //   success: true,
+//     //   message: '2FA token verified successfully!',
+//     //   verified: true,
+//     //   token: accessToken,
+//     //   userId: user.id,
+//     //   username: user.username,
+//     //   email: user.email,
+//     //   twoFAEnabled: true,
+//     // });
+//   } catch (error) {
+//     console.error('Error verifying 2FA token for user:', userId, error);
+//     return reply.code(500).send({
+//       success: false,
+//       message: 'Failed to verify 2FA token.',
+//       verified: false,
+//     });
+//   }
+// }
 
 // async function refreshTokenHandler(request, reply) {
 //     const { refreshToken } = request.cookies;

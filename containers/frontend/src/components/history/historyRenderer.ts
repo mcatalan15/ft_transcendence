@@ -60,33 +60,96 @@ export class HistoryRenderer {
     window.addEventListener('resize', updateSvgMargin);
   }
 
-  private async createPongBox(): Promise<HTMLElement> {
-    const currentUser = sessionStorage.getItem('username') || '';
-	const username = this.username === currentUser ? currentUser : this.username;
-	console.log(`Creating PongBox for user: ${username}`);
-	const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-	});
-    const data = await response.json();
-	console.log(`User ID for ${username}:`, data.userId);
-    const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
+//   private async createPongBox(): Promise<HTMLElement> {
+//     const currentUser = sessionStorage.getItem('username') || '';
+// 	const username = this.username === currentUser ? currentUser : this.username;
+// 	console.log(`Creating PongBox for user: ${username}`);
+// 	const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
+// 		credentials: 'include',
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 		},
+// 	});
+//     const data = await response.json();
+// 	console.log(`User ID for ${username}:`, data.userId);
+//     const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
 
-    const contentRenderer = new HistoryContentRenderer(this.container, this.username);
-    const historyContent = contentRenderer.render();
+//     const contentRenderer = new HistoryContentRenderer(this.container, this.username);
+//     const historyContent = contentRenderer.render();
 
-    const pongBox = new PongBoxComponent({
-      avatarUrl,
-      nickname: username,
-      mainContent: historyContent,
-    });
+//     const pongBox = new PongBoxComponent({
+//       avatarUrl,
+//       nickname: username,
+//       mainContent: historyContent,
+//     });
     
-    const pongBoxElement = pongBox.getElement();
-    pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
-    return pongBoxElement;
-  }
+//     const pongBoxElement = pongBox.getElement();
+//     pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
+//     return pongBoxElement;
+//   }
+	private async createPongBox(): Promise<HTMLElement> {
+		try {
+			const currentUser = sessionStorage.getItem('username') || '';
+			const username = this.username === currentUser ? currentUser : this.username;
+			console.log(`Creating PongBox for user: ${username}`);
+			const token = sessionStorage.getItem('token');
+			console.log('Render token: ', token);
+			if (!token) {
+				console.error('No token found in sessionStorage');
+				navigate('/signin');
+				throw new Error('No token found');
+			}
+			console.log('Fetching profile from:', getApiUrl(`/profile/${username}`));
+			console.log('Request headers:', { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` });
+			const response = await fetch(`${getApiUrl('/profile')}/${username}`, {
+				headers: {
+					'Accept': 'application/json',
+					'Authorization': `Bearer ${token}`,
+				},
+			});
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				if (response.status === 401) {
+					console.error('Unauthorized access, redirecting to signin');
+					navigate('/signin');
+					throw new Error('Unauthorized: Please sign in again');
+				}
+				if (response.status === 404) {
+					throw new Error(`User not found: ${errorData.message || 'Unknown error'}`);
+				}
+				throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+			}
+			const profileData = await response.json();
+			console.log(`User ID for ${username}:`, profileData.id_user);
+			// Pre-fetch avatar
+			const avatarResponse = await fetch(`${getApiUrl('/profile/avatar')}/${profileData.id_user}?t=${Date.now()}`, {
+				headers: {
+					'Authorization': `Bearer ${token}`,
+				},
+			});
+			let avatarUrl = '/assets/avatarUnknownSquare.png'; // Default fallback
+			if (avatarResponse.ok) {
+				avatarUrl = URL.createObjectURL(await avatarResponse.blob());
+			} else {
+				const errorData = await avatarResponse.json().catch(() => ({}));
+				console.error('Failed to fetch avatar:', errorData);
+			}
+			const contentRenderer = new HistoryContentRenderer(this.container, this.username);
+			const historyContent = await contentRenderer.render(); // Await render
+			const pongBox = new PongBoxComponent({
+				avatarUrl,
+				nickname: username,
+				mainContent: historyContent,
+			});
+			const pongBoxElement = pongBox.getElement();
+			pongBoxElement.style.marginTop = CONFIG.STYLES.pongBoxMarginTop;
+			return pongBoxElement;
+		} catch (error) {
+			console.error('Error creating PongBox:', error);
+			MessageManager.showError(`Error al cargar el historial: ${error.message}`);
+			throw error;
+		}
+	}
 
   private createMainLayout(svgHeader: HTMLElement, pongBoxElement: HTMLElement): HTMLElement {
     const contentWrapper = document.createElement('div');

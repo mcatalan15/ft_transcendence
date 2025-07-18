@@ -4,10 +4,19 @@ import i18n from "../../i18n";
 
 export async function addFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in sessionStorage');
+            alert('Authentication required');
+            navigate('/signin');
+            return false;
+        }
+
         const response = await fetch(getApiUrl('/friends/add'), {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             credentials: 'include',
             body: JSON.stringify({ username })
@@ -32,10 +41,19 @@ export async function addFriend(username: string, onSuccess?: () => void): Promi
 
 export async function removeFriend(username: string, onSuccess?: () => void): Promise<boolean> {
     try {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in sessionStorage');
+            alert('Authentication required');
+            navigate('/signin');
+            return false;
+        }
+
         const response = await fetch(getApiUrl('/friends/remove'), {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             credentials: 'include',
             body: JSON.stringify({ username })
@@ -60,10 +78,18 @@ export async function removeFriend(username: string, onSuccess?: () => void): Pr
 
 export async function statusFriend(username: string): Promise<boolean> {
 	try {
+		const token = sessionStorage.getItem('token');
+		if (!token) {
+			console.error('No token found in sessionStorage');
+			navigate('/signin');
+			return false;
+		}
+
 		const response = await fetch(getApiUrl(`/friends/status/${username}`), {
 			method: 'GET',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
 			credentials: 'include'
 		});
@@ -92,10 +118,19 @@ export async function changeNickname(newNick: string): Promise<void> {
     }
 
 	try {
+		const token = sessionStorage.getItem('token');
+		if (!token) {
+			console.error('No token found in sessionStorage');
+			alert('Authentication required');
+			navigate('/signin');
+			return;
+		}
+
 		const response = await fetch(getApiUrl('/profile/nickname'), {
 			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
 			credentials: 'include',
 			body: JSON.stringify({ nickname: newNick })
@@ -124,10 +159,19 @@ export async function changeNickname(newNick: string): Promise<void> {
 
 export async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
 	try {
+		const token = sessionStorage.getItem('token');
+		if (!token) {
+			console.error('No token found in sessionStorage');
+			alert('Authentication required');
+			navigate('/signin');
+			return;
+		}
+
 		const response = await fetch(getApiUrl('/profile/password'), {
 			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
 			credentials: 'include',
 			body: JSON.stringify({ oldPassword, newPassword })

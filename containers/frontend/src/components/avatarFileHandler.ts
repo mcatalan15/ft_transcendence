@@ -70,8 +70,16 @@ export class AvatarFileHandler {
   }
 
   private async sendAvatarRequest(formData: FormData): Promise<Response> {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found in sessionStorage');
+    }
+
     return fetch(getApiUrl('/profile/avatar'), {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       credentials: 'include',
       body: formData
     });

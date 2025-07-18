@@ -131,10 +131,18 @@ export class FriendsContentRenderer {
 
   private async loadAndRenderFriends(): Promise<void> {
     try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        console.error('No token found in sessionStorage');
+        this.showError('Authentication required');
+        return;
+      }
+
       const response = await fetch(getApiUrl('/friends'), {
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
 

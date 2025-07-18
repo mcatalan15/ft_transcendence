@@ -123,6 +123,7 @@ export function showSignUp(container: HTMLElement): void {
             errorMessageDiv.textContent = result.message;
         } else {
           alert(i18n.t('success', { ns: 'signup', defaultValue: 'Registration successful!' }));
+		  console.log('[Signup] Token found?', sessionStorage.getItem('token'));
           navigate('/signin');
           return;
         }

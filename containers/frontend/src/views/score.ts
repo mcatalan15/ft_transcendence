@@ -38,10 +38,15 @@ export function showScore(container: HTMLElement) {
       contentWrapper.appendChild(pongBoxElement);
       container.appendChild(contentWrapper);
 
-      fetch(getApiUrl('/profile'), {
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      const token = sessionStorage.getItem('token');
+      if (token) {
+        fetch(getApiUrl('/profile'), {
+          credentials: 'include',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        })
         .then(response => response.json())
         .then(data => {
           const titleEl = pongBoxElement.querySelector('div.text-amber-50');
@@ -60,5 +65,6 @@ export function showScore(container: HTMLElement) {
           console.error('Error fetching score:', error);
           return;
         });
+      }
     });
 }
