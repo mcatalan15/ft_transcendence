@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 10:14:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 21:57:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ export class PhysicsSystem implements System {
 	}
 
 	update(entities: Entity[], delta: FrameData): void {
-		if (this.game.isOnline && this.game.config.classicMode) {
+		if (this.game.isOnline && this.game.config.classicMode && this.game.config.variant !== 'tournament') {
 			this.handlePureServerPhysics(entities, delta);
 		} else {
 			this.handlePureClientPhysics(entities, delta);
@@ -226,7 +226,7 @@ export class PhysicsSystem implements System {
 	private handlePureClientPhysics(entities: Entity[], delta: FrameData): void {
 		const entitiesMap = createEntitiesMap(entities);
 		
-		if (!this.game.isOnline || !this.game.config.classicMode) {
+		if ((!this.game.isOnline || !this.game.config.classicMode)) {
 			for (const entity of entities) {
 				if (entity.hasComponent('physics')) {
 					if (entity instanceof Paddle) {

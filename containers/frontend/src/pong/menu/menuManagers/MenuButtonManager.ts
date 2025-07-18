@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 09:31:53 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 09:46:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ import { getThemeColors } from "../../utils/Utils";
 import * as menuUtils from "../../utils/MenuUtils"
 import { MenuOverlayQuitButton } from "../menuButtons/MenuOverlayQuitButton";
 import { MenuTournamentOverlayButton } from "../menuButtons/MenuTournamentOverlayButton";
+import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
+import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
 
 export class ButtonManager {
 	static createMainButtons(menu: Menu) {
@@ -584,6 +586,152 @@ export class ButtonManager {
 				menu.tournamentGlossaryButton = tournamentOverlayButton;
 			} else if (index === 1) {
 				menu.tournamentFiltersButton = tournamentOverlayButton;
+			}
+		});
+	}
+
+	static createPlayInputButton(menu: Menu) {
+		const inputButtonConfig: menuUtils.MenuButtonConfig = {
+			isClicked: false,
+			text: "GUEST?",
+			onClick: () => {
+				console.log('InputButton clicked');
+				menu.playSound("menuSelect");
+			},
+			color: getThemeColors(menu.config.classicMode).menuBlue,
+			index: 0
+		};
+	
+		const inputButton = new MenuBigInputButton(
+			'playInputButton',
+			'playInputButton',
+			'menuContainer',
+			menu,
+			inputButtonConfig
+		);
+	
+		const x = 710;
+		const y = 555;
+	
+		inputButton.setPosition(x, y);
+		inputButton.setHidden(true);
+		menu.entities.push(inputButton);
+		menu.menuHidden.addChild(inputButton.getContainer());
+	
+		menu.playInputButton = inputButton;
+		menu.playInputButton.setClickable(false);
+	}
+
+	static createTournamentInputButtons(menu: Menu) {
+		const tournamentInputButtonConfigs: menuUtils.MenuButtonConfig[] = [
+			{
+				isClicked: false,
+				text: 'Player-1',
+				onClick: () => {
+					console.log(`Tournament Player-1 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 0
+			},
+			{
+				isClicked: false,
+				text: 'Player-2',
+				onClick: () => {
+					console.log(`Tournament Player-2 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 1
+			},
+			{
+				isClicked: false,
+				text: 'Player-3',
+				onClick: () => {
+					console.log(`Tournament Player-3 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 2
+			},
+			{
+				isClicked: false,
+				text: 'Player-4',
+				onClick: () => {
+					console.log(`Tournament Player-4 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 3
+			},
+			{
+				isClicked: false,
+				text: 'Player-5',
+				onClick: () => {
+					console.log(`Tournament Player-5 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 4
+			},
+			{
+				isClicked: false,
+				text: 'Player-6',
+				onClick: () => {
+					console.log(`Tournament Player-6 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 5
+			},
+			{
+				isClicked: false,
+				text: 'Player-7',
+				onClick: () => {
+					console.log(`Tournament Player-7 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 6
+			},
+			{
+				isClicked: false,
+				text: 'Player-8',
+				onClick: () => {
+					console.log(`Tournament Player-8 button clicked`);
+					menu.playSound("menuSelect");
+				},
+				color: getThemeColors(menu.config.classicMode).menuBlue,
+				index: 7
+			}
+		];
+
+		tournamentInputButtonConfigs.forEach((config, index) => {
+			const tournamentInputButton = new MenuSmallInputButton(
+				`tournamentInputButton_${config.text.toLowerCase()}`,
+				`tournamentInputButton_${index}`,
+				'menuContainer',
+				menu,
+				config
+			);
+	
+			let x = 155;
+			let y = 195 + (index * 55);
+	
+			tournamentInputButton.setPosition(x, y);
+			tournamentInputButton.setHidden(true);
+			menu.entities.push(tournamentInputButton);
+			menu.menuHidden.addChild(tournamentInputButton.getContainer());
+	
+			switch (index) {
+				case (0): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (1): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (2): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (3): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (4): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (5): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (6): menu.tournamentInputButtons[index] = tournamentInputButton; break;
+				case (7): menu.tournamentInputButtons[index] = tournamentInputButton; break;
 			}
 		});
 	}

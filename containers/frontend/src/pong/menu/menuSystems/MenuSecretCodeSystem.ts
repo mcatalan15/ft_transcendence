@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 09:46:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:53:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ export class SecretCodeSystem implements System {
 
     constructor(private menu: Menu) {
         this.keydownHandler = (event: KeyboardEvent) => {
-            if (!this.isActive) return;
+            if (!this.isActive || menu.inputFocus) return;
             this.handleKeyInput(event.code);
         };
         
@@ -121,7 +121,7 @@ export class SecretCodeSystem implements System {
                         target: this.menu.aboutButton,
                         buttonName: 'ABOUT'
                     });
-                } else if (this.menu.playButton.getIsClicked()) {
+                } else if (this.menu.playButton.getIsClicked() && !this.menu.tournamentManager.getHasActiveTournament()) {
                     console.log("ESC: Closing play overlay");
                     this.menu.eventQueue.push({
                         type: 'PLAY_BACK',

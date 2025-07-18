@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/07 19:14:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:43:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,31 +62,33 @@ export class TournamentNextMatchDisplay extends Entity {
 		}
 	}
 
-	getPlainStats(){
+	getPlainStats(playerData?: any){
 		this.plainStats = [];
 		
-		const tournamentsStat = this.menu.playerData?.tournaments || 0;
+		const data = playerData || this.menu.playerData;
+	
+		const tournamentsStat = data?.tournaments || 0;
 		this.plainStats.push(this.formatStat(tournamentsStat, 'number'));
 	
-		const goalsScoredStat = this.menu.playerData?.goalsScored || 0;
+		const goalsScoredStat = data?.goalsScored || 0;
 		this.plainStats.push(this.formatStat(goalsScoredStat, 'number'));
 	
-		const goalsConcededStat = this.menu.playerData?.goalsConceded || 0;
+		const goalsConcededStat = data?.goalsConceded || 0;
 		this.plainStats.push(this.formatStat(goalsConcededStat, 'number'));
 	
-		const winsStat = this.menu.playerData?.wins || 0;
+		const winsStat = data?.wins || 0;
 		this.plainStats.push(this.formatStat(winsStat, 'number'));
 	
-		const lossesStat = this.menu.playerData?.losses || 0;
+		const lossesStat = data?.losses || 0;
 		this.plainStats.push(this.formatStat(lossesStat, 'number'));
 	
-		const drawsStat = this.menu.playerData?.draws || 0;
+		const drawsStat = data?.draws || 0;
 		this.plainStats.push(this.formatStat(drawsStat, 'number'));
 	
-		const winLossRatioStat = this.calculateWinLossRatio();
+		const winLossRatioStat = this.calculateWinLossRatio(data);
 		this.plainStats.push(this.formatStat(winLossRatioStat, 'ratio'));
 	
-		const rankStat = this.menu.playerData?.rank || 0;
+		const rankStat = data?.rank || 0;
 		this.plainStats.push(this.formatStat(rankStat, 'rank'));
 	
 		console.log('Formatted stats:', this.plainStats);
@@ -131,9 +133,10 @@ export class TournamentNextMatchDisplay extends Entity {
 		}
 	}
 	
-	calculateWinLossRatio(): number {
-		const wins = this.menu.playerData?.wins || 0;
-		const losses = this.menu.playerData?.losses || 0;
+	calculateWinLossRatio(playerData?: any): number {
+		const data = playerData || this.menu.playerData;
+		const wins = data?.wins || 0;
+		const losses = data?.losses || 0;
 	
 		if (losses === 0) {
 			return wins > 0 ? 100 : 0.00;
@@ -159,7 +162,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		statsTexts.push({
-			text: this.getStatsValuesInLanguage(true), 
+			text: this.getStatsValuesInLanguage(false), 
 			x: 1225.5,
 			y: 517.5,
 			style: {
@@ -185,7 +188,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 		
 		statsTexts.push({
-			text: this.getStatsValuesInLanguage(true), 
+			text: this.getStatsValuesInLanguage(false), 
 			x: 1523,
 			y: 517.5,
 			style: {
@@ -261,7 +264,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: this.menu.playerData!.name.toUpperCase() || "PLAYER 1", 
+			text: /* this.menu.playerData!.name.toUpperCase() || */ "WAITING", 
 			x: 1225,
 			y: 487.5,
 			style: {
@@ -274,7 +277,7 @@ export class TournamentNextMatchDisplay extends Entity {
 		} as Text);
 
 		vsTexts.push({
-			text: this.menu.playerData!.name.toUpperCase() || "PLAYER 2", 
+			text: /* this.menu.playerData!.name.toUpperCase() ||  */"WAITING", 
 			x: 1525,
 			y: 490,
 			style: {
@@ -366,5 +369,141 @@ export class TournamentNextMatchDisplay extends Entity {
 		
 		this.avatarFrames.clear();
 		this.createAvatarFrames();
+	}
+
+	public eraseTournamentPlayerInfo(){
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && (child.text.includes('???') || child.text.includes('WAITING'))) {
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	}
+
+	public updateLeftPlayerInfo(playerData: any, name: string): void {
+		this.vsText[2].text = name.toUpperCase();
+		this.vsText[2].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+		const leftNameComponent = new TextComponent(this.vsText[2]);
+		this.replaceComponent('text', leftNameComponent, 'vsText2');
+	
+		if (playerData) {
+			this.getPlainStats(playerData);
+			this.statsTexts[1].text = this.getStatsValuesInLanguage(true);
+		} else {
+			this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
+		}
+
+		this.statsTexts[1].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+	
+		const leftStatsComponent = new TextComponent(this.statsTexts[1]);
+		this.replaceComponent('text', leftStatsComponent, 'statsText1');
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && 
+				(child.text.includes('???') || child.text === 'WAITING') &&
+				child.x >= 1100 && child.x <= 1350) {
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	
+		this.menu.renderLayers.overlays.addChild(leftNameComponent.getRenderable());
+		this.menu.renderLayers.overlays.addChild(leftStatsComponent.getRenderable());
+	}
+	
+	public updateRightPlayerInfo(playerData: any, name: string): void {
+		this.vsText[3].text = name.toUpperCase();
+		this.vsText[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+		const rightNameComponent = new TextComponent(this.vsText[3]);
+		this.replaceComponent('text', rightNameComponent, 'vsText3');
+	
+		if (playerData) {
+			this.getPlainStats(playerData);
+			this.statsTexts[3].text = this.getStatsValuesInLanguage(true);
+		} else {
+			this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
+		}
+
+		this.statsTexts[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+	
+		const rightStatsComponent = new TextComponent(this.statsTexts[3]);
+		this.replaceComponent('text', rightStatsComponent, 'statsText3');
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && typeof child.text === 'string' && 
+				(child.text.includes('???') || child.text === 'WAITING') &&
+				child.x >= 1400 && child.x <= 1650) { // Right side bounds
+				this.menu.renderLayers.overlays.removeChild(child);
+			}
+		}
+	
+		this.menu.renderLayers.overlays.addChild(rightNameComponent.getRenderable());
+		this.menu.renderLayers.overlays.addChild(rightStatsComponent.getRenderable());
+	}
+
+	public updateMatchDisplay(): void {
+		if (!this.menu.tournamentConfig || !this.menu.tournamentManager.getHasActiveTournament()) {
+			// Show default/waiting state
+			this.showDefaultState();
+			return;
+		}
+	
+		const leftPlayerName = this.menu.tournamentConfig.nextMatch.leftPlayerName;
+		const rightPlayerName = this.menu.tournamentConfig.nextMatch.rightPlayerName;
+	
+		console.log(`Updating match display: ${leftPlayerName} vs ${rightPlayerName}`);
+	
+		// Clear previous info
+		this.eraseTournamentPlayerInfo();
+	
+		if (leftPlayerName && rightPlayerName) {
+			// Get player data
+			const leftPlayerData = this.getPlayerDataByName(leftPlayerName);
+			const rightPlayerData = this.getPlayerDataByName(rightPlayerName);
+	
+			// Update display
+			this.updateLeftPlayerInfo(leftPlayerData, leftPlayerName);
+			this.updateRightPlayerInfo(rightPlayerData, rightPlayerName);
+		} else {
+			// Show waiting state
+			this.showDefaultState();
+		}
+	}
+
+	private showDefaultState(): void {
+		this.eraseTournamentPlayerInfo();
+
+		let defaultPlayerName;
+
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			defaultPlayerName == 'FINISHED'
+		} else {
+			defaultPlayerName = 'WAITING';
+		}
+
+		this.vsText[2].text = defaultPlayerName!.toUpperCase();
+		this.vsText[3].text = defaultPlayerName!.toUpperCase();
+		
+		this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
+		this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
+	}
+
+	private getPlayerDataByName(playerName: string): any {
+		if (!playerName || !this.menu.tournamentConfig) return null;
+		
+		const playerData = this.menu.tournamentConfig.registeredPlayerData;
+		
+		for (let i = 1; i <= 8; i++) {
+			const player = playerData[`player${i}Data` as keyof typeof playerData];
+			if (player && player.name === playerName) {
+				return player;
+			}
+		}
+		
+		return null;
 	}
 }

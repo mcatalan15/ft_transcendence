@@ -3,6 +3,7 @@ import { Application } from "pixi.js";
 import { Menu } from './menu/Menu';
 import { Preconfiguration } from "./utils/GameConfig";
 import { gameManager } from "../utils/GameManager";
+import { TournamentManager } from "../utils/TournamentManager";
 
 class BrowserOptimizer {
 static isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
@@ -123,8 +124,16 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
         invitationData: null
     };
 
-    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
+    console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
+	
+	const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
+
+	const tournamentManager = new TournamentManager(app);
+	menu.tournamentManager = tournamentManager;
+	
     await menu.init(false, true);
+
+	
 
     gameManager.registerGame(container.id, menu, undefined, app);
 }
