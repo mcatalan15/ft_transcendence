@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:47:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:37:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,34 +194,37 @@ export class Bracket extends Entity {
 		for (let i = 0; i < playerCount; i++) {
 			const x = baseX;
 			const y = startY + (i * verticalSpacing);
-
-			let playerName;
-
-			if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 8) {
-				const key = `player${i + 1}` as PlayerKey;
-				playerName = this.menu.tournamentManager.getTournamentConfig()!.registeredPlayerNames[key];
-			} else if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 4) {
-				switch (i) {
-					case 0: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player1; break;
-					case 1: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player2; break;
-					case 2: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player3; break;
-					case 3: playerName = this.menu.tournamentManager.getTournamentConfig()!.secondRoundPlayers.player4; break;
+	
+			let playerName = '';
+			const config = this.menu.tournamentManager.getTournamentConfig();
+	
+			if (config) {
+				if (playerCount === 8) { // First round
+					const key = `player${i + 1}` as keyof typeof config.firstRoundPlayers;
+					playerName = config.firstRoundPlayers[key] || '';
+				} else if (playerCount === 4) { // Second round
+					const winner1 = config.matchWinners.match1Winner;
+					const winner2 = config.matchWinners.match2Winner;
+					const winner3 = config.matchWinners.match3Winner;
+					const winner4 = config.matchWinners.match4Winner;
+					
+					playerName = [winner1, winner2, winner3, winner4][i] || '';
+				} else if (playerCount === 2) { // Third round (semifinals)
+					const winner5 = config.matchWinners.match5Winner;
+					const winner6 = config.matchWinners.match6Winner;
+					
+					playerName = [winner5, winner6][i] || '';
+				} else if (playerCount === 1) { // Final
+					const winner7 = config.matchWinners.match7Winner;
+					playerName = winner7 || '';
 				}
-			}  else if (this.menu.tournamentManager.getHasActiveTournament() && playerCount === 2) {
-				switch (i) {
-					case 0: playerName = this.menu.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player1; break;
-					case 1: playerName = this.menu.tournamentManager.getTournamentConfig()!.thirdRoundPlayers.player2; break;
-				}
-
-			} else {
-				playerName = '';
 			}
 			
 			this.nameCells.push(new NameCell(
 				`nameCell_${this.nameCells.length}`,
 				'bracket',
 				this.menu,
-				playerName!,
+				playerName,
 				x,
 				y,
 				this.CELL_WIDTH,
@@ -380,20 +383,27 @@ export class Bracket extends Entity {
 
 		const roundComponent = new RenderComponent(this.roundGraphic);
 		this.addComponent(roundComponent, 'roundGraphic');
-	}
-	private createCrownElement() {
+	}	private createCrownElement() {
 		this.crown = this.createCrown();
 		const crownTextComponent = new TextComponent(this.crown);
 		this.addComponent(crownTextComponent, 'crown');
 	}
 
 	createCrown() {
+		let alpha;
+		
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()?.isFinished) {
+			alpha = 1;
+		} else {
+			alpha = 0.3
+		}
+		
 		return {
 			text: "♛",
 			x: this.menu.width / 2,
 			y: this.menu.height / 2 - 40,
 			style: {
-				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.3 },
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha:  alpha },
 				fontSize: 75,
 				fontWeight: 'lighter' as const,
 				fontFamily: 'anatol-mn',
@@ -435,33 +445,5 @@ export class Bracket extends Entity {
 		this.replaceComponent('text', lowerRoundLegendComponent, 'lowerRoundLegend');
 		const lowerRoundLegendTextComponent = new TextComponent(newLowerRoundLegend[1]);
 		this.replaceComponent('text', lowerRoundLegendTextComponent, 'lowerRoundLegendText');
-	}
-
-	getRandomName(index: number): string {
-		const names = [
-			"HMUNOZ_G",
-			"MCATALAN", 
-			"VIMAZURO",
-			"GPICO-CO",
-			"ARCEBRIA",
-			"NPONCHON",
-			"EFERRE-M",
-			"HARRISON",
-			"ISABELLA",
-			"JENNIFER",
-			"KATHERIN",
-			"LEONARDO",
-			"MARGARET",
-			"NICHOLAS",
-			"PATRICIA",
-			"QUENTIN_",
-			"REBECCA_",
-			"SAMUEL__",
-			"THEODORE",
-			"VICTORIA"
-		];
-		
-		const nameIndex = Math.floor(index) % names.length;
-		return names[nameIndex];
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:14:56 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 11:57:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:16:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ export class MenuTournamentSystem implements System {
 			}
 		}
 
-		// Push unhandled events back to queue
 		this.menu.eventQueue.push(...unhandledEvents);
 	}
 
@@ -54,44 +53,40 @@ export class MenuTournamentSystem implements System {
 		this.prepareNextMatch(this.menu.tournamentConfig!.nextMatch.matchOrder);
 	}
 
-	/**
-	 * Prepares the current match display based on the tournament's current state
-	 */
 	prepareCurrentMatch() {
 		if (!this.menu.tournamentManager.getHasActiveTournament() || !this.menu.tournamentConfig) {
 			console.log('No active tournament to prepare match for');
 			return;
 		}
-
+	
 		const currentMatchOrder = this.menu.tournamentConfig.nextMatch.matchOrder;
-		console.log(`Preparing current match with order: ${currentMatchOrder}`);
+		console.log(`Preparing match with order: ${currentMatchOrder}`);
 		
+		// Check if tournament is complete
+		if (currentMatchOrder > 7) {
+			console.log('Tournament complete!');
+			this.menu.tournamentConfig.isFinished = true;
+			return;
+		}
+		
+		// Don't increment here - just prepare the current match
 		this.prepareNextMatch(currentMatchOrder);
 	}
 
-	/**
-	 * Prepares the next match display for the given match order
-	 */
 	prepareNextMatch(order: number) {
 		const nextPlayers = this.getNextTournamentPlayers(order);
 		
-		// Update the tournament config with next match info
 		this.menu.tournamentConfig!.nextMatch.leftPlayerName = nextPlayers.player1;
 		this.menu.tournamentConfig!.nextMatch.rightPlayerName = nextPlayers.player2;
 	
 		console.log(`Preparing match ${order}: ${nextPlayers.player1} vs ${nextPlayers.player2}`);
 		
-		// Get player data for both players
-		const leftPlayerData = this.getPlayerDataByName(nextPlayers.player1!);
-		const rightPlayerData = this.getPlayerDataByName(nextPlayers.player2!);
-		
-		// Update the display if it exists
 		if (this.menu.tournamentOverlay?.nextMatchDisplay) {
-			this.menu.tournamentOverlay.nextMatchDisplay.eraseTournamentPlayerInfo();
-			this.menu.tournamentOverlay.nextMatchDisplay.updateLeftPlayerInfo(leftPlayerData, this.menu.tournamentConfig!.nextMatch.leftPlayerName!);
-			this.menu.tournamentOverlay.nextMatchDisplay.updateRightPlayerInfo(rightPlayerData, this.menu.tournamentConfig!.nextMatch.rightPlayerName!);
+			this.menu.tournamentOverlay.nextMatchDisplay.updateMatchDisplay();
+
+			const leftPlayerData = this.getPlayerDataByName(nextPlayers.player1!);
+			const rightPlayerData = this.getPlayerDataByName(nextPlayers.player2!);
 			
-			// Update avatars
 			MenuImageManager.updateTournamentPlayerAvatars(
 				this.menu, 
 				leftPlayerData, 
@@ -100,25 +95,60 @@ export class MenuTournamentSystem implements System {
 		}
 	}
 
-	/**
-	 * Advances to the next match in the tournament
-	 */
-	advanceToNextMatch() {
-		if (!this.menu.tournamentConfig) return;
-
-		const currentOrder = this.menu.tournamentConfig.nextMatch.matchOrder;
-		const nextOrder = currentOrder + 1;
-		
-		// Check if tournament is complete
-		if (nextOrder > 7) { // Assuming 7 total matches in 8-player tournament
-			console.log('Tournament complete!');
-			this.menu.tournamentConfig.isFinished = true;
+	completeCurrentMatch(winnerName: string) {
+		if (!this.menu.tournamentConfig || !this.menu.tournamentManager.getHasActiveTournament()) {
+			console.log('No active tournament to complete match for');
 			return;
 		}
+	
+		const currentMatchOrder = this.menu.tournamentConfig.nextMatch.matchOrder;
+		console.log(`Completing match ${currentMatchOrder}, winner: ${winnerName}`);
+	
+		// Update tournament results
+		this.updateTournamentResults(currentMatchOrder, winnerName);
+	
+		// Check if tournament is finished
+		if (currentMatchOrder >= 7) {
+			console.log('Tournament finished!');
+			this.menu.tournamentConfig.isFinished = true;
+			this.menu.tournamentManager.completeTournament();
+		} else {
+			// Advance to next match
+			const hasNextMatch = this.menu.tournamentManager.advanceMatch();
+			
+			if (hasNextMatch) {
+				const nextMatchOrder = currentMatchOrder + 1;
+				this.menu.tournamentConfig.nextMatch.matchOrder = nextMatchOrder;
+				console.log(`Tournament continues with match ${nextMatchOrder}`);
+				
+				// Prepare the next match
+				this.prepareNextMatch(nextMatchOrder);
+			}
+		}
+	}
 
-		// Update match order and prepare next match
-		this.menu.tournamentConfig.nextMatch.matchOrder = nextOrder;
-		this.prepareNextMatch(nextOrder);
+	private updateTournamentResults(matchOrder: number, winnerName: string) {
+		if (!this.menu.tournamentConfig) return;
+	
+		console.log(`Updating tournament results for match ${matchOrder}, winner: ${winnerName}`);
+	
+		if (matchOrder <= 4) {
+			// Round 1 matches (1-4) -> Winners go to secondRoundPlayers
+			// Match 1 -> player1, Match 2 -> player2, Match 3 -> player3, Match 4 -> player4
+			const playerKey = `player${matchOrder}` as keyof typeof this.menu.tournamentConfig.secondRoundPlayers;
+			this.menu.tournamentConfig.secondRoundPlayers[playerKey] = winnerName;
+			console.log(`Updated secondRoundPlayers.${playerKey} = ${winnerName}`);
+		} else if (matchOrder <= 6) {
+			// Round 2 matches (5-6) -> Winners go to thirdRoundPlayers  
+			const roundPosition = matchOrder - 4; // Match 5 -> position 1, Match 6 -> position 2
+			const playerKey = `player${roundPosition}` as keyof typeof this.menu.tournamentConfig.thirdRoundPlayers;
+			this.menu.tournamentConfig.thirdRoundPlayers[playerKey] = winnerName;
+			console.log(`Updated thirdRoundPlayers.${playerKey} = ${winnerName}`);
+		} else {
+			// Round 3 (match 7) -> Tournament winner
+			this.menu.tournamentConfig.tournamentWinner = winnerName;
+			console.log(`Tournament winner: ${winnerName}`);
+		}
 	}
 
 	private getPlayerDataByName(playerName: string): any {
@@ -126,7 +156,6 @@ export class MenuTournamentSystem implements System {
 		
 		const playerData = this.menu.tournamentConfig.registeredPlayerData;
 		
-		// Find which player this name belongs to
 		for (let i = 1; i <= 8; i++) {
 			const player = playerData[`player${i}Data` as keyof typeof playerData];
 			if (player && player.name === playerName) {
@@ -138,54 +167,74 @@ export class MenuTournamentSystem implements System {
 	}
 
 	getNextTournamentPlayers(order: number) {
+		console.log(`Getting players for match ${order}`);
+		
 		switch(order) {
+			// Round 1: Original 8 players (matches 1-4)
 			case (1): {
-				return ({
+				const players = {
 					player1: this.menu.tournamentConfig!.firstRoundPlayers.player1,
 					player2: this.menu.tournamentConfig!.firstRoundPlayers.player2
-				});
+				};
+				console.log(`Match 1 players:`, players);
+				return players;
 			}
-
+	
 			case (2): {
-				return ({
+				const players = {
 					player1: this.menu.tournamentConfig!.firstRoundPlayers.player3,
 					player2: this.menu.tournamentConfig!.firstRoundPlayers.player4
-				});
+				};
+				console.log(`Match 2 players:`, players);
+				return players;
 			}
-
+	
 			case (3): {
-				return ({
+				const players = {
 					player1: this.menu.tournamentConfig!.firstRoundPlayers.player5,
 					player2: this.menu.tournamentConfig!.firstRoundPlayers.player6
-				});
+				};
+				console.log(`Match 3 players:`, players);
+				return players;
 			}
-
+	
 			case (4): {
-				return ({
+				const players = {
 					player1: this.menu.tournamentConfig!.firstRoundPlayers.player7,
 					player2: this.menu.tournamentConfig!.firstRoundPlayers.player8
-				});
+				};
+				console.log(`Match 4 players:`, players);
+				return players;
 			}
-
+	
+			// Round 2: Winners from round 1 (matches 5-6) - These are the semifinals
 			case (5): {
-				return ({
-					player1: this.menu.tournamentConfig!.secondRoundPlayers.player1,
-					player2: this.menu.tournamentConfig!.secondRoundPlayers.player2
-				});
+				const players = {
+					player1: this.menu.tournamentConfig!.secondRoundPlayers.player1, // Winner of match 1
+					player2: this.menu.tournamentConfig!.secondRoundPlayers.player2  // Winner of match 2
+				};
+				console.log(`Match 5 (Semifinal 1) players:`, players);
+				return players;
 			}
-
+	
 			case (6): {
-				return ({
-					player1: this.menu.tournamentConfig!.secondRoundPlayers.player3,
-					player2: this.menu.tournamentConfig!.secondRoundPlayers.player4
-				});
+				const players = {
+					player1: this.menu.tournamentConfig!.secondRoundPlayers.player3, // Winner of match 3
+					player2: this.menu.tournamentConfig!.secondRoundPlayers.player4  // Winner of match 4
+				};
+				console.log(`Match 6 (Semifinal 2) players:`, players);
+				return players;
 			}
-
+	
+			// Round 3: Winners from round 2 (match 7) - This is the final
+			case (7):
 			default: {
-				return ({
-					player1: this.menu.tournamentConfig!.thirdRoundPlayers.player1,
-					player2: this.menu.tournamentConfig!.thirdRoundPlayers.player2
-				});
+				const players = {
+					player1: this.menu.tournamentConfig!.thirdRoundPlayers.player1, // Winner of match 5
+					player2: this.menu.tournamentConfig!.thirdRoundPlayers.player2  // Winner of match 6
+				};
+				console.log(`Match 7 (Final) players:`, players);
+				return players;
 			}
 		}
 	}

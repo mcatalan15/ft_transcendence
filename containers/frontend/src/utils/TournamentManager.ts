@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:47:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 11:58:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:06:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ export class TournamentManager {
 	private hasActiveTournament: boolean = false;
 	private activeTournament: TournamentConfig | null = null;
 	private containerId: string | null = null;
-	private currentMatch: number = 0;
+	private currentMatch: number = 1;
 	private totalMatches: number = 7; // 8 players = 7 matches total
 
 	constructor(app: Application) {
@@ -28,7 +28,7 @@ export class TournamentManager {
 		this.hasActiveTournament = true;
 		this.activeTournament = config;
 		this.containerId = containerId;
-		this.currentMatch = 0; // Reset match counter
+		this.currentMatch = 1;
 		console.log(`Tournament started for container ${containerId}:`, config);
 	}
 
@@ -76,6 +76,11 @@ export class TournamentManager {
 	}
 
 	public startMatch(): void {
+		if (this.currentMatch >= this.totalMatches) {
+			console.error('Cannot start match - tournament already complete');
+			return;
+		}
+		
 		this.currentMatch++;
 		console.log(`Starting match ${this.currentMatch} of ${this.totalMatches}`);
 	}
@@ -92,22 +97,30 @@ export class TournamentManager {
 		return this.totalMatches;
 	}
 
-	/**
-	 * Advances to the next match and returns true if tournament is still ongoing
-	 */
 	public advanceMatch(): boolean {
 		if (this.currentMatch < this.totalMatches) {
 			this.currentMatch++;
 			console.log(`Advanced to match ${this.currentMatch} of ${this.totalMatches}`);
+			
+			// Update the tournament config if it exists
+			if (this.activeTournament) {
+				this.activeTournament.nextMatch.matchOrder = this.currentMatch;
+			}
+			
 			return true;
 		}
 		return false;
 	}
 
-	/**
-	 * Gets the current match order from the tournament config
-	 */
 	public getCurrentMatchOrder(): number {
 		return this.activeTournament?.nextMatch?.matchOrder || 1;
+	}
+
+	public synchronizeWithConfig(config: TournamentConfig): void {
+		if (this.activeTournament) {
+			this.activeTournament = config;
+			this.currentMatch = config.nextMatch.matchOrder;
+			console.log(`Synchronized tournament manager with config. Current match: ${this.currentMatch}`);
+		}
 	}
 }

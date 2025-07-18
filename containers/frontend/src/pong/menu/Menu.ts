@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 11:56:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:26:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -439,10 +439,51 @@ export class Menu{
 		}
 
 		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
-			// Show the tournament finished overlay
-			// Show the tournament winner
-			// Change ready button to finish tournament button
-			// Process results and deployments
+			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
+				const optionsEvent: GameEvent = {
+					type: 'OPTIONS_CLICK',
+					target: this.optionsButton,
+				};
+
+				this.eventQueue.push(optionsEvent);
+
+				const classicEvent: GameEvent = {
+					type: 'CLASSIC_CLICK',
+					target: this.classicButton,
+				};
+
+				this.eventQueue.push(classicEvent);
+			}
+
+			const startEvent: GameEvent = {
+				type: 'START_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(startEvent);
+
+			const rankedEvent: GameEvent = {
+				type: 'RANKED_CLICK',
+				target: this.onlineButton,
+			};
+	
+			this.eventQueue.push(rankedEvent);
+			
+			const tournamentEvent: GameEvent = {
+				type: 'TOURNAMENT_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(tournamentEvent)
+
+			const playEvent: GameEvent = {
+				type: 'PLAY_CLICK',
+				target: this.playButton,
+			};
+
+			this.eventQueue.push(playEvent);
+
+			//! Tournament ending stuff
 		}
 	}
 

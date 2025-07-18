@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 22:34:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:43:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,5 +443,67 @@ export class TournamentNextMatchDisplay extends Entity {
 	
 		this.menu.renderLayers.overlays.addChild(rightNameComponent.getRenderable());
 		this.menu.renderLayers.overlays.addChild(rightStatsComponent.getRenderable());
+	}
+
+	public updateMatchDisplay(): void {
+		if (!this.menu.tournamentConfig || !this.menu.tournamentManager.getHasActiveTournament()) {
+			// Show default/waiting state
+			this.showDefaultState();
+			return;
+		}
+	
+		const leftPlayerName = this.menu.tournamentConfig.nextMatch.leftPlayerName;
+		const rightPlayerName = this.menu.tournamentConfig.nextMatch.rightPlayerName;
+	
+		console.log(`Updating match display: ${leftPlayerName} vs ${rightPlayerName}`);
+	
+		// Clear previous info
+		this.eraseTournamentPlayerInfo();
+	
+		if (leftPlayerName && rightPlayerName) {
+			// Get player data
+			const leftPlayerData = this.getPlayerDataByName(leftPlayerName);
+			const rightPlayerData = this.getPlayerDataByName(rightPlayerName);
+	
+			// Update display
+			this.updateLeftPlayerInfo(leftPlayerData, leftPlayerName);
+			this.updateRightPlayerInfo(rightPlayerData, rightPlayerName);
+		} else {
+			// Show waiting state
+			this.showDefaultState();
+		}
+	}
+
+	private showDefaultState(): void {
+		this.eraseTournamentPlayerInfo();
+
+		let defaultPlayerName;
+
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			defaultPlayerName == 'FINISHED'
+		} else {
+			defaultPlayerName = 'WAITING';
+		}
+
+		this.vsText[2].text = defaultPlayerName!.toUpperCase();
+		this.vsText[3].text = defaultPlayerName!.toUpperCase();
+		
+		this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
+		this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
+	}
+
+	private getPlayerDataByName(playerName: string): any {
+		if (!playerName || !this.menu.tournamentConfig) return null;
+		
+		const playerData = this.menu.tournamentConfig.registeredPlayerData;
+		
+		for (let i = 1; i <= 8; i++) {
+			const player = playerData[`player${i}Data` as keyof typeof playerData];
+			if (player && player.name === playerName) {
+				return player;
+			}
+		}
+		
+		return null;
 	}
 }
