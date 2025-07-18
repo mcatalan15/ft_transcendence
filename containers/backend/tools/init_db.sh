@@ -191,13 +191,13 @@ if [ ! -f "$DB_PATH" ]; then
 
 	-- Creation of ButiBot and Guest
 	-- Insert ButiBot user if not exists
-	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
-	SELECT 'ButiBot', 'ButiBot@example.com', 'Hola1234', 'local', 0, 'default'
+	INSERT INTO users (username, email, provider, twoFactorEnabled, avatar_filename, avatar_type)
+	SELECT 'ButiBot', 'ButiBot@example.com', 'local', 0, 'squareBot.png', 'default'
 	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'ButiBot');
 
 	-- Insert guest user if not exists
-	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
-	SELECT 'guest', 'guest@example.com', 'Hola1234', 'local', 0, 'default'
+	INSERT INTO users (username, email, provider, twoFactorEnabled, avatar_filename, avatar_type)
+	SELECT 'guest', 'guest@example.com', 'local', 0, 'squareUnknown.png', 'default'
 	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'guest');
 
 -- Insert user_stats for ButiBot if not exists
