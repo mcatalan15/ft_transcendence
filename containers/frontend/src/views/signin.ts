@@ -98,6 +98,9 @@ export function showSignIn(container: HTMLElement): void {
         if (!result.success) {
           if (result.message === 'Invalid email or password') {
             errorMessageDiv.textContent = i18n.t('errorInvalidCredentials', { ns: 'signin' });
+          }
+          else if (result.message === 'body/email must match format "email"') {
+            errorMessageDiv.textContent = i18n.t('errorInvalidEmailFormat', { ns: 'signin' });
           } else
             errorMessageDiv.textContent = result.message || i18n.t('errorInvalidCredentials', { ns: 'signin' });
         } else {

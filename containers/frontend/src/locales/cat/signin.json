@@ -6,6 +6,7 @@
     "signUp": "Registrar-se",
     "errorAllFields": "Tots els camps són obligatoris!",
     "errorInvalidCredentials": "Correu electrònic o contrasenya invàlids.",
+    "errorInvalidEmailFormat": "Format de correu electrònic invàlid.",
     "success": "Inici de sessió completat amb èxit!",
     "noAccount": "Encara no tens un compte?"
 }
