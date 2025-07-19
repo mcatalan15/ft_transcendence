@@ -90,7 +90,7 @@ def create_games(n):
         conn.close()
         sys.exit(1)
     
-    smart_contract_link = "https://testnet.snowtrace.io/address/	0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6/contract/43113/readContract?chainid=43113"
+    smart_contract_link = "https://testnet.snowtrace.io/address/0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6/contract/43113/readContract?chainid=43113"
     contract_address = "0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6"
 
 
@@ -579,6 +579,9 @@ def create_tournament_game(c, tournament_id, player1_id, player2_id):
     }
     config_json = json.dumps(config)
 
+    smart_contract_link = "https://testnet.snowtrace.io/address/0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6/contract/43113/readContract?chainid=43113"
+    contract_address = "0x7f053C63bF897AA9Dc1373158051F1fDbB4a5BC6"
+
     # Insert tournament game
     c.execute("""
         INSERT INTO games (
@@ -587,6 +590,7 @@ def create_tournament_game(c, tournament_id, player1_id, player2_id):
             player1_score, player2_score,
             game_mode, general_result,
             config_json,
+            smart_contract_link, contract_address,
             default_balls_used, curve_balls_used, multiply_balls_used,
             spin_balls_used, burst_balls_used,
             bullets_used, shields_used,
@@ -609,6 +613,7 @@ def create_tournament_game(c, tournament_id, player1_id, player2_id):
         player1_score, player2_score,
         game_mode, general_result,
         config_json,
+        smart_contract_link, contract_address,
         ball_usage['default_balls_used'], ball_usage['curve_balls_used'], ball_usage['multiply_balls_used'],
         ball_usage['spin_balls_used'], ball_usage['burst_balls_used'],
         special_items['bullets_used'], special_items['shields_used'],
