@@ -80,10 +80,7 @@ export class AvatarComponent {
           });
           if (!response.ok) {
             alert(i18n.t('errors.uploadFailed', { ns: 'settings' }) || 'Error uploading avatar');
-            // Actualizar la imagen usando userId
-
           } else {
-
             const match = this.avatarImg.src.match(/\/avatar\/([^/?]+)/);
             const userId = match ? match[1] : sessionStorage.getItem('userId');
             if (userId) {
@@ -108,11 +105,11 @@ export class AvatarComponent {
       if (response.ok) {
         const data = await response.json();
         if (data.isOnline) {
-          Object.assign(statusButton.style, {
+            Object.assign(statusButton.style, {
             ...STATUS_BUTTON_STYLES.base,
-            backgroundColor: '#22c55e',
+            backgroundColor: '#a3e635',
             transition: 'background-color 0.3s ease'
-          });
+            });
           statusButton.title = 'Online';
         } else {
           Object.assign(statusButton.style, {

@@ -24,6 +24,7 @@ export async function isUserAuthenticated(): Promise<boolean> {
 		}
 
 		// Token is valid
+		console.log(`[authGuard] Token is valid:`, decodedToken);
 		const response = await fetch(getApiUrl('/auth/refresh'), {
 			method: 'POST',
 			credentials: 'include'

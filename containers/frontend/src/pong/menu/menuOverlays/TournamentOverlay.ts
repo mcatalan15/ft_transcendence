@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:46:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:27:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,15 +84,7 @@ export class TournamentOverlay extends Overlay {
 	return this.nextMatchDisplay;
 }
 
-	public show(): void {
-		/* if (this.menu.tournamentManager.getHasActiveTournament()) {
-			const prepareMatchEvent = {
-				type: 'PREPARE_NEXT_MATCH',
-				target: null,
-			};
-			this.menu.eventQueue.push(prepareMatchEvent);
-		} */
-		
+	public show(): void {	
 		this.changeStrokeColor(this.getStrokeColor());
 		this.updateOverlayTexts();
 		super.show();
@@ -104,6 +96,7 @@ export class TournamentOverlay extends Overlay {
 		this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
 		
 		this.menu.readyButton.setHidden(false);
+		console.log('TournamenManager.getHasActiveTournament():', this.menu.tournamentManager.getHasActiveTournament());
 		if (this.menu.tournamentManager.getHasActiveTournament() && !this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
 			this.menu.readyButton.setClickable(true);
 		} else {
@@ -123,7 +116,7 @@ export class TournamentOverlay extends Overlay {
 			
 		}
 
-		if (!this.menu.tournamentManager.getHasActiveTournament() && !this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+		if (!this.menu.tournamentManager.getHasActiveTournament() || (this.menu.tournamentManager.getTournamentConfig() && this.menu.tournamentManager.getTournamentConfig()!.isFinished)) {
 			this.quitButton!.setClickable(true);
 		} else {
 			this.quitButton!.setClickable(false);

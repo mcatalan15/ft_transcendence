@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:52:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:07:10 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:21:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ export class ButtonSystem implements System {
 			this.game.language,
 			this.game.isFirefox,
 		);
+
+		gameManager.registerGame(this.game.app.view.id, menu, undefined, this.game.app);
 		
 		// Transfer tournament manager and synchronize state
 		menu.tournamentManager = this.game.tournamentManager;

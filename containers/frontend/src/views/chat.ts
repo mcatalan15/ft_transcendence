@@ -1,14 +1,7 @@
 import i18n from '../i18n';
-import { HeaderTest } from '../components/generalComponents/testmenu';
-import { LanguageSelector } from '../components/generalComponents/languageSelector';
 import { navigate } from '../utils/router';
 import { ChatManager, MessageType } from '../utils/chat/chat';
-import { HeadersComponent } from '../components/pongBoxComponents/headersComponent';
-import { CONFIG } from '../config/settings.config';
 import { ResponsiveLayout } from '../components/layouts/ResponsiveLayout';
-import { RESPONSIVE_CONFIG } from '../config/responsive.config';
-
-let currentResizeHandler: (() => void) | null = null;
 
 function createButton(color: string, text: string, action: () => void) {
   const btn = document.createElement('button');
@@ -70,7 +63,7 @@ export async function showChat(container: HTMLElement): Promise<void> {
     mainContainer.style.marginTop = '0'; 
   }
   
-  const chatMainContent = createChatMainContent(container);
+  const chatMainContent = createChatMainContent();
   
   const chatBox = document.createElement('div');
   chatBox.className = `
@@ -101,17 +94,16 @@ export async function showChat(container: HTMLElement): Promise<void> {
   
 
   if (svgHeader) {
-    const headerTopOffset = -27; 
+    const headerTopOffset = -32; 
     svgHeader.style.marginTop = `${headerTopOffset}px`;
     svgHeader.style.zIndex = '40';
   }
 }
 
-function createChatMainContent(container: HTMLElement) {
+function createChatMainContent() {
   const chatMainContent = document.createElement('div');
   chatMainContent.className = 'w-full h-full flex flex-col p-4';
   
-  // Channel tabs/filters
   const channelTabs = document.createElement('div');
   channelTabs.className = 'flex gap-2 mb-4 flex-wrap';
   
@@ -226,34 +218,4 @@ function createChatMainContent(container: HTMLElement) {
   });
 
   return chatMainContent;
-}
-
-/*function createHeader(): HTMLElement {
-  const lang = i18n.language || 'en';
-  const svgHeader = new HeadersComponent({
-    type: 'chat',
-    lang,
-    style: {
-      position: 'absolute',
-      top: '-27px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: '100%',
-      maxWidth: '1800px',
-      zIndex: '40'
-    }
-  }).getElement();
-  
-  return svgHeader;
-}*/
-
-/*function cleanup(): void {
-  if (currentResizeHandler) {
-    window.removeEventListener('resize', currentResizeHandler);
-    currentResizeHandler = null;
-  }
-}*/
-
-export function setResizeHandler(handler: (() => void) | null): void {
-  currentResizeHandler = handler;
 }

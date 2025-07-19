@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   PlayOverlay.ts                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
 /*   Updated: 2025/07/17 18:48:48 by hmunoz-g         ###   ########.fr       */

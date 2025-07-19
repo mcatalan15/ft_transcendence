@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 19:34:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 16:09:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ export class Duel extends Entity {
 	createNameTags(): Text[] {
 		const nameTags: Text[] = [];
 
-		let leftName = this.menu.playerData!.name!.toUpperCase() || "PLAYER 1";
+		let leftName = this.menu.playerData?.name!.toUpperCase() || "PLAYER 1";
 		
 		// Check for both name and username fields, prioritize name
 		let rightName = this.menu.config.mode === 'online' ? "PLAYER 2" : "";
@@ -287,7 +287,7 @@ export class Duel extends Entity {
 		// If no opponent data, set appropriate default based on variant
 		if (!rightName) {
 			if (this.menu.config.variant === '1vAI') {
-				rightName = "AI-BOT";
+				rightName = "BUTIBOT";
 			} else {
 				// Set default guest name based on language
 				switch (this.menu.language) {

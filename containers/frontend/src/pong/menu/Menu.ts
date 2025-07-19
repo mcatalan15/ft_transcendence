@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
 /*   Updated: 2025/07/18 14:26:42 by hmunoz-g         ###   ########.fr       */
@@ -259,6 +259,9 @@ export class Menu{
 			invitationData: null
 		};
 		
+		console.log('🎯 Menu Preconfiguration Status:');
+		console.log('Has invitation context:', this.preconfiguration.hasInvitationContext);
+		
 		if (this.preconfiguration.hasInvitationContext && this.preconfiguration.invitationData) {
 			console.log('📧 Invitation Data:');
 			console.log('  - Invite ID:', this.preconfiguration.invitationData.inviteId);
@@ -267,6 +270,7 @@ export class Menu{
 			console.log('  - Mode will be set to:', this.preconfiguration.mode);
 			this.hasPreconfig = true;
 		} else {
+			console.log('📝 No invitation context - standard menu initialization');
 			this.hasPreconfig = false;
 		}
 		

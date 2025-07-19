@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 12:53:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 11:43:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,13 +195,15 @@ export class SecretCodeSystem implements System {
         this.registerCode({
             name: "ballfest",
             sequence: ["KeyB", "KeyA", "KeyL", "KeyL", "KeyF", "KeyE", "KeyS", "KeyT"],
-            timeout: 2000,
+            timeout: 5000,
             effect: () => {
                 if (!this.menu.config.classicMode) {
-                    for(let i = 0; i <= 50; i++) {
+                    const interval = 3000 / 51;
+                    for (let i = 0; i <= 50; i++) {
                         setTimeout(() => {
-                        MenuBallSpawner.spawnDefaultBallInMenu(this.menu);
-                        }, i * 20);
+                            MenuBallSpawner.spawnDefaultBallInMenu(this.menu);
+                            this.menu.playSound("ballClick");
+                        }, i * interval);
                     }
                 }
             },

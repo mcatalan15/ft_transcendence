@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 11:38:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:07:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -478,7 +478,7 @@ export class PongGame {
 		} else {
 			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 			if (this.config.variant === '1vAI') {
-				this.rightPlayer = { name: "AI-BOT" };
+				this.rightPlayer = { name: "BUTIBOT" };
 			} else if (this.config.variant === '1v1') {
 				this.rightPlayer = { name: this.config.guestName || "GUEST" };
 			}
@@ -720,6 +720,8 @@ export class PongGame {
 			// Placeholding avatars
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
 			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
+			{ name: 'avatarBotSquare', url: '/avatars/square/squareBot.png' },
+			{ name: 'avatarBotClassic', url: '/avatars/squareClassic/squareBotClassic.png' },
 		]);
 	}
 
@@ -862,8 +864,10 @@ export class PongGame {
 			if (this.config.classicMode) {
 				uiEntity.setClassicScoreText(score1.toString(), 'left');
 				uiEntity.setClassicScoreText(score2.toString(), 'right');
+				console.log(`🎮 UI: Classic score updated from server - left=${score1}, right=${score2}`);
 			} else {
 				uiEntity.setScoreText(`${score1} - ${score2}`);
+				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
 			}
 		}
 	}
@@ -942,7 +946,7 @@ export class PongGame {
 			this.playerData = await this.getUserData(hostId!, token!);
 			this.opponentData = await this.getUserData(guestId!, token!);
 		} catch (error) {
-			console.error('API call failed:', error);
+			console.error('❌ API call failed:', error);
 		}
 	}
 
@@ -958,9 +962,7 @@ export class PongGame {
 			
 			if (this.networkManager) {
 				console.log('Disconnecting network manager...');
-				this.networkManager.cancelMatchmaking();
 				this.networkManager.disconnect();
-				this.networkManager.close();
 			}
 
 			if (stopTicker && this.app?.ticker?.started) {

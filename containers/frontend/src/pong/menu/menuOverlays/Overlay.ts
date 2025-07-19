@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 16:12:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:15:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -452,8 +452,8 @@ export abstract class Overlay extends Entity {
 		this.background.fill({ color: 0x151515, alpha: 1 });
 		this.background.moveTo(0, 57.2);
 		this.background.lineTo(0, 610);
-		this.background.lineTo(780, 610);
-		this.background.moveTo(870, 610);
+		this.background.lineTo(778, 610);
+		this.background.moveTo(871, 610);
 		this.background.lineTo(1635, 610);
 		this.background.lineTo(1635, 57.2);
 		this.background.stroke({ color: color, width: 3 });
