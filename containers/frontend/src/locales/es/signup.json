@@ -1,6 +1,6 @@
 {
     "title": "¡Empecemos!",
-    "nickname": "Apodo",
+    "nickname": "Apodo en minúsculas",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
@@ -8,7 +8,7 @@
     "signUp": "Registrarse",
     "errorAllFields": "¡Todos los campos son obligatorios!",
     "errorUsernameLength": "¡El nombre de usuario debe tener entre 3 y 8 caracteres!",
-    "errorUsernameChars": "¡El nombre de usuario solo puede contener letras y números!",
+    "errorUsernameChars": "¡El nombre de usuario solo puede contener letras minúsculas, números y guiones!",
     "errorPasswordLength": "¡La contraseña debe tener entre 6 y 20 caracteres!",
     "errorPasswordsMatch": "¡Las contraseñas no coinciden!",
     "errorInvalidEmail": "¡Dirección de correo electrónico inválida!",

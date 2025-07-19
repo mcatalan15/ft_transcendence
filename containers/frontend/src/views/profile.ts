@@ -8,11 +8,11 @@ let currentResizeHandler: (() => void) | null = null;
 export async function showProfile(container: HTMLElement, username?: string): Promise<void> {
   try {
     await initializeI18n();
-    await render(container, username);
+    render(container, username);
   } catch (error) {
     console.error('Failed to initialize profile:', error);
     MessageManager.showError('Error loading profile');
-    navigate('/profile');
+    navigate('/home');
     return;
   }
 }

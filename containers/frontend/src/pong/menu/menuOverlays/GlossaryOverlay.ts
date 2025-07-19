@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 15:19:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:59:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,9 @@ export class GlossaryOverlay extends Overlay {
         if (!this.menu.paddleL || !this.menu.paddleR) {
             MenuPowerupManager.createGlossaryPaddles(this.menu);
         }
+
+        this.quitButton!.setHidden(false);
+        this.quitButton!.setClickable(true);
     
         MenuImageManager.prepareWallImagesForGlossary(this.menu);
     }
@@ -102,6 +105,9 @@ export class GlossaryOverlay extends Overlay {
     }
 
     protected onHideComplete(): void {
+        this.quitButton!.setHidden(true);
+        this.quitButton!.setClickable(false);
+        
         MenuPowerupManager.hideFromGlossary(this.menu);
         MenuImageManager.hideWallImagesFromGlossary(this.menu);
     }

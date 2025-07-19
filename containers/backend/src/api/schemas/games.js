@@ -684,6 +684,101 @@ const getUserDataSchema = {
     }
 };
 
+const getUserByUsernameSchema = {
+    description: 'Retrieve user data and statistics by username',
+    tags: ['users'],
+    body: {
+        type: 'object',
+        required: ['username'],
+        properties: {
+            username: { type: 'string', description: 'Username to search for' }
+        }
+    },
+    response: {
+        200: {
+            description: 'User data retrieved successfully',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', description: 'Indicates if the request was successful' },
+                userData: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string', description: 'User ID' },
+                        name: { type: 'string', description: 'User display name' }, // Changed from 'username'
+                        avatar: { type: 'string', description: 'User avatar URL' },
+                        type: { type: 'string', enum: ['human', 'ai'], description: 'Player type' }, // Added
+                        side: { type: 'string', enum: ['left', 'right'], description: 'Player side' }, // Added
+                        goalsScored: { type: 'number', description: 'Total goals scored by the user' },
+                        goalsConceded: { type: 'number', description: 'Total goals conceded by the user' },
+                        tournaments: { type: 'number', description: 'Number of tournaments won' },
+                        wins: { type: 'number', description: 'Number of matches won' },
+                        losses: { type: 'number', description: 'Number of matches lost' },
+                        draws: { type: 'number', description: 'Number of matches drawn' },
+                        rank: { type: 'number', description: 'User rank' },
+                        totalPlayers: { type: 'number', description: 'Total number of players (optional)' } // Added optional field
+                    },
+                    required: ['id', 'name', 'avatar', 'type', 'side', 'goalsScored', 'goalsConceded', 'tournaments', 'wins', 'losses', 'draws', 'rank'] // Updated required fields
+                }
+            },
+            example: {
+                success: true,
+                userData: {
+                    id: '12345',
+                    name: 'player123', // Changed from 'username'
+                    avatar: '/api/profile/avatar/12345?t=1234567890',
+                    type: 'human', // Added
+                    side: 'right', // Added
+                    goalsScored: 10,
+                    goalsConceded: 5,
+                    tournaments: 2,
+                    wins: 15,
+                    losses: 3,
+                    draws: 7,
+                    rank: 42
+                }
+            }
+        },
+        400: {
+            description: 'Bad request - missing username',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', description: 'Indicates if the request was successful' },
+                message: { type: 'string', description: 'Error message' }
+            },
+            example: {
+                success: false,
+                message: 'username is required'
+            }
+        },
+        404: {
+            description: 'User not found',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', description: 'Indicates if the request was successful' },
+                message: { type: 'string', description: 'Error message' }
+            },
+            example: {
+                success: false,
+                message: 'User not found'
+            }
+        },
+        500: {
+            description: 'Server error',
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', description: 'Indicates if the request was successful' },
+                message: { type: 'string', description: 'Error message' },
+                error: { type: 'string', description: 'Detailed error message' }
+            },
+            example: {
+                success: false,
+                message: 'Database error occurred',
+                error: 'Specific database error'
+            }
+        }
+    }
+};
+
 module.exports = {
     saveGameSchema,
     retrieveGamesSchema,
@@ -692,4 +787,5 @@ module.exports = {
 	getGamesHistorySchema,
     saveResultsSchema,
 	getUserDataSchema,
+    getUserByUsernameSchema
 };

@@ -31,10 +31,8 @@ function handleUpgrade(wss, gameWss, server) {
         const gameId = segments.length >= 5 ? segments[4] : undefined;
         console.log(`Game websocket connection with ID: ${gameId}`);
         
-        // Store gameId in the WebSocket instance for later access
         ws.gameId = gameId;
         
-        // Emit connection with gameId as third parameter
         gameWss.emit('connection', ws, request, { gameId });
       });
     }

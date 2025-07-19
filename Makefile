@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+         #
+#    By: evafmur <evafmur@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/15 12:40:16 by nponchon         ###   ########.fr        #
+#    Updated: 2025/07/17 10:31:35 by nponchon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,6 @@ prod:
 	@bash ./scripts/setup_prod.sh
 	@bash ./scripts/generate_certs.sh
 	@COMPOSE_BAKE=true docker compose --env-file ./containers/.env -f ./containers/docker-compose.yml -f ./containers/docker-compose.prod.yml up -d --build
-	@GRAFANA_ADMIN_PASSWORD=$$(bash ./scripts/setup_prod.sh) && \
-    docker exec grafana grafana cli admin reset-admin-password $$GRAFANA_ADMIN_PASSWORD
 
 dev:
 	@bash ./scripts/setup_dev.sh
@@ -104,10 +102,10 @@ fclean:
 nuke:
 	@read -p "This will result in total Docker destruction, remove all cache, containers, images, etc. Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ] || exit 1
 	-docker stop $$(docker ps -aq) && docker rm $$(docker ps -aq)
-	-docker rm -f $(docker ps -aq)
-	-docker rmi -f $(docker images -aq)
-	-docker volume rm $(docker volume ls -q)
-	-docker network rm $(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
+	-docker rm -f $$(docker ps -aq)
+	-docker rmi -f $$(docker images -aq)
+	-docker volume rm $$(docker volume ls)
+	-docker network rm $$(docker network ls | grep -v "bridge\|host\|none" | awk '{print $1}')
 	-docker builder prune -af
 	-docker system prune -af --volumes
 

@@ -8,6 +8,7 @@ import { setResizeHandler } from '../../views/profile';
 import { ProfileContentRenderer } from './profileContentRenderer';
 import { getApiUrl } from '../../config/api';
 import { MessageManager } from '../../utils/messageManager';
+import { navigate } from '../../utils/router';
 
 export class ProfileRenderer {
   private container: HTMLElement;
@@ -46,7 +47,7 @@ export class ProfileRenderer {
       this.container.appendChild(contentWrapper);
     } catch (error) {
       console.error('Error rendering profile:', error);
-      MessageManager.showError('Error al cargar el perfil');
+      //MessageManager.showError('Error al cargar el perfil');
     }
   }
 
@@ -86,6 +87,10 @@ export class ProfileRenderer {
       });
 
       if (!response.ok) {
+		if (response.status === 404) {
+			navigate('/404');
+			return document.createElement('div'); // Return empty div for 404
+		}
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -112,7 +117,7 @@ export class ProfileRenderer {
       return pongBoxElement;
     } catch (error) {
       console.error('Error creating PongBox:', error);
-      MessageManager.showError('Error al cargar el perfil');
+      ///MessageManager.showError('Error al cargar el perfil');
       throw error;
     }
   }

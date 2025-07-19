@@ -1,4 +1,5 @@
 import { getApiUrl } from '../../config/api';
+import { showAuth } from '../../views/auth';
 
 export async function localSignIn(
     email: string, 
@@ -24,15 +25,17 @@ export async function localSignIn(
         
         if (data.success) {
 
-            // Store in sessionStorage
             sessionStorage.setItem('username', data.username || '');
             sessionStorage.setItem('userId', data.userId || '');
-            sessionStorage.setItem('email', data.email || '');
-            sessionStorage.setItem('token', data.token || '');
+			sessionStorage.setItem('email', data.email || '');
             sessionStorage.setItem('localAuth', 'true');
             sessionStorage.setItem('twoFAEnabled', String(data.twoFAEnabled || false));
-
-            // Return the result object
+/* 			if (!data.twoFAEnabled) {
+				const app = document.getElementById("app");
+				showAuth(app as HTMLElement);
+			} */
+			sessionStorage.setItem('token', data.token || '');
+			
             return {
                 success: true,
                 message: data.message,

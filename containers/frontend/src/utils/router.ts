@@ -21,7 +21,7 @@ export function startRouter(container: HTMLElement) {
 }
 
 let lastNavigation = 0;
-const NAVIGATION_COOLDOWN = 3; // ms
+const NAVIGATION_COOLDOWN = 5; // ms
 
 export function navigate(path: string) {
     const now = Date.now();
@@ -33,8 +33,6 @@ export function navigate(path: string) {
 
 async function renderRoute(path: string) {
 	if (!app) return;
-
-	console.log('🧹 Cleaning up games before route change...');
 	
 	app.innerHTML = '';
 
@@ -108,16 +106,7 @@ async function renderRoute(path: string) {
 			views.showSettings(app);
 			return;
 		
-		case '/stats':
-			if (!(await isUserAuthenticated())) {
-				navigate('/');
-				return;
-			}
-			views.showStats(app);
-			return;
-		
 		case '/404':
-
 			views.show404(app);
 			return;
 

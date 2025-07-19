@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 12:16:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 18:48:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,11 @@ export class PlayOverlay extends Overlay {
         this.addContent(this.nextMatchDisplay, 'overlays');
         
         this.setQuitButton(this.menu.playQuitButton);
+
+        if (this.menu.config.variant === '1v1') {
+            this.inputButton = this.menu.playInputButton;
+            this.setPlayInputButton(this.inputButton);
+        }
     }
 
     public redrawTitles(): void {
@@ -70,12 +75,22 @@ export class PlayOverlay extends Overlay {
         }
     }
 
-    public show(): void {
+    public async show(): Promise<void> {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
+        
+        await MenuImageManager.preparePlayAvatarImages(this.menu);
         super.show();
     
-        MenuImageManager.preparePlayAvatarImages(this.menu);
+        MenuImageManager.bringAvatarsToFront(this.menu);
+        
+        const avatars = MenuImageManager.getAllPlayAvatarImages();
+        
+        avatars.forEach(avatar => {
+            if (avatar) {
+                avatar.alpha = 0;
+            }
+        });
     
         this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
         this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
@@ -83,7 +98,13 @@ export class PlayOverlay extends Overlay {
         
         this.menu.readyButton.setHidden(false);
         this.menu.tournamentGlossaryButton.setHidden(false);
-        this.menu.tournamentFiltersButton.setHidden(false);  
+        this.menu.tournamentFiltersButton.setHidden(false);
+    
+        this.quitButton!.setHidden(false);
+        this.quitButton!.setClickable(true);
+        
+        this.inputButton!.setHidden(false);
+        this.inputButton!.setClickable(true);
     }
 
     public hide(): void {
@@ -98,7 +119,15 @@ export class PlayOverlay extends Overlay {
         this.menu.readyButton.setHidden(true);
         this.menu.tournamentGlossaryButton.setHidden(true);
         this.menu.tournamentFiltersButton.setHidden(true);
+        
+        this.quitButton!.setHidden(true);
+        this.quitButton!.setClickable(false);
+        
+        this.inputButton!.setHidden(true);
+        this.inputButton!.setClickable(false);
 
         MenuImageManager.hidePlayAvatarImages(this.menu);
+
+        this.menu.playInputButton.resetButton();
     }
 }

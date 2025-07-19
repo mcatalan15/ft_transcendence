@@ -1,7 +1,10 @@
 {
     "date": "Date",
     "opponent": "Opponent",
+    "winner" : "Winner",
     "score": "Score",
     "mode": "Mode",
-    "contract": "Contract"
+    "contract": "Contract",
+    "draw": "Draw",
+    "noGames": "This looks a little empty. Let's go play some Pong!"
 }

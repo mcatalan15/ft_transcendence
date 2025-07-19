@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:07:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig, GameData, PlayerData } from '../utils/GameConfig';
+import { GameConfig, GameData, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -56,6 +56,7 @@ import { ButtonSystem } from '../systems/ButtonSystem';
 import { BallSpawner } from '../spawners/BallSpawner'
 import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
+import { TournamentManager } from '../../utils/TournamentManager';
 
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
@@ -121,6 +122,9 @@ export class PongGame {
 	endGameOverlay!: EndgameOverlay;
 
 	isFirefox: boolean = false;
+
+	tournamentManager!: TournamentManager;
+	tournamentConfig: TournamentConfig | null = null;
 
 	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
@@ -313,8 +317,7 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name || 'PLAYER 1',
-                id: this.leftPlayer.id || 'player1',
+                name: this.leftPlayer.id || 'player1',
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -326,8 +329,7 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-				name: this.rightPlayer.name || 'PLAYER 2',
-                id: this.rightPlayer.id || 'player2',
+                name: this.rightPlayer.id || 'player2',
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -341,6 +343,7 @@ export class PongGame {
 		};
 
 		console.log(this.data.createdAt);
+		console.log('Game data prepared:', this.data);
 	}
 
 	initSounds(): void {
@@ -469,15 +472,15 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void> {
-		if (this.config.mode === 'online') {
+		if (this.config.mode === 'online' || this.config.variant === 'tournament') {
 			this.leftPlayer = { name: this.config.hostName || "Host Player" };
 			this.rightPlayer = { name: this.config.guestName || "Guest Player" };
 		} else {
 			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 			if (this.config.variant === '1vAI') {
-				this.rightPlayer = { name: "AI-BOT" };
-			} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
-				this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+				this.rightPlayer = { name: "BUTIBOT" };
+			} else if (this.config.variant === '1v1') {
+				this.rightPlayer = { name: this.config.guestName || "GUEST" };
 			}
 		}
 		
@@ -717,6 +720,8 @@ export class PongGame {
 			// Placeholding avatars
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
 			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
+			{ name: 'avatarBotSquare', url: '/avatars/square/squareBot.png' },
+			{ name: 'avatarBotClassic', url: '/avatars/squareClassic/squareBotClassic.png' },
 		]);
 	}
 
@@ -945,7 +950,7 @@ export class PongGame {
 		}
 	}
 
-	async cleanup(): Promise<void> {
+	async cleanup(stopTicker: boolean = true): Promise<void> {
 		try {            
 			console.log('Starting game cleanup...');
 			
@@ -960,7 +965,7 @@ export class PongGame {
 				this.networkManager.disconnect();
 			}
 
-			if (this.app?.ticker?.started) {
+			if (stopTicker && this.app?.ticker?.started) {
 				this.app.ticker.stop();
 			}
 			

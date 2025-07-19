@@ -11,7 +11,7 @@
     "errors": {
         "nicknameRequired": "El àlies és obligatori",
         "nicknameLength": "El àlies ha de tenir entre 3 i 8 caràcters",
-        "nicknameFormat": "El format del àlies és invàlid",
+        "nicknameFormat": "El àlies ha de tenir lletres en minúsculas, números i guions",
         "passwordRequired": "Els camps de contrasenya són obligatoris",
         "passwordLength": "La contrasenya ha de tenir entre 6 i 20 caràcters",
         "passwordMismatch": "Les contrasenyes no coincideixen",

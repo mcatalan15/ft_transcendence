@@ -11,7 +11,7 @@
     "errors": {
         "nicknameRequired": "Nickname is required",
         "nicknameLength": "Nickname must be between 3 and 8 characters",
-        "nicknameFormat": "Nickname format is invalid",
+        "nicknameFormat": "Nickname must contain lowercases, numbers and hyphens",
         "passwordRequired": "Password fields are required",
         "passwordLength": "Password must be between 6 and 20 characters",
         "passwordMismatch": "Passwords do not match",

@@ -2,7 +2,6 @@ const Fastify = require('fastify');
 const fastifyMultipart = require('@fastify/multipart');
 const loggerConfig = require('./logsConfiguration');
 const fastifyCookie = require('@fastify/cookie');
-const fastifySession = require('@fastify/session');
 const swagger = require('@fastify/swagger');
 const swaggerUI = require('@fastify/swagger-ui');
 const path = require('path');

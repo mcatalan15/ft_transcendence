@@ -29,7 +29,7 @@ export class SettingsFormsRenderer {
 
   private createPongStyleFormsSection(): HTMLElement {
     const formsContainer = document.createElement('div');
-    formsContainer.className = 'w-full flex flex-col items-center mt-8 px-4';
+    formsContainer.className = 'w-full flex flex-col items-center mt-8 px-2';
 
     const overlay = this.createPongOverlay();
     
@@ -47,7 +47,7 @@ export class SettingsFormsRenderer {
 
   private createPongOverlay(): HTMLElement {
     const overlay = document.createElement('div');
-    overlay.className = 'relative p-6 gap-6 flex flex-col items-center';
+    overlay.className = 'relative p-4 gap-4 flex flex-col items-center';
     
     overlay.style.backgroundColor = '#171717';
     overlay.style.borderRadius = '0px';
@@ -87,7 +87,7 @@ export class SettingsFormsRenderer {
 
   private createPongStylePasswordForm(): HTMLElement {
     const formContainer = document.createElement('div');
-    formContainer.className = 'w-full flex flex-col items-center gap-4 mt-8';
+    formContainer.className = 'w-full flex flex-col items-center gap-4 mt-4';
 
     const headerBar = this.createPongHeaderBar(i18n.t('settings:changePassword'));
     formContainer.appendChild(headerBar);
@@ -123,7 +123,7 @@ export class SettingsFormsRenderer {
 
   private createPongHeaderBar(text: string): HTMLElement {
     const headerContainer = document.createElement('div');
-    headerContainer.className = 'w-full relative mb-4';
+    headerContainer.className = 'w-full relative mb-2';
     
     const headerBar = document.createElement('div');
     headerBar.style.width = '100%';
@@ -242,7 +242,7 @@ export class SettingsFormsRenderer {
       MessageManager.showError(i18n.t('settings:errors.nicknameLength'));
       return;
     }
-    if (!/^(?=[a-zA-Z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-zA-Z0-9-]+$/.test(newNickname)) {
+    if (!/^(?=[a-z0-9-]{3,8}$)(?!-)(?!.*-.*-)[a-z0-9-]+$/.test(newNickname)) {
       MessageManager.showError(i18n.t('settings:errors.nicknameFormat'));
       return;
     }

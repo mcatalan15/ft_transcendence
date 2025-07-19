@@ -1,7 +1,10 @@
 {
     "date": "Fecha",
     "opponent": "Oponente",
+    "winner": "Ganador",
     "score": "Puntuación",
     "mode": "Modo",
-    "contract": "Contrato"
+    "contract": "Contrato",
+    "draw": "Empate",
+    "noGames": "Aún no hay partidas registradas. Comienza a jugar al Pong!"
 }

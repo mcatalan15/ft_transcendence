@@ -546,7 +546,6 @@ async function googleHandler(request, reply, fastify) {
 
 		console.log(`[Google Auth] Attempting to authenticate user with email: ${email}`);
 
-		// Try to get the user directly
 		let user = await getUserByEmail(email);
 
 		if (user) {
@@ -573,12 +572,21 @@ async function googleHandler(request, reply, fastify) {
 			const parts = name.toLowerCase().split(' ');
 			const firstInitial = parts[0].charAt(0);
 			const lastName = parts[parts.length - 1];
-			const nickname = `${firstInitial}${lastName}`;
+			let nickname = `${firstInitial}${lastName}`;
 			const defaultAvatarId = Math.floor(Math.random() * 4) + 1;
 			const avatarFilename = `default_${defaultAvatarId}.png`;
 
-			await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
-			console.log(`[Google Auth - New User] User saved to database`);
+			try {
+				await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
+			} catch (error) {
+				if (error.message.includes('Username or email already exists')) {
+					// If the user already exists, change their nick and hope it does not exist because I don't want to loop infinitely
+					nickname = nickname + "-";
+					await saveUserToDatabase(nickname, email, null, 'google', avatarFilename);
+				} else {
+					throw error;
+				}
+			}
 
 			// Get the newly created user
 			const newUser = await getUserByEmail(email);
@@ -603,7 +611,6 @@ async function googleHandler(request, reply, fastify) {
 			});
 		}
 	} catch (error) {
-		console.error('[Google Auth] Error:', error);
 		return reply.status(401).send({
 			success: false,
 			message: 'Invalid Token',

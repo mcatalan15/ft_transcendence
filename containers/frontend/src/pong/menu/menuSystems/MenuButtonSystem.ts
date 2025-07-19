@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 12:56:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:44:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
+import { TournamentManager } from "../../../utils/TournamentManager";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -105,6 +107,7 @@ export class MenuButtonSystem implements System {
 		this.menu.IAButton.setHidden(!this.menu.IAButton.getIsHidden());
 		this.menu.duelButton.setHidden(!this.menu.duelButton.getIsHidden());
 		this.menu.startXButton.setHidden(!this.menu.startXButton.getIsHidden());
+		this.menu.tournamentButton.setHidden(!this.menu.tournamentButton.getIsHidden());
 
 		this.menu.menuContainer.addChild(this.menu.onlineButton.getContainer());
 		this.menu.menuContainer.addChild(this.menu.localButton.getContainer());
@@ -117,10 +120,25 @@ export class MenuButtonSystem implements System {
 		this.menu.redrawFrame();
 	}
 
-	handlePlayClick(){
+	async handlePlayClick(){
+		this.menu.optionsButton.setClickable(false);
+		this.menu.glossaryButton.setClickable(false);
+		this.menu.aboutButton.setClickable(false);
+		this.menu.filtersButton.setClickable(false);
+		this.menu.classicButton.setClickable(false);
+		this.menu.playButton.setClickable(false);
+		this.menu.localButton.setClickable(false);
+		this.menu.onlineButton.setClickable(false);
+		this.menu.IAButton.setClickable(false);
+		this.menu.duelButton.setClickable(false);
+		this.menu.tournamentButton.setClickable(false);
+		this.menu.startXButton.setClickable(false);
+		this.menu.ballButton.setClickable(false);
+		
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
+		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 		
@@ -129,19 +147,25 @@ export class MenuButtonSystem implements System {
 			this.menu.tournamentOverlay.show();
 			this.overlayStack.push('tournament');
 			this.setButtonsClickability(false);
+			
+			for (const button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			}
 		} else {
 			this.menu.playButton.setClicked(true);
+			await this.menu.playOverlay.setAllRenderablesAlpha(0);
 			this.menu.playOverlay.show();
 			this.overlayStack.push('play');
 			this.setButtonsClickability(false);
+			this.menu.playInputButton.resetButton();
 		}
 	}
 
 	async handleReadyClick() {
+		this.menu.playSound("menuConfirm");
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				// Create a PongNetworkManager for matchmaking (no game instance yet)
 				const networkManager = new PongNetworkManager(null, '');
 				await networkManager.startMatchmaking();
 				
@@ -158,18 +182,16 @@ export class MenuButtonSystem implements System {
 	private startLocalGame(): void {
 		console.log('Starting local game...');
 		
-		// Clean up menu first
 		this.menu.cleanup();
 		
-		// Deregister menu from GameManager
-		gameManager.destroyGame(this.menu.app.view.id);
+		//gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
+		game.tournamentManager = this.menu.tournamentManager;
 		
-		// Register new game with GameManager
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 		
 		game.init();
@@ -308,11 +330,14 @@ export class MenuButtonSystem implements System {
 
 			this.setButtonsClickability(true);
 		} else if (event.type.includes('PLAY')) {
+			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
+				gameManager.destroyGame(this.menu.app.view.id);
+				window.location.href = '/pong';
+			}
 			const playIndex = this.overlayStack.indexOf('play');
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
 			if (tournamentIndex > -1) this.overlayStack.splice(tournamentIndex, 1);
-			
 			this.setButtonsClickability(this.overlayStack.length === 0);
 			this.menu.playButton.setClicked(false);
 			this.menu.playButton.resetButton();
@@ -321,6 +346,16 @@ export class MenuButtonSystem implements System {
 				this.menu.tournamentOverlay.hide();
 			} else {
 				this.menu.playOverlay.hide();
+			}
+
+			this.menu.opponentData = null;
+
+			this.menu.hasOngoingTournament = false;
+			this.menu.tournamentConfig = null;
+			this.menu.tournamentManager.clearTournament();
+
+			for (let button of this.menu.tournamentInputButtons) {
+				button.resetButton();
 			}
 		}
 	}
@@ -428,7 +463,7 @@ export class MenuButtonSystem implements System {
 		}
 
 		if (this.menu.tournamentButton.getIsClicked()) {    
-			this.menu.config.mode = 'online';
+			this.menu.config.mode = 'local';
 			this.menu.config.variant = 'tournament';
 		}
 
@@ -715,7 +750,7 @@ export class MenuButtonSystem implements System {
 		(this.menu.paddleR as Paddle).redrawFullPaddle(true, 'powerdown');
 	}
 
-	setButtonsClickability(clickable: boolean): void {       
+	setButtonsClickability(clickable: boolean, tournament: boolean = false): void {       
 		this.menu.startButton.setClickable(clickable);
 		this.menu.optionsButton.setClickable(clickable);
 		this.menu.glossaryButton.setClickable(clickable);
@@ -771,9 +806,38 @@ export class MenuButtonSystem implements System {
 			this.menu.config.mode = 'online';
 			if (this.menu.tournamentButton.getIsClicked()) {
 				this.menu.config.variant = 'tournament';
+				this.menu.config.mode = 'local';
 			} else if (this.menu.duelButton.getIsClicked()) {
 				this.menu.config.variant = '1v1';
 			}
 		}
+
+		if (this.menu.config.variant === 'tournament') {
+			console.log('Setting up tournament configuration BEFORE START...');
+			this.menu.config.hostName = this.menu.tournamentConfig?.nextMatch.leftPlayerName!;
+			this.menu.config.guestName= this.menu.tournamentConfig?.nextMatch.rightPlayerName!;
+		} else {
+			this.menu.config.players![0].name = sessionStorage.getItem('username') || 'Player 1';
+			if (this.menu.opponentData) {
+				this.menu.config.players![1].name = this.menu.opponentData.name || 'GUEST';
+			} else {
+				if (this.menu.storedGuestName) {
+					this.menu.config.players![1].name = this.menu.storedGuestName;
+				} else {
+					this.menu.config.players![1].name = 'GUEST';
+				}
+			}
+
+			if (this.menu.config.mode === 'local' && this.menu.config.variant === '1v1') {
+				this.menu.config.hostName = this.menu.config.players![0].name;
+				this.menu.config.guestName = this.menu.config.players![1].name;
+			}
+		}
+
+		if (this.menu.config.guestName === 'butibot' && this.menu.config.variant !== 'tournament') {
+			this.menu.config.variant = '1vAI';
+		}
+
+		console.log('Final game configuration:', this.menu.config);
 	}
 }

@@ -79,11 +79,9 @@ export function showLanding(container: HTMLElement): void {
         });
       };
 
-      // Configurar botones inicialmente
       setupButtons();
 
       const langSelector = new LanguageSelector(() => {
-        // Solo actualizar el texto de los botones sin regenerar todo
         const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
         const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;
         if (signInBtn) signInBtn.textContent = i18n.t('signIn', { ns: 'landing' });
