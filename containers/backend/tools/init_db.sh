@@ -178,10 +178,10 @@ if [ ! -f "$DB_PATH" ]; then
 	);
 
 	CREATE TABLE IF NOT EXISTS game_results (
-    id_game INTEGER PRIMARY KEY,
-    game_data TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(id_game) REFERENCES games(id_game)
+		id_game INTEGER PRIMARY KEY,
+		game_data TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(id_game) REFERENCES games(id_game)
 	);
 
 		-- Create indexes for better performance
@@ -191,16 +191,16 @@ if [ ! -f "$DB_PATH" ]; then
 
 	-- Creation of ButiBot and Guest
 	-- Insert ButiBot user if not exists
-	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
-	SELECT 'ButiBot', 'ButiBot@example.com', 'Hola1234', 'local', 0, 'default'
+	INSERT INTO users (username, email, provider, twoFactorEnabled, avatar_filename, avatar_type)
+	SELECT 'ButiBot', 'ButiBot@example.com', 'local', 0, 'squareBot.png', 'default'
 	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'ButiBot');
 
 	-- Insert guest user if not exists
-	INSERT INTO users (username, email, password, provider, twoFactorEnabled, avatar_type)
-	SELECT 'guest', 'guest@example.com', 'Hola1234', 'local', 0, 'default'
+	INSERT INTO users (username, email, provider, twoFactorEnabled, avatar_filename, avatar_type)
+	SELECT 'guest', 'guest@example.com', 'local', 0, 'squareUnknown.png', 'default'
 	WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'guest');
 
--- Insert user_stats for ButiBot if not exists
+	-- Insert user_stats for ButiBot if not exists
 	INSERT OR IGNORE INTO user_stats (id_user)
 	SELECT id_user FROM users WHERE username = 'ButiBot';
 
