@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 18:04:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:33:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,9 +170,23 @@ export class MenuButtonSystem implements System {
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				const networkManager = new PongNetworkManager(null, '');
-				await networkManager.startMatchmaking();
-				
+				this.networkManager = new PongNetworkManager(null, '', this.menu);
+				await this.networkManager.startMatchmaking();
+				this.menu.readyButton.setClickable(false);
+				this.menu.readyButton.setClicked(true);
+
+				// Fake loading animation
+				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+				this.menu.readyButton.updateText('');
+				while (this.menu.readyButton.getIsClicked()) {
+					if (this.menu.readyButton.getText().length < 3) {
+						this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+					} else if (this.menu.readyButton.getText().length >= 3) {
+						this.menu.readyButton.updateText('');
+					}
+					await sleep(500);
+				}
+				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -543,7 +557,28 @@ export class MenuButtonSystem implements System {
 		this.menu.duelButton.setHidden(false);
 		this.menu.tournamentButton.setHidden(true);
 
-		this.menu.startXButton.setHidden(true); 
+		this.menu.startXButton.setHidden(true);
+	}
+
+	async handleMatchFound() {
+
+		this.menu.readyButton.setClicked(false);
+		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+
+		// Fake loading animation (gotta reuse your old tricks eh)
+		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+		this.menu.readyButton.updateText('');
+		while (this.menu.readyButton.getText().length < 3) {
+			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+			await sleep(1000);
+		}
+		const params = new URLSearchParams({
+			gameId: this.networkManager?.getGameId() || '',
+			hostName: this.networkManager?.getHostName() || 'host',
+			guestName: this.networkManager?.getGuestName() || 'guest',
+			mode: 'online'
+		});
+		navigate(`/pong?${params.toString()}`);
 	}
 
 	handleClassicClicked() {

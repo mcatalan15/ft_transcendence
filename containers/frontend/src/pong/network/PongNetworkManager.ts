@@ -509,10 +509,9 @@ export class PongNetworkManager {
 			console.log('Starting matchmaking...');
 			
 			if (!this.wsManager.socket || this.wsManager.socket.readyState !== WebSocket.OPEN) {
-				await this.wsManager.connect(null); // Connect without gameId for matchmaking
+				await this.wsManager.connect(null);
 			}
 			
-			// Send matchmaking request
 			this.wsManager.send({
 				type: 'FIND_MATCH',
 				gameType: '1v1',
@@ -530,5 +529,15 @@ export class PongNetworkManager {
 			type: 'CANCEL_MATCHMAKING',
 			playerId: sessionStorage.getItem('username')
 		});
+	}
+
+	public getGameId(): string {
+		return this.gameId;
+	}
+	public getHostName(): string {
+		return this.hostName;
+	}
+	public getGuestName(): string {
+		return this.guestName;
 	}
 }
