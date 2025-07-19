@@ -18,15 +18,16 @@ export interface GameHistory {
 export async function loadGames(
   currentPage: number,
   gamesPerPage: number,
-  username: string
+  userId: string
 ): Promise<{ games: GameHistory[]; totalGames: number }> {
-  const usernameParam = username ? username : sessionStorage.getItem('username') || '';
+  const usernameParam = userId ? userId : sessionStorage.getItem('username');
   const response = await fetch(getApiUrl(`/games/history?page=${currentPage}&limit=${gamesPerPage}&user=${usernameParam}`), {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
   });
+  console.log(`Fetching games for user: ${usernameParam}`); 
   
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);

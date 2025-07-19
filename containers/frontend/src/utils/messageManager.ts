@@ -5,7 +5,6 @@ export class MessageManager {
   private static readonly DISPLAY_TIME = CONFIG.TRANSITIONS.messageDisplayTime;
   private static readonly FADE_OUT_DELAY = CONFIG.TRANSITIONS.fadeOutDelay;
 
-  // Create message container in specified element
   static createContainer(container: HTMLElement): void {
     if (!document.getElementById(this.CONTAINER_ID)) {
       const messageContainer = document.createElement('div');
@@ -15,17 +14,14 @@ export class MessageManager {
     }
   }
 
-  // Show success message to user
   static showSuccess(message: string): void {
     this.showMessage(message, 'success');
   }
 
-  // Show error message to user
   static showError(message: string): void {
     this.showMessage(message, 'error');
   }
 
-  // Display message with specified type and styling
   private static showMessage(message: string, type: 'success' | 'error'): void {
     const messageContainer = this.getOrCreateContainer();
     const messageDiv = this.createMessageElement(message, type);
@@ -35,7 +31,6 @@ export class MessageManager {
     this.scheduleRemoval(messageDiv, messageContainer);
   }
 
-  // Get existing container or create new one
   private static getOrCreateContainer(): HTMLElement {
     let container = document.getElementById(this.CONTAINER_ID);
     if (!container) {
@@ -44,7 +39,6 @@ export class MessageManager {
     return container;
   }
 
-  // Create message container and append to body
   private static createMessageContainer(): HTMLElement {
     const container = document.createElement('div');
     container.id = this.CONTAINER_ID;
@@ -53,7 +47,6 @@ export class MessageManager {
     return container;
   }
 
-  // Create styled message element
   private static createMessageElement(message: string, type: 'success' | 'error'): HTMLElement {
     const messageDiv = document.createElement('div');
     messageDiv.className = this.getMessageClasses(type);
@@ -69,17 +62,15 @@ export class MessageManager {
     return messageDiv;
   }
 
-  // Get CSS classes based on message type
   private static getMessageClasses(type: 'success' | 'error'): string {
     const baseClasses = 'px-4 py-3 shadow-lg max-w-xs text-center transition-all duration-300 transform translate-x-full opacity-0';
     const typeClasses = type === 'success' 
-      ? 'bg-green-500 text-white border-l-4 border-green-600' 
+      ? 'bg-lime-400 text-white border-l-4 border-lime-500' 
       : 'bg-red-500 text-white border-l-4 border-red-600';
     
     return `${baseClasses} ${typeClasses}`;
   }
 
-  // Animate message entry with slide effect
   private static animateMessageEntry(messageDiv: HTMLElement): void {
     requestAnimationFrame(() => {
       messageDiv.style.opacity = '1';
@@ -87,14 +78,12 @@ export class MessageManager {
     });
   }
 
-  // Schedule automatic message removal
   private static scheduleRemoval(messageDiv: HTMLElement, container: HTMLElement): void {
     setTimeout(() => {
       this.removeMessage(messageDiv, container);
     }, this.DISPLAY_TIME);
   }
 
-  // Remove message with fade out animation
   private static removeMessage(messageDiv: HTMLElement, container?: HTMLElement): void {
     messageDiv.style.opacity = '0';
     messageDiv.style.transform = 'translateX(100%)';
@@ -104,7 +93,6 @@ export class MessageManager {
     }, this.FADE_OUT_DELAY);
   }
 
-  // Finalize message removal and cleanup container
   private static finalizeMessageRemoval(messageDiv: HTMLElement, container?: HTMLElement): void {
     messageDiv.remove();
     

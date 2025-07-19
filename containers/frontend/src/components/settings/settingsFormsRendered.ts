@@ -1,4 +1,3 @@
-import { CONFIG } from '../../config/settings.config';
 import { MessageManager } from '../../utils/messageManager';
 import { changeNickname, changePassword } from '../../utils/profile/profileUtils';
 import i18n from '../../i18n';

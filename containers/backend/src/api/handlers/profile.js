@@ -18,6 +18,9 @@ async function getUserProfile(request, reply) {
     try {
         const sessionUser = request.session.get('user');
         const requestedUsername = request.params.username;
+		console.log(`Session user: ${sessionUser}`);
+		console.log(`Requested username: ${requestedUsername}`);
+		
 
         let targetUser;
         let userStats;

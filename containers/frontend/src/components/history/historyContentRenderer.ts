@@ -114,6 +114,7 @@ export class HistoryContentRenderer {
 
   private async loadAndRenderGames(): Promise<void> {
     try {
+      console.log(`[HistoryContentRenderer] Loading games for user: ${this.username}, page: ${this.currentPage}, limit: ${this.gamesPerPage}`);
       const { games, totalGames: total } = await loadGames(this.currentPage, this.gamesPerPage, this.username);
       
       this.totalGames = total;
