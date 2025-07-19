@@ -188,7 +188,7 @@ async function getUsernameById(userId) {
 
 async function getUserById(userId) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT id_user as id, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
+        const query = `SELECT id_user, username, email, avatar_filename, avatar_type, twoFactorEnabled FROM users WHERE id_user = ?`;
         db.get(query, [userId], (err, row) => {
             if (err) {
                 console.error('Database error in getUserById:', err);
@@ -557,7 +557,7 @@ async function getTwoFactorSecret(userId) {
 async function enableTwoFactor(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        const params = [secret, 0, userId];
+        const params = [secret, 1, userId];
 
         db.run(query, params, function (err) {
             if (err) {
@@ -872,6 +872,7 @@ async function getUserProfileStats(userId) {
 }
 
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
+	console.log(`Saving refresh token for user ${userId}: ${refreshToken}`);
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
                       ON CONFLICT(user_id) DO UPDATE SET token = ?`;
@@ -887,6 +888,7 @@ async function saveRefreshTokenInDatabase(userId, refreshToken) {
                 });
                 reject(err);
             } else {
+				console.log(`Refresh token saved successfully for user ${userId}`);
                 resolve(true);
             }
         });
