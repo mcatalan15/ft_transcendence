@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:29:09 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:46:24 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
 import { navigate } from "../../../utils/router";
+import { MenuInputSystem } from "./MenuInputSystem";
+import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
+import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
+import { Text } from "pixi.js";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -399,10 +403,12 @@ export class MenuButtonSystem implements System {
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
 
-			for (let button of this.menu.tournamentInputButtons) {
+			/* for (let button of this.menu.tournamentInputButtons) {
 				button.resetButton();
-			}
+			} */
 		}
+
+		this.menu.inputFocus = null;
 	}
 
 	handleLocalClick() {

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:52:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:21:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:22:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,15 @@ export class ButtonSystem implements System {
 	private handleGameQuit(): void {
 		console.log('Game quit requested');
 		
-		const tournamentConfig = this.game.tournamentManager.getTournament();
+		let tournamentConfig;
+		if (this.game.config.variant === 'tournament') {
+			tournamentConfig = this.game.tournamentManager.getTournament();
+		}
 		
 		if (tournamentConfig) {
 			this.returnToMenuWithTournament();
 		} else {
+			console.log('No tournament config found, returning to main menu');
 			gameManager.destroyGame(this.game.app.view.id);
 			window.location.href = '/pong';
 		}

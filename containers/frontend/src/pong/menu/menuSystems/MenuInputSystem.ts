@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:00:57 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:45:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ export class MenuInputSystem implements System {
 					}
 				}
 
-				if (repeatedFlag < 2) {
-					console.log(`repeatedFlag: ${repeatedFlag}`);
+				if ((this.currentInputButton instanceof MenuBigInputButton && this.currentInputButton.getText() !== 'butibot' && this.currentInputButton.getText() !== this.menu.playerData?.name)) {
+					this.finishInput();
+					return;
+				} else if (this.currentInputButton instanceof MenuSmallInputButton && repeatedFlag < 2 && this.currentInputButton.getText() !== 'butibot') {
 					this.finishInput();
 					return;
 				}
@@ -185,8 +187,6 @@ export class MenuInputSystem implements System {
 				}
 			} catch (error) {
 				console.error('Error fetching user data:', error);
-				this.menu.config.guestName = 'butibot';
-				await MenuImageManager.updateRightPlayerAvatar(this.menu);
 			}
 		} else {
 			inputButton.updateText(userName.toUpperCase());
@@ -396,5 +396,9 @@ export class MenuInputSystem implements System {
 				return 'nom?';
 			}
 		}
+	}
+
+	public getCurrentInputButton(): MenuBigInputButton | MenuSmallInputButton | null {
+		return this.currentInputButton;
 	}
 }

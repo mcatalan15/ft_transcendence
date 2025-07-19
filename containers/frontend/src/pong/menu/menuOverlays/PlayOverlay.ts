@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 17:10:25 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:44:31 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,5 +129,7 @@ export class PlayOverlay extends Overlay {
         MenuImageManager.hidePlayAvatarImages(this.menu);
 
         this.menu.playInputButton.resetButton();
+
+        this.menu.playInputButton.getButtonText().alpha = 1;
     }
 }

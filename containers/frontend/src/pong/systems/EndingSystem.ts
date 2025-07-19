@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:17:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:08:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ export class EndingSystem implements System {
 
 	constructor(game: PongGame) {
 		this.game = game;
-		this.isOnlineGame = game.isOnline; // Use game's online state
+		this.isOnlineGame = game.isOnline;
 		
 		for (const entity of this.game.entities) {
 			if (isUI(entity)) this.UI = entity;
@@ -76,7 +76,7 @@ export class EndingSystem implements System {
 			}
 		}
 
-		if (this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+		if (this.UI.leftScore === 2 && this.UI.rightScore === 2) {
 			this.setGameResults();
 				this.ended = true;
 		}
@@ -163,8 +163,12 @@ export class EndingSystem implements System {
 	}
 
 	private processGameEnd(): void {
-		console.log('Processing game end...');
-		console.log(`Left player: ${this.game.leftPlayer.name} - (${this.game.data.leftPlayer.isDisconnected}) (${this.UI.leftScore}) vs Right player: ${this.game.data.rightPlayer.name} - (${this.game.rightPlayer.isDisconnected}) (${this.UI.rightScore})`);
+		if (this.endingProcessed) {
+			console.log('Game end already processed, skipping duplicate processing');
+			return;
+		}
+
+		this.endingProcessed = true;
 		
 		if (this.game.leftPlayer.isDisconnected === true || this.game.rightPlayer.isDisconnected === true) {
 			if (this.game.leftPlayer.isDisconnected === true) {
@@ -175,8 +179,6 @@ export class EndingSystem implements System {
 		} else {
 			this.game.data.winner = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : (this.game.data.rightPlayer.result === 'win' ? this.game.data.rightPlayer.name : null);
 		}
-
-		console.log(`Game ended. Winner: ${this.game.data.winner}`);
 		
 		this.game.data.finalScore = {
 			leftPlayer: this.UI.leftScore,
@@ -214,14 +216,17 @@ export class EndingSystem implements System {
 	}
 
 	private handleOnlineGameResultSaving(): void {
-		console.log('Online game ended, checking if should save results...');
+		/* console.log('Online game ended, checking if should save results...');
+		console.log(this.game.config);
+		console.log(this.game.data);
+		console.log('Current player:', sessionStorage.getItem('username'));
 		
-		if (this.game.localPlayerNumber === 1) {
+		if (sessionStorage.getItem('username') === this.game.config.hostName) {
 			console.log('This player is host, saving game results...');
 			this.game.saveGameResults();
 		} else {
 			console.log('This player is guest, host will save results');
-		}
+		} */
 	}
 
 	private triggerFireworks(): void {

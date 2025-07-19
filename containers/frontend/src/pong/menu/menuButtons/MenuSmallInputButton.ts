@@ -6,10 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 09:49:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:57:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { Text } from "pixi.js";
 import { MenuButton } from "./MenuButton";
 import { ButtonStyle } from "./BaseButton";
 import { getThemeColors } from "../../utils/Utils";
@@ -80,6 +81,7 @@ export class MenuSmallInputButton extends MenuButton {
         if (this.buttonText) {
             this.buttonText.alpha = 0.5;
         }
+        
         this.menu.inputFocus = this.getButtonId();
         this.menu.isProcessingInput = true;
     }
@@ -194,4 +196,12 @@ export class MenuSmallInputButton extends MenuButton {
 	public unhover() {
 		this.handlePointerLeave();
 	}
+
+    public getButtonText(): Text {
+        if (this.buttonText) {
+            return this.buttonText
+        };
+
+        throw new Error("Button text is not defined");
+    }
 }
