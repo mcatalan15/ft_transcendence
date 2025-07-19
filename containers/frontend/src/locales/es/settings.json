@@ -20,6 +20,6 @@
         "updateSuccess": "Ajustes actualizados con éxito",
         "loadingFailed": "Error al cargar los ajustes",
         "userNotFound": "Usuario no encontrado",
-        "uploadFailed": "Error al subir el avatar: comprueba tu archivo e inténtalo de nuevo. La imagen debe ser un archivo PNG, GIF o JPEG válido y tener menos de 2MB de tamaño."
+        "uploadFailed": "Error al subir el avatar: comprueba tu archivo e inténtalo de nuevo. La imagen debe ser un archivo PNG o JPEG válido y tener menos de 2MB de tamaño."
     }
 }

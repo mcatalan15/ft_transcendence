@@ -18,7 +18,7 @@
         "passwordSame": "Le nouveau mot de passe doit être différent du mot de passe actuel",
         "updateFailed": "Échec de la mise à jour des paramètres. Veuillez réessayer plus tard.",
         "updateSuccess": "Paramètres mis à jour avec succès",
-        "uploadFailed": "Échec du téléchargement de l'avatar : vérifiez votre fichier et réessayez. L'image doit être un fichier PNG, GIF ou JPEG valide et de moins de 2 Mo.",
+        "uploadFailed": "Échec du téléchargement de l'avatar : vérifiez votre fichier et réessayez. L'image doit être un fichier PNG ou JPEG valide et de moins de 2 Mo.",
         "loadingFailed": "Erreur lors du chargement du profil",
         "userNotFound": "Utilisateur non trouvé"
     }
