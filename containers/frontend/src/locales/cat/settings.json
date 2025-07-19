@@ -20,6 +20,6 @@
         "updateSuccess": "Ajustos actualitzats amb èxit",
         "loadingFailed": "Error en carregar els ajustos",
         "userNotFound": "Usuari no trobat",
-        "uploadFailed": "Error en pujar l'avatar: comprova el teu arxiu i torna-ho a provar. La imatge ha de ser un arxiu PNG, GIF o JPEG vàlid i tenir menys de 2MB de mida."
+        "uploadFailed": "Error en pujar l'avatar: comprova el teu arxiu i torna-ho a provar. La imatge ha de ser un arxiu PNG o JPEG vàlid i tenir menys de 2MB de mida."
     }
 }
