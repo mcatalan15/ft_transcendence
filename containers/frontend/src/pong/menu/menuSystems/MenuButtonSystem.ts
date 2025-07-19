@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 11:40:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 11:45:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,20 @@ export class MenuButtonSystem implements System {
 	}
 
 	async handlePlayClick(){
+		this.menu.optionsButton.setClickable(false);
+		this.menu.glossaryButton.setClickable(false);
+		this.menu.aboutButton.setClickable(false);
+		this.menu.filtersButton.setClickable(false);
+		this.menu.classicButton.setClickable(false);
+		this.menu.playButton.setClickable(false);
+		this.menu.localButton.setClickable(false);
+		this.menu.onlineButton.setClickable(false);
+		this.menu.IAButton.setClickable(false);
+		this.menu.duelButton.setClickable(false);
+		this.menu.tournamentButton.setClickable(false);
+		this.menu.startXButton.setClickable(false);
+		
+		
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
@@ -148,6 +162,7 @@ export class MenuButtonSystem implements System {
 	}
 
 	async handleReadyClick() {
+		this.menu.playSound("menuConfirm");
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');

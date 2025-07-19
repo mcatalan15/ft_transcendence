@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 20:24:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:26:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -513,6 +513,8 @@ export class EndgameOverlay extends Entity {
 			console.warn(`Invalid side: ${side}. Defaulting to "Player 1".`);
 			text = "Player 1";
 		}
+
+		console.log('Player name text:', text.toUpperCase());
 		
 		return {
 			text: text.toUpperCase(),
@@ -768,7 +770,7 @@ export class EndgameOverlay extends Entity {
 		
 		const rightSprite = await this.createPlayerAvatarSprite(
 			rightPlayerData?.avatar,
-			`avatarUnknown${assetSuffix}`,
+			this.game.config.variant === '1vAI' ? `avatarBot${assetSuffix}` : `avatarUnknown${assetSuffix}`,
 			1220,
 			385,
 			0.225
