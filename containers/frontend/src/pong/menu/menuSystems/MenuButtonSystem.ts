@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 21:16:01 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:29:09 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,6 @@ export class MenuButtonSystem implements System {
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				// Create a PongNetworkManager for matchmaking (no game instance yet)
 				this.networkManager = new PongNetworkManager(null, '', this.menu);
 				await this.networkManager.startMatchmaking();
 				this.menu.readyButton.setClickable(false);
@@ -586,26 +585,26 @@ export class MenuButtonSystem implements System {
 		this.menu.startXButton.setHidden(true);
 	}
 
-	handleMatchFound() {
-		
-		/* if (this.menu.readyButton.getIsClicked()) {
-			navigate(`/pong?${params.toString()}`);
-		} */
+	async handleMatchFound() {
 
-    this.menu.readyButton.setClicked(false);
-	// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
-    
-    // Update ready button text based on role
-    if (this.networkManager?.getIsHost()) {
-        this.menu.readyButton.updateText('GO!');
-        this.menu.readyButton.setClickable(true);
-    } else {
-        this.menu.readyButton.updateText('WAITING...');
-        this.menu.readyButton.setClickable(false);
-    }
-    
-    console.log('PlayOverlay updated with match data');
-}
+		this.menu.readyButton.setClicked(false);
+		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+
+		// Fake loading animation (gotta reuse your old tricks eh)
+		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+		this.menu.readyButton.updateText('');
+		while (this.menu.readyButton.getText().length < 3) {
+			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+			await sleep(1000);
+		}
+		const params = new URLSearchParams({
+			gameId: this.networkManager?.getGameId() || '',
+			hostName: this.networkManager?.getHostName() || 'host',
+			guestName: this.networkManager?.getGuestName() || 'guest',
+			mode: 'online'
+		});
+		navigate(`/pong?${params.toString()}`);
+	}
 
 	handleClassicClicked() {
 		this.menu.config.classicMode = !this.menu.config.classicMode;
