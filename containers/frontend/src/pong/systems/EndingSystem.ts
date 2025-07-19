@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:08:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:03:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ export class EndingSystem implements System {
 			this.ended = true;
 		}
 	
-		if (this.game.tournamentManager.getHasActiveTournament() && 
+		if (this.game.config.variant === 'tournament' && this.game.tournamentManager.getHasActiveTournament() && 
 			(this.game.data.leftPlayer.result === 'win' || this.game.data.rightPlayer.result === 'win')) {
 			
 			const winnerName = this.game.data.leftPlayer.result === 'win' ? 

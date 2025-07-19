@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:46:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:07:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,12 +218,14 @@ export class MenuButtonSystem implements System {
 
 		this.menu.cleanup();
 
+		//! CHECK
 		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
+		game.tournamentManager = this.menu.tournamentManager;
 
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
 
