@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 15:43:25 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:55:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -994,7 +994,7 @@ export class Menu{
 			console.log('All menu sounds stopped and unloaded');
 		}
 		
-		this.app.ticker.stop();
+		//this.app.ticker.stop();
 		
 		this.systems.forEach(system => {
 			if (system.cleanup) {
