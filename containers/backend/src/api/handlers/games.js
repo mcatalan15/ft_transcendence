@@ -365,8 +365,10 @@ async function getGamesHistoryHandler(request, reply) {
     try {
         console.log('Entering getGamesHistoryHandler');
         console.log('Request user:', request.user);
-        const userId = request.user?.id;
+
+        const userId = request.query.user || request.user?.id;
         console.log('User ID:', userId);
+
         if (!userId) {
             console.log('No userId, returning 401');
             return reply.code(401).send({
@@ -386,7 +388,6 @@ async function getGamesHistoryHandler(request, reply) {
             gamesCount: result.games.length,
         });
 
-        // Fetch usernames for each game
         const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
             const [player1_name, player2_name, winner_name] = await Promise.all([
                 getUsernameById(game.player1_id),

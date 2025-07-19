@@ -82,7 +82,7 @@ export class HistoryRenderer {
 
     const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
 
-    const contentRenderer = new HistoryContentRenderer(this.container.id);
+    const contentRenderer = new HistoryContentRenderer(data.userId);
     const historyContent = contentRenderer.render();
 
     const pongBox = new PongBoxComponent({

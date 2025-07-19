@@ -18,10 +18,11 @@ export interface GameHistory {
 export async function loadGames(
   currentPage: number,
   gamesPerPage: number,
-  username: string
+  userId: string
 ): Promise<{ games: GameHistory[]; totalGames: number }> {
-  const usernameParam = username ? username : sessionStorage.getItem('username') || '';
-  const response = await fetch(getApiUrl(`/games/history?page=${currentPage}&limit=${gamesPerPage}&user=${usernameParam}`), {
+  //const usernameParam = username ? username : sessionStorage.getItem('username') || '';
+  console.log(`[gameutils] userId: ${userId}`);
+  const response = await fetch(getApiUrl(`/games/history?page=${currentPage}&limit=${gamesPerPage}&user=${userId}`), {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
