@@ -528,17 +528,6 @@ export class PongNetworkManager {
 	public getIsHost(): boolean {
 		return this.isHost;
 	}
-
-	public getGameId(): string {
-		return this.gameId;
-	}
-	public getHostName(): string {
-		return this.hostName;
-	}
-	public getGuestName(): string {
-		return this.guestName;
-	}
-
 	public getGameId(): string {
 		return this.gameId;
 	}

@@ -81,9 +81,9 @@ const saveGameSchema = {
                         type: 'object',
                         required: ['mode', 'classicMode', 'variant'],
                         properties: {
-                            mode: { type: 'string', enum: ['online', 'local', 'tournament'] },
+                            mode: { type: 'string', enum: ['local', 'online'] },
                             classicMode: { type: 'boolean' },
-                            variant: { type: 'string', enum: ['1v1', '2v2', '3v3', '4v4'] }
+                            variant: { type: 'string', enum: ['1v1', '1vAI', 'tournament'] }
                         }
                     },
                     createdAt: { type: ['string', 'null'], format: 'date-time', description: 'Timestamp when the game was created' },
@@ -142,9 +142,11 @@ const saveGameSchema = {
                     },
                     leftPlayer: {
                         type: 'object',
-                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        required: ['id', 'name', 'isDisconnected', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
                         properties: {
                             id: { type: 'string', description: 'Username of the left player' },
+                            name: { type: 'string', description: 'Name of the left player' },
+                            isDisconnected: { type: 'boolean', description: 'Whether the left player disconnected during the game' },
                             score: { type: 'number', minimum: 0 },
                             result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
                             hits: { type: 'number', minimum: 0 },
@@ -157,9 +159,11 @@ const saveGameSchema = {
                     },
                     rightPlayer: {
                         type: 'object',
-                        required: ['id', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
+                        required: ['id', 'name', 'isDisconnected', 'score', 'result', 'hits', 'goalsInFavor', 'goalsAgainst', 'powerupsPicked', 'powerdownsPicked', 'ballchangesPicked'],
                         properties: {
                             id: { type: 'string', description: 'Username of the right player' },
+                            name: { type: 'string', description: 'Name of the left player' },
+                            isDisconnected: { type: 'boolean', description: 'Whether the left player disconnected during the game' },
                             score: { type: 'number', minimum: 0 },
                             result: { type: ['string', 'null'], enum: ['win', 'lose', 'draw', null] },
                             hits: { type: 'number', minimum: 0 },
