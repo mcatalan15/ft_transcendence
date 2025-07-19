@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 20:07:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:58:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,9 +217,6 @@ export class MenuButtonSystem implements System {
 		console.log('Starting local game...');
 
 		this.menu.cleanup();
-
-		//! CHECK
-		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
@@ -868,7 +865,7 @@ export class MenuButtonSystem implements System {
 		if (this.menu.startButton) this.menu.startButton.resetButton();
 	}
 
-	protected setFinalConfig() {
+	protected async setFinalConfig() {
 		if (this.menu.localButton.getIsClicked()) {
 			this.menu.config.mode = 'local';
 			if (this.menu.IAButton.getIsClicked()) {
@@ -911,6 +908,10 @@ export class MenuButtonSystem implements System {
 		if (this.menu.config.guestName === 'butibot' && this.menu.config.variant !== 'tournament') {
 			this.menu.config.variant = '1vAI';
 		}
+
+		//! Player IDS
+		this.menu.config.players![0].id = await this.menu.getUserId(this.menu.config.players![0].name, sessionStorage.getItem('token')!);
+		this.menu.config.players![1].id = await this.menu.getUserId(this.menu.config.players![1].name, sessionStorage.getItem('token')!);
 
 		console.log('Final game configuration:', this.menu.config);
 	}

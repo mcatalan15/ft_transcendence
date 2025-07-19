@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:55:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:49:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1283,6 +1283,41 @@ export class Menu{
 			return data.userData as PlayerData;
 		} catch (error) {
 			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	async getUserId(username: string, token: string): Promise<string>{
+		try {
+			console.log(`Fetching user ID for username ${username} with token ${token}`);
+			if (!username || !token) {
+				throw new Error('Username and token are required to fetch user ID');
+			}
+
+			const response = await fetch(getApiUrl('/games/getUserByUsername'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					username: username
+				}),
+				credentials: 'include'
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+
+			const data = await response.json();
+			console.log('User ID fetched successfully:', data.userId);
+
+			return data.id as string;
+		} catch (error) {
+			console.error('Error fetching user ID:', error);
 			throw error;
 		}
 	}
