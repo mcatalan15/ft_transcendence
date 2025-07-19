@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:07:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:42:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ export class PongGame {
 
 	tournamentManager!: TournamentManager;
 	tournamentConfig: TournamentConfig | null = null;
+	hasSavedResults: boolean = false;
 
 	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
@@ -799,6 +800,8 @@ export class PongGame {
 	}
 
 	async saveGameResults(): Promise<void> {
+		if (this.hasSavedResults || this.config.mode !== 'online') { return; }
+		
 		try {
 			console.log('Starting to save game results...');
 			console.log('Game data to send:', this.data);
@@ -840,6 +843,7 @@ export class PongGame {
 			if (response.ok) {
 				const result = await response.json();
 				console.log('Game results saved successfully:', result);
+				this.hasSavedResults = true;
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);

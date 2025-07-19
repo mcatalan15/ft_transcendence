@@ -5,14 +5,11 @@ class GameResultsService {
 		try {
 			console.log('🔍 Attempting to save online game results...');
 
-			// Import the database and getUserByUsername function
 			const { db, getUserByUsername } = require('../src/api/db/database');
 
-			// Get user IDs from usernames
 			const player1User = await getUserByUsername(gameData.leftPlayer.name);
 			const player2User = await getUserByUsername(gameData.rightPlayer.name);
 
-			// Check if users exist
 			if (!player1User) {
 				throw new Error(`Player 1 with username '${gameData.leftPlayer.name}' not found`);
 			}
@@ -24,7 +21,6 @@ class GameResultsService {
 			const player1_id = player1User.id_user;
 			const player2_id = player2User.id_user;
 
-			// Determine winner ID and general result
 			let winner_id = 0;
 			let generalResult = 'draw';
 

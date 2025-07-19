@@ -6,9 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 12:38:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:01:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { Text } from "pixi.js";
 
 import { MenuButton } from "./MenuButton";
 
@@ -193,4 +195,12 @@ export class MenuBigInputButton extends MenuButton {
 	public unhover() {
 		this.handlePointerLeave();
 	}
+
+    public getButtonText(): Text {
+        if (this.buttonText) {
+            return this.buttonText
+        };
+
+        throw new Error("Button text is not defined");
+    }
 }

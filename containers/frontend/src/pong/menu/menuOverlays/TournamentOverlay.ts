@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:27:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:03:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,7 @@ export class TournamentOverlay extends Overlay {
 				this.tournamentInputButtons[i].setHidden(true);
 				this.tournamentInputButtons[i].setClickable(false);
 				this.tournamentInputButtons[i].isFilled = false;
+				this.tournamentInputButtons[i].getButtonText().alpha = 1;
 			}
 		}
 	}
