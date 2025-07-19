@@ -129,7 +129,7 @@ export class MenuButtonSystem implements System {
 		this.menu.redrawFrame();
 	}
 
-	handlePlayClick() {
+	async handlePlayClick() {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
