@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:44:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:30:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,7 +318,8 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-                name: this.leftPlayer.id || 'player1',
+                id: this.leftPlayer.id || "2",
+				name: this.leftPlayer.name || "guest",
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -330,7 +331,8 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-                name: this.rightPlayer.id || 'player2',
+                id: this.rightPlayer.id || "2",
+				name: this.rightPlayer.name || "guest",
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -486,7 +488,9 @@ export class PongGame {
 		}
 		
 		this.data.leftPlayer.name = this.leftPlayer.name;
+		this.data.leftPlayer.id = this.config.players![0].id;
     	this.data.rightPlayer.name = this.rightPlayer.name;
+		this.data.rightPlayer.id = this.config.players![1].id;
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -800,7 +804,7 @@ export class PongGame {
 	}
 
 	async saveGameResults(): Promise<void> {
-		if (this.hasSavedResults || this.config.mode !== 'online') { return; }
+		if (this.hasSavedResults || this.config.variant !== 'tournament') { return; }
 		
 		try {
 			console.log('Starting to save game results...');
@@ -823,7 +827,6 @@ export class PongGame {
 				createdAt: this.data.createdAt instanceof Date ? this.data.createdAt.toISOString() : this.data.createdAt,
 				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
 			};
-			// console.log('Making API call to /api/games/results');
 			console.log('Making API call to /api/games');
 			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
@@ -877,7 +880,6 @@ export class PongGame {
 	}
 
 	// API
-
 	async getUserData(userId: string, token: string): Promise<PlayerData> {
 		try {
 			console.log(`Fetching user data for user ${userId} with token ${token}`);
@@ -911,6 +913,45 @@ export class PongGame {
 			return data.userData as PlayerData;
 		} catch (error) {
 			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	async getUserId(username: string, token: string): Promise<string> {
+		try {
+			console.log(`Fetching user ID for username ${username} with token ${token}`);
+			if (!username || !token) {
+				throw new Error('Username and token are required to fetch user ID');
+			}
+	
+			const response = await fetch(getApiUrl('/games/getUserByUsername'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					username: username
+				}),
+				credentials: 'include'
+			});
+	
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+	
+			const data = await response.json();
+			
+			// Fix: Access the correct property path
+			console.log('User ID fetched successfully:', data.userData.id);
+	
+			// Fix: Return the correct property
+			return data.userData.id as string;
+		} catch (error) {
+			console.error('Error fetching user ID:', error);
+			return ("2");
 			throw error;
 		}
 	}
