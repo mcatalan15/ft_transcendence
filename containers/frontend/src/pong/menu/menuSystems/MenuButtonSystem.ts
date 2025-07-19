@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 11:45:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:44:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ export class MenuButtonSystem implements System {
 		this.menu.duelButton.setClickable(false);
 		this.menu.tournamentButton.setClickable(false);
 		this.menu.startXButton.setClickable(false);
-		
+		this.menu.ballButton.setClickable(false);
 		
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
@@ -330,6 +330,10 @@ export class MenuButtonSystem implements System {
 
 			this.setButtonsClickability(true);
 		} else if (event.type.includes('PLAY')) {
+			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
+				gameManager.destroyGame(this.menu.app.view.id);
+				window.location.href = '/pong';
+			}
 			const playIndex = this.overlayStack.indexOf('play');
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
@@ -349,6 +353,10 @@ export class MenuButtonSystem implements System {
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
+
+			for (let button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			}
 		}
 	}
 
@@ -825,5 +833,11 @@ export class MenuButtonSystem implements System {
 				this.menu.config.guestName = this.menu.config.players![1].name;
 			}
 		}
+
+		if (this.menu.config.guestName === 'butibot' && this.menu.config.variant !== 'tournament') {
+			this.menu.config.variant = '1vAI';
+		}
+
+		console.log('Final game configuration:', this.menu.config);
 	}
 }

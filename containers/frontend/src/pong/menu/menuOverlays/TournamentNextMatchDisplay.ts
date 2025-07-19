@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:43:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:12:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,7 +394,7 @@ export class TournamentNextMatchDisplay extends Entity {
 			this.statsTexts[1].text = this.getStatsValuesInLanguage(false);
 		}
 
-		this.statsTexts[1].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+		this.statsTexts[1].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3 };
 	
 		const leftStatsComponent = new TextComponent(this.statsTexts[1]);
 		this.replaceComponent('text', leftStatsComponent, 'statsText1');
@@ -426,7 +426,7 @@ export class TournamentNextMatchDisplay extends Entity {
 			this.statsTexts[3].text = this.getStatsValuesInLanguage(false);
 		}
 
-		this.statsTexts[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1 };
+		this.statsTexts[3].style.fill = { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.3 };
 	
 		const rightStatsComponent = new TextComponent(this.statsTexts[3]);
 		this.replaceComponent('text', rightStatsComponent, 'statsText3');

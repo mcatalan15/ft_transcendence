@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 19:08:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:00:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -551,7 +551,8 @@ export class MenuImageManager {
 	}
 
 	private static getRightPlayerAvatarData(menu: Menu): { name: string, x: number, y: number } {
-		if (menu.config.variant === '1vAI') {
+		console.log(`Game Config ${menu.config.variant}, Guest Name: ${menu.config.guestName}`);
+		if (menu.config.variant === '1vAI' || menu.config.guestName === 'butibot') {
 			return {
 				name: menu.config.classicMode ? 'avatarBotClassic' : 'avatarBotSquare',
 				x: 785,

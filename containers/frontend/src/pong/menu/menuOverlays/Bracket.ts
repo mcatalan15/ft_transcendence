@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:37:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:38:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,21 +201,21 @@ export class Bracket extends Entity {
 			if (config) {
 				if (playerCount === 8) { // First round
 					const key = `player${i + 1}` as keyof typeof config.firstRoundPlayers;
-					playerName = config.firstRoundPlayers[key] || '';
+					playerName = config.firstRoundPlayers[key]?.toUpperCase() || '';
 				} else if (playerCount === 4) { // Second round
-					const winner1 = config.matchWinners.match1Winner;
-					const winner2 = config.matchWinners.match2Winner;
-					const winner3 = config.matchWinners.match3Winner;
-					const winner4 = config.matchWinners.match4Winner;
+					const winner1 = config.matchWinners.match1Winner?.toUpperCase();
+					const winner2 = config.matchWinners.match2Winner?.toUpperCase();
+					const winner3 = config.matchWinners.match3Winner?.toUpperCase();
+					const winner4 = config.matchWinners.match4Winner?.toUpperCase();
 					
 					playerName = [winner1, winner2, winner3, winner4][i] || '';
 				} else if (playerCount === 2) { // Third round (semifinals)
-					const winner5 = config.matchWinners.match5Winner;
-					const winner6 = config.matchWinners.match6Winner;
+					const winner5 = config.matchWinners.match5Winner?.toUpperCase();
+					const winner6 = config.matchWinners.match6Winner?.toUpperCase();
 					
 					playerName = [winner5, winner6][i] || '';
 				} else if (playerCount === 1) { // Final
-					const winner7 = config.matchWinners.match7Winner;
+					const winner7 = config.matchWinners.match7Winner?.toUpperCase();
 					playerName = winner7 || '';
 				}
 			}

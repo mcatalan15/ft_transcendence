@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 10:46:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 12:47:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ export interface PlayerData {
 	draws: number;
 	rank: number;
 	totalPlayers?: number;
+	isBot?: boolean;
 }
 
 export type PlayerKey = `player${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`;

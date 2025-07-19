@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 09:55:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:00:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,6 +185,8 @@ export class MenuInputSystem implements System {
 				}
 			} catch (error) {
 				console.error('Error fetching user data:', error);
+				this.menu.config.guestName = 'butibot';
+				await MenuImageManager.updateRightPlayerAvatar(this.menu);
 			}
 		} else {
 			inputButton.updateText(userName.toUpperCase());
