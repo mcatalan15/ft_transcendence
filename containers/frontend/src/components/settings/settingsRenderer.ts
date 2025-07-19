@@ -26,7 +26,6 @@ export class SettingsRenderer {
     this.reloadCallback();
   };
 
-  // Render complete settings page layout
   public async render(): Promise<void> {
     try {
       this.container.innerHTML = '';
@@ -48,7 +47,6 @@ export class SettingsRenderer {
     }
   }
 
-  // Create and configure SVG header component
   private createHeader(): HTMLElement {
     const lang = i18n.language || 'en';
     const svgHeader = new HeadersComponent({
@@ -60,7 +58,6 @@ export class SettingsRenderer {
     return svgHeader;
   }
 
-  // Setup responsive margin adjustments for header
   private setupResponsiveMargin(svgHeader: HTMLElement): void {
     const updateSvgMargin = () => {
       const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
@@ -74,7 +71,6 @@ export class SettingsRenderer {
     window.addEventListener('resize', updateSvgMargin);
   }
 
-  // Create and configure pong box component with forms
   private async createPongBox(): Promise<HTMLElement> {
     try {
       const username = sessionStorage.getItem('username') || '';
@@ -109,7 +105,6 @@ export class SettingsRenderer {
     }
   }
 
-  // Create main layout structure with header and pong box
   private createMainLayout(svgHeader: HTMLElement, pongBoxElement: HTMLElement): HTMLElement {
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'flex flex-col items-center justify-center w-full h-full bg-neutral-900';
