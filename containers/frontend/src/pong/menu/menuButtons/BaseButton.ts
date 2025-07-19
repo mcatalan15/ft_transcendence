@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 17:11:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 12:26:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ export abstract class BaseButton extends Entity {
     protected buttonId: string;
     protected buttonContainer!: Container;
     protected buttonGraphic!: Graphics;
-    protected buttonText?: Text;
+    public buttonText?: Text;
     protected isHovered: boolean = false;
     protected isClicked: boolean = false;
     protected isClickable: boolean = true;
@@ -349,6 +349,12 @@ export abstract class BaseButton extends Entity {
 
     public setHidden(hidden: boolean): void {
         this.isHidden = hidden;
+        if (hidden) {
+            this.buttonContainer.eventMode = 'none';
+            this.buttonContainer.cursor = 'default';
+        } else {
+            this.setClickable(this.isClickable);
+        }
     }
 
     public setClicked(clicked: boolean): void {
@@ -365,5 +371,9 @@ export abstract class BaseButton extends Entity {
             this.buttonContainer.eventMode = 'none';
             this.buttonContainer.cursor = 'default';
         }
+    }
+
+    public setHovered(hovered: boolean): void {
+        this.isHovered = hovered;
     }
 }

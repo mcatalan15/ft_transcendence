@@ -7,6 +7,8 @@ export class HeaderTest {
     constructor() {
         this.element = document.createElement('header');
         this.element.className = 'fixed top-0 left-0 w-full bg-neutral-900 shadow-sm z-10';
+        const userProfileURL = sessionStorage.getItem('username') ? `/profile/${sessionStorage.getItem('username')}` : '/profile';
+        const userHistoryURL = sessionStorage.getItem('username') ? `/history/${sessionStorage.getItem('username')}` : '/history';
         this.element.innerHTML = `
 	<nav class="bg-neutral-900 fixed w-full z-20 top-0 start-0 border-b border-amber-50">
 	<div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1">
@@ -21,13 +23,13 @@ export class HeaderTest {
 		<div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
 		<ul class="flex flex-col p-3 md:p-0 mt-4 font-medium border border-neutral-900 rounded-lg bg-neutral-900 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-900">
 			<li>
-			<button data-route="/profile" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer" aria-current="page">${i18n.t('profile', { ns: 'menu'})}</button>
+			<button data-route="${userProfileURL}" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer" aria-current="page">${i18n.t('profile', { ns: 'menu'})}</button>
 			</li>
 			<li>
 			<button data-route="/pong" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('pong', { ns: 'menu'})}</button>
 			</li>
             <li>
-			<button data-route="/history" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('history', { ns: 'menu'})}</button>
+			<button data-route="${userHistoryURL}" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('history', { ns: 'menu'})}</button>
 			</li>
 			<li>
 			<button data-route="/friends" class="block py-2 px-3 text-3xl text-amber-50 font-anatol rounded-sm hover:bg-amber-400 md:hover:bg-transparent md:hover:text-amber-400 md:p-0 nav-link cursor-pointer">${i18n.t('friends', { ns: 'menu'})}</button>

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EndingSystem.ts                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:37 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:17:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,11 @@ export class EndingSystem implements System {
 	}
 
 	private checkLocalGameEnd(): void {
-		if (this.UI.leftScore >= 3 && this.UI.rightScore < 2) {
+		if (this.UI.leftScore >= 1 && this.UI.rightScore < 2) {
 			this.game.data.leftPlayer.result = 'win';
 			this.game.data.rightPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.rightScore >= 3 && this.UI.leftScore < 2) {
+		} else if (this.UI.rightScore >= 1 && this.UI.leftScore < 2) {
 			this.game.data.rightPlayer.result = 'win';
 			this.game.data.leftPlayer.result = 'lose';
 			this.ended = true;
@@ -100,6 +100,52 @@ export class EndingSystem implements System {
 			this.game.data.leftPlayer.result = 'draw';
 			this.game.data.rightPlayer.result = 'draw';
 			this.ended = true;
+		}
+	
+		if (this.game.tournamentManager.getHasActiveTournament() && 
+			(this.game.data.leftPlayer.result === 'win' || this.game.data.rightPlayer.result === 'win')) {
+			
+			const winnerName = this.game.data.leftPlayer.result === 'win' ? 
+				this.game.data.leftPlayer.name : 
+				this.game.data.rightPlayer.name;
+			
+			// Get the current match from the tournament config, not the manager
+			const config = this.game.tournamentManager.getTournamentConfig()!;
+			const currentMatch = config.nextMatch.matchOrder;
+			
+			console.log(`Completing match ${currentMatch} with winner: ${winnerName}`);
+			
+			// Update match winners
+			config.matchWinners[`match${currentMatch}Winner` as keyof typeof config.matchWinners] = winnerName;
+			
+			// Update tournament structure based on current match
+			if (currentMatch <= 4) {
+				const secondRoundKey = `player${currentMatch}` as keyof typeof config.secondRoundPlayers;
+				config.secondRoundPlayers[secondRoundKey] = winnerName;
+			}
+			else if (currentMatch <= 6) {
+				const roundPosition = currentMatch - 4;
+				const finalRoundKey = `player${roundPosition}` as keyof typeof config.thirdRoundPlayers;
+				config.thirdRoundPlayers[finalRoundKey] = winnerName;
+				console.log(`Updated third round ${finalRoundKey}: ${winnerName}`);
+			}
+			else if (currentMatch === 7) {
+				config.tournamentWinner = winnerName;
+				config.isFinished = true;
+				console.log(`Tournament finished! Winner: ${winnerName}`);
+			}
+			
+			// Update the tournament manager's state
+			this.game.tournamentManager.updateTournament(config);
+			
+			// Advance to next match if not finished
+			if (!config.isFinished) {
+				const hasNextMatch = this.game.tournamentManager.advanceMatch();
+				if (hasNextMatch) {
+					config.nextMatch.matchOrder = currentMatch + 1;
+					console.log(`Advanced to match ${config.nextMatch.matchOrder}`);
+				}
+			}
 		}
 	}
 

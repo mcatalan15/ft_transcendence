@@ -65,8 +65,8 @@ export const CONFIG: SettingsConfig = {
   },
   FILE_UPLOAD: {
     maxSize: 2 * 1024 * 1024,
-    acceptedTypes: ['image/jpeg', 'image/png', 'image/gif'],
-    acceptedString: 'image/jpeg,image/png,image/gif'
+    acceptedTypes: ['image/jpeg', 'image/png'],
+    acceptedString: 'image/jpeg,image/png'
   },
   BREAKPOINTS: {
     mobile: 768
