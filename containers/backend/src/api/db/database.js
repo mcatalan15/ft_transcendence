@@ -323,12 +323,6 @@ async function getLatestGame() {
 }
 
 async function saveGameToDatabase(gameRecord, gameData) {
-	const db = require('./database'); // Assuming your database connection module
-
-	// if (!db || typeof db.run !== 'function') {
-    //   reject(new Error('Database not properly initialized'));
-    //   return;
-    // }
 	return new Promise((resolve, reject) => {
 		console.log('saveGameToDatabase called with gameRecord:', gameRecord);
 
@@ -381,7 +375,7 @@ async function saveGameToDatabase(gameRecord, gameData) {
                 player2_powerdowns_picked,
                 player2_ballchanges_picked,
                 player2_result
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
 		const params = [
@@ -969,122 +963,316 @@ async function getUserProfileStats(userId) {
 }
 
 async function updateUserStats(player1_id, player2_id, gameData) {
-    const db = require('./database'); // Assuming you have a database connection module
-    
     try {
         // Begin transaction to ensure atomic updates
         await db.run('BEGIN TRANSACTION');
 
-        // Update stats for left player
+        // Update stats for left player (player1)
         await db.run(`
             INSERT INTO user_stats (
-                user_id,
-                games_played,
+                id_user,
+                total_games,
                 wins,
                 losses,
                 draws,
-                total_score,
                 total_hits,
-                goals_scored,
-                goals_conceded,
-                powerups_collected,
-                powerdowns_collected,
-                ball_changes_collected
-            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(user_id) DO UPDATE SET
-                games_played = games_played + 1,
+                total_goals_scored,
+                total_goals_conceded,
+                total_powerups_picked,
+                total_powerdowns_picked,
+                total_ballchanges_picked,
+                total_default_balls,
+                total_curve_balls,
+                total_multiply_balls,
+                total_spin_balls,
+                total_burst_balls,
+                total_bullets,
+                total_shields,
+                total_pyramids,
+                total_escalators,
+                total_hourglasses,
+                total_lightnings,
+                total_maws,
+                total_rakes,
+                total_trenches,
+                total_kites,
+                total_bowties,
+                total_honeycombs,
+                total_snakes,
+                total_vipers,
+                total_waystones,
+                highest_score,
+                last_updated
+            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(id_user) DO UPDATE SET
+                total_games = total_games + 1,
                 wins = wins + ?,
                 losses = losses + ?,
                 draws = draws + ?,
-                total_score = total_score + ?,
                 total_hits = total_hits + ?,
-                goals_scored = goals_scored + ?,
-                goals_conceded = goals_conceded + ?,
-                powerups_collected = powerups_collected + ?,
-                powerdowns_collected = powerdowns_collected + ?,
-                ball_changes_collected = ball_changes_collected + ?
+                total_goals_scored = total_goals_scored + ?,
+                total_goals_conceded = total_goals_conceded + ?,
+                total_powerups_picked = total_powerups_picked + ?,
+                total_powerdowns_picked = total_powerdowns_picked + ?,
+                total_ballchanges_picked = total_ballchanges_picked + ?,
+                total_default_balls = total_default_balls + ?,
+                total_curve_balls = total_curve_balls + ?,
+                total_multiply_balls = total_multiply_balls + ?,
+                total_spin_balls = total_spin_balls + ?,
+                total_burst_balls = total_burst_balls + ?,
+                total_bullets = total_bullets + ?,
+                total_shields = total_shields + ?,
+                total_pyramids = total_pyramids + ?,
+                total_escalators = total_escalators + ?,
+                total_hourglasses = total_hourglasses + ?,
+                total_lightnings = total_lightnings + ?,
+                total_maws = total_maws + ?,
+                total_rakes = total_rakes + ?,
+                total_trenches = total_trenches + ?,
+                total_kites = total_kites + ?,
+                total_bowties = total_bowties + ?,
+                total_honeycombs = total_honeycombs + ?,
+                total_snakes = total_snakes + ?,
+                total_vipers = total_vipers + ?,
+                total_waystones = total_waystones + ?,
+                highest_score = MAX(highest_score, ?),
+                win_rate = ROUND((wins + ?) * 100.0 / (total_games + 1), 2),
+                average_score = ROUND((total_goals_scored + ?) / (total_games + 1), 2),
+                goals_per_game = ROUND((total_goals_scored + ?) / (total_games + 1), 2),
+                hits_per_game = ROUND((total_hits + ?) / (total_games + 1), 2),
+                powerups_per_game = ROUND((total_powerups_picked + ?) / (total_games + 1), 2),
+                last_updated = CURRENT_TIMESTAMP
         `, [
             // Initial insert values
             player1_id,
             gameData.leftPlayer.result === 'win' ? 1 : 0,
             gameData.leftPlayer.result === 'lose' ? 1 : 0,
             gameData.leftPlayer.result === 'draw' ? 1 : 0,
-            gameData.leftPlayer.score,
             gameData.leftPlayer.hits,
             gameData.leftPlayer.goalsInFavor,
             gameData.leftPlayer.goalsAgainst,
             gameData.leftPlayer.powerupsPicked,
             gameData.leftPlayer.powerdownsPicked,
             gameData.leftPlayer.ballchangesPicked,
-            // Update values
+            // Ball usage (these come from the shared gameData, not individual players)
+            gameData.balls.defaultBalls,
+            gameData.balls.curveBalls,
+            gameData.balls.multiplyBalls,
+            gameData.balls.spinBalls,
+            gameData.balls.burstBalls,
+            // Special items
+            gameData.specialItems.bullets,
+            gameData.specialItems.shields,
+            // Wall elements
+            gameData.walls.pyramids,
+            gameData.walls.escalators,
+            gameData.walls.hourglasses,
+            gameData.walls.lightnings,
+            gameData.walls.maws,
+            gameData.walls.rakes,
+            gameData.walls.trenches,
+            gameData.walls.kites,
+            gameData.walls.bowties,
+            gameData.walls.honeycombs,
+            gameData.walls.snakes,
+            gameData.walls.vipers,
+            gameData.walls.waystones,
+            gameData.leftPlayer.score, // highest_score
+            
+            // Update values (same as above for calculations)
             gameData.leftPlayer.result === 'win' ? 1 : 0,
             gameData.leftPlayer.result === 'lose' ? 1 : 0,
             gameData.leftPlayer.result === 'draw' ? 1 : 0,
-            gameData.leftPlayer.score,
             gameData.leftPlayer.hits,
             gameData.leftPlayer.goalsInFavor,
             gameData.leftPlayer.goalsAgainst,
             gameData.leftPlayer.powerupsPicked,
             gameData.leftPlayer.powerdownsPicked,
-            gameData.leftPlayer.ballchangesPicked
+            gameData.leftPlayer.ballchangesPicked,
+            gameData.balls.defaultBalls,
+            gameData.balls.curveBalls,
+            gameData.balls.multiplyBalls,
+            gameData.balls.spinBalls,
+            gameData.balls.burstBalls,
+            gameData.specialItems.bullets,
+            gameData.specialItems.shields,
+            gameData.walls.pyramids,
+            gameData.walls.escalators,
+            gameData.walls.hourglasses,
+            gameData.walls.lightnings,
+            gameData.walls.maws,
+            gameData.walls.rakes,
+            gameData.walls.trenches,
+            gameData.walls.kites,
+            gameData.walls.bowties,
+            gameData.walls.honeycombs,
+            gameData.walls.snakes,
+            gameData.walls.vipers,
+            gameData.walls.waystones,
+            gameData.leftPlayer.score,
+            // For calculated fields
+            gameData.leftPlayer.result === 'win' ? 1 : 0, // win_rate calculation
+            gameData.leftPlayer.goalsInFavor, // average_score calculation
+            gameData.leftPlayer.goalsInFavor, // goals_per_game calculation
+            gameData.leftPlayer.hits, // hits_per_game calculation
+            gameData.leftPlayer.powerupsPicked // powerups_per_game calculation
         ]);
 
-        // Update stats for right player
+        // Update stats for right player (player2)
         await db.run(`
             INSERT INTO user_stats (
-                user_id,
-                games_played,
+                id_user,
+                total_games,
                 wins,
                 losses,
                 draws,
-                total_score,
                 total_hits,
-                goals_scored,
-                goals_conceded,
-                powerups_collected,
-                powerdowns_collected,
-                ball_changes_collected
-            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(user_id) DO UPDATE SET
-                games_played = games_played + 1,
+                total_goals_scored,
+                total_goals_conceded,
+                total_powerups_picked,
+                total_powerdowns_picked,
+                total_ballchanges_picked,
+                total_default_balls,
+                total_curve_balls,
+                total_multiply_balls,
+                total_spin_balls,
+                total_burst_balls,
+                total_bullets,
+                total_shields,
+                total_pyramids,
+                total_escalators,
+                total_hourglasses,
+                total_lightnings,
+                total_maws,
+                total_rakes,
+                total_trenches,
+                total_kites,
+                total_bowties,
+                total_honeycombs,
+                total_snakes,
+                total_vipers,
+                total_waystones,
+                highest_score,
+                last_updated
+            ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(id_user) DO UPDATE SET
+                total_games = total_games + 1,
                 wins = wins + ?,
                 losses = losses + ?,
                 draws = draws + ?,
-                total_score = total_score + ?,
                 total_hits = total_hits + ?,
-                goals_scored = goals_scored + ?,
-                goals_conceded = goals_conceded + ?,
-                powerups_collected = powerups_collected + ?,
-                powerdowns_collected = powerdowns_collected + ?,
-                ball_changes_collected = ball_changes_collected + ?
+                total_goals_scored = total_goals_scored + ?,
+                total_goals_conceded = total_goals_conceded + ?,
+                total_powerups_picked = total_powerups_picked + ?,
+                total_powerdowns_picked = total_powerdowns_picked + ?,
+                total_ballchanges_picked = total_ballchanges_picked + ?,
+                total_default_balls = total_default_balls + ?,
+                total_curve_balls = total_curve_balls + ?,
+                total_multiply_balls = total_multiply_balls + ?,
+                total_spin_balls = total_spin_balls + ?,
+                total_burst_balls = total_burst_balls + ?,
+                total_bullets = total_bullets + ?,
+                total_shields = total_shields + ?,
+                total_pyramids = total_pyramids + ?,
+                total_escalators = total_escalators + ?,
+                total_hourglasses = total_hourglasses + ?,
+                total_lightnings = total_lightnings + ?,
+                total_maws = total_maws + ?,
+                total_rakes = total_rakes + ?,
+                total_trenches = total_trenches + ?,
+                total_kites = total_kites + ?,
+                total_bowties = total_bowties + ?,
+                total_honeycombs = total_honeycombs + ?,
+                total_snakes = total_snakes + ?,
+                total_vipers = total_vipers + ?,
+                total_waystones = total_waystones + ?,
+                highest_score = MAX(highest_score, ?),
+                win_rate = ROUND((wins + ?) * 100.0 / (total_games + 1), 2),
+                average_score = ROUND((total_goals_scored + ?) / (total_games + 1), 2),
+                goals_per_game = ROUND((total_goals_scored + ?) / (total_games + 1), 2),
+                hits_per_game = ROUND((total_hits + ?) / (total_games + 1), 2),
+                powerups_per_game = ROUND((total_powerups_picked + ?) / (total_games + 1), 2),
+                last_updated = CURRENT_TIMESTAMP
         `, [
             // Initial insert values
             player2_id,
             gameData.rightPlayer.result === 'win' ? 1 : 0,
             gameData.rightPlayer.result === 'lose' ? 1 : 0,
             gameData.rightPlayer.result === 'draw' ? 1 : 0,
-            gameData.rightPlayer.score,
             gameData.rightPlayer.hits,
             gameData.rightPlayer.goalsInFavor,
             gameData.rightPlayer.goalsAgainst,
             gameData.rightPlayer.powerupsPicked,
             gameData.rightPlayer.powerdownsPicked,
             gameData.rightPlayer.ballchangesPicked,
-            // Update values
+            // Ball usage (shared between both players)
+            gameData.balls.defaultBalls,
+            gameData.balls.curveBalls,
+            gameData.balls.multiplyBalls,
+            gameData.balls.spinBalls,
+            gameData.balls.burstBalls,
+            // Special items
+            gameData.specialItems.bullets,
+            gameData.specialItems.shields,
+            // Wall elements
+            gameData.walls.pyramids,
+            gameData.walls.escalators,
+            gameData.walls.hourglasses,
+            gameData.walls.lightnings,
+            gameData.walls.maws,
+            gameData.walls.rakes,
+            gameData.walls.trenches,
+            gameData.walls.kites,
+            gameData.walls.bowties,
+            gameData.walls.honeycombs,
+            gameData.walls.snakes,
+            gameData.walls.vipers,
+            gameData.walls.waystones,
+            gameData.rightPlayer.score, // highest_score
+            
+            // Update values (same as above for calculations)
             gameData.rightPlayer.result === 'win' ? 1 : 0,
             gameData.rightPlayer.result === 'lose' ? 1 : 0,
             gameData.rightPlayer.result === 'draw' ? 1 : 0,
-            gameData.rightPlayer.score,
             gameData.rightPlayer.hits,
             gameData.rightPlayer.goalsInFavor,
             gameData.rightPlayer.goalsAgainst,
             gameData.rightPlayer.powerupsPicked,
             gameData.rightPlayer.powerdownsPicked,
-            gameData.rightPlayer.ballchangesPicked
+            gameData.rightPlayer.ballchangesPicked,
+            gameData.balls.defaultBalls,
+            gameData.balls.curveBalls,
+            gameData.balls.multiplyBalls,
+            gameData.balls.spinBalls,
+            gameData.balls.burstBalls,
+            gameData.specialItems.bullets,
+            gameData.specialItems.shields,
+            gameData.walls.pyramids,
+            gameData.walls.escalators,
+            gameData.walls.hourglasses,
+            gameData.walls.lightnings,
+            gameData.walls.maws,
+            gameData.walls.rakes,
+            gameData.walls.trenches,
+            gameData.walls.kites,
+            gameData.walls.bowties,
+            gameData.walls.honeycombs,
+            gameData.walls.snakes,
+            gameData.walls.vipers,
+            gameData.walls.waystones,
+            gameData.rightPlayer.score,
+            // For calculated fields
+            gameData.rightPlayer.result === 'win' ? 1 : 0, // win_rate calculation
+            gameData.rightPlayer.goalsInFavor, // average_score calculation
+            gameData.rightPlayer.goalsInFavor, // goals_per_game calculation
+            gameData.rightPlayer.hits, // hits_per_game calculation
+            gameData.rightPlayer.powerupsPicked // powerups_per_game calculation
         ]);
 
         await db.run('COMMIT');
+        console.log('User stats updated successfully for both players');
     } catch (error) {
+        console.error('Error updating user stats:', error);
         await db.run('ROLLBACK');
         throw error;
     }

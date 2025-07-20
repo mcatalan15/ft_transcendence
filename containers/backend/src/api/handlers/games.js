@@ -145,26 +145,23 @@ async function saveGameHandler(request, reply) {
 	const { gameData } = request.body;
 
 	try {
-		const player1User = await getUserByUsername(gameData.leftPlayer.id);
-		const player2User = await getUserByUsername(gameData.rightPlayer.id);
-		
 		// Check if users exist
-		if (!player1User) {
+		if (!gameData.leftPlayer.name) {
 			return reply.status(400).send({
 				success: false,
-				message: `Player 1 with username '${gameData.leftPlayer.id}' not found`
+				message: `Player 1 with username '${gameData.leftPlayer.name}' not found`
 			});
 		}
 		
-		if (!player2User) {
+		if (!gameData.rightPlayer.name) {
 			return reply.status(400).send({
 				success: false,
-				message: `Player 2 with username '${gameData.rightPlayer.id}' not found`
+				message: `Player 2 with username '${gameData.rightPlayer.name}' not found`
 			});
 		}
 
-		const player1_id = player1User.id_user;
-		const player2_id = player2User.id_user;
+		const player1_id = gameData.leftPlayer.id;
+		const player2_id = gameData.rightPlayer.id;
 		
 		// Determine winner ID
 		let winner_id = 0; // Default for draw
@@ -229,6 +226,8 @@ async function saveGameHandler(request, reply) {
 			player2_ballchanges_picked: gameData.rightPlayer.ballchangesPicked,
 			player2_result: gameData.rightPlayer.result
 		};
+
+        console.log('Saving game record:', JSON.stringify(gameRecord, null, 2));    
 
 		// Save to database
 		const gameId = await saveGameToDatabase(gameRecord, gameData);
@@ -365,8 +364,10 @@ async function getGamesHistoryHandler(request, reply) {
     try {
         console.log('Entering getGamesHistoryHandler');
         console.log('Request user:', request.user);
-        const userId = request.user?.id;
+
+        const userId = request.query.user || request.user?.id;
         console.log('User ID:', userId);
+
         if (!userId) {
             console.log('No userId, returning 401');
             return reply.code(401).send({
@@ -386,7 +387,6 @@ async function getGamesHistoryHandler(request, reply) {
             gamesCount: result.games.length,
         });
 
-        // Fetch usernames for each game
         const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
             const [player1_name, player2_name, winner_name] = await Promise.all([
                 getUsernameById(game.player1_id),

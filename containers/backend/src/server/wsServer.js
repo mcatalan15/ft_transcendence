@@ -9,7 +9,6 @@ function setupWebSocketServers() {
 
 function handleUpgrade(wss, gameWss, server) {
   server.on('upgrade', (request, socket, head) => {
-    // Use the actual host from the request headers
     const host = request.headers.host || 'localhost';
     const protocol = request.headers['x-forwarded-proto'] || 'http';
     const fullUrl = `${protocol}://${host}${request.url}`;

@@ -4,17 +4,12 @@ JWT_SECRET=$(openssl rand -hex 32)
 JWT_REFRESH_SECRET=$(openssl rand -hex 32)
 SESSION_SECRET=$(openssl rand -hex 32)
 
-# Génération de mot de passe améliorée pour éviter les caractères problématiques
 PASSWORD=$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 20)
-# Assurez-vous qu'il y a au moins une majuscule, une minuscule et un chiffre
 if ! [[ "$PASSWORD" =~ [A-Z] ]] || ! [[ "$PASSWORD" =~ [a-z] ]] || ! [[ "$PASSWORD" =~ [0-9] ]]; then
   PASSWORD=$(echo "${PASSWORD:0:17}A1z")
 fi
 
-echo $PASSWORD
-
-# Correction importante: ne pas utiliser de variable d'environnement ici
-GRAFANA_ADMIN_PASSWORD=$PASSWORD
+export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
 
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'

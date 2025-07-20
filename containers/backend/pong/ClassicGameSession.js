@@ -41,6 +41,8 @@ class ClassicGameSession {
 		this.externalBroadcast = null;
 		this.ballUpdateCounter = 0;
     	this.paddleUpdateCounter = 0;
+
+		this.resultsSaved = false;
 	}
 
 	getState() {
@@ -246,12 +248,18 @@ class ClassicGameSession {
 	}
 	
 	endGame() {
+		if (this.gameEnded) {
+			console.log(`Game ${this.sessionId} already ended, skipping duplicate endGame call`);
+			return;
+		}
+
+		this.gameEnded = true;
+		
 		this.gameState.ball.x = -100;
 		this.gameState.ball.y = -100;
 		this.gameState.ballVelocity.x = 0;
 		this.gameState.ballVelocity.y = 0;
 		
-		this.gameEnded = true;
 		this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
 		
 		console.log(`Game ${this.sessionId} ended. Winner: ${this.winner}`);
@@ -329,16 +337,26 @@ class ClassicGameSession {
 	}
 	
 	async saveGameResults(results) {
+		// Prevent duplicate saves
+		if (this.resultsSaved) {
+			console.log('Game results already saved, skipping duplicate save');
+			return;
+		}
+		
 		try {
 			console.log('Saving online game results:', results);
+			this.resultsSaved = true; // Set flag before async operation
 			
 			await GameResultsService.saveOnlineGameResults(results.gameData);
 			
 			console.log('Online game results saved successfully');
 		} catch (error) {
 			console.error('Error saving online game results:', error);
+			this.resultsSaved = false; // Reset flag on error so it can be retried
+			throw error;
 		}
 	}
+	
 	stopGameLoop() {
 		if (this.gameLoop) {
 			clearInterval(this.gameLoop);
@@ -371,11 +389,16 @@ class ClassicGameSession {
 			this.players.player2.socket = null;
 		}
 		
+		// ✅ Better check: only end game if it's started AND not already ended
 		if (this.gameStarted && !this.gameEnded) {
+			console.log(`Player ${playerId} disconnected, ending game`);
 			this.broadcastToAll('playerDisconnected', { playerId });
-			this.endGame();
+			this.endGame(); // This will now be protected by the check in endGame()
+		} else if (this.gameEnded) {
+			console.log(`Player ${playerId} disconnected after game ended, no action needed`);
 		}
 	}
+	
 	
 	cleanup() {
 		this.stopGameLoop();

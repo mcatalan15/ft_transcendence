@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 16:09:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:52:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,15 +292,15 @@ export class Duel extends Entity {
 				// Set default guest name based on language
 				switch (this.menu.language) {
 					case ('es'): {
-						rightName = "INVITADO";
+						rightName = "";
 						break;
 					}
 					case ('fr'): {
-						rightName = "INVITÉ";
+						rightName = "";
 						break;
 					}
 					case ('cat'): {
-						rightName = "CONVIDAT";
+						rightName = "";
 						break;
 					}
 					default: {

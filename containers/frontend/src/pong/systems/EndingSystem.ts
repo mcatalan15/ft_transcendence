@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:17:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:36:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ export class EndingSystem implements System {
 
 	constructor(game: PongGame) {
 		this.game = game;
-		this.isOnlineGame = game.isOnline; // Use game's online state
+		this.isOnlineGame = game.isOnline;
 		
 		for (const entity of this.game.entities) {
 			if (isUI(entity)) this.UI = entity;
@@ -76,7 +76,7 @@ export class EndingSystem implements System {
 			}
 		}
 
-		if (this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+		if (this.UI.leftScore === 2 && this.UI.rightScore === 2) {
 			this.setGameResults();
 				this.ended = true;
 		}
@@ -102,7 +102,7 @@ export class EndingSystem implements System {
 			this.ended = true;
 		}
 	
-		if (this.game.tournamentManager.getHasActiveTournament() && 
+		if (this.game.config.variant === 'tournament' && this.game.tournamentManager.getHasActiveTournament() && 
 			(this.game.data.leftPlayer.result === 'win' || this.game.data.rightPlayer.result === 'win')) {
 			
 			const winnerName = this.game.data.leftPlayer.result === 'win' ? 
@@ -163,8 +163,12 @@ export class EndingSystem implements System {
 	}
 
 	private processGameEnd(): void {
-		console.log('Processing game end...');
-		console.log(`Left player: ${this.game.leftPlayer.name} - (${this.game.data.leftPlayer.isDisconnected}) (${this.UI.leftScore}) vs Right player: ${this.game.data.rightPlayer.name} - (${this.game.rightPlayer.isDisconnected}) (${this.UI.rightScore})`);
+		if (this.endingProcessed) {
+			console.log('Game end already processed, skipping duplicate processing');
+			return;
+		}
+
+		this.endingProcessed = true;
 		
 		if (this.game.leftPlayer.isDisconnected === true || this.game.rightPlayer.isDisconnected === true) {
 			if (this.game.leftPlayer.isDisconnected === true) {
@@ -175,8 +179,6 @@ export class EndingSystem implements System {
 		} else {
 			this.game.data.winner = this.game.data.leftPlayer.result === 'win' ? this.game.data.leftPlayer.name : (this.game.data.rightPlayer.result === 'win' ? this.game.data.rightPlayer.name : null);
 		}
-
-		console.log(`Game ended. Winner: ${this.game.data.winner}`);
 		
 		this.game.data.finalScore = {
 			leftPlayer: this.UI.leftScore,
@@ -197,14 +199,11 @@ export class EndingSystem implements System {
 
 		if (!this.game.config.classicMode) {
 			this.triggerLosingPaddleExplosion();
-
-			if (isPlayerWinner(this.game)) {
-				this.triggerFireworks();
-			}
+			this.triggerFireworks();
 		}
 		
-		if (this.isOnlineGame) {
-			this.handleOnlineGameResultSaving();
+		if (this.game.config.variant === 'tournament') {
+			this.handleTournamentGameResultSaving();
 		} else {
 			console.log('Local game ended, no backend save needed');
 		}
@@ -213,14 +212,24 @@ export class EndingSystem implements System {
 		this.displayResults();
 	}
 
-	private handleOnlineGameResultSaving(): void {
-		console.log('Online game ended, checking if should save results...');
+	private async handleTournamentGameResultSaving(): Promise<void> {
+		console.log('Tournament game ended, checking if should save results...');
 		
-		if (this.game.localPlayerNumber === 1) {
-			console.log('This player is host, saving game results...');
-			this.game.saveGameResults();
-		} else {
-			console.log('This player is guest, host will save results');
+		await this.getUserIds();
+		
+		this.game.saveGameResults();
+	}
+	
+	async getUserIds(): Promise<void> {
+		this.game.data.leftPlayer.id = await this.game.getUserId(this.game.data.leftPlayer.name, sessionStorage.getItem('token')!);
+		if (!this.game.data.leftPlayer.id) {
+			this.game.data.leftPlayer.id =  await this.game.getUserId('guest', sessionStorage.getItem('token')!);
+			this.game.data.leftPlayer.name = "guest";
+		}
+		this.game.data.rightPlayer.id = await this.game.getUserId(this.game.data.rightPlayer.name, sessionStorage.getItem('token')!);
+		if (!this.game.data.rightPlayer.id) {
+			await this.game.getUserId("guest", sessionStorage.getItem('token')!);
+			this.game.data.rightPlayer.name = "guest";
 		}
 	}
 
