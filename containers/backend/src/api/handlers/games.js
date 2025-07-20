@@ -692,6 +692,15 @@ async function saveTournamentResultsHandler(request, reply) {
 	}
 }
 
+// fetch('/api/games/tournament/results', {
+// 	method: 'POST',
+// 	headers: {
+// 		'Content-Type': 'application/json',
+// 		'Authorization': `Bearer ${token}`
+// 	},
+// 	body: JSON.stringify(tournamentResults)
+// });
+
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
