@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 18:14:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 18:30:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,22 +68,18 @@ export class EndingSystem implements System {
 	//! SET CORRECT ENDING CONDITIONS BEFORE TURNING IN
 
 	private checkOnlineGameEnd(): void {
+		if (this.game.leftPlayer.isDisconnected || this.game.rightPlayer.isDisconnected) {
+			this.setGameResults();
+			this.ended = true;
+			return;
+		}
+	
 		if (this.UI.leftScore >= 3 || this.UI.rightScore >= 3) {
 			const scoreDiff = Math.abs(this.UI.leftScore - this.UI.rightScore);
 			if (scoreDiff >= 2) {
 				this.setGameResults();
 				this.ended = true;
 			}
-		}
-
-		if (this.UI.leftScore === 2 && this.UI.rightScore === 2) {
-			this.setGameResults();
-				this.ended = true;
-		}
-		
-		if (this.UI.leftScore >= 21 || this.UI.rightScore >= 21) {
-			this.setGameResults();
-			this.ended = true;
 		}
 	}
 

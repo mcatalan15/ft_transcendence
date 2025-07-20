@@ -260,7 +260,13 @@ class ClassicGameSession {
 		this.gameState.ballVelocity.x = 0;
 		this.gameState.ballVelocity.y = 0;
 		
-		this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
+		if (!this.players.player1.socket) {
+			this.winner = 'player2';
+		} else if (!this.players.player2.socket) {
+			this.winner = 'player1';
+		} else {
+			this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
+		}
 		
 		console.log(`Game ${this.sessionId} ended. Winner: ${this.winner}`);
 	

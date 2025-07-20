@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 17:38:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 19:18:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/T
 
 // API stuff
 import { getApiUrl } from '../../config/api';
+import { PongNetworkManager } from '../network/PongNetworkManager';
 
 export class PongGame {
 	config: GameConfig;
@@ -1013,13 +1014,27 @@ export class PongGame {
 				await this.soundManager.cleanup();
 			}
 			
-			if (this.networkManager) {
-				console.log('Disconnecting network manager...');
-				this.networkManager.cancelMatchmaking();
-				this.networkManager.disconnect();
-				this.networkManager.close();
+			// Handle PongNetworkManager from window for matchmaking cleanup
+			const windowNetworkManager = (window as any).currentNetworkManager;
+			if (windowNetworkManager && typeof windowNetworkManager.cancelMatchmaking === 'function') {
+				console.log('Canceling matchmaking from PongNetworkManager...');
+				try {
+					await windowNetworkManager.cancelMatchmaking();
+				} catch (error) {
+					console.warn('Error during matchmaking cleanup:', error);
+				}
 			}
-
+			
+			// Close WebSocket connection (this.networkManager is WebSocketManager)
+			if (this.networkManager) {
+				console.log('Closing WebSocket connection...');
+				try {
+					this.networkManager.close();
+				} catch (error) {
+					console.warn('Error during WebSocket cleanup:', error);
+				}
+			}
+	
 			if (stopTicker && this.app?.ticker?.started) {
 				this.app.ticker.stop();
 			}
@@ -1031,7 +1046,7 @@ export class PongGame {
 				}
 			}
 			this.systems = [];
-
+	
 			console.log('Cleaning up entities...');
 			for (const entity of this.entities) {
 				const render = entity.getComponent('render') as RenderComponent;
@@ -1047,17 +1062,25 @@ export class PongGame {
 				}
 			}
 			this.entities = [];
-
+	
 			if (ParticleSpawner?.cleanup) {
 				ParticleSpawner.cleanup();
 			}
-
+	
 			console.log('Cleaning up render layers...');
 			for (const layer of Object.values(this.renderLayers)) {
 				if (layer?.parent) {
 					layer.parent.removeChild(layer);
 				}
 				layer?.destroy({ children: true });
+			}
+			
+			// Clean up window references
+			if ((window as any).currentPongGame === this) {
+				(window as any).currentPongGame = null;
+			}
+			if ((window as any).currentNetworkManager === windowNetworkManager) {
+				(window as any).currentNetworkManager = null;
 			}
 			
 			console.log('Game cleanup completed successfully');

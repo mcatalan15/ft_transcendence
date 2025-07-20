@@ -231,10 +231,10 @@ export class PongNetworkManager {
 		navigate(`/pong?${params.toString()}`);
 	}
 
-	handlePlayerDisconnection(id: string) {
+	private handlePlayerDisconnection(id: string) {
 		const leftPlayerId = this.game.data.leftPlayer.name;
 		const rightPlayerId = this.game.data.rightPlayer.name;
-
+	
 		if (id === leftPlayerId) {
 			this.game.leftPlayer.isDisconnected = true;
 			console.log(`Player ${leftPlayerId} has disconnected in handlePlayerDisconnection`);
@@ -242,8 +242,13 @@ export class PongNetworkManager {
 			this.game.rightPlayer.isDisconnected = true;
 			console.log(`Player ${rightPlayerId} has disconnected in handlePlayerDisconnection`);
 		}
-
-		//! MIGHT NEED TO HANDLE THE DATA SEND OF ONLINE GAMES BY ONLY HOST (AND CHANGE OF HOSTS) FROM HERE
+	
+		// Immediately trigger game end
+		this.game.hasEnded = true;
+		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
+		if (endingSystem) {
+			endingSystem.ended = true;
+		}
 	}
 
 	async connect(gameId: string) {
