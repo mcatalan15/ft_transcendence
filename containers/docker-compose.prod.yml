@@ -49,14 +49,14 @@ services:
     networks:
       - transcendence
 
-  # blockchain:
-  #   environment:
-  #     - NODE_ENV=production
-  #     - AVALANCHE_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
-  #     - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
-  #     - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
-  #   networks:
-  #     - transcendence
+  blockchain:
+    environment:
+      - NODE_ENV=production
+      - AVALANCHE_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+      - PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+      - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+    networks:
+      - transcendence
 
   redis:
     environment:

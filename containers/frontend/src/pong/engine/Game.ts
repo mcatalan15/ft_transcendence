@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:30:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:04:26 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -844,9 +844,34 @@ export class PongGame {
 			console.log('Response ok:', response.ok);
 	
 			if (response.ok) {
-				const result = await response.json();
-				console.log('Game results saved successfully:', result);
+				const gameResponse = await fetch('/api/games/latest');
+				const gameResult = await gameResponse.json();
+				console.log('Game results saved successfully:', gameResult);
 				this.hasSavedResults = true;
+
+				// Deploy smart contract
+				// const gameResponse = await fetch('/api/games/latest');
+				// const gameData = await gameResponse.json();
+
+				// Deploy contract
+				const deployResponse = await fetch('/api/deploy', {
+				    method: 'POST',
+				    headers: {
+				        'Content-Type': 'application/json',
+				    },
+				    body: JSON.stringify({
+						gameId: gameResult.id_game
+				    })
+				});
+
+				const deployData = await deployResponse.json();
+
+				if (deployResponse.ok) {
+				    // messageDiv.textContent = `Game saved and contract deployment initiated. Address: ${deployData.address}`;
+				    console.log('Deployment initiated:', deployData);
+				} else {
+				    console.log('Deployment failed:', deployData);
+				}
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);
