@@ -72,8 +72,6 @@ export class HistoryRenderer {
 		},
 	});
     const data = await response.json();
-    console.log(`Response data for ${username}:`, data);
-	console.log(`User ID for ${username}:`, data.userId);
 
 	if (!data || !data.userId) {
 		navigate('/404');
