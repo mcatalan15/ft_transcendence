@@ -66,7 +66,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 		const twoFaBox = document.createElement('div');
 		twoFaBox.className = 'bg-neutral-800 border-2 border-amber-50 p-8 max-w-md w-full mx-auto';
 		twoFaBox.innerHTML = `
-		<h2 class="text-4xl font-bold mb-6 text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('title', { ns: 'auth' })}</h2>
+		<h2 class="text-4xl font-bold mb-6 text-center text-amber-50 font-anatol tracking-wider">${i18n.t('title', { ns: 'auth' })}</h2>
 		<p class="text-amber-50 mb-6 font-mono text-sm opacity-80">${i18n.t('enterCode', { ns: 'auth' })}</p>
 		<div class="space-y-6">
 		<input
@@ -150,7 +150,7 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 		  <div class="pt-6 w-full flex justify-center gap-x-4 z-30">
 			<div class="h-screen flex items-center justify-center text-amber-50">
 			  <div class="bg-neutral-800 border-2 border-amber-50 p-10 w-full max-w-md space-y-8">
-				<h2 class="text-4xl font-bold text-center text-amber-50 font-anatol uppercase tracking-wider">${i18n.t('setup', { ns: 'auth' })}</h2>
+				<h2 class="text-4xl font-bold text-center text-amber-50 font-anatol tracking-wider">${i18n.t('setup', { ns: 'auth' })}</h2>
 				<div class="space-y-6">
 				  <p class="text-amber-50 font-mono text-sm opacity-80">${i18n.t('scanInstructions', { ns: 'auth' })}</p>
 				  <div class="qr-code-display flex justify-center items-center bg-neutral-800">
