@@ -1278,8 +1278,6 @@ async function updateUserStats(player1_id, player2_id, gameData) {
     }
 }
 
-// ...existing code...
-
 async function updateTournamentStats(tournamentConfig) {
 	return new Promise((resolve, reject) => {
 		// Check Tournament is finished
@@ -1409,5 +1407,6 @@ module.exports = {
     getRefreshTokenFromDatabase,
     deleteRefreshTokenFromDatabase,
 	getUsernameById,
-	updateUserStats
+	updateUserStats,
+	updateTournamentStats
 };
