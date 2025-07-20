@@ -434,7 +434,7 @@ export class Menu{
 			this.eventQueue.push(prepareNextMatchEvent);
 		}
 
-		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
+		if (this.tournamentManager.getHasActiveTournament() && this.tournamentManager.getTournamentConfig()?.isFinished) {
 			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
 				const optionsEvent: GameEvent = {
 					type: 'OPTIONS_CLICK',
@@ -481,7 +481,7 @@ export class Menu{
 
 			//! Tournament ending stuff
 			console.log('Tournament Ending!!!!!!!!');
-			console.log('Tournament Config:', this.tournamentManager.getTournamentConfig());
+			console.log('[END] Tournament Config:', this.tournamentManager.getTournamentConfig());
 
 			try {
 				const token = sessionStorage.getItem('token');
