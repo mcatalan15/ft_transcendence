@@ -11,12 +11,9 @@ export class HistoryContentRenderer {
   private totalPages: number = 1;
   private matchTableComponent: MatchTableComponent;
   private paginationComponent: Pagination | null = null;
-  //private username: string = '';
-  //private userId: string;
 
   constructor(private userId: string) {
     this.matchTableComponent = new MatchTableComponent([]);
-    //this.username = username;
   }
 
   render(): HTMLElement {
@@ -198,10 +195,12 @@ export class HistoryContentRenderer {
       return;
     }
 
-    const currentUser = sessionStorage.getItem('username') || '';
+    const currentUser = window.location.pathname.split('/').filter(Boolean).pop() || '';
+
     const matchRows = games.map((game) => ({
       date: new Date(game.created_at).toLocaleString(),
       opponent: game.player1_name === currentUser ? game.player2_name : game.player1_name,
+
       winner: game.winner_name ? game.winner_name : `${i18n.t('draw', { ns: 'history'})}`,
       score: `${game.player1_score} - ${game.player2_score}`,
       mode: game.game_mode || 'Classic',
