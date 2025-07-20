@@ -282,84 +282,168 @@ async function retrieveLastGameHandler(request, reply) {
 	}
 };
 
+// async function deployContractHandler(request, reply) {
+//     try {
+//         console.log('Starting deployment process');
+//         const latestGame = await getLatestGame();
+//         console.log('Latest game:', latestGame);
+
+//         if (!latestGame) {
+//             throw new Error("No game data found in database");
+//         }
+
+// 		// Getting player names
+// 		const [player1Name, player2Name] = await Promise.all([
+// 			getUsernameById(latestGame.player1_id),
+// 			getUsernameById(latestGame.player2_id)
+// 		]);
+
+//         const gameData = {
+// 			teamA: String(player1Name || "Player 1"),
+// 			scoreA: Number(latestGame.player1_score || 0),
+//             teamB: String(player2Name || "Player 2"),
+//             scoreB: Number(latestGame.player2_score || 0)
+//         };
+
+//         if (!gameData.teamA || !gameData.teamB) {
+//             throw new Error("Missing player names in game data");
+//         }
+
+//         console.log('Sending request to blockchain service:', gameData);
+//         // const response = await fetch("http://blockchain:3002/deploy", {
+//         //     method: "POST",
+//         //     headers: { "Content-Type": "application/json" },
+//         //     body: JSON.stringify({ gameData }),
+//         // });
+
+//         // console.log('Blockchain response status:', response.status);
+//         // if (!response.ok) {
+//         //     const error = await response.text();
+//         //     throw new Error(`Blockchain container error: ${error}`);
+//         // }
+
+//         // const blockchainResponse = await response.json();
+//         // console.log("Blockchain deployment response:", blockchainResponse);
+
+//         console.log('Saving contract to database:', {
+//             id_game: latestGame.id_game,
+//             address: blockchainResponse.address,
+//             explorerLink: blockchainResponse.explorerLink
+//         });
+//         // await saveSmartContractToDatabase(
+//         //     latestGame.id_game,
+//         //     blockchainResponse.address,
+//         //     blockchainResponse.explorerLink
+//         // );
+
+//         console.log('Deployment completed successfully');
+//         reply.send({
+//             success: true,
+//             contractAddress: blockchainResponse.address,
+//             explorerLink: blockchainResponse.explorerLink,
+//             gameData: {
+//                 player1_name: gameData.teamA,
+//                 player1_score: gameData.scoreA,
+//                 player2_name: gameData.teamB,
+//                 player2_score: gameData.scoreB
+//             }
+//         });
+//     } catch (error) {
+//         console.error("Deployment failed:", {
+//             message: error.message,
+//             stack: error.stack,
+//             name: error.name,
+//             code: error.code
+//         });
+//         request.log.error("Deployment failed:", error);
+//         reply.status(500).send({
+//             success: false,
+//             error: error.message,
+//             details: error.message.includes("database")
+//                 ? "Check database connection and game data"
+//                 : error.message.includes("blockchain")
+//                 ? "Check blockchain service connectivity"
+//                 : "Unexpected error during deployment"
+//         });
+//     }
+// };
+
 async function deployContractHandler(request, reply) {
-    try {
-        console.log('Starting deployment process');
-        const latestGame = await getLatestGame();
-        console.log('Latest game:', latestGame);
-        if (!latestGame) {
-            throw new Error("No game data found in database");
-        }
+	try {
+		console.log('Starting deployment process');
+		const { gameId, player1Name, player2Name, player1Score, player2Score } = request.body;
 
-        const gameData = {
-            teamA: String(latestGame.player1_name || "Player 1"),
-            scoreA: Number(latestGame.player1_score || 0),
-            teamB: String(latestGame.player2_name || "Player 2"),
-            scoreB: Number(latestGame.player2_score || 0)
-        };
+		// Validar que tenemos todos los datos necesarios
+		if (!gameId || !player1Name || !player2Name || player1Score === undefined || player2Score === undefined) {
+			return reply.status(400).send({
+				success: false,
+				error: 'Missing required data',
+				details: 'gameId, player1Name, player2Name, player1Score, and player2Score are required'
+			});
+		}
 
-        if (!gameData.teamA || !gameData.teamB) {
-            throw new Error("Missing player names in game data");
-        }
+		console.log('Deploying contract with data:', {
+			gameId,
+			player1Name,
+			player2Name,
+			player1Score,
+			player2Score
+		});
 
-        console.log('Sending request to blockchain service:', gameData);
-        const response = await fetch("http://blockchain:3002/deploy", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameData }),
-        });
+		// Preparar datos para blockchain
+		const blockchainGameData = {
+			player1Name: String(player1Name),
+			player1Score: Number(player1Score),
+			player2Name: String(player2Name),
+			player2Score: Number(player2Score)
+		};
 
-        console.log('Blockchain response status:', response.status);
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Blockchain container error: ${error}`);
-        }
+		console.log('Sending request to blockchain service:', blockchainGameData);
 
-        const blockchainResponse = await response.json();
-        console.log("Blockchain deployment response:", blockchainResponse);
+		const response = await fetch("http://blockchain:3002/deploy", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ gameData: blockchainGameData }),
+		});
 
-        console.log('Saving contract to database:', {
-            id_game: latestGame.id_game,
-            address: blockchainResponse.address,
-            explorerLink: blockchainResponse.explorerLink
-        });
-        await saveSmartContractToDatabase(
-            latestGame.id_game,
-            blockchainResponse.address,
-            blockchainResponse.explorerLink
-        );
+		if (!response.ok) {
+			const error = await response.text();
+			throw new Error(`Blockchain container error: ${error}`);
+		}
 
-        console.log('Deployment completed successfully');
-        reply.send({
-            success: true,
-            contractAddress: blockchainResponse.address,
-            explorerLink: blockchainResponse.explorerLink,
-            gameData: {
-                player1_name: gameData.teamA,
-                player1_score: gameData.scoreA,
-                player2_name: gameData.teamB,
-                player2_score: gameData.scoreB
-            }
-        });
-    } catch (error) {
-        console.error("Deployment failed:", {
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
-            code: error.code
-        });
-        request.log.error("Deployment failed:", error);
-        reply.status(500).send({
-            success: false,
-            error: error.message,
-            details: error.message.includes("database")
-                ? "Check database connection and game data"
-                : error.message.includes("blockchain")
-                ? "Check blockchain service connectivity"
-                : "Unexpected error during deployment"
-        });
-    }
-};
+		const blockchainResponse = await response.json();
+		console.log("Blockchain deployment response:", blockchainResponse);
+
+		// Guardar el contrato en la base de datos
+		await saveSmartContractToDatabase(
+			gameId,
+			blockchainResponse.address,
+			blockchainResponse.explorerLink
+		);
+
+		console.log('Deployment completed successfully');
+		reply.send({
+			success: true,
+			contractAddress: blockchainResponse.address,
+			explorerLink: blockchainResponse.explorerLink,
+			gameData: {
+				player1_name: blockchainGameData.player1Name,
+				player1_score: blockchainGameData.player1Score,
+				player2_name: blockchainGameData.player2Name,
+				player2_score: blockchainGameData.player2Score
+			}
+		});
+	} catch (error) {
+		console.error("Deployment failed:", error);
+		reply.status(500).send({
+			success: false,
+			error: error.message,
+			details: error.message.includes("blockchain")
+				? "Check blockchain service connectivity"
+				: "Unexpected error during deployment"
+		});
+	}
+}
 
 async function getGamesHistoryHandler(request, reply) {
     console.log('Received getGamesHistory request');
