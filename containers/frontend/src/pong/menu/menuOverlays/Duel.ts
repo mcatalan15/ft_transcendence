@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:52:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 21:54:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,7 @@ export class Duel extends Entity {
 
 		nameTags.push({
 			text: leftName, 
-			x: 340,
+			x: 330,
 			y: 570,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
@@ -724,5 +724,115 @@ export class Duel extends Entity {
 			
 			console.log(this.opponentStatsTexts);
 		}
+	}
+
+	public updatePlayerData(playerData: any): void {
+		console.log('updatePlayerData called with:', playerData);
+		
+		this.menu.playerData = playerData;
+		console.log('Menu player data set to:', this.menu.playerData);
+		
+		this.updateLeftPlayerInfo();
+	}
+	
+	private updateLeftPlayerInfo(): void {
+		if (this.menu.playerData?.name) {
+			this.getPlayerStats();
+
+			this.playerStatsTexts.pop();
+	
+			this.playerStatsTexts.push({
+				text: this.getStatsValuesInLanguage("player", this.menu.playerData ? true : false),
+				x: 340,
+				y: 600,
+				style: {
+					fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
+					fontSize: 8,
+					fontWeight: '900' as const,
+					align: 'center' as const,
+					fontFamily: '"Roboto Mono", monospace',
+				},
+			} as Text);
+
+			const playerStatsTextComponent = new TextComponent(this.playerStatsTexts[this.playerStatsTexts.length - 1]);
+			this.replaceComponent('text', playerStatsTextComponent, `playerStatsText${this.playerStatsTexts.length - 1}`);
+			
+			console.log(this.menu.renderLayers.overlays.children);
+			
+			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
+				const child = this.menu.renderLayers.overlays.children[i];
+				
+				if ('text' in child && typeof child.text === 'string' && (child.text.startsWith('           ') || child.text.startsWith('       ') || child.text.startsWith('        '))) {
+					this.menu.renderLayers.overlays.removeChild(child);
+					break;
+				}
+			}
+
+			this.menu.renderLayers.overlays.addChild(playerStatsTextComponent.getRenderable());
+	
+			console.log(this.playerStatsTexts);
+		}
+	}
+	
+	public updateNameTags(): void {
+		let leftName = this.menu.playerData?.name?.toUpperCase() || "PLAYER 1";
+		let rightName = this.menu.opponentData?.name?.toUpperCase() || "PLAYER 2";
+	
+		for (let i = 0; i < this.nameTags.length; i++) {
+			try {
+				this.removeComponent(`nameTag${i}`);
+			} catch (error) {
+				console.warn(`Could not remove nameTag${i}:`, error);
+			}
+		}
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && 'x' in child && 'y' in child && 'style' in child) {
+				const isLeftNamePosition = child.x === 330 && child.y === 570;
+				const isRightNamePosition = child.x === 785 && child.y === 570;
+				
+				if ((isLeftNamePosition || isRightNamePosition)) {
+					console.log('Removing name tag at position:', child.x, child.y, 'with text:', child.text);
+					this.menu.renderLayers.overlays.removeChild(child);
+				}
+			}
+		}
+	
+		this.nameTags[0] = {
+			text: leftName, 
+			x: 330,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text;
+	
+		this.nameTags[1] = {
+			text: rightName, 
+			x: 785,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text;
+		
+	
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(this.nameTags[i]);
+			this.addComponent(nameTagComponent, `nameTag${i}`);
+			this.menu.renderLayers.overlays.addChild(nameTagComponent.getRenderable());
+		}
+		
+		console.log('Updated name tags:', this.nameTags);
 	}
 }

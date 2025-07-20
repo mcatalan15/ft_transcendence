@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 19:27:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 21:53:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ import { MenuInputSystem } from "./MenuInputSystem";
 import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
 import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
 import { Text } from "pixi.js";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -86,9 +87,6 @@ export class MenuButtonSystem implements System {
 				this.resetLayer(event);
 			} else if (event.type.endsWith('BACK')) {
 				this.resetLayer(event);
-				if (event.type === 'PLAY_BACK') {
-					await this.handleCancelMatchmaking();
-				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
@@ -391,6 +389,7 @@ export class MenuButtonSystem implements System {
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
+			this.handleCancelMatchmaking();
 
 			for (let button of this.menu.tournamentInputButtons) {
 				button.resetButton();
@@ -589,23 +588,93 @@ export class MenuButtonSystem implements System {
 
 		this.menu.startXButton.setHidden(true);
 	}
-
+	
 	async handleMatchFound() {
-
 		this.menu.readyButton.setClicked(false);
-		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+	
+		const hostName = this.networkManager?.getHostName() || 'host';
+		const guestName = this.networkManager?.getGuestName() || 'guest';
+		const currentUsername = sessionStorage.getItem('username');
+	
+		console.log('Match found! Host:', hostName, 'Guest:', guestName);
+	
+		try {
+			const hostResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: hostName
+				})
+			});
+	
+			if (!hostResponse.ok) {
+				throw new Error(`HTTP error getting host data! status: ${hostResponse.status}`);
+			}
+	
+			const hostResponseData = await hostResponse.json();
+			
+			const guestResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: guestName
+				})
+			});
+	
+			if (!guestResponse.ok) {
+				throw new Error(`HTTP error getting guest data! status: ${guestResponse.status}`);
+			}
+	
+			const guestResponseData = await guestResponse.json();
+	
+			if (hostResponseData.success && guestResponseData.success) {
+				const hostData = hostResponseData.userData;
+				const guestData = guestResponseData.userData;
+				hostData.side = 'left';
+			
+				console.log('Host Data:', hostData, 'Guest Data:', guestData);
+			
+				// Always set the same layout for both players
+				this.menu.playerData = hostData;
+				this.menu.opponentData = guestData;
 
-		// Fake loading animation (gotta reuse your old tricks eh)
+				if (currentUsername === hostName) {
+					await MenuImageManager.updateRightPlayerAvatar(this.menu);
+					this.menu.playOverlay.duel.updateOpponentData(this.menu.opponentData);
+				} else if (currentUsername === guestName) {
+					await MenuImageManager.updateLeftPlayerAvatar(this.menu); 
+					await MenuImageManager.updateRightPlayerAvatar(this.menu);
+					this.menu.playOverlay.duel.updatePlayerData(this.menu.playerData);
+					this.menu.playOverlay.duel.updateOpponentData(this.menu.opponentData);
+				}
+
+				this.menu.playOverlay.duel.updateNameTags();
+			} else {
+				console.error('Failed to get user data:', 
+					hostResponseData.success ? guestResponseData.message : hostResponseData.message);
+			}
+	
+		} catch (error) {
+			console.error('Error fetching player data for matchmaking:', error);
+		}
+	
 		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 		this.menu.readyButton.updateText('');
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
-			await sleep(1000);
+			await sleep(3000);
 		}
+		
 		const params = new URLSearchParams({
 			gameId: this.networkManager?.getGameId() || '',
-			hostName: this.networkManager?.getHostName() || 'host',
-			guestName: this.networkManager?.getGuestName() || 'guest',
+			hostName: hostName,
+			guestName: guestName,
 			mode: 'online'
 		});
 		navigate(`/pong?${params.toString()}`);

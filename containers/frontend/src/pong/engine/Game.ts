@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 19:18:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:12:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1014,7 +1014,6 @@ export class PongGame {
 				await this.soundManager.cleanup();
 			}
 			
-			// Handle PongNetworkManager from window for matchmaking cleanup
 			const windowNetworkManager = (window as any).currentNetworkManager;
 			if (windowNetworkManager && typeof windowNetworkManager.cancelMatchmaking === 'function') {
 				console.log('Canceling matchmaking from PongNetworkManager...');
@@ -1025,7 +1024,6 @@ export class PongGame {
 				}
 			}
 			
-			// Close WebSocket connection (this.networkManager is WebSocketManager)
 			if (this.networkManager) {
 				console.log('Closing WebSocket connection...');
 				try {
