@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 20:49:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:07:00 by mcatalan@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,6 +480,38 @@ export class Menu{
 			this.eventQueue.push(playEvent);
 
 			//! Tournament ending stuff
+			console.log('Tournament Ending!!!!!!!!');
+			console.log('Tournament Config:', this.tournamentManager.getTournamentConfig());
+
+			try {
+				const token = sessionStorage.getItem('token');
+				if (!token) {
+					console.error('No auth token found for tournament results');
+					return;
+				}
+
+				const response = await fetch(getApiUrl('/games/saveTournamentResults'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						tournamentConfig: this.tournamentManager.getTournamentConfig()
+					}),
+					credentials: 'include'
+				});
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error('Failed to save tournament results:', errorText);
+				} else {
+					const result = await response.json();
+					console.log('Tournament results saved successfully:', result);
+				}
+			} catch (error) {
+				console.error('Error saving tournament results:', error);
+			}
 		}
 	}
 

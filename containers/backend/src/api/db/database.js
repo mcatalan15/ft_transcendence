@@ -1278,6 +1278,104 @@ async function updateUserStats(player1_id, player2_id, gameData) {
     }
 }
 
+// async function updateTournamentStats(tournamentConfig) {
+// 	return new Promise((resolve, reject) => {
+// 		// Check Tournament is finished
+// 		if (!tournamentConfig.isFinished) {
+// 			reject(new Error('Tournament must be finished to update stats'));
+// 			return;
+// 		}
+
+// 		const { registeredPlayerData, tournamentWinner } = tournamentConfig;
+
+// 		// Extract all the players that are null
+// 		const players = [];
+// 		Object.values(registeredPlayerData).forEach(playerData => {
+// 			if (playerData && playerData.name) {
+// 				players.push({
+// 					name: playerData.name,
+// 					id: playerData.id,
+// 					isWinner: playerData.name === tournamentWinner
+// 				});
+// 			}
+// 		});
+
+// 		if (players.length === 0) {
+// 			reject(new Error('No valid players found in tournament'));
+// 			return;
+// 		}
+
+// 		console.log(`[DB] Updating tournament stats for ${players.length} players. Winner: ${tournamentWinner}`);
+
+// 		// Start transaction
+// 		db.run('BEGIN TRANSACTION', (err) => {
+// 			if (err) {
+// 				console.error('[DB ERROR] Failed to begin transaction:', err);
+// 				reject(err);
+// 				return;
+// 			}
+
+// 			let completed = 0;
+// 			let errors = [];
+
+// 			players.forEach(player => {
+// 				const query = `
+//                     UPDATE user_stats 
+//                     SET 
+//                         total_tournaments = total_tournaments + 1,
+//                         tournaments_won = tournaments_won + ?,
+//                         tournaments_lost = tournaments_lost + ?,
+//                         last_updated = CURRENT_TIMESTAMP
+//                     WHERE id_user = (SELECT id_user FROM users WHERE username = ?)
+//                 `;
+
+// 				const wonIncrement = player.isWinner ? 1 : 0;
+// 				const lostIncrement = player.isWinner ? 0 : 1;
+// 				const params = [wonIncrement, lostIncrement, player.name];
+
+// 				db.run(query, params, function (err) {
+// 					completed++;
+
+// 					if (err) {
+// 						console.error(`[DB ERROR] Failed to update stats for player ${player.name}:`, err);
+// 						errors.push(`Failed to update ${player.name}: ${err.message}`);
+// 					} else if (this.changes === 0) {
+// 						console.warn(`[DB WARN] Player ${player.name} not found or no stats to update`);
+// 						errors.push(`Player ${player.name} not found`);
+// 					} else {
+// 						console.log(`[DB] Updated tournament stats for ${player.name} (Winner: ${player.isWinner})`);
+// 					}
+
+// 					// When all players are processed, commit or rollback
+// 					if (completed === players.length) {
+// 						if (errors.length > 0) {
+// 							console.error('[DB ERROR] Some players could not be updated:', errors);
+// 							db.run('ROLLBACK', (rollbackErr) => {
+// 								if (rollbackErr) console.error('[DB ERROR] Rollback failed:', rollbackErr);
+// 								reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
+// 							});
+// 						} else {
+// 							db.run('COMMIT', (commitErr) => {
+// 								if (commitErr) {
+// 									console.error('[DB ERROR] Commit failed:', commitErr);
+// 									reject(commitErr);
+// 								} else {
+// 									console.log(`[DB] Successfully updated tournament stats for all ${players.length} players`);
+// 									resolve({
+// 										updatedPlayers: players.length,
+// 										tournamentWinner: tournamentWinner,
+// 										players: players.map(p => ({ name: p.name, isWinner: p.isWinner }))
+// 									});
+// 								}
+// 							});
+// 						}
+// 					}
+// 				});
+// 			});
+// 		});
+// 	});
+// }
+
 async function updateTournamentStats(tournamentConfig) {
 	return new Promise((resolve, reject) => {
 		// Check Tournament is finished
@@ -1288,7 +1386,7 @@ async function updateTournamentStats(tournamentConfig) {
 
 		const { registeredPlayerData, tournamentWinner } = tournamentConfig;
 
-		// Extract all the players that are null
+		// Extract all the players that are not null
 		const players = [];
 		Object.values(registeredPlayerData).forEach(playerData => {
 			if (playerData && playerData.name) {
@@ -1307,72 +1405,71 @@ async function updateTournamentStats(tournamentConfig) {
 
 		console.log(`[DB] Updating tournament stats for ${players.length} players. Winner: ${tournamentWinner}`);
 
-		// Start transaction
-		db.run('BEGIN TRANSACTION', (err) => {
-			if (err) {
-				console.error('[DB ERROR] Failed to begin transaction:', err);
-				reject(err);
+		let completed = 0;
+		let errors = [];
+
+		// Use serialized approach instead of transaction for this case
+		const updatePlayerStats = (playerIndex) => {
+			if (playerIndex >= players.length) {
+				// All players processed
+				if (errors.length > 0) {
+					console.error('[DB ERROR] Some players could not be updated:', errors);
+					reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
+				} else {
+					console.log(`[DB] Successfully updated tournament stats for all ${players.length} players`);
+					resolve({
+						updatedPlayers: players.length,
+						tournamentWinner: tournamentWinner,
+						players: players.map(p => ({ name: p.name, isWinner: p.isWinner }))
+					});
+				}
 				return;
 			}
 
-			let completed = 0;
-			let errors = [];
+			const player = players[playerIndex];
+			const query = `
+                INSERT INTO user_stats (
+                    id_user, 
+                    total_tournaments, 
+                    tournaments_won, 
+                    tournaments_lost,
+                    last_updated
+                ) VALUES (
+                    (SELECT id_user FROM users WHERE username = ?), 
+                    1, 
+                    ?, 
+                    ?,
+                    CURRENT_TIMESTAMP
+                )
+                ON CONFLICT(id_user) DO UPDATE SET 
+                    total_tournaments = total_tournaments + 1,
+                    tournaments_won = tournaments_won + ?,
+                    tournaments_lost = tournaments_lost + ?,
+                    last_updated = CURRENT_TIMESTAMP
+            `;
 
-			players.forEach(player => {
-				const query = `
-                    UPDATE user_stats 
-                    SET 
-                        total_tournaments = total_tournaments + 1,
-                        tournaments_won = tournaments_won + ?,
-                        tournaments_lost = tournaments_lost + ?,
-                        last_updated = CURRENT_TIMESTAMP
-                    WHERE id_user = (SELECT id_user FROM users WHERE username = ?)
-                `;
+			const wonIncrement = player.isWinner ? 1 : 0;
+			const lostIncrement = player.isWinner ? 0 : 1;
+			const params = [player.name, wonIncrement, lostIncrement, wonIncrement, lostIncrement];
 
-				const wonIncrement = player.isWinner ? 1 : 0;
-				const lostIncrement = player.isWinner ? 0 : 1;
-				const params = [wonIncrement, lostIncrement, player.name];
+			db.run(query, params, function (err) {
+				if (err) {
+					console.error(`[DB ERROR] Failed to update stats for player ${player.name}:`, err);
+					errors.push(`Failed to update ${player.name}: ${err.message}`);
+				} else if (this.changes === 0) {
+					console.warn(`[DB WARN] Player ${player.name} not found or no stats to update`);
+					errors.push(`Player ${player.name} not found`);
+				} else {
+					console.log(`[DB] Updated tournament stats for ${player.name} (Winner: ${player.isWinner})`);
+				}
 
-				db.run(query, params, function (err) {
-					completed++;
-
-					if (err) {
-						console.error(`[DB ERROR] Failed to update stats for player ${player.name}:`, err);
-						errors.push(`Failed to update ${player.name}: ${err.message}`);
-					} else if (this.changes === 0) {
-						console.warn(`[DB WARN] Player ${player.name} not found or no stats to update`);
-						errors.push(`Player ${player.name} not found`);
-					} else {
-						console.log(`[DB] Updated tournament stats for ${player.name} (Winner: ${player.isWinner})`);
-					}
-
-					// When all players are processed, commit or rollback
-					if (completed === players.length) {
-						if (errors.length > 0) {
-							console.error('[DB ERROR] Some players could not be updated:', errors);
-							db.run('ROLLBACK', (rollbackErr) => {
-								if (rollbackErr) console.error('[DB ERROR] Rollback failed:', rollbackErr);
-								reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
-							});
-						} else {
-							db.run('COMMIT', (commitErr) => {
-								if (commitErr) {
-									console.error('[DB ERROR] Commit failed:', commitErr);
-									reject(commitErr);
-								} else {
-									console.log(`[DB] Successfully updated tournament stats for all ${players.length} players`);
-									resolve({
-										updatedPlayers: players.length,
-										tournamentWinner: tournamentWinner,
-										players: players.map(p => ({ name: p.name, isWinner: p.isWinner }))
-									});
-								}
-							});
-						}
-					}
-				});
+				// Process next player
+				updatePlayerStats(playerIndex + 1);
 			});
-		});
+		};
+
+		// Start processing players
+		updatePlayerStats(0);
 	});
 }
 
