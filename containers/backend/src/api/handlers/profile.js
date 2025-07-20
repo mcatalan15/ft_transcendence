@@ -369,7 +369,7 @@ async function changePasswordHandler(request, reply) {
 		}
 
 		const hashedNewPassword = await bcrypt.hash(newPassword, 12);
-		const updatedUser = await changePassword(user.id, hashedNewPassword);
+		const updatedUser = await changePassword(user.id_user, hashedNewPassword);
 		
 		if (!updatedUser) {
 			return reply.status(500).send({
