@@ -19,7 +19,7 @@ _version 16.1_
 - **Blockchain Integration**: Match results are tracked on Avalanche blockchain.
 - **Monitoring & DevOps**: Prometheus and Grafana for metrics and dashboards.
 - **Internationalization (i18n)**: Multi-language support (EN, FR, ES, CAT).
-- **Microservices Architecture**: Modular backend using Node.js & Fastify, frontend using Typescript & Tailwind CSS (Pixi.js for the game), an SQLite database and Redis to handle websockets.
+- **Microservices Architecture**: Modular backend using Node.js & Fastify with an SQLite database, frontend using Typescript & Tailwind CSS (Pixi.js for the game) and Redis to handle chat and game sessions.
 
 ---
 
@@ -31,7 +31,7 @@ The project is structured as a set of loosely-coupled microservices, each runnin
 |---------------|----------------------------------------------|
 | **frontend**  | TypeScript SPA + Tailwind CSS                |
 | **backend**   | Node.js + Fastify                            |
-| **redis**     | Websocket management                         |
+| **redis**     | Chat and game session management             |
 | **grafana**   | Monitoring dashboards                        |
 | **prometheus**| Metrics collection                           |
 | **blockchain**| Avalanche/Hardhat for smart contracts        |
