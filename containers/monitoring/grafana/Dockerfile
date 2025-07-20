@@ -9,5 +9,3 @@ COPY ./config/provisioning/datasources/prometheus.yaml /etc/grafana/provisioning
 COPY ./config/provisioning/dashboards/dashboards.yaml /etc/grafana/provisioning/dashboards/dashboards.yaml
 
 EXPOSE 3100
-
-USER grafana
