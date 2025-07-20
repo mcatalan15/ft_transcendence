@@ -6,7 +6,7 @@ services:
     build: 
       context: ./frontend
       args:
-        - NODE_ENV=development  # Use dev mode for Vite
+        - NODE_ENV=development
     container_name: frontend
     ports:
       - "5173:5173"

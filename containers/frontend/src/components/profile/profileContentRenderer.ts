@@ -285,10 +285,11 @@ export class ProfileContentRenderer {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username: this.username })
+        body: JSON.stringify({ userId: data.userId })
       });
 
       if (!response.ok) {
+        console.error('friends data:', data);
         throw new Error('Failed to update friend status');
       }
 
