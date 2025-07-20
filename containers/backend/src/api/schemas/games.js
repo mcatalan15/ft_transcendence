@@ -599,6 +599,99 @@ const saveResultsSchema = {
     }
 };
 
+const saveTournamentResultsSchema = {
+	description: 'Save tournament results and update participant statistics',
+	tags: ['tournaments'],
+	body: {
+		type: 'object',
+		required: ['tournamentConfig'],
+		properties: {
+			tournamentConfig: {
+				type: 'object',
+				required: ['isFinished', 'registeredPlayerData', 'tournamentWinner'],
+				properties: {
+					tournamentId: {
+						type: ['string', 'number', 'null'],
+						description: 'Tournament identifier'
+					},
+					isPrepared: { type: 'boolean' },
+					isFinished: {
+						type: 'boolean',
+						description: 'Must be true to process results'
+					},
+					classicMode: { type: 'boolean' },
+					currentPhase: {
+						type: 'integer',
+						minimum: 1,
+						maximum: 4
+					},
+					currentMatch: {
+						type: 'integer',
+						minimum: 1,
+						maximum: 8
+					},
+					registeredPlayerData: {
+						type: 'object',
+						properties: {
+							player1Data: { type: ['object', 'null'] },
+							player2Data: { type: ['object', 'null'] },
+							player3Data: { type: ['object', 'null'] },
+							player4Data: { type: ['object', 'null'] },
+							player5Data: { type: ['object', 'null'] },
+							player6Data: { type: ['object', 'null'] },
+							player7Data: { type: ['object', 'null'] },
+							player8Data: { type: ['object', 'null'] }
+						}
+					},
+					tournamentWinner: {
+						type: ['string', 'null'],
+						description: 'Name of the tournament winner'
+					}
+				}
+			}
+		}
+	},
+	response: {
+		200: {
+			description: 'Tournament results saved successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				updatedPlayers: { type: 'number' },
+				tournamentWinner: { type: ['string', 'null'] }
+			},
+			example: {
+				success: true,
+				message: 'Tournament results saved successfully',
+				updatedPlayers: 8,
+				tournamentWinner: 'player1'
+			}
+		},
+		400: {
+			description: 'Bad request - invalid tournament data',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Tournament must be finished to save results'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				error: { type: 'string' }
+			}
+		}
+	}
+};
+
 const getUserDataSchema = {
     description: 'Retrieve user data and statistics by user ID',
     tags: ['users'],
@@ -785,6 +878,7 @@ const getUserByUsernameSchema = {
 
 module.exports = {
     saveGameSchema,
+	saveTournamentResultsSchema,
     retrieveGamesSchema,
     retrieveLastGameSchema,
     deployContractSchema,

@@ -637,6 +637,59 @@ async function getUserByUsernameHandler(request, reply) {
     }
 }
 
+async function saveTournamentResultsHandler(request, reply) {
+	try {
+		const { tournamentConfig } = request.body;
+
+		console.log('[TOURNAMENT] Processing tournament results:', {
+			tournamentId: tournamentConfig.tournamentId,
+			isFinished: tournamentConfig.isFinished,
+			winner: tournamentConfig.tournamentWinner,
+			playerCount: Object.values(tournamentConfig.registeredPlayerData).filter(p => p !== null).length
+		});
+
+		// Check if tournament is finished
+		if (!tournamentConfig.isFinished) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Tournament must be finished to save results'
+			});
+		}
+
+		// Check if there is a winner
+		if (!tournamentConfig.tournamentWinner) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Tournament winner is required'
+			});
+		}
+
+		// Update tournament stats
+		const result = await updateTournamentStats(tournamentConfig);
+
+		console.log('[TOURNAMENT] Successfully updated tournament stats:', result);
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Tournament results saved successfully',
+			updatedPlayers: result.updatedPlayers,
+			tournamentWinner: result.tournamentWinner
+		});
+
+	} catch (error) {
+		console.error('[TOURNAMENT ERROR] Failed to save tournament results:', {
+			message: error.message,
+			stack: error.stack
+		});
+
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to save tournament results',
+			error: error.message
+		});
+	}
+}
+
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
@@ -646,4 +699,5 @@ module.exports = {
 	getGamesHistoryHandler,
     saveResultsHandler,
     getUserByUsernameHandler,
+	saveTournamentResultsHandler
 };
