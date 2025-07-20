@@ -1,30 +1,29 @@
-const { addFriend, removeFriend, getFriendsList, checkFriendship, getUserByUsername } = require('../db/database');
+const { addFriend, removeFriend, getFriendsList, checkFriendship, getUserByUsername, getUserById } = require('../db/database');
 
 async function addFriendHandler(request, reply) {
     try {
         const sessionUser = request.session.get('user');
-        const { username } = request.body;
+        const { userId } = request.body;
 
-        if (!username) {
+        if (!userId) {
             return reply.status(400).send({
                 success: false,
-                message: 'Username is required'
+                message: 'User ID is required'
             });
         }
 
-        const friendUser = await getUserByUsername(username);
+        const friendUser = await getUserById(userId);
         if (!friendUser) {
             return reply.status(404).send({
                 success: false,
                 message: 'User not found'
             });
         }
-
         await addFriend(sessionUser.userId, friendUser.id_user);
 
         return reply.status(201).send({
             success: true,
-            message: `${username} added as friend`,
+            message: `${friendUser.username} added as friend`,
             friend: {
                 userId: friendUser.id_user,
                 username: friendUser.username
@@ -51,9 +50,9 @@ async function addFriendHandler(request, reply) {
 async function removeFriendHandler(request, reply) {
     try {
         const sessionUser = request.session.get('user');
-        const { username } = request.body;
+        const { userId } = request.body;
 
-        const friendUser = await getUserByUsername(username);
+        const friendUser = await getUserById(userId);
         if (!friendUser) {
             return reply.status(404).send({
                 success: false,
@@ -62,7 +61,7 @@ async function removeFriendHandler(request, reply) {
         }
 
         const removed = await removeFriend(sessionUser.userId, friendUser.id_user);
-        
+
         if (!removed) {
             return reply.status(400).send({
                 success: false,
@@ -72,7 +71,7 @@ async function removeFriendHandler(request, reply) {
 
         return reply.status(200).send({
             success: true,
-            message: `${username} removed from friends`
+            message: `${friendUser.username} removed from friends`
         });
 
     } catch (error) {

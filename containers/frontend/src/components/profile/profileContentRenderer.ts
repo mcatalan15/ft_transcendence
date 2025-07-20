@@ -285,7 +285,7 @@ export class ProfileContentRenderer {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username: this.username })
+        body: JSON.stringify({ userId: data.userId })
       });
 
       if (!response.ok) {

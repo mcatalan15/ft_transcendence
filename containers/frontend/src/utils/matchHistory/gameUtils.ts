@@ -20,8 +20,7 @@ export async function loadGames(
   gamesPerPage: number,
   userId: string
 ): Promise<{ games: GameHistory[]; totalGames: number }> {
-  //const usernameParam = username ? username : sessionStorage.getItem('username') || '';
-  console.log(`[gameutils] userId: ${userId}`);
+
   const response = await fetch(getApiUrl(`/games/history?page=${currentPage}&limit=${gamesPerPage}&user=${userId}`), {
     credentials: 'include',
     headers: {
@@ -34,7 +33,7 @@ export async function loadGames(
   }
 
   const data = await response.json();
-  console.log('History response:', data);
+  
   return {
     games: data.games || [],
     totalGames: data.total || 0,
