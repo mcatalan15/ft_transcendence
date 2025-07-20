@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:30:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:38:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -488,9 +488,7 @@ export class PongGame {
 		}
 		
 		this.data.leftPlayer.name = this.leftPlayer.name;
-		this.data.leftPlayer.id = this.config.players![0].id;
     	this.data.rightPlayer.name = this.rightPlayer.name;
-		this.data.rightPlayer.id = this.config.players![1].id;
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -721,6 +719,16 @@ export class PongGame {
 			{ name: 'drawHeaderESYellow', url: '/headers/headers_draw_es_yellow.svg' },
 			{ name: 'drawHeaderFRYellow', url: '/headers/headers_draw_fr_yellow.svg' },
 			{ name: 'drawHeaderCATYellow', url: '/headers/headers_draw_cat_yellow.svg' },
+
+			{ name: 'resultsHeaderENWhite', url: '/headers/headers_results_en_white.svg' },
+			{ name: 'resultsHeaderESWhite', url: '/headers/headers_results_es_white.svg' },
+			{ name: 'resultsHeaderFRWhite', url: '/headers/headers_results_fr_white.svg' },
+			{ name: 'resultsHeaderCATWhite', url: '/headers/headers_results_cat_white.svg' },
+
+			{ name: 'resultsHeaderENYellow', url: '/headers/headers_results_en_yellow.svg' },
+			{ name: 'resultsHeaderESYellow', url: '/headers/headers_results_es_yellow.svg' },
+			{ name: 'resultsHeaderFRYellow', url: '/headers/headers_results_fr_yellow.svg' },
+			{ name: 'resultsHeaderCATYellow', url: '/headers/headers_results_cat_yellow.svg' },
 
 			// Placeholding avatars
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },

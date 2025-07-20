@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:36:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 18:14:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,14 +234,14 @@ export class EndingSystem implements System {
 	}
 
 	private triggerFireworks(): void {
-		for (let i = 0; i < 75; i++) {
+		for (let i = 0; i < 25; i++) {
 			setTimeout(() => {
 				const x = Math.random() * this.game.width;
 				const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
 				const color = GAME_COLORS.orange;
 				
 				ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
-			}, i * 300);
+			}, i * 75);
 		}
 	}
 

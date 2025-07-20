@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:37:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:45:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ export class GameQuitButton extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
         
@@ -157,7 +157,7 @@ export class GameQuitButton extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 

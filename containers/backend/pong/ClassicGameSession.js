@@ -321,23 +321,20 @@ class ClassicGameSession {
 		console.log('=== FINAL GAME RESULTS ===');
 		console.log('Complete gameResults object:', JSON.stringify(gameResults, null, 2));
 		
-		// CLEAN: Only use externalBroadcast (WebSocket)
 		if (this.externalBroadcast) {
 			console.log('📡 Broadcasting GAME_END via WebSocket');
-			this.externalBroadcast(gameResults); // Send the entire object, not wrapped
+			this.externalBroadcast(gameResults);
 			console.log('📡 GAME_END broadcast complete');
 		} else {
 			console.log('❌ No externalBroadcast function available');
 		}
 		
-		// Remove the old broadcastToAll call - we only need WebSocket
 		
 		this.saveGameResults(gameResults);
 		this.stopGameLoop();
 	}
 	
 	async saveGameResults(results) {
-		// Prevent duplicate saves
 		if (this.resultsSaved) {
 			console.log('Game results already saved, skipping duplicate save');
 			return;
@@ -345,14 +342,14 @@ class ClassicGameSession {
 		
 		try {
 			console.log('Saving online game results:', results);
-			this.resultsSaved = true; // Set flag before async operation
+			this.resultsSaved = true;
 			
 			await GameResultsService.saveOnlineGameResults(results.gameData);
 			
 			console.log('Online game results saved successfully');
 		} catch (error) {
 			console.error('Error saving online game results:', error);
-			this.resultsSaved = false; // Reset flag on error so it can be retried
+			this.resultsSaved = false;
 			throw error;
 		}
 	}
@@ -389,11 +386,10 @@ class ClassicGameSession {
 			this.players.player2.socket = null;
 		}
 		
-		// ✅ Better check: only end game if it's started AND not already ended
 		if (this.gameStarted && !this.gameEnded) {
 			console.log(`Player ${playerId} disconnected, ending game`);
 			this.broadcastToAll('playerDisconnected', { playerId });
-			this.endGame(); // This will now be protected by the check in endGame()
+			this.endGame();
 		} else if (this.gameEnded) {
 			console.log(`Player ${playerId} disconnected after game ended, no action needed`);
 		}
