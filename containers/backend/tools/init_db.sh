@@ -39,7 +39,7 @@ if [ ! -f "$DB_PATH" ]; then
 		id_game INTEGER PRIMARY KEY AUTOINCREMENT,
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		ended_at TIMESTAMP,
-		is_tournament BOOLEAN DEFAULT 0,
+		is_tournament BOOLEAN DEFAULT 1,
 		player1_id INTEGER,
 		player2_id INTEGER,
 		winner_id INTEGER,

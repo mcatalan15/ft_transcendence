@@ -180,8 +180,8 @@ async function saveGameHandler(request, reply) {
 			winner_id: winner_id,
 			player1_score: gameData.finalScore.leftPlayer,
 			player2_score: gameData.finalScore.rightPlayer,
-			game_mode: gameData.config.mode,
-			is_tournament: gameData.is_tournament || false, // Default: false
+			game_mode: gameData.config.mode.variant || 'tournament', // Default: 'tournament'
+			is_tournament: true, // Default: true
 			smart_contract_link: gameData.smart_contract_link || '', // Default: empty string
 			contract_address: gameData.contract_address || '', // Default: empty string
 			created_at: gameData.createdAt,

@@ -488,9 +488,9 @@ export class PongGame {
 		}
 		
 		this.data.leftPlayer.name = this.leftPlayer.name;
-		this.data.leftPlayer.id = this.config.players![0].id;
+		// this.data.leftPlayer.id = this.config.players![0].id;
     	this.data.rightPlayer.name = this.rightPlayer.name;
-		this.data.rightPlayer.id = this.config.players![1].id;
+		// this.data.rightPlayer.id = this.config.players![1].id;
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
