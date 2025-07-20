@@ -72,16 +72,15 @@ export class HistoryRenderer {
 		},
 	});
     const data = await response.json();
-	console.log(`User ID for ${username}:`, data.userId);
 
 	if (!data || !data.userId) {
 		navigate('/404');
-		return document.createElement('div'); // Return an empty div if no user data
+		return document.createElement('div');
 	}
 
     const avatarUrl = `${getApiUrl('/profile/avatar')}/${data.userId}?t=${Date.now()}`;
 
-    const contentRenderer = new HistoryContentRenderer(this.container, this.username);
+    const contentRenderer = new HistoryContentRenderer(data.userId);
     const historyContent = contentRenderer.render();
 
     const pongBox = new PongBoxComponent({

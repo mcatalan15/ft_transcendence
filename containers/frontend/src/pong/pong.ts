@@ -3,6 +3,7 @@ import { Application } from "pixi.js";
 import { Menu } from './menu/Menu';
 import { Preconfiguration } from "./utils/GameConfig";
 import { gameManager } from "../utils/GameManager";
+import { TournamentManager } from "../utils/TournamentManager";
 
 class BrowserOptimizer {
 static isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
@@ -78,20 +79,15 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
 			currentPlayerName: sessionStorage.getItem('username') || undefined
 		};
 
-		console.log('🎮 Creating direct online game with config:', gameConfig);
-
 		const { PongGame } = await import('./engine/Game');
 		const game = new PongGame(app, gameConfig, language);
 		
 		gameManager.registerGame(container.id, game, undefined, app);
 		
 		await game.init();
-		
-		console.log('🌐 Creating PongNetworkManager for direct game...');
+
 		const { PongNetworkManager } = await import('./network/PongNetworkManager');
 		const networkManager = new PongNetworkManager(game, gameId);
-		
-		console.log('🌐 PongNetworkManager created and connecting...');
 		
 		return;
 	}
@@ -129,9 +125,15 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
     };
 
     console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
+	
+	const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
 
-    const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
+	const tournamentManager = new TournamentManager(app);
+	menu.tournamentManager = tournamentManager;
+	
     await menu.init(false, true);
+
+	
 
     gameManager.registerGame(container.id, menu, undefined, app);
 }

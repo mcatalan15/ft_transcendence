@@ -11,7 +11,7 @@
     "errors": {
         "nicknameRequired": "Nickname is required",
         "nicknameLength": "Nickname must be between 3 and 8 characters",
-        "nicknameFormat": "Nickname format is invalid",
+        "nicknameFormat": "Nickname must contain lowercases, numbers and hyphens",
         "passwordRequired": "Password fields are required",
         "passwordLength": "Password must be between 6 and 20 characters",
         "passwordMismatch": "Passwords do not match",
@@ -20,6 +20,6 @@
         "updateSuccess": "Settings updated successfully",
         "loadingFailed": "Failed to load settings",
         "userNotFound": "User not found",
-        "uploadFailed": "Failed to upload avatar: check your file and try again. The image must be a valid PNG, GIF or JPEG file and less than 2MB in size."
+        "uploadFailed": "Failed to upload avatar: check your file and try again. The image must be a valid PNG or JPEG file and less than 2MB in size."
     }
 }

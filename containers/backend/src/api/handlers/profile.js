@@ -155,11 +155,11 @@ async function avatarUploadHandler(request, reply) {
 			});
 		  }
 
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+		const allowedTypes = ['image/jpeg', 'image/png'];
 		if (!allowedTypes.includes(data.mimetype)) {
 			return reply.status(400).send({
 				success: false,
-				message: 'Only JPEG, PNG, and GIF files are allowed'
+				message: 'Only JPEG and PNG files are allowed'
 			});
 		}
 		
@@ -369,7 +369,7 @@ async function changePasswordHandler(request, reply) {
 		}
 
 		const hashedNewPassword = await bcrypt.hash(newPassword, 12);
-		const updatedUser = await changePassword(user.id, hashedNewPassword);
+		const updatedUser = await changePassword(user.id_user, hashedNewPassword);
 		
 		if (!updatedUser) {
 			return reply.status(500).send({

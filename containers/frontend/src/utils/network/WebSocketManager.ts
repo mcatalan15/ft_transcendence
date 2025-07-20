@@ -82,12 +82,10 @@ export class WebSocketManager {
                 console.log(`Closing existing connection before connecting with gameId: ${gameId}`);
                 this.cleanupConnection();
             }
-              
-            // Reset reconnection counter when intentionally connecting
+
             this.reconnectAttempts = 0;
             this.gameId = gameId;
             
-            // Construct the proper WebSocket URL
             let wsUrl: string;
             if (gameId) {
                 wsUrl = `${this.gameWebSocketUrl}/${gameId}`;
@@ -112,7 +110,6 @@ export class WebSocketManager {
                     playerNumber: storedPlayerNumber ? parseInt(storedPlayerNumber) : undefined
                 });
 
-                // Start heartbeat after successful connection
                 this.startHeartbeat();
                 resolve();
             };
@@ -122,7 +119,6 @@ export class WebSocketManager {
                 this.isConnecting = false;
                 this.stopHeartbeat();
                 
-                // Only handle automatic reconnects for unexpected closures
                 if (event.code !== 1000 && event.code !== 1001) { // Not normal closure or going away
                     this.handleDisconnect(event);
                 }
@@ -141,15 +137,13 @@ export class WebSocketManager {
     }
 
     private startHeartbeat(): void {
-        this.stopHeartbeat(); // Clear any existing heartbeat
+        this.stopHeartbeat();
         
         this.heartbeatInterval = setInterval(() => {
             if (this.socket?.readyState === WebSocket.OPEN) {
                 // Send ping
                 this.isAlive = false;
                 this.socket.send(JSON.stringify({ type: 'PING' }));
-                
-                // Set timeout to check for pong response
                 this.heartbeatTimeout = setTimeout(() => {
                     if (!this.isAlive) {
                         console.log('Heartbeat timeout - closing connection');
@@ -195,7 +189,6 @@ export class WebSocketManager {
             }, delay);
         } else {
             console.error('Max reconnection attempts reached');
-            // Optionally emit an event or call a callback to notify the application
         }
     }
 
@@ -203,7 +196,6 @@ export class WebSocketManager {
         try {
             const message = JSON.parse(event.data);
             
-            // Handle pong response for heartbeat
             if (message.type === 'PONG') {
                 this.isAlive = true;
                 if (this.heartbeatTimeout) {
@@ -213,12 +205,10 @@ export class WebSocketManager {
                 return;
             }
             
-            // IMPORTANT: Try different variations of the type to match
             const msgType = message.type;
             const msgTypeLower = typeof msgType === 'string' ? msgType.toLowerCase() : null;
             const msgTypeBase = typeof msgType === 'string' ? msgType.split(' ')[0] : null;
             
-            // Try all combinations to find a match
             let handler = null;
             
             if (this.messageHandlers.has(msgType)) {
@@ -347,12 +337,10 @@ export class WebSocketManager {
         });
     }
 
-    // Method to check connection status
     isConnected(): boolean {
         return this.socket?.readyState === WebSocket.OPEN;
     }
 
-    // Method to get current reconnection attempts
     getReconnectAttempts(): number {
         return this.reconnectAttempts;
     }

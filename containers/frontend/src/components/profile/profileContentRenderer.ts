@@ -149,11 +149,11 @@ export class ProfileContentRenderer {
 
   private createButtonsColumn(data: ProfileData): HTMLElement {
     const column = document.createElement('div');
-    column.className = 'w-1/2 flex flex-col items-center justify-center gap-3 p-4';
+    column.className = 'w-1/2 flex flex-col items-center justify-center gap-9 p-4';
 
     const buttons = this.getButtonsConfig(data);
     buttons.forEach(btn => {
-      const button = this.createButton(btn.color, btn.label, btn.action);
+      const button = this.createButton(btn.color, btn.label, btn.action || (() => {}));
       column.appendChild(button);
     });
 
@@ -285,7 +285,7 @@ export class ProfileContentRenderer {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username: this.username })
+        body: JSON.stringify({ userId: data.userId })
       });
 
       if (!response.ok) {

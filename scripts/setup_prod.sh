@@ -4,15 +4,10 @@ JWT_SECRET=$(openssl rand -hex 32)
 JWT_REFRESH_SECRET=$(openssl rand -hex 32)
 SESSION_SECRET=$(openssl rand -hex 32)
 
-while true; do
-  PASSWORD=$(LC_CTYPE=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 20)
-  [[ ${#PASSWORD} -ge 20 ]] &&
-  [[ "$PASSWORD" =~ [A-Z] ]] &&
-  [[ "$PASSWORD" =~ [a-z] ]] &&
-  [[ "$PASSWORD" =~ [0-9] ]] && break
-done
-
-echo $PASSWORD
+PASSWORD=$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 20)
+if ! [[ "$PASSWORD" =~ [A-Z] ]] || ! [[ "$PASSWORD" =~ [a-z] ]] || ! [[ "$PASSWORD" =~ [0-9] ]]; then
+  PASSWORD=$(echo "${PASSWORD:0:17}A1z")
+fi
 
 export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
 

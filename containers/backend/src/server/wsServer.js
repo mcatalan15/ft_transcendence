@@ -9,7 +9,6 @@ function setupWebSocketServers() {
 
 function handleUpgrade(wss, gameWss, server) {
   server.on('upgrade', (request, socket, head) => {
-    // Use the actual host from the request headers
     const host = request.headers.host || 'localhost';
     const protocol = request.headers['x-forwarded-proto'] || 'http';
     const fullUrl = `${protocol}://${host}${request.url}`;
@@ -31,10 +30,8 @@ function handleUpgrade(wss, gameWss, server) {
         const gameId = segments.length >= 5 ? segments[4] : undefined;
         console.log(`Game websocket connection with ID: ${gameId}`);
         
-        // Store gameId in the WebSocket instance for later access
         ws.gameId = gameId;
         
-        // Emit connection with gameId as third parameter
         gameWss.emit('connection', ws, request, { gameId });
       });
     }

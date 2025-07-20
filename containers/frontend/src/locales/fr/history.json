@@ -1,7 +1,10 @@
 {
     "date": "Date",
     "opponent": "Adversaire",
+    "winner": "Vainqueur",
     "score": "Score",
     "mode": "Mode",
-    "contract": "Contrat"
+    "contract": "Contrat",
+    "draw": "Match nul",
+    "noGames": "C'est bien vide ici ! Et si on faisait un petit Pong ?"
 }

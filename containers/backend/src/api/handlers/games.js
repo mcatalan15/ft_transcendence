@@ -55,7 +55,7 @@ async function getUserDataHandler(request, reply) {
             if (!userStats) {
                 console.log(`No stats found for user ${userId}, returning default stats`);
                 const userData = {
-                    id: user.id.toString(),
+                    id: userId,
                     name: user.username || user.name || 'PLAYER',
                     avatar: avatarUrl, 
                     goalsScored: 0,
@@ -76,7 +76,7 @@ async function getUserDataHandler(request, reply) {
             }
 
             const userData = {
-                id: user.id.toString(),
+                id: userId,
                 name: user.username || user.name || 'PLAYER',
                 avatar: avatarUrl,
                 goalsScored: userStats.total_goals_scored || 0,
@@ -140,30 +140,28 @@ function calculateRank(stats) {
     
     return parseFloat(eloRating.toFixed(1));
 }
+
 async function saveGameHandler(request, reply) {
 	const { gameData } = request.body;
 
 	try {
-		const player1User = await getUserByUsername(gameData.leftPlayer.id);
-		const player2User = await getUserByUsername(gameData.rightPlayer.id);
-		
 		// Check if users exist
-		if (!player1User) {
+		if (!gameData.leftPlayer.name) {
 			return reply.status(400).send({
 				success: false,
-				message: `Player 1 with username '${gameData.leftPlayer.id}' not found`
+				message: `Player 1 with username '${gameData.leftPlayer.name}' not found`
 			});
 		}
 		
-		if (!player2User) {
+		if (!gameData.rightPlayer.name) {
 			return reply.status(400).send({
 				success: false,
-				message: `Player 2 with username '${gameData.rightPlayer.id}' not found`
+				message: `Player 2 with username '${gameData.rightPlayer.name}' not found`
 			});
 		}
 
-		const player1_id = player1User.id_user;
-		const player2_id = player2User.id_user;
+		const player1_id = gameData.leftPlayer.id;
+		const player2_id = gameData.rightPlayer.id;
 		
 		// Determine winner ID
 		let winner_id = 0; // Default for draw
@@ -229,121 +227,7 @@ async function saveGameHandler(request, reply) {
 			player2_result: gameData.rightPlayer.result
 		};
 
-		// Save to database
-		const gameId = await saveGameToDatabase(gameRecord, gameData);
-
-		// Update user stats
-		await updateUserStats(gameRecord.player1_id, gameRecord.player2_id, gameData);
-
-		reply.status(201).send({
-			success: true,
-			message: 'Game saved successfully',
-			gameId
-		});
-	} catch (error) {
-		console.log('Error saving game:', error);
-		if (error.message.includes('SQLITE_CONSTRAINT')) {
-			reply.status(400).send({
-				success: false,
-				message: 'Database constraint error'
-			});
-		} else {
-			reply.status(500).send({
-				success: false,
-				message: 'Failed to save game'
-			});
-		}
-	}
-}
-
-async function saveGameHandler(request, reply) {
-	const { gameData } = request.body;
-
-	try {
-		const player1User = await getUserByUsername(gameData.leftPlayer.id);
-		const player2User = await getUserByUsername(gameData.rightPlayer.id);
-		
-		// Check if users exist
-		if (!player1User) {
-			return reply.status(400).send({
-				success: false,
-				message: `Player 1 with username '${gameData.leftPlayer.id}' not found`
-			});
-		}
-		
-		if (!player2User) {
-			return reply.status(400).send({
-				success: false,
-				message: `Player 2 with username '${gameData.rightPlayer.id}' not found`
-			});
-		}
-
-		const player1_id = player1User.id_user;
-		const player2_id = player2User.id_user;
-		
-		// Determine winner ID
-		let winner_id = 0; // Default for draw
-		if (gameData.generalResult === 'leftWin') {
-			winner_id = player1_id;
-		} else if (gameData.generalResult === 'rightWin') {
-			winner_id = player2_id;
-		}
-		// Map GameData to database fields
-		const gameRecord = {
-			
-			player1_id: player1_id,
-			player2_id: player2_id,
-			winner_id: winner_id,
-			player1_score: gameData.finalScore.leftPlayer,
-			player2_score: gameData.finalScore.rightPlayer,
-			game_mode: gameData.config.mode,
-			is_tournament: gameData.is_tournament || false, // Default: false
-			smart_contract_link: gameData.smart_contract_link || '', // Default: empty string
-			contract_address: gameData.contract_address || '', // Default: empty string
-			created_at: gameData.createdAt,
-			ended_at: gameData.endedAt,
-			config_json: JSON.stringify(gameData.config),
-			general_result: gameData.generalResult,
-			// Ball usage
-			default_balls_used: gameData.balls.defaultBalls,
-			curve_balls_used: gameData.balls.curveBalls,
-			multiply_balls_used: gameData.balls.multiplyBalls,
-			spin_balls_used: gameData.balls.spinBalls,
-			burst_balls_used: gameData.balls.burstBalls,
-			// Special items
-			bullets_used: gameData.specialItems.bullets,
-			shields_used: gameData.specialItems.shields,
-			// Walls
-			pyramids_used: gameData.walls.pyramids,
-			escalators_used: gameData.walls.escalators,
-			hourglasses_used: gameData.walls.hourglasses,
-			lightnings_used: gameData.walls.lightnings,
-			maws_used: gameData.walls.maws,
-			rakes_used: gameData.walls.rakes,
-			trenches_used: gameData.walls.trenches,
-			kites_used: gameData.walls.kites,
-			bowties_used: gameData.walls.bowties,
-			honeycombs_used: gameData.walls.honeycombs,
-			snakes_used: gameData.walls.snakes,
-			vipers_used: gameData.walls.vipers,
-			waystones_used: gameData.walls.waystones,
-			// Player 1 stats
-			player1_hits: gameData.leftPlayer.hits,
-			player1_goals_in_favor: gameData.leftPlayer.goalsInFavor,
-			player1_goals_against: gameData.leftPlayer.goalsAgainst,
-			player1_powerups_picked: gameData.leftPlayer.powerupsPicked,
-			player1_powerdowns_picked: gameData.leftPlayer.powerdownsPicked,
-			player1_ballchanges_picked: gameData.leftPlayer.ballchangesPicked,
-			player1_result: gameData.leftPlayer.result,
-			// Player 2 stats
-			player2_hits: gameData.rightPlayer.hits,
-			player2_goals_in_favor: gameData.rightPlayer.goalsInFavor,
-			player2_goals_against: gameData.rightPlayer.goalsAgainst,
-			player2_powerups_picked: gameData.rightPlayer.powerupsPicked,
-			player2_powerdowns_picked: gameData.rightPlayer.powerdownsPicked,
-			player2_ballchanges_picked: gameData.rightPlayer.ballchangesPicked,
-			player2_result: gameData.rightPlayer.result
-		};
+        console.log('Saving game record:', JSON.stringify(gameRecord, null, 2));    
 
 		// Save to database
 		const gameId = await saveGameToDatabase(gameRecord, gameData);
@@ -480,8 +364,10 @@ async function getGamesHistoryHandler(request, reply) {
     try {
         console.log('Entering getGamesHistoryHandler');
         console.log('Request user:', request.user);
-        const userId = request.user?.id;
+
+        const userId = request.query.user || request.user?.id;
         console.log('User ID:', userId);
+
         if (!userId) {
             console.log('No userId, returning 401');
             return reply.code(401).send({
@@ -501,7 +387,6 @@ async function getGamesHistoryHandler(request, reply) {
             gamesCount: result.games.length,
         });
 
-        // Fetch usernames for each game
         const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
             const [player1_name, player2_name, winner_name] = await Promise.all([
                 getUsernameById(game.player1_id),
@@ -673,6 +558,85 @@ async function retrieveGamesHandler(request, reply) {
 	}
 };
 
+async function getUserByUsernameHandler(request, reply) {
+    try {
+        const { username } = request.body;
+        
+        console.log('Received getUserByUsername request for username:', username);
+        
+        if (!username) {
+            return reply.status(400).send({
+                success: false,
+                message: 'username is required'
+            });
+        }
+
+        try {
+            const user = await getUserByUsername(username);
+            
+            if (!user) {
+                console.log(`User ${username} not found in users table`);
+                return reply.status(404).send({
+                    success: false,
+                    message: 'User not found'
+                });
+            }
+
+            console.log('Found user:', user);
+
+            const userStats = await getUserStats(user.id_user);
+            
+            let avatarUrl = 'avatarUnknownSquare';
+
+            if (user.avatar_filename) {
+                const timestamp = Date.now();
+                if (user.avatar_filename.startsWith('/')) {
+                    avatarUrl = `${user.avatar_filename}?t=${timestamp}`;
+                } else {
+                    avatarUrl = `/api/profile/avatar/${user.id_user}?t=${Date.now()}`;
+                }
+            }
+            
+            const userData = {
+                id: user.id_user.toString(),
+                name: user.username,
+                avatar: avatarUrl,
+                type: 'human',
+                side: 'right',
+                goalsScored: userStats?.total_goals_scored || 0,
+                goalsConceded: userStats?.total_goals_conceded || 0,
+                tournaments: userStats?.tournaments_won || 0,
+                wins: userStats?.wins || 0,
+                losses: userStats?.losses || 0,
+                draws: userStats?.draws || 0,
+                rank: userStats ? calculateRank(userStats) : 999
+            };
+
+            console.log('Returning user data:', userData);
+            
+            reply.status(200).send({
+                success: true,
+                userData: userData
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            reply.status(500).send({
+                success: false,
+                message: 'Database error occurred',
+                error: dbError.message
+            });
+        }
+    } catch (error) {
+        console.error('Error in getUserByUsernameHandler:', error);
+        reply.status(500).send({
+            success: false,
+            message: 'Failed to fetch user data',
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
@@ -681,4 +645,5 @@ module.exports = {
 	deployContractHandler,
 	getGamesHistoryHandler,
     saveResultsHandler,
+    getUserByUsernameHandler,
 };

@@ -1,13 +1,13 @@
 const addFriendSchema = {
-    description: 'Add a new friend by username. Users cannot add themselves as friends and cannot add the same user twice.',
+    description: 'Add a new friend by user ID. Users cannot add themselves as friends and cannot add the same user twice.',
     tags: ['friends'],
     body: {
         type: 'object',
-        required: ['username'],
+        required: ['userId'],
         properties: {
-            username: { 
-                type: 'string', 
-                description: 'Username of the user to add as friend' 
+            userId: { 
+                type: 'number', 
+                description: 'ID of the user to add as a friend'
             }
         }
     },
@@ -75,15 +75,15 @@ const addFriendSchema = {
 };
 
 const removeFriendSchema = {
-    description: 'Remove a friend by username. Only removes the friendship if it exists.',
+    description: 'Remove a friend by user ID. Only removes the friendship if it exists.',
     tags: ['friends'],
     body: {
         type: 'object',
-        required: ['username'],
+        required: ['userId'],
         properties: {
-            username: { 
-                type: 'string', 
-                description: 'Username of the friend to remove' 
+            userId: { 
+                type: 'number', 
+                description: 'ID of the friend to remove' 
             }
         }
     },

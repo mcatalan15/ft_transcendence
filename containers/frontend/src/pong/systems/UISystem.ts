@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UISystem.ts                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 10:31:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:51:44 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ export class UISystem implements System {
 
 	private updateScore(entities: Entity[], event: GameEvent): void {
 		if (this.game.isOnline && this.game.config.classicMode || this.game.hasEnded) {
-			console.log('🎮 UI: Skipping local score event in online mode, server manages scoring');
+			console.log('UI: Skipping local score event in online mode, server manages scoring');
 			return;
 		}
 

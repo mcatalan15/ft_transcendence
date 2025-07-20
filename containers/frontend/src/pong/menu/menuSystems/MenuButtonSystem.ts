@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/11 12:56:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:58:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,28 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
+import { navigate } from "../../../utils/router";
+import { MenuInputSystem } from "./MenuInputSystem";
+import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
+import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
+import { Text } from "pixi.js";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
 	private overlayStack: string[] = [];
 	private glossaryOpenedBy: 'main' | 'overlay' | null = null;
+	private networkManager: PongNetworkManager | null = null;
 
 	constructor(menu: Menu) {
 		this.menu = menu;
 	}
 
-	update(): void {
+	async update(): Promise<void> {
 		const unhandledEvents = [];
 
 		while (this.menu.eventQueue.length > 0) {
 			const event = this.menu.eventQueue.shift() as GameEvent;
-			
+
 			if (event.type === 'START_CLICK') {
 				this.handleStartClick();
 			} else if (event.type === 'OPTIONS_CLICK') {
@@ -80,17 +86,26 @@ export class MenuButtonSystem implements System {
 				this.resetLayer(event);
 			} else if (event.type.endsWith('BACK')) {
 				this.resetLayer(event);
+				if (event.type === 'PLAY_BACK') {
+					await this.handleCancelMatchmaking();
+				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
+			} else if (event.type === 'MATCH_FOUND') {
+				this.handleMatchFound();
+			} else if (event.type === '1V1_READY_CLICK') {
+				this.handle1v1ReadyClick();
+			} else if (event.type === 'BOTH_READY') {
+				this.handleBothReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
 		}
-		
+
 		this.menu.eventQueue.push(...unhandledEvents);
 	}
 
-	handleStartClick(){
+	handleStartClick() {
 		//Hide Start Button
 		this.menu.startButton.setHidden(true);
 		this.menu.menuHidden.addChild(this.menu.startButton.getContainer());
@@ -105,6 +120,7 @@ export class MenuButtonSystem implements System {
 		this.menu.IAButton.setHidden(!this.menu.IAButton.getIsHidden());
 		this.menu.duelButton.setHidden(!this.menu.duelButton.getIsHidden());
 		this.menu.startXButton.setHidden(!this.menu.startXButton.getIsHidden());
+		this.menu.tournamentButton.setHidden(!this.menu.tournamentButton.getIsHidden());
 
 		this.menu.menuContainer.addChild(this.menu.onlineButton.getContainer());
 		this.menu.menuContainer.addChild(this.menu.localButton.getContainer());
@@ -117,34 +133,55 @@ export class MenuButtonSystem implements System {
 		this.menu.redrawFrame();
 	}
 
-	handlePlayClick(){
+	async handlePlayClick() {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
+		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
-		
+
 		if (this.menu.config.variant === 'tournament') {
 			this.menu.playButton.setClicked(true);
 			this.menu.tournamentOverlay.show();
 			this.overlayStack.push('tournament');
 			this.setButtonsClickability(false);
+			
+			for (const button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			}
 		} else {
 			this.menu.playButton.setClicked(true);
+			await this.menu.playOverlay.setAllRenderablesAlpha(0);
 			this.menu.playOverlay.show();
 			this.overlayStack.push('play');
 			this.setButtonsClickability(false);
+			this.menu.playInputButton.resetButton();
 		}
 	}
 
 	async handleReadyClick() {
+		this.menu.playSound("menuConfirm");
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
 				console.log('Starting online matchmaking...');
-				// Create a PongNetworkManager for matchmaking (no game instance yet)
-				const networkManager = new PongNetworkManager(null, '');
-				await networkManager.startMatchmaking();
-				
+				this.networkManager = new PongNetworkManager(null, '', this.menu);
+				await this.networkManager.startMatchmaking();
+				this.menu.readyButton.setClickable(false);
+				this.menu.readyButton.setClicked(true);
+
+				// Fake loading animation
+				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+				this.menu.readyButton.updateText('');
+				while (this.menu.readyButton.getIsClicked()) {
+					if (this.menu.readyButton.getText().length < 3) {
+						this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+					} else if (this.menu.readyButton.getText().length >= 3) {
+						this.menu.readyButton.updateText('');
+					}
+					await sleep(500);
+				}
+				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -155,23 +192,40 @@ export class MenuButtonSystem implements System {
 		}
 	}
 
+	private async handleCancelMatchmaking() {
+		if (this.networkManager) {
+			try {
+				await this.networkManager.cancelMatchmaking();
+				this.networkManager = null;
+			} catch (error) {
+				console.error('Error cancelling matchmaking:', error);
+			}
+		}
+		this.menu.readyButton.resetButton();
+		this.menu.readyButton.updateText('READY');
+		this.menu.readyButton.setClickable(true);
+		this.menu.readyButton.setClicked(false);
+	}
+
+	private handle1v1ReadyClick() {
+		// TODO
+	}
+
+	private handleBothReadyClick() { }
+
 	private startLocalGame(): void {
 		console.log('Starting local game...');
-		
-		// Clean up menu first
+
 		this.menu.cleanup();
-		
-		// Deregister menu from GameManager
-		gameManager.destroyGame(this.menu.app.view.id);
 
 		this.setFinalConfig();
 
 		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
-		
-		// Register new game with GameManager
+		game.tournamentManager = this.menu.tournamentManager;
+
 		gameManager.registerGame(this.menu.app.view.id, game, undefined, this.menu.app);
-		
+
 		game.init();
 	}
 
@@ -230,7 +284,7 @@ export class MenuButtonSystem implements System {
 		this.setButtonsClickability(false);
 	}
 
-	resetLayer(event: GameEvent){
+	resetLayer(event: GameEvent) {
 		if (event.type.includes('START')) {
 			this.resetStartOptions();
 
@@ -284,7 +338,7 @@ export class MenuButtonSystem implements System {
 			if (index > -1) {
 				this.overlayStack.splice(index, 1);
 			}
-			
+
 			this.menu.tournamentFiltersButton.setClickable(true);
 			this.menu.tournamentGlossaryButton.setClickable(true);
 			this.menu.readyButton.setClickable(true);
@@ -294,40 +348,71 @@ export class MenuButtonSystem implements System {
 				this.menu.glossaryButton.setClicked(false);
 				this.menu.glossaryButton.resetButton();
 			}
-			
+
 			this.menu.glossaryOverlay.hide();
 			this.glossaryOpenedBy = null;
 		} else if (event.type.includes('ABOUT')) {
 			this.setButtonsClickability(true);
-			
+
 			this.menu.aboutButton.setClicked(false);
 
 			this.menu.aboutButton.resetButton();
-			
+
 			this.menu.aboutOverlay.hide();
 
 			this.setButtonsClickability(true);
 		} else if (event.type.includes('PLAY')) {
+			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
+				gameManager.destroyGame(this.menu.app.view.id);
+				window.location.href = '/pong';
+			}
+			this.menu.readyButton.resetButton();
+			this.menu.readyButton.setClicked(false);
+			this.menu.readyButton.setClickable(true);
 			const playIndex = this.overlayStack.indexOf('play');
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
 			if (tournamentIndex > -1) this.overlayStack.splice(tournamentIndex, 1);
-			
+
 			this.setButtonsClickability(this.overlayStack.length === 0);
 			this.menu.playButton.setClicked(false);
 			this.menu.playButton.resetButton();
 			this.menu.glossaryButton.resetButton();
+
 			if (this.menu.config.variant === 'tournament') {
 				this.menu.tournamentOverlay.hide();
 			} else {
 				this.menu.playOverlay.hide();
+				this.menu.readyButton.updateText('READY');
 			}
+
+			this.menu.opponentData = null;
+
+			this.menu.hasOngoingTournament = false;
+			this.menu.tournamentConfig = null;
+			this.menu.tournamentManager.clearTournament();
+
+			for (let button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			}
+
+			this.menu.opponentData = null;
+
+			this.menu.hasOngoingTournament = false;
+			this.menu.tournamentConfig = null;
+			this.menu.tournamentManager.clearTournament();
+
+			/* for (let button of this.menu.tournamentInputButtons) {
+				button.resetButton();
+			} */
 		}
+
+		this.menu.inputFocus = null;
 	}
 
 	handleLocalClick() {
 		this.menu.localButton.setClicked(!this.menu.localButton.getIsClicked());
-		
+
 		if (this.menu.onlineButton.getIsClicked()) {
 			this.menu.onlineButton.setClicked(!this.menu.onlineButton.getIsClicked());
 		}
@@ -427,7 +512,7 @@ export class MenuButtonSystem implements System {
 			this.menu.duelButton.setClicked(!this.menu.duelButton.getIsClicked());
 		}
 
-		if (this.menu.tournamentButton.getIsClicked()) {    
+		if (this.menu.tournamentButton.getIsClicked()) {
 			this.menu.config.mode = 'online';
 			this.menu.config.variant = 'tournament';
 		}
@@ -441,7 +526,7 @@ export class MenuButtonSystem implements System {
 	handleFiltersClicked() {
 		const text = this.menu.filtersButton.getText();
 		let isClicked = this.menu.filtersButton.getIsClicked();
-	
+
 		if (isClicked) {
 			this.menu.filtersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
 			this.menu.tournamentFiltersButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
@@ -460,7 +545,7 @@ export class MenuButtonSystem implements System {
 			this.menu.menuContainer.filters = this.menu.baseFilters;
 			this.menu.renderLayers.overlays.filters = this.menu.baseFilters;
 			this.menu.renderLayers.overlayQuits.filters = this.menu.baseFilters;
-			
+
 			if (this.menu.config.classicMode) {
 				this.menu.renderLayers.powerups.filters = this.menu.powerupClassicFilters;
 				this.menu.renderLayers.powerdowns.filters = this.menu.powerupClassicFilters;
@@ -473,7 +558,7 @@ export class MenuButtonSystem implements System {
 
 			this.menu.config.filters = true;
 		}
-	
+
 		this.menu.filtersButton.setClicked(!this.menu.filtersButton.getIsClicked());
 		this.menu.filtersButton.resetButton();
 		this.menu.tournamentFiltersButton.setClicked(!this.menu.tournamentFiltersButton.getIsClicked());
@@ -502,24 +587,45 @@ export class MenuButtonSystem implements System {
 		this.menu.duelButton.setHidden(false);
 		this.menu.tournamentButton.setHidden(true);
 
-		this.menu.startXButton.setHidden(true); 
+		this.menu.startXButton.setHidden(true);
+	}
+
+	async handleMatchFound() {
+
+		this.menu.readyButton.setClicked(false);
+		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+
+		// Fake loading animation (gotta reuse your old tricks eh)
+		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+		this.menu.readyButton.updateText('');
+		while (this.menu.readyButton.getText().length < 3) {
+			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
+			await sleep(1000);
+		}
+		const params = new URLSearchParams({
+			gameId: this.networkManager?.getGameId() || '',
+			hostName: this.networkManager?.getHostName() || 'host',
+			guestName: this.networkManager?.getGuestName() || 'guest',
+			mode: 'online'
+		});
+		navigate(`/pong?${params.toString()}`);
 	}
 
 	handleClassicClicked() {
 		this.menu.config.classicMode = !this.menu.config.classicMode;
 		this.menu.ballAmount = 0;
-	
+
 		const text = this.menu.classicButton.getText();
 		const isClicked = this.menu.classicButton.getIsClicked();
-	
+
 		if (isClicked) {
 			this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'ON'));
 		} else if (!isClicked) {
 			this.menu.classicButton.updateText(this.getUpdatedHalfButtonText(text, 'OFF'));
 		}
-	
+
 		this.menu.classicButton.setClicked(!this.menu.classicButton.getIsClicked());
-	
+
 		const menu = this.menu;
 
 		const entitiesToRemove: string[] = [];
@@ -536,7 +642,7 @@ export class MenuButtonSystem implements System {
 
 		this.resetButtons();
 
-	
+
 		if (menu.title) {
 			menu.title.updateBlockingVisibility();
 		}
@@ -544,7 +650,7 @@ export class MenuButtonSystem implements System {
 		const titleORender = this.menu.titleO.getComponent('render') as RenderComponent;
 
 		if (this.menu.config.classicMode) {
-			this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());       
+			this.menu.menuHidden.addChild(this.menu.ballButton.getContainer());
 			this.menu.renderLayers.logo.addChild(titleORender.graphic);
 			this.menu.glossaryOverlay.changeStrokeColor(GAME_COLORS.white);
 
@@ -601,7 +707,7 @@ export class MenuButtonSystem implements System {
 
 			case ('es'): {
 				if (mode === 'ON') {
-				return text.substring(0, text.indexOf('SÍ')) + 'NO';
+					return text.substring(0, text.indexOf('SÍ')) + 'NO';
 				} else if (mode === 'OFF') {
 					return text.substring(0, text.indexOf('NO')) + 'SÍ';
 				}
@@ -631,24 +737,24 @@ export class MenuButtonSystem implements System {
 
 	public updatePlayButtonState(): void {
 		let shouldBeClickable = false;
-		
+
 		if (this.menu.localButton.getIsClicked()) {
 			shouldBeClickable = this.menu.IAButton.getIsClicked() || this.menu.duelButton.getIsClicked();
 		} else if (this.menu.onlineButton.getIsClicked()) {
 			shouldBeClickable = this.menu.tournamentButton.getIsClicked() || this.menu.duelButton.getIsClicked();
 		}
-		
+
 		const playButton = this.menu.playButton;
 		const wasClickable = playButton.getIsClickable();
-		
+
 		if (wasClickable !== shouldBeClickable) {
 			playButton.setClickable(shouldBeClickable);
-			
+
 			if (shouldBeClickable) {
 				playButton.getContainer().eventMode = 'static';
 				playButton.getContainer().cursor = 'pointer';
 				playButton.setClicked(false);
-				
+
 				playButton.getContainer().removeAllListeners();
 				playButton.setupEventHandlers();
 			} else {
@@ -657,7 +763,7 @@ export class MenuButtonSystem implements System {
 				playButton.setClicked(true);
 				playButton.getContainer().removeAllListeners();
 			}
-			
+
 			playButton.resetButton();
 		}
 	}
@@ -682,7 +788,7 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.resetButton();
 		this.menu.tournamentGlossaryButton.resetButton();
 		this.menu.tournamentFiltersButton.resetButton();
-		
+
 		this.menu.playOrnament.resetOrnament();
 		this.menu.startOrnament.resetOrnament();
 		this.menu.optionsOrnament.resetOrnament();
@@ -715,7 +821,7 @@ export class MenuButtonSystem implements System {
 		(this.menu.paddleR as Paddle).redrawFullPaddle(true, 'powerdown');
 	}
 
-	setButtonsClickability(clickable: boolean): void {       
+	setButtonsClickability(clickable: boolean): void {
 		this.menu.startButton.setClickable(clickable);
 		this.menu.optionsButton.setClickable(clickable);
 		this.menu.glossaryButton.setClickable(clickable);
@@ -730,7 +836,7 @@ export class MenuButtonSystem implements System {
 		this.menu.startXButton.setClickable(clickable);
 		this.menu.optionsXButton.setClickable(clickable);
 		this.menu.ballButton.setClickable(clickable);
-		
+
 		if (clickable) {
 			this.updatePlayButtonState();
 		} else {
@@ -740,7 +846,7 @@ export class MenuButtonSystem implements System {
 
 	cleanup(): void {
 		this.menu.eventQueue = [];
-		
+
 		if (this.menu.startButton) this.menu.startButton.resetButton();
 		if (this.menu.playButton) this.menu.playButton.resetButton();
 		if (this.menu.optionsButton) this.menu.optionsButton.resetButton();
@@ -759,7 +865,7 @@ export class MenuButtonSystem implements System {
 		if (this.menu.startButton) this.menu.startButton.resetButton();
 	}
 
-	protected setFinalConfig() {
+	protected async setFinalConfig() {
 		if (this.menu.localButton.getIsClicked()) {
 			this.menu.config.mode = 'local';
 			if (this.menu.IAButton.getIsClicked()) {
@@ -771,9 +877,42 @@ export class MenuButtonSystem implements System {
 			this.menu.config.mode = 'online';
 			if (this.menu.tournamentButton.getIsClicked()) {
 				this.menu.config.variant = 'tournament';
+				this.menu.config.mode = 'local';
 			} else if (this.menu.duelButton.getIsClicked()) {
 				this.menu.config.variant = '1v1';
 			}
 		}
+
+		if (this.menu.config.variant === 'tournament') {
+			console.log('Setting up tournament configuration BEFORE START...');
+			this.menu.config.hostName = this.menu.tournamentConfig?.nextMatch.leftPlayerName!;
+			this.menu.config.guestName= this.menu.tournamentConfig?.nextMatch.rightPlayerName!;
+		} else {
+			this.menu.config.players![0].name = sessionStorage.getItem('username') || 'Player 1';
+			if (this.menu.opponentData) {
+				this.menu.config.players![1].name = this.menu.opponentData.name || 'GUEST';
+			} else {
+				if (this.menu.storedGuestName) {
+					this.menu.config.players![1].name = this.menu.storedGuestName;
+				} else {
+					this.menu.config.players![1].name = 'GUEST';
+				}
+			}
+
+			if (this.menu.config.mode === 'local' && this.menu.config.variant === '1v1') {
+				this.menu.config.hostName = this.menu.config.players![0].name;
+				this.menu.config.guestName = this.menu.config.players![1].name;
+			}
+		}
+
+		if (this.menu.config.guestName === 'butibot' && this.menu.config.variant !== 'tournament') {
+			this.menu.config.variant = '1vAI';
+		}
+
+		//! Player IDS
+		this.menu.config.players![0].id = await this.menu.getUserId(this.menu.config.players![0].name, sessionStorage.getItem('token')!);
+		this.menu.config.players![1].id = await this.menu.getUserId(this.menu.config.players![1].name, sessionStorage.getItem('token')!);
+
+		console.log('Final game configuration:', this.menu.config);
 	}
 }

@@ -9,17 +9,12 @@ interface Friend {
 }
 
 export class FriendsContentRenderer {
-  private container: HTMLElement;
   private friendsData: Friend[] = [];
   private currentPage: number = 0;
   private friendsPerPage: number = 10;
   private totalPages: number = 1;
   private paginationComponent: Pagination | null = null;
   private filteredFriends: Friend[] = [];
-
-  constructor(container: HTMLElement) {
-    this.container = container;
-  }
 
   render(): HTMLElement {
     const mainContent = document.createElement('div');
@@ -215,12 +210,46 @@ export class FriendsContentRenderer {
 
     if (friends.length === 0) {
       const emptyMessage = document.createElement('div');
-      emptyMessage.textContent = i18n.t('noFriends', { ns: 'friends' }) || 'No friends found';
       emptyMessage.className = 'col-span-full text-center py-8';
       emptyMessage.style.color = '#FFFBEB';
       emptyMessage.style.fontFamily = '"Roboto Mono", monospace';
       emptyMessage.style.fontSize = '14px';
       emptyMessage.style.opacity = '0.7';
+      
+      const fullText = i18n.t('noFriends', { ns: 'friends' }) || 'No friends found. Try using Chat to connect with others!';
+      
+      const chatRegex = /\b(chat|xat)\b/i;
+      const match = fullText.match(chatRegex);
+      
+      if (match) {
+        const indexBefore = match.index || 0;
+        const matchedWord = match[0];
+        const indexAfter = indexBefore + matchedWord.length;
+        
+        if (indexBefore > 0) {
+          const beforeText = fullText.substring(0, indexBefore);
+          emptyMessage.appendChild(document.createTextNode(beforeText));
+        }
+        
+        const chatLink = document.createElement('a');
+        chatLink.textContent = matchedWord;
+        chatLink.href = '#';
+        chatLink.className = 'text-amber-400 hover:underline cursor-pointer';
+        chatLink.style.color = '#fbbf24';
+        chatLink.onclick = (e: MouseEvent) => {
+          e.preventDefault();
+          navigate('/chat');
+        };
+        emptyMessage.appendChild(chatLink);
+        
+        if (indexAfter < fullText.length) {
+          const afterText = fullText.substring(indexAfter);
+          emptyMessage.appendChild(document.createTextNode(afterText));
+        }
+      } else {
+        emptyMessage.textContent = fullText;
+      }
+      
       friendsList.appendChild(emptyMessage);
       return;
     }

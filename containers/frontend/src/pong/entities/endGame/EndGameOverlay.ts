@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 18:23:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:38:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,20 +217,13 @@ export class EndgameOverlay extends Entity {
 		let assetName: string;
 		
 		if (this.game.data.generalResult !== 'draw') {
-			const isWinner = isPlayerWinner(this.game);
-			const language = this.game.language || 'en';	
-		
-			console.log(`Creating header sprite for language: ${language}, isWinner: ${isWinner}, isFirefox: ${this.isFirefox}, gameMode: ${this.game.isOnline ? 'online' : 'local'}`);
+			const language = this.game.language || 'en';
 			
 			if (this.game.config.classicMode) {
-				assetName = isWinner ? `victoryHeader${language.toUpperCase()}White` : `defeatHeader${language.toUpperCase()}White`;
+				assetName = `victoryHeader${language.toUpperCase()}White`;
 			} else {
-				if (isWinner) {
 					assetName = `victoryHeader${language.toUpperCase()}Green`;
-				} else {
-					assetName = `defeatHeader${language.toUpperCase()}Red`;
 				}
-			}
 		} else {
 			if (this.game.config.classicMode) {
 				assetName = `drawHeader${this.game.language.toUpperCase()}White`;
@@ -304,7 +297,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				frameColor = GAME_COLORS.orange;
 			} else {
-				frameColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				frameColor = GAME_COLORS.orange;
 			}
 		}
 		
@@ -328,7 +321,7 @@ export class EndgameOverlay extends Entity {
 		if (game.config.classicMode) {
 			statsColor = GAME_COLORS.white;
 		} else {
-			statsColor = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+			statsColor = GAME_COLORS.orange;
 		}
 
 		const statsUnderlines = new Graphics();
@@ -501,7 +494,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 
@@ -513,6 +506,8 @@ export class EndgameOverlay extends Entity {
 			console.warn(`Invalid side: ${side}. Defaulting to "Player 1".`);
 			text = "Player 1";
 		}
+
+		console.log('Player name text:', text.toUpperCase());
 		
 		return {
 			text: text.toUpperCase(),
@@ -756,7 +751,7 @@ export class EndgameOverlay extends Entity {
 		const assetSuffix = this.game.config.classicMode ? 'Classic' : 'Square';
 		
 		const leftPlayerData = this.game.playerData;
-		const rightPlayerData = this.game.opponentData;;
+		const rightPlayerData = this.game.opponentData;
 		
 		const leftSprite = await this.createPlayerAvatarSprite(
 			leftPlayerData?.avatar,
@@ -768,7 +763,7 @@ export class EndgameOverlay extends Entity {
 		
 		const rightSprite = await this.createPlayerAvatarSprite(
 			rightPlayerData?.avatar,
-			`avatarUnknown${assetSuffix}`,
+			this.game.config.variant === '1vAI' ? `avatarBot${assetSuffix}` : `avatarUnknown${assetSuffix}`,
 			1220,
 			385,
 			0.225
@@ -884,7 +879,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 
@@ -958,7 +953,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 		
@@ -993,7 +988,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 
@@ -1046,7 +1041,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 		
@@ -1101,7 +1096,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 
@@ -1149,7 +1144,7 @@ export class EndgameOverlay extends Entity {
 			if (this.game.data.generalResult === 'draw') {
 				color = GAME_COLORS.orange;
 			} else {
-				color = isPlayerWinner(this.game) ? GAME_COLORS.green : GAME_COLORS.red;
+				color = GAME_COLORS.orange;
 			}
 		}
 	

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/14 18:13:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:49:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
 // Import G A M E
-import { GameConfig, Preconfiguration, PlayerData } from '../utils/GameConfig';
+import { GameConfig, Preconfiguration, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -30,6 +30,8 @@ import { MenuButton } from './menuButtons/MenuButton';
 import { MenuHalfButton } from './menuButtons/MenuHalfButton';
 import { MenuXButton } from './menuButtons/MenuXButton';
 import { BallButton } from './menuButtons/BallButton';
+import { MenuBigInputButton } from './menuButtons/MenuBigInputButton';
+import { MenuSmallInputButton } from './menuButtons/MenuSmallInputButton';
 import { Powerup } from '../entities/powerups/Powerup';
 import { MenuImageManager } from './menuManagers/MenuImageManager';
 
@@ -53,6 +55,8 @@ import { MenuAnimationSystem } from './menuSystems/MenuAnimationSystem';
 import { MenuParticleSystem } from './menuSystems/MenuParticleSystem';
 import { MenuPostProcessingSystem } from './menuSystems/MenuPostProcessingSystem';
 import { SecretCodeSystem } from './menuSystems/MenuSecretCodeSystem';
+import { MenuInputSystem } from './menuSystems/MenuInputSystem';
+import { MenuTournamentSystem } from './menuSystems/MenuTournamentSystem';
 
 import { MenuPhysicsSystem } from './menuSystems/MenuPhysicsSystem';
 import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
@@ -69,6 +73,7 @@ import { AboutOverlay } from './menuOverlays/AboutOverlay';
 import { PlayOverlay } from './menuOverlays/PlayOverlay';
 import { TournamentOverlay } from './menuOverlays/TournamentOverlay';
 import { getApiUrl } from '../../config/api';
+import { TournamentManager } from '../../utils/TournamentManager';
 
 declare global {
     interface Window {
@@ -140,6 +145,10 @@ export class Menu{
 	readyButtonHeight: number = 75;
 	tournamentOverlayButtonWidth: number = 190;
 	tournamentOverlayButtonHeight: number = 32.5;
+	bigInputButtonWidth: number = 150;
+	bigInputButtonHeight: number = 30;
+	smallInputButtonWidth: number = 145;
+	smallInputButtonHeight: number = 25;
 
 	// Button Containers
 	startButton!: MenuButton;
@@ -163,6 +172,7 @@ export class Menu{
 	readyButton!: MenuButton;
 	tournamentGlossaryButton!: MenuButton;
 	tournamentFiltersButton!: MenuButton;
+	playInputButton!: MenuBigInputButton;
 
 	// Ornaments
 	frame!: Graphics;
@@ -218,9 +228,21 @@ export class Menu{
 
 	// Player Data
 	playerData: PlayerData | null = null;
+	opponentData: PlayerData | null = null;
+	storedGuestName: string | null = null;
+
+	// Tournament Data
+	tournamentManager!: TournamentManager;
+	hasOngoingTournament: boolean = false;
+	tournamentConfig!: TournamentConfig | null;
+	tournamentInputButtons: MenuSmallInputButton[] = [];
 
 	//Browser data
 	isFirefox: boolean = false;
+
+	// Input stuff
+	inputFocus: string | null = null;
+	isProcessingInput: boolean = false;
 
 	constructor(app: Application, language: string, isFirefox?: boolean, hasPreConfiguration?: boolean, preconfiguration?: Preconfiguration) {
 		this.language = language;
@@ -237,9 +259,6 @@ export class Menu{
 			invitationData: null
 		};
 		
-		console.log('🎯 Menu Preconfiguration Status:');
-		console.log('Has invitation context:', this.preconfiguration.hasInvitationContext);
-		
 		if (this.preconfiguration.hasInvitationContext && this.preconfiguration.invitationData) {
 			console.log('📧 Invitation Data:');
 			console.log('  - Invite ID:', this.preconfiguration.invitationData.inviteId);
@@ -248,7 +267,6 @@ export class Menu{
 			console.log('  - Mode will be set to:', this.preconfiguration.mode);
 			this.hasPreconfig = true;
 		} else {
-			console.log('📝 No invitation context - standard menu initialization');
 			this.hasPreconfig = false;
 		}
 		
@@ -296,16 +314,15 @@ export class Menu{
 
 		this.renderLayers.blackEnd.addChild(menuUtils.setMenuBackground(app));
 		this.initSounds();
-
-		//! GAME CONFIGURATION TO BE FED IN MENU, SENT TO BACKEND
+		
 		this.config = {
 			mode: 'local',
 			variant: '1v1',
 			classicMode: false,
 			filters: true,
 			players: [
-				{ name: 'Player 1', type: 'human', side: 'left' },
-				{ name: 'Player 2', type: 'human', side: 'right' }
+				{ id: '', name: 'Player 1', type: 'local', side: 'left' },
+				{ id: '', name: 'Player 2', type: 'local', side: 'right' }
 			]
 		};
 		
@@ -330,6 +347,8 @@ export class Menu{
 		await ButtonManager.createOverlayQuitButtons(this);
 		await ButtonManager.createReadyButton(this);
 		await ButtonManager.createTournamentOverlayButtons(this);
+		await ButtonManager.createPlayInputButton(this);
+		await ButtonManager.createTournamentInputButtons(this);
 		await this.createOrnaments();
 		await this.createEntities();
 		await this.createTitle();
@@ -355,6 +374,113 @@ export class Menu{
 		/* if (this.preconfiguration) {
 			this.manageOnlineInvitationGame();
 		} */
+
+		if (this.tournamentManager.getHasActiveTournament()) {
+			this.hasOngoingTournament = true;
+			this.tournamentConfig = this.tournamentManager.getTournamentConfig();
+		}
+
+		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
+
+			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
+				const optionsEvent: GameEvent = {
+					type: 'OPTIONS_CLICK',
+					target: this.optionsButton,
+				};
+
+				this.eventQueue.push(optionsEvent);
+
+				const classicEvent: GameEvent = {
+					type: 'CLASSIC_CLICK',
+					target: this.classicButton,
+				};
+
+				this.eventQueue.push(classicEvent);
+			}
+
+			const startEvent: GameEvent = {
+				type: 'START_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(startEvent);
+
+			const rankedEvent: GameEvent = {
+				type: 'RANKED_CLICK',
+				target: this.onlineButton,
+			};
+	
+			this.eventQueue.push(rankedEvent);
+			
+			const tournamentEvent: GameEvent = {
+				type: 'TOURNAMENT_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(tournamentEvent)
+
+			const playEvent: GameEvent = {
+				type: 'PLAY_CLICK',
+				target: this.playButton,
+			};
+	
+			this.eventQueue.push(playEvent);
+
+			const prepareNextMatchEvent: GameEvent = {
+				type: 'PREPARE_NEXT_MATCH',
+				target: null,
+			};
+			
+			this.eventQueue.push(prepareNextMatchEvent);
+		}
+
+		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
+			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
+				const optionsEvent: GameEvent = {
+					type: 'OPTIONS_CLICK',
+					target: this.optionsButton,
+				};
+
+				this.eventQueue.push(optionsEvent);
+
+				const classicEvent: GameEvent = {
+					type: 'CLASSIC_CLICK',
+					target: this.classicButton,
+				};
+
+				this.eventQueue.push(classicEvent);
+			}
+
+			const startEvent: GameEvent = {
+				type: 'START_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(startEvent);
+
+			const rankedEvent: GameEvent = {
+				type: 'RANKED_CLICK',
+				target: this.onlineButton,
+			};
+	
+			this.eventQueue.push(rankedEvent);
+			
+			const tournamentEvent: GameEvent = {
+				type: 'TOURNAMENT_CLICK',
+				target: this.tournamentButton,
+			};
+	
+			this.eventQueue.push(tournamentEvent)
+
+			const playEvent: GameEvent = {
+				type: 'PLAY_CLICK',
+				target: this.playButton,
+			};
+
+			this.eventQueue.push(playEvent);
+
+			//! Tournament ending stuff
+		}
 	}
 
 	manageOnlineInvitationGame() {
@@ -505,6 +631,8 @@ export class Menu{
 		const physicsSystem = new MenuPhysicsSystem(this);
 		const lineSystem = new MenuLineSystem(this);
 		const secretCodeSystem = new SecretCodeSystem(this);
+		const inputSystem = new MenuInputSystem(this);
+		const tournamentSystem = new MenuTournamentSystem(this);
 		
 		this.systems.push(buttonSystem);
 		this.systems.push(VFXSystem);
@@ -515,6 +643,8 @@ export class Menu{
 		this.systems.push(physicsSystem);
 		this.systems.push(lineSystem);
 		this.systems.push(secretCodeSystem);
+		this.systems.push(inputSystem);
+		this.systems.push(tournamentSystem);
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();
@@ -864,7 +994,7 @@ export class Menu{
 			console.log('All menu sounds stopped and unloaded');
 		}
 		
-		this.app.ticker.stop();
+		//this.app.ticker.stop();
 		
 		this.systems.forEach(system => {
 			if (system.cleanup) {
@@ -1019,19 +1149,104 @@ export class Menu{
 		
 		console.log('Applying Firefox-specific optimizations...');
 		
-		// Reduce particle density
 		this.maxBalls = Math.floor(this.maxBalls * 0.7);
 		
-		// Disable some intensive visual effects
 		this.app.ticker.maxFPS = 60;
 		this.app.ticker.minFPS = 30;
-		
-		// Force garbage collection more frequently (if available)
+
 		if (window.gc) {
 			setInterval(() => {
 				window.gc!();
 			}, 10000);
 		}
+	}
+
+	public cancelTournament(): void {
+		this.hasOngoingTournament = false;
+		this.tournamentConfig = null;
+		this.tournamentManager.clearTournament();
+
+		this.tournamentInputButtons.forEach(button => {
+			button.updateText(`Player-${button.getButtonId().split('_').pop()}`);
+			button.isFilled = false;
+		});
+	}
+
+	public initTournamentConfiguration() {
+		console.log('Initializing tournament configuration...');
+
+		this.tournamentConfig =  {
+			isPrepared: false,
+			isFinished: false,
+			classicMode: this.config.classicMode? true : false,
+
+			currentPhase: 1,
+			currentMatch: 1,
+			
+			matchWinners: {
+				match1Winner: null,
+				match2Winner: null,
+				match3Winner: null,
+				match4Winner: null,
+				match5Winner: null,
+				match6Winner: null,
+				match7Winner: null,
+			},
+
+			nextMatch: {
+				matchOrder: 0,
+				leftPlayerName: null,
+				rightPlayerName: null,
+			},
+
+			registeredPlayerNames: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+				player5: null,
+				player6: null,
+				player7: null,
+				
+			},
+
+			registeredPlayerData: {
+				player1Data: null,
+				player2Data: null,
+				player3Data: null,
+				player4Data: null,
+				player5Data: null,
+				player6Data: null,
+				player7Data: null,
+				player8Data: null,
+			},
+
+			firstRoundPlayers: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+				player5: null,
+				player6: null,
+				player7: null,
+				player8: null,
+			},
+
+			secondRoundPlayers: {
+				player1: null,
+				player2: null,
+				player3: null,
+				player4: null,
+			},
+
+			thirdRoundPlayers: {
+				player1: null,
+				player2: null,
+			},
+
+			tournamentWinner: null,
+
+		} as TournamentConfig;
 	}
 
 	// API CALL
@@ -1068,6 +1283,41 @@ export class Menu{
 			return data.userData as PlayerData;
 		} catch (error) {
 			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	async getUserId(username: string, token: string): Promise<string>{
+		try {
+			console.log(`Fetching user ID for username ${username} with token ${token}`);
+			if (!username || !token) {
+				throw new Error('Username and token are required to fetch user ID');
+			}
+
+			const response = await fetch(getApiUrl('/games/getUserByUsername'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					username: username
+				}),
+				credentials: 'include'
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+
+			const data = await response.json();
+			console.log('User ID fetched successfully:', data.userId);
+
+			return data.id as string;
+		} catch (error) {
+			console.error('Error fetching user ID:', error);
 			throw error;
 		}
 	}

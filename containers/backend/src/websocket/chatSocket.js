@@ -264,20 +264,16 @@ async function handleGameInviteResponse(message, senderWs, wss, redisService) {
 		
 		// Store in Redis (keep existing logic)
 		try {
-			console.log('📝 Attempting to store game data in Redis...');
 			const success = await redisService.createGame(gameId, gameData);
 			if (success) {
-				console.log(`✅ Game session ${gameId} created in Redis:`, gameData);
 			} else {
 				throw new Error('Redis createGame returned false');
 			}
 		} catch (error) {
-			console.error('❌ Failed to create game session:', error);
-			// ... error handling
+			console.error('Failed to create game session:', error);
 			return;
 		}
-	
-		// Find WebSocket connections
+
 		let hostWs = null;
 		let guestWs = senderWs;
 	
@@ -287,8 +283,7 @@ async function handleGameInviteResponse(message, senderWs, wss, redisService) {
 				break;
 			}
 		}
-	
-		// Send navigation messages with player names included
+
 		if (hostWs && hostWs.readyState === WebSocket.OPEN) {
 			const hostMessage = {
 				type: 'game_invite_accepted',
@@ -296,13 +291,11 @@ async function handleGameInviteResponse(message, senderWs, wss, redisService) {
 				inviteId: message.inviteId,
 				gameId: gameId,
 				action: 'navigate_to_pong',
-				// Add player names for URL construction
 				hostName: hostId,
 				guestName: guestId
 			};
 			
 			hostWs.send(JSON.stringify(hostMessage));
-			console.log('✅ Navigate message sent to host successfully');
 		}
 	
 		if (guestWs && guestWs.readyState === WebSocket.OPEN) {
@@ -312,13 +305,11 @@ async function handleGameInviteResponse(message, senderWs, wss, redisService) {
 				inviteId: message.inviteId,
 				gameId: gameId,
 				action: 'navigate_to_pong',
-				// Add player names for URL construction
 				hostName: hostId,
 				guestName: guestId
 			};
 			
 			guestWs.send(JSON.stringify(guestMessage));
-			console.log('✅ Navigate message sent to guest successfully');
 		}
 	}
 }

@@ -5,6 +5,7 @@ import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
 import { UI } from '../entities/UI';
 import { navigate } from '../../utils/router';
+import { Menu } from '../menu/Menu';
 
 export class PongNetworkManager {
 	private wsManager: WebSocketManager;
@@ -14,12 +15,14 @@ export class PongNetworkManager {
 	private hostName: string = '';
 	private guestName: string = '';
 	private gameId: string = '';
+	private menu: Menu | null = null;
 
 	private inputBuffer: Array<{input: number, timestamp: number}> = [];
 	private lastInputSent: number = 0;
 
-	constructor(game: PongGame | null, gameId: string) {
+	constructor(game: PongGame | null, gameId: string, menu?: Menu) {
 		this.game = game;
+		this.menu = menu;
 		this.gameId = gameId;
 		
 		this.wsManager = new WebSocketManager(
@@ -27,14 +30,12 @@ export class PongNetworkManager {
 			getWsUrl('/socket/game')
 		);
 
-		// Only set networkManager if game exists
 		if (this.game) {
 			this.game.networkManager = this.wsManager;
 		}
 		
 		this.setupHandlers();
 		
-		// Only connect immediately if we have a gameId (actual game)
 		if (gameId) {
 			this.connect(gameId);
 		}
@@ -195,8 +196,9 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_SUCCESS', (message) => {
-			console.log('🎮 Match found!', message);
-			
+
+			this.menu?.readyButton.setClicked(false);
+
 			this.gameId = message.gameId;
 			this.hostName = message.hostName;
 			this.guestName = message.guestName;
@@ -205,17 +207,10 @@ export class PongNetworkManager {
 			this.isHost = message.hostName === currentUsername;
 			this.playerNumber = this.isHost ? 1 : 2;
 			
-			console.log('🎮 Matchmaking successful:', {
-				gameId: this.gameId,
-				hostName: this.hostName,
-				guestName: this.guestName,
-				isHost: this.isHost
+			/* this.menu?.readyButton.setClicked(true); */
+			this.menu?.eventQueue.push({ 
+				type: 'MATCH_FOUND',
 			});
-			
-			// Update UI
-			this.showConnectionStatus('Match found! Transitioning to game...');
-			
-			this.transitionToGame();
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
@@ -225,7 +220,7 @@ export class PongNetworkManager {
 		});
 	}
 
-	private transitionToGame() {
+	private async transitionToGame() {
 		const params = new URLSearchParams({
 			gameId: this.gameId,
 			hostName: this.hostName,
@@ -263,8 +258,6 @@ export class PongNetworkManager {
 		} catch (error) {
 		console.error('Failed to connect to game:', error);
 		
-		// Show connection error in UI
-		this.showConnectionStatus(`Connection failed: ${error.message}`);
 		const statusDiv = document.getElementById('connection-status');
 		if (statusDiv) {
 			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
@@ -509,10 +502,9 @@ export class PongNetworkManager {
 			console.log('Starting matchmaking...');
 			
 			if (!this.wsManager.socket || this.wsManager.socket.readyState !== WebSocket.OPEN) {
-				await this.wsManager.connect(null); // Connect without gameId for matchmaking
+				await this.wsManager.connect(null);
 			}
 			
-			// Send matchmaking request
 			this.wsManager.send({
 				type: 'FIND_MATCH',
 				gameType: '1v1',
@@ -525,10 +517,24 @@ export class PongNetworkManager {
 		}
 	}
 
-	public cancelMatchmaking() {
+	public async cancelMatchmaking() {
 		this.wsManager.send({
 			type: 'CANCEL_MATCHMAKING',
 			playerId: sessionStorage.getItem('username')
 		});
+		this.disconnect();
+	}
+
+	public getIsHost(): boolean {
+		return this.isHost;
+	}
+	public getGameId(): string {
+		return this.gameId;
+	}
+	public getHostName(): string {
+		return this.hostName;
+	}
+	public getGuestName(): string {
+		return this.guestName;
 	}
 }

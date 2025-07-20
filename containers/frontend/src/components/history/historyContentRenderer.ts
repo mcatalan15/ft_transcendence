@@ -2,21 +2,18 @@ import { loadGames, GameHistory } from '../../utils/matchHistory/gameUtils';
 import { MatchTableComponent } from './table';
 import { Pagination } from '../generalComponents/Pagination';
 import i18n from '../../i18n';
+import { navigate } from '../../utils/router';
 
 export class HistoryContentRenderer {
-  private container: HTMLElement;
   private currentPage: number = 0;
   private gamesPerPage: number = 8;
   private totalGames: number = 0;
   private totalPages: number = 1;
   private matchTableComponent: MatchTableComponent;
   private paginationComponent: Pagination | null = null;
-  private username: string = '';
 
-  constructor(container: HTMLElement, username: string = '') {
-    this.container = container;
+  constructor(private userId: string) {
     this.matchTableComponent = new MatchTableComponent([]);
-	this.username = username;
   }
 
   render(): HTMLElement {
@@ -27,7 +24,7 @@ export class HistoryContentRenderer {
     const historySection = this.createHistorySection();
     mainContent.appendChild(historySection);
 
-    this.loadAndRenderGames(this.username);
+    this.loadAndRenderGames();
     return mainContent;
   }
 
@@ -52,7 +49,6 @@ export class HistoryContentRenderer {
     overlay.className = 'relative p-6 gap-6 flex flex-col items-center';
     
     overlay.style.backgroundColor = '#171717';
-    //overlay.style.border = '3px solid #FFFBEB';
     overlay.style.borderRadius = '0px';
     overlay.style.width = '100%';
     overlay.style.maxWidth = '1000px';
@@ -102,9 +98,10 @@ export class HistoryContentRenderer {
       });
 
       const rows = table.querySelectorAll('tr:not(:first-child)');
-      rows.forEach((row, index) => {
-        row.style.borderBottom = '1px solid #FFFBEB33';
-        const cells = row.querySelectorAll('td');
+      rows.forEach((row) => {
+        const tableRow = row as HTMLTableRowElement;
+        tableRow.style.borderBottom = '1px solid #FFFBEB33';
+        const cells = tableRow.querySelectorAll('td');
         cells.forEach(cell => {
           cell.style.padding = '12px';
           cell.style.color = '#FFFBEB';
@@ -115,7 +112,7 @@ export class HistoryContentRenderer {
 
   private async loadAndRenderGames(): Promise<void> {
     try {
-      const { games, totalGames: total } = await loadGames(this.currentPage, this.gamesPerPage, this.username);
+      const { games, totalGames: total } = await loadGames(this.currentPage, this.gamesPerPage, this.userId);
       
       this.totalGames = total;
       this.totalPages = Math.max(1, Math.ceil(this.totalGames / this.gamesPerPage));
@@ -155,14 +152,56 @@ export class HistoryContentRenderer {
   private updateTable(games: GameHistory[]): void {
     if (games.length === 0) {
       this.matchTableComponent.updateData([]);
+      
+      const tableContainer = document.querySelector('.w-full.flex.flex-col.items-center.gap-4');
+      if (tableContainer) {
+        const existingMessage = tableContainer.querySelector('.no-games-message');
+        if (existingMessage) {
+          existingMessage.remove();
+        }
+        
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'col-span-full text-center py-8 no-games-message';
+        emptyMessage.style.color = '#FFFBEB';
+        emptyMessage.style.fontFamily = '"Roboto Mono", monospace';
+        emptyMessage.style.fontSize = '14px';
+        emptyMessage.style.opacity = '0.7';
+        
+        const fullText = i18n.t('noGames', { ns: 'history' }) || 'No games found. Try playing Pong first!';
+        
+        const parts = fullText.split(/(Pong)/);
+        
+        parts.forEach((part: string) => {
+          if (part === 'Pong') {
+            const pongLink: HTMLAnchorElement = document.createElement('a');
+            pongLink.textContent = 'Pong';
+            pongLink.href = '#';
+            pongLink.className = 'text-amber-400 hover:underline cursor-pointer';
+            pongLink.style.color = '#fbbf24';
+            pongLink.onclick = (e: MouseEvent) => {
+              e.preventDefault();
+              navigate('/pong');
+            };
+            emptyMessage.appendChild(pongLink);
+          } else {
+            const textNode: Text = document.createTextNode(part);
+            emptyMessage.appendChild(textNode);
+          }
+        });
+        
+        tableContainer.appendChild(emptyMessage);
+      }
+      
       return;
     }
 
-    const currentUser = sessionStorage.getItem('username') || '';
+    const currentUser = window.location.pathname.split('/').filter(Boolean).pop() || '';
+
     const matchRows = games.map((game) => ({
       date: new Date(game.created_at).toLocaleString(),
       opponent: game.player1_name === currentUser ? game.player2_name : game.player1_name,
-      winner: game.winner_name || 'Draw',
+
+      winner: game.winner_name ? game.winner_name : `${i18n.t('draw', { ns: 'history'})}`,
       score: `${game.player1_score} - ${game.player2_score}`,
       mode: game.game_mode || 'Classic',
       contract: game.smart_contract_link

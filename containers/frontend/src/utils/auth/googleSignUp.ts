@@ -66,7 +66,7 @@ export function setupGoogleSignUp(): void {
                             navigate('/auth');
                         } else {
                             // Existing user with 2FA enabled - go to profile
-                            navigate('/profile');
+                            navigate('/home');
                         }
                     }, 100);
                     return;

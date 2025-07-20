@@ -377,7 +377,7 @@ export class ChatManager {
 
   private handleCommand(messageText: string): boolean {
     const inviteMatch = messageText.match(/^\/invite\s+@([a-zA-Z0-9-]{3,8})(?:\s+(.*))?$/i);
-    if (inviteMatch) {
+    if (inviteMatch && inviteMatch[1] !== sessionStorage.getItem('username')) {
       const targetUser = inviteMatch[1];
       this.sendGameInvitation(targetUser);
       return true;

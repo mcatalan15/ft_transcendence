@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 12:02:24 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:30:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
 
 // Import GameConfig
-import { GameConfig, GameData, PlayerData } from '../utils/GameConfig';
+import { GameConfig, GameData, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
 // Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
@@ -56,6 +56,7 @@ import { ButtonSystem } from '../systems/ButtonSystem';
 import { BallSpawner } from '../spawners/BallSpawner'
 import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
+import { TournamentManager } from '../../utils/TournamentManager';
 
 // Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
@@ -121,6 +122,10 @@ export class PongGame {
 	endGameOverlay!: EndgameOverlay;
 
 	isFirefox: boolean = false;
+
+	tournamentManager!: TournamentManager;
+	tournamentConfig: TournamentConfig | null = null;
+	hasSavedResults: boolean = false;
 
 	constructor(app: Application, config: GameConfig, language: string, isFirefox?: boolean) {
 		this.config = config;
@@ -313,8 +318,8 @@ export class PongGame {
 			},
 			
 			leftPlayer: {
-				name: this.leftPlayer.name || 'PLAYER 1',
-                id: this.leftPlayer.id || 'player1',
+                id: this.leftPlayer.id || "2",
+				name: this.leftPlayer.name || "guest",
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -326,8 +331,8 @@ export class PongGame {
 				ballchangesPicked: 0
 			},
 			rightPlayer: {
-				name: this.rightPlayer.name || 'PLAYER 2',
-                id: this.rightPlayer.id || 'player2',
+                id: this.rightPlayer.id || "2",
+				name: this.rightPlayer.name || "guest",
 				isDisconnected: false,
                 score: 0,
                 result: null,
@@ -341,6 +346,7 @@ export class PongGame {
 		};
 
 		console.log(this.data.createdAt);
+		console.log('Game data prepared:', this.data);
 	}
 
 	initSounds(): void {
@@ -469,20 +475,22 @@ export class PongGame {
 	}
 
 	async createEntities(): Promise<void> {
-		if (this.config.mode === 'online') {
+		if (this.config.mode === 'online' || this.config.variant === 'tournament') {
 			this.leftPlayer = { name: this.config.hostName || "Host Player" };
 			this.rightPlayer = { name: this.config.guestName || "Guest Player" };
 		} else {
 			this.leftPlayer = { name: sessionStorage.getItem('username') || "Player 1" };
 			if (this.config.variant === '1vAI') {
-				this.rightPlayer = { name: "AI-BOT" };
-			} else if (this.config.mode === 'local' && this.config.variant === '1v1') {
-				this.rightPlayer = { name: sessionStorage.getItem('opponent') || "GUEST" };
+				this.rightPlayer = { name: "BUTIBOT" };
+			} else if (this.config.variant === '1v1') {
+				this.rightPlayer = { name: this.config.guestName || "GUEST" };
 			}
 		}
 		
 		this.data.leftPlayer.name = this.leftPlayer.name;
+		this.data.leftPlayer.id = this.config.players![0].id;
     	this.data.rightPlayer.name = this.rightPlayer.name;
+		this.data.rightPlayer.id = this.config.players![1].id;
 
 		// Create Bounding Box
 		this.createBoundingBoxes();
@@ -717,6 +725,8 @@ export class PongGame {
 			// Placeholding avatars
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
 			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
+			{ name: 'avatarBotSquare', url: '/avatars/square/squareBot.png' },
+			{ name: 'avatarBotClassic', url: '/avatars/squareClassic/squareBotClassic.png' },
 		]);
 	}
 
@@ -794,6 +804,8 @@ export class PongGame {
 	}
 
 	async saveGameResults(): Promise<void> {
+		if (this.hasSavedResults || this.config.variant !== 'tournament') { return; }
+		
 		try {
 			console.log('Starting to save game results...');
 			console.log('Game data to send:', this.data);
@@ -815,7 +827,6 @@ export class PongGame {
 				createdAt: this.data.createdAt instanceof Date ? this.data.createdAt.toISOString() : this.data.createdAt,
 				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
 			};
-			// console.log('Making API call to /api/games/results');
 			console.log('Making API call to /api/games');
 			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
@@ -835,6 +846,7 @@ export class PongGame {
 			if (response.ok) {
 				const result = await response.json();
 				console.log('Game results saved successfully:', result);
+				this.hasSavedResults = true;
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);
@@ -868,7 +880,6 @@ export class PongGame {
 	}
 
 	// API
-
 	async getUserData(userId: string, token: string): Promise<PlayerData> {
 		try {
 			console.log(`Fetching user data for user ${userId} with token ${token}`);
@@ -902,6 +913,45 @@ export class PongGame {
 			return data.userData as PlayerData;
 		} catch (error) {
 			console.error('Error fetching user data:', error);
+			throw error;
+		}
+	}
+
+	async getUserId(username: string, token: string): Promise<string> {
+		try {
+			console.log(`Fetching user ID for username ${username} with token ${token}`);
+			if (!username || !token) {
+				throw new Error('Username and token are required to fetch user ID');
+			}
+	
+			const response = await fetch(getApiUrl('/games/getUserByUsername'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					username: username
+				}),
+				credentials: 'include'
+			});
+	
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('API error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+			}
+	
+			const data = await response.json();
+			
+			// Fix: Access the correct property path
+			console.log('User ID fetched successfully:', data.userData.id);
+	
+			// Fix: Return the correct property
+			return data.userData.id as string;
+		} catch (error) {
+			console.error('Error fetching user ID:', error);
+			return ("2");
 			throw error;
 		}
 	}
@@ -945,7 +995,7 @@ export class PongGame {
 		}
 	}
 
-	async cleanup(): Promise<void> {
+	async cleanup(stopTicker: boolean = true): Promise<void> {
 		try {            
 			console.log('Starting game cleanup...');
 			
@@ -957,10 +1007,12 @@ export class PongGame {
 			
 			if (this.networkManager) {
 				console.log('Disconnecting network manager...');
+				this.networkManager.cancelMatchmaking();
 				this.networkManager.disconnect();
+				this.networkManager.close();
 			}
 
-			if (this.app?.ticker?.started) {
+			if (stopTicker && this.app?.ticker?.started) {
 				this.app.ticker.stop();
 			}
 			

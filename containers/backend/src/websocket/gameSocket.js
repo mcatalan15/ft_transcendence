@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const ClassicGameSession = require('../../pong/ClassicGameSession'); 
+const ClassicGameSession = require('../../pong/ClassicGameSession');
 
 function setupGameWebSocket(wss, redisService, gameManager) {
 	const activeGames = new Map();
@@ -33,18 +33,18 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					case 'IDENTIFY':
 						playerId = data.playerId;
 						gameId = data.gameId || gameId;
-						
+
 						// Store the WebSocket connection for this player
 						playerConnections.set(playerId, ws);
-						
+
 						console.log(`Player ${playerId} identified for game ${gameId}`);
-					
+
 						ws.send(JSON.stringify({
 							type: 'IDENTIFY_SUCCESS',
 							playerId: playerId,
 							gameId: gameId
 						}));
-					
+
 						// Only attempt to join game if we have a valid gameId
 						if (gameId && gameId !== '' && gameId !== 'undefined' && gameId !== 'null') {
 							console.log(`Attempting to join game ${gameId} for player ${playerId}`);
@@ -69,7 +69,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					case 'PING':
 						ws.send(JSON.stringify({ type: 'PONG' }));
 						break;
-					
+
 					case 'FIND_MATCH':
 						console.log('Player requesting matchmaking:', data);
 						if (data.playerId) {
@@ -78,9 +78,13 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						await handleFindMatch(data, ws, redisService, playerConnections);
 						break;
 
+					case 'CANCEL_MATCHMAKING':
+						handleCancelMatchmaking(data, redisService, activeGames, playerConnections);
+						break;
+
 					default:
 						console.log('Unknown game message type:', data.type);
-					}
+				}
 			} catch (error) {
 				console.error('Error processing game message:', error);
 				console.error('Error stack:', error.stack);
@@ -96,16 +100,43 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 			if (playerId) {
 				playerConnections.delete(playerId);
-				console.log(`🧹 Removed connection for player ${playerId}`);
 			}
-			
-			handlePlayerDisconnect(playerId, gameId, activeGames);
+
+			handlePlayerDisconnect(playerId, gameId, activeGames, playerConnections);
 		});
 
 		ws.on('error', (error) => {
-			
+
 		});
 	});
+
+	async function handleCancelMatchmaking(data, redisService, activeGames, playerConnections) {
+		console.log(`Player ${data.playerId} cancelled matchmaking`);
+		if (data.playerId) {
+			playerConnections.delete(data.playerId);
+			try {
+				const waitingGames = await redisService.getWaitingGames('1v1');
+
+				for (const gameId of waitingGames) {
+					const gameData = await redisService.getGameData(gameId);
+
+					if (gameData && gameData.hostId === data.playerId) {
+						await redisService.deleteGame(gameId);
+					}
+				}
+				for (const [gameId, game] of activeGames.entries()) {
+					if (game.players && game.players.has(data.playerId)) {
+						game.players.delete(data.playerId);
+						if (game.players.size === 0) {
+							activeGames.delete(gameId);
+						}
+					}
+				}
+			} catch (error) {
+				console.error('Error cancelling matchmaking:', error);
+			}
+		}
+	}
 
 	async function handleJoinGame(data, ws, activeGames, redisService) {
 		const { gameId, playerId } = data;
@@ -124,8 +155,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 		try {
 			const gameData = await redisService.getGameData(gameId);
-			console.log('🔍 Game data from Redis:', gameData);
-			
+
 			if (!gameData) {
 				console.error('❌ Game not found in Redis');
 				ws.send(JSON.stringify({
@@ -135,19 +165,13 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 				return;
 			}
 
-			console.log(`🔍 Player ${playerId} attempting to join game ${gameId}`);
-			console.log('🔍 Current game status:', gameData.status);
-			console.log('🔍 Host ID:', gameData.hostId);
-			console.log('🔍 Guest ID:', gameData.guestId);
-
-			// Check if session exists
 			const sessionExists = activeGames.has(gameId);
 			console.log('🔍 Session exists in activeGames:', sessionExists);
 
 			if (!sessionExists) {
 				console.log(`🔍 Creating new ClassicGameSession for ${gameId}`);
 
-				const session = new ClassicGameSession(gameId, 
+				const session = new ClassicGameSession(gameId,
 					{ id: gameData.hostId, socket: null },
 					{ id: gameData.guestId, socket: null }
 				);
@@ -168,12 +192,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			}
 
 			const game = activeGames.get(gameId);
-			console.log('🔍 Game object:', {
-				hasSession: !!game.session,
-				playersCount: game.players.size,
-				gameDataStatus: game.gameData.status
-			});
-			
+
 			let playerNumber;
 			if (playerId === gameData.hostId) {
 				playerNumber = 1;
@@ -182,7 +201,6 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 				playerNumber = 2;
 				console.log('🔍 Player is GUEST (2)');
 			} else {
-				console.error('❌ Unauthorized player:', playerId);
 				ws.send(JSON.stringify({
 					type: 'ERROR',
 					message: 'Unauthorized player'
@@ -202,8 +220,6 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			};
 			game.session.addPlayer(playerObject);
 
-			console.log('🔍 Added player to session, sending GAME_JOINED...');
-
 			ws.send(JSON.stringify({
 				type: 'GAME_JOINED',
 				gameId: gameId,
@@ -213,35 +229,21 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 				gameState: game.session.getState()
 			}));
 
-			console.log(`✅ Player ${playerId} joined game ${gameId} as player ${playerNumber}`);
-
-			// Check if both players are now connected
 			const connectedPlayers = game.players.size;
 			console.log(`🔍 Game ${gameId} now has ${connectedPlayers}/2 players connected`);
 			console.log('🔍 Game status is:', gameData.status);
 
-			// Auto-start logic for matchmaking games
 			if (gameData.status === 'ready' && connectedPlayers === 2) {
-				console.log(`🚀 === AUTO-START CONDITIONS MET ===`);
-				console.log(`🚀 Game ${gameId} is ready from matchmaking with both players connected!`);
-				
-				// Mark all players as ready
 				game.players.forEach((player, pid) => {
 					console.log(`🚀 Marking player ${pid} as ready`);
 					player.ready = true;
 				});
-				
-				console.log(`🚀 Starting game ${gameId} immediately...`);
+
 				startGame(gameId, activeGames);
 			} else {
 				console.log(`⏳ Not auto-starting: status=${gameData.status}, players=${connectedPlayers}/2`);
 			}
-
-			console.log('🔍 === handleJoinGame END ===');
-
 		} catch (error) {
-			console.error('❌ Error in handleJoinGame:', error);
-			console.error('❌ Error stack:', error.stack);
 			ws.send(JSON.stringify({
 				type: 'ERROR',
 				message: 'Failed to join game'
@@ -280,15 +282,12 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 	}
 
 	function startGame(gameId, activeGames) {
-		console.log('🎮 === startGame START ===');
-		console.log('🎮 Starting game:', gameId);
-		
+
 		const game = activeGames.get(gameId);
-		if (!game) {
-			console.error('❌ Game not found in activeGames');
+		if (!game || game.session.gameStarted) {
 			return;
 		}
-		
+
 		if (game.session.gameStarted) {
 			console.log('⚠️ Game already started');
 			return;
@@ -344,32 +343,49 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		const game = activeGames.get(gameId);
 		if (!game) return;
 
-		console.log(`🏁 Ending game ${gameId}`);
-
 		game.session.endGame();
 
 		setTimeout(() => {
 			activeGames.delete(gameId);
-			console.log(`🧹 Cleaned up game ${gameId}`);
 		}, 5000);
 	}
 
-	function handlePlayerDisconnect(playerId, gameId, activeGames) {
-		if (!gameId || !playerId) return;
+	function handlePlayerDisconnect(playerId, gameId, activeGames, playerConnections = null) {
+		if (!playerId) return;
 
-		console.log(`❌ Player ${playerId} disconnected from game ${gameId}`);
+		console.log(`Handling disconnect for player ${playerId}`);
 
-		const game = activeGames.get(gameId);
-		if (!game) return;
+		// Remove from player connections if provided
+		if (playerConnections) {
+			playerConnections.delete(playerId);
+		}
 
-		game.players.delete(playerId);	
+		// Find and clean up ALL games this player was in
+		const gamesToDelete = [];
 
-		broadcastToGame(gameId, {
-		type: 'PLAYER_DISCONNECTED',
-		playerId: playerId
-		}, activeGames);
+		for (const [currentGameId, game] of activeGames.entries()) {
+			if (game.players && game.players.has(playerId)) {
+				console.log(`Found player ${playerId} in game ${currentGameId}`);
 
-		endGame(gameId, activeGames);
+				// Remove player from this game
+				game.players.delete(playerId);
+
+				// Broadcast disconnect message to remaining players
+				broadcastToGame(currentGameId, {
+					type: 'PLAYER_DISCONNECTED',
+					playerId: playerId
+				}, activeGames);
+
+				// Mark game for cleanup
+				gamesToDelete.push(currentGameId);
+			}
+		}
+
+		// End all games the player was in
+		for (const gameIdToDelete of gamesToDelete) {
+			console.log(`Ending game ${gameIdToDelete} due to player ${playerId} disconnect`);
+			endGame(gameIdToDelete, activeGames);
+		}
 	}
 
 	function broadcastToGame(gameId, message, activeGames) {
@@ -380,11 +396,8 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			type: message.type || 'UNKNOWN',
 			...message
 		};
-		
+
 		const messageStr = JSON.stringify(messageToSend);
-		
-		console.log(`📡 Broadcasting to game ${gameId}:`, messageToSend.type);
-		console.log(`📡 Full message:`, messageStr);
 		
 		game.players.forEach((player, playerId) => {
 			if (player.ws && player.ws.readyState === WebSocket.OPEN) {
@@ -400,7 +413,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 	async function handleFindMatch(data, ws, redisService, playerConnections) {
 		const { playerId, gameType = '1v1' } = data;
-		
+
 		if (!playerId) {
 			ws.send(JSON.stringify({
 				type: 'ERROR',
@@ -410,27 +423,19 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		}
 
 		try {
-			console.log(`🔍 Finding match for player ${playerId}, game type: ${gameType}`);
-			
+			console.log(`Finding match for player ${playerId}, game type: ${gameType}`);
+
 			const waitingGames = await redisService.getWaitingGames(gameType);
-			console.log('🎮 Found waiting games:', waitingGames);
 
 			if (waitingGames && waitingGames.length > 0) {
 				const gameId = waitingGames[0];
 				const gameData = await redisService.getGameData(gameId);
 
-				if (!gameData || gameData.hostId === playerId || gameData.guestId === playerId) {
-					console.error(`❌ Invalid game data for game ${gameId} or player ${playerId} already in game`);
-					return;
-				}
-
-				if (gameData && !gameData.guestId) {
+				if (gameData && !gameData.guestId && gameData.hostId !== playerId) {
 					gameData.guestId = playerId;
 					gameData.status = 'ready';
 					await redisService.setGameData(gameId, gameData);
-					
-					console.log(`🎮 Player ${playerId} joined game ${gameId} as guest`);
-					
+
 					ws.send(JSON.stringify({
 						type: 'MATCHMAKING_SUCCESS',
 						gameId: gameId,
@@ -438,8 +443,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						guestName: gameData.guestId,
 						role: 'guest'
 					}));
-					
-					// Notify the waiting host player
+
 					const hostConnection = playerConnections.get(gameData.hostId);
 					if (hostConnection && hostConnection.readyState === 1) {
 						hostConnection.send(JSON.stringify({
@@ -451,30 +455,27 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						}));
 						console.log(`✅ Notified host ${gameData.hostId} that guest ${gameData.guestId} joined`);
 					}
+					return;
 				}
-			} else {
-				// Create new game and wait
-				const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-				const gameData = {
-					gameId: gameId,
-					hostId: playerId,
-					guestId: null,
-					status: 'waiting',
-					gameType: gameType,
-					createdAt: new Date().toISOString()
-				};
-				
-				await redisService.setGameData(gameId, gameData);
-				
-				console.log(`🎮 Player ${playerId} created new game ${gameId} and is waiting`);
-				
-				// Send waiting response
-				ws.send(JSON.stringify({
-					type: 'MATCHMAKING_WAITING',
-					gameId: gameId,
-					message: 'Waiting for opponent...'
-				}));
 			}
+
+			const gameId = `game_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+			const gameData = {
+				gameId: gameId,
+				hostId: playerId,
+				guestId: null,
+				status: 'waiting',
+				gameType: gameType,
+				createdAt: new Date().toISOString()
+			};
+
+			await redisService.setGameData(gameId, gameData);
+
+			ws.send(JSON.stringify({
+				type: 'MATCHMAKING_WAITING',
+				gameId: gameId,
+				message: 'Waiting for opponent...'
+			}));
 
 		} catch (error) {
 			console.error('Matchmaking error:', error);

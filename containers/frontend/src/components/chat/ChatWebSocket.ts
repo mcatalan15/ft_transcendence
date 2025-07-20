@@ -1,6 +1,7 @@
 import { ChatMessage, MessageType } from '../../types/chat.types';
 import { navigate } from '../../utils/router';
 import { getWsUrl } from '../../config/api';
+import i18n from '../../i18n';
 
 export class ChatWebSocket {
     private socket: WebSocket;
@@ -34,21 +35,19 @@ export class ChatWebSocket {
         });
 
         this.socket.addEventListener('close', () => {
-            this.notifySystemMessage('Disconnected from chat server', MessageType.SYSTEM);
+            this.notifySystemMessage(i18n.t('serverDisconnection', { ns: 'chat' }), MessageType.SYSTEM);
         });
 
         this.socket.addEventListener('error', (e) => {
             console.error('WebSocket error', e);
-            this.notifySystemMessage('Connection error', MessageType.SYSTEM);
+            this.notifySystemMessage(i18n.t('connectionError', { ns: 'chat' }), MessageType.SYSTEM);
         });
     }
 
     private handleIncomingMessage(data: any) {
-        // Handle special message types
         if (data.type === 'game_invite_accepted' && data.action === 'navigate_to_pong') {
-            this.notifySystemMessage(`Game invitation accepted! Navigating to Pong...`, MessageType.GAME);
+            this.notifySystemMessage(i18n.t('invitationAccepted', { ns: 'chat' }), MessageType.GAME);
             setTimeout(() => {
-                // Construct URL with player names
                 const urlParams = new URLSearchParams({
                     invitation: 'true',
                     inviteId: data.inviteId,
@@ -62,11 +61,10 @@ export class ChatWebSocket {
         }
         
         if (data.type === 'game_invite_declined') {
-            this.notifySystemMessage(`${data.username} declined your game invitation.`, MessageType.GAME);
+            this.notifySystemMessage(data.username + i18n.t('invitationDeclined', { ns: 'chat' }), MessageType.GAME);
             return;
         }
 
-        // Create ChatMessage for normal messages
         const message: ChatMessage = {
             id: data.id || Date.now().toString(),
             type: data.type as MessageType,
@@ -79,7 +77,6 @@ export class ChatWebSocket {
             gameRoomId: data.gameRoomId
         };
 
-        // Filter game invites for current user
         if (message.type === MessageType.GAME_INVITE) {
             const currentUser = sessionStorage.getItem('username');
             if (message.targetUser !== currentUser) {
@@ -108,7 +105,7 @@ export class ChatWebSocket {
 
     sendMessage(message: any): boolean {
         if (this.socket.readyState !== WebSocket.OPEN) {
-            this.notifySystemMessage('Not connected to server', MessageType.SYSTEM);
+            this.notifySystemMessage(i18n.t('notConnected', { ns: 'chat' }), MessageType.SYSTEM);
             return false;
         }
         
@@ -124,13 +121,13 @@ export class ChatWebSocket {
             type: MessageType.GAME_INVITE,
             username: username,
             targetUser: targetUser,
-            content: `${username} wants to challenge you to a Pong match!`,
+            content: username + i18n.t('userChallenges', { ns: 'chat' }),
             inviteId: inviteId,
             timestamp: new Date().toISOString()
         };
 
         if (this.sendMessage(inviteMessage)) {
-            this.notifySystemMessage(`Game invitation sent to @${targetUser}`, MessageType.GAME);
+            this.notifySystemMessage(i18n.t('invitationSentTo', { ns: 'chat' }) + targetUser, MessageType.GAME);
         }
     }
 
@@ -141,14 +138,14 @@ export class ChatWebSocket {
             type: MessageType.GAME_INVITE_RESPONSE,
             username: username,
             targetUser: fromUser,
-            content: `${username} accepted the game invitation!`,
+            content: username + i18n.t('userAcceptsInvitation', { ns: 'chat' }),
             inviteId: inviteId,
             action: 'accept',
             timestamp: new Date().toISOString()
         };
         
         this.sendMessage(responseMessage);
-        this.notifySystemMessage(`Accepting game invitation from ${fromUser}...`, MessageType.GAME);
+        this.notifySystemMessage(i18n.t('acceptingInvitation', { ns: 'chat' }) + fromUser, MessageType.GAME);
     }
 
     declineGameInvite(inviteId: string, fromUser: string) {
@@ -158,14 +155,14 @@ export class ChatWebSocket {
             type: MessageType.GAME_INVITE_RESPONSE,
             username: username,
             targetUser: fromUser,
-            content: `${username} declined the game invitation.`,
+            content: username + i18n.t('invitationDeclined', { ns: 'chat' }),
             inviteId: inviteId,
             action: 'decline',
             timestamp: new Date().toISOString()
         };
         
         this.sendMessage(responseMessage);
-        this.notifySystemMessage(`Declined game invitation from ${fromUser}`, MessageType.GAME);
+        this.notifySystemMessage(i18n.t('decliningInvitation', { ns: 'chat' }) + fromUser, MessageType.GAME);
     }
 
     isConnected(): boolean {
