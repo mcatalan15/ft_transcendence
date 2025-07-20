@@ -289,7 +289,6 @@ export class ProfileContentRenderer {
       });
 
       if (!response.ok) {
-        console.error('friends data:', data);
         throw new Error('Failed to update friend status');
       }
 
