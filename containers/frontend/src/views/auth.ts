@@ -19,16 +19,8 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	await i18n.loadNamespaces('auth');
   	await i18n.changeLanguage(i18n.language);
 
-	console.log('Hola!');
 	const urlParams = new URLSearchParams(window.location.search);
 	const fromPage = urlParams.get('from');
-	console.log('Current URL:', window.location.href);
-	console.log('URL params:', urlParams.toString());
-	console.log('fromPage value:', fromPage);
-	console.log('UserId:', sessionStorage.getItem('userId'));
-	console.log('Username:', sessionStorage.getItem('username'));
-/* 	console.log('Email:', sessionStorage.getItem('email')); */
-	// console.log('Auth Token:', sessionStorage.getItem('token') ? 'Present' : 'Missing');
 
 	const authDiv = document.createElement('div');
 	authDiv.className = 'h-screen flex items-center justify-center bg-neutral-900';
@@ -36,8 +28,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 	const actualUserId = sessionStorage.getItem('userId');
 	const actualUsername = sessionStorage.getItem('username');
 	const actualEmail = sessionStorage.getItem('email');
-	// let actual2FA = sessionStorage.getItem('twoFAEnabled');
-	// console.log(`[auth.ts] twoFAEnabled: ${actual2FA}`);
 
 	if (!actualUserId || !actualUsername || !actualEmail) {
 		console.error('Missing user data in sessionStorage, redirecting to signin');
@@ -45,14 +35,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 		return;
 	}
 
-	// Validate 2FA value - should be "0" (enabled) or "1" (disabled)
-	// if (actual2FA !== '0' && actual2FA !== '1') {
-		// console.warn('Invalid twoFAEnabled value, defaulting to 0 (disabled)');
-		// actual2FA = '0';
-	// }
-
-	// Check if 2FA is enabled (0 = enabled, needs verification)
-	console.log(`Checking 2FA status using /api/auth/status/${actualUserId}`);
 	let actual2FA = '0';
 	try {
 		const response = await fetch(getApiUrl(`/auth/status/${actualUserId}`), {
@@ -63,8 +45,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 			credentials: 'include',
 		});
 
-		console.log('Fetching auth status from API...');
-		console.log(`api/auth/status response: ${response.status} ${response.statusText}`);
 		if (response.ok) {
 			const data = await response.json();
 
@@ -74,20 +54,15 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 
 			// Update the actual2FA variable based on API response
 			actual2FA = twoFAEnabled  === true ? '1' : '0';
-			console.log('[auth.ts] actual2FA:', actual2FA);
-			console.log('[auth.ts] Type of actual2FA:', typeof actual2FA);
 		} else {
 			console.error('Failed to fetch 2FA status:', response.statusText);
-			// Fall back to sessionStorage value if API fails
 		}
 
 	} catch (error) {
 		console.error('Error calling 2FA status API:', error);
-		// Fall back to sessionStorage value if API fails
 	}
 
 	if (actual2FA === '1') {
-		console.log('Showing signin with 2FA verification');
 		const twoFaBox = document.createElement('div');
 		twoFaBox.className = 'bg-neutral-800 border-2 border-amber-50 p-8 max-w-md w-full mx-auto';
 		twoFaBox.innerHTML = `
@@ -164,8 +139,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 			}
 		});
 	} else {
-		// 2FA is disabled (0) - show setup
-		console.log('Showing signup success and initiating 2FA setup');
 		const message = document.createElement('p');
 		message.textContent = i18n.t('2FASetupMessage', { ns: 'auth' });
 		authDiv.appendChild(message);
@@ -242,7 +215,6 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				const data: TwoFaSetupResponse = await response.json();
 				qrCodeDisplay.innerHTML = `<img src="${data.qrCodeUrl}" alt="${i18n.t('QRCode', { ns: 'auth' })}" width="200" height="200"/>`;
 				secretKeySpan.textContent = data.secret;
-				console.log('2FA Setup Data:', data);
 			} catch (error: any) {
 				console.error('Failed to load QR code: ', error);
 				qrCodeDisplay.textContent = `${i18n.t('error.failedLoading', { ns: 'auth' })} ${error.message}`;
@@ -277,20 +249,17 @@ export async function showAuth(container: HTMLElement): Promise<void> {
 				});
 
 				const data: TwoFaVerifyResponse & { token?: string, twoFAEnabled?: number } = await response.json();
-				console.log('Frontend (Setup) received from /api/auth/verify:', data);
 
 				if (response.ok && data.verified) {
 					verificationStatus.textContent = i18n.t('verificationSuccessProceed', { ns: 'auth' });
 					verificationStatus.style.color = 'green';
 					if (data.token) {
 						sessionStorage.setItem('token', data.token);
-						console.log('Updated authToken in sessionStorage (Setup):', data.token ? 'Present' : 'Missing');
 					}
-					// Set to "0" (enabled) after successful verification
 					sessionStorage.setItem('twoFAEnabled', '1');
-					console.log('Updated twoFAEnabled in sessionStorage to "1" (enabled) after setup.');
 					tokenInput.disabled = true;
-					window.location.href = '/home';
+					navigate('/home');
+					return;
 				} else {
 					verificationStatus.textContent = i18n.t(data.message || 'error.verificationFailed', { ns: 'auth' });
 					verificationStatus.style.color = 'red';
