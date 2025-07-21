@@ -131,6 +131,7 @@ function createChatMainContent() {
     bg-neutral-800 text-amber-50 border border-amber-50/30
     px-3 py-2 text-sm min-w-[100px]
   `.replace(/\s+/g, ' ').trim();
+  typeSelector.id = 'message-type';
   typeSelector.name = 'messageType';
   
   Object.assign(typeSelector.style, {
