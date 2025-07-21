@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 11:34:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:52:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,29 +55,6 @@ export class GlossaryTexts extends Entity {
 
     private getColumnDataEN() {
         return [
-            // Column 1A: Powerups Title (Left)
-            /* {
-                tag: 'powerupsTitle',
-                text: "----------------------[ POWERUPS ]----------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Powerups Content (Left)
             {
                 tag: 'powerupsContent',
                 text: 
@@ -103,29 +80,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 2A: Powerdowns Title (Center)
-            /* {
-                tag: 'powerdownsTitle',
-                text: "---------------------[ POWERDOWNS ]---------------------" ,
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Powerdowns Content (Center)
             {
                 tag: 'powerdownsContent',
                 text: 
@@ -151,29 +105,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 3A: Ball Changes Title (Right)
-            /* {
-                tag: 'ballchangesTitle',
-                text: "--------------------[ BALL CHANGES ]--------------------",
-                x: 1200,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 3B: Ball Changes Content (Right)
             {
                 tag: 'ballchangesContent',
                 text: 
@@ -199,29 +130,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 4A: Affectations title (Down - Left)
-            /* {
-                tag: 'affectationsTitle',
-                text: "--------------------[ AFFECTATIONS ]--------------------",
-                x: 120,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 4B: Affectations content (Down - Left)
             {
                 tag: 'affectationsContent',
                 text: 
@@ -245,29 +153,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 5A: Wall shapes (Down - center/right)
-            /* {
-                tag: 'wallShapesTitle',
-                text: "----------------------------------------------------[ WALL FIGURES ]----------------------------------------------------",
-                x: 650,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1000,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 5B: Wall shapes (Down - center/right)
             {
                 tag: 'wallShapesContent',
                 text: 
@@ -295,29 +180,6 @@ export class GlossaryTexts extends Entity {
 
     private getColumnDataES() {
         return [
-            // Column 1A: Powerups Title (Left)
-            /* {
-                tag: 'powerupsTitle',
-                text: "----------------------[ POWERUPS ]----------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Powerups Content (Left)
             {
                 tag: 'powerupsContent',
                 text: 
@@ -343,29 +205,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 2A: Powerdowns Title (Center)
-            /* {
-                tag: 'powerdownsTitle',
-                text: "---------------------[ POWERDOWNS ]---------------------" ,
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Powerdowns Content (Center)
             {
                 tag: 'powerdownsContent',
                 text: 
@@ -391,29 +230,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 3A: Ball Changes Title (Right)
-            /* {
-                tag: 'ballchangesTitle',
-                text: "------------------[ CAMBIOS DE PELOTA ]-----------------",
-                x: 1200,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 3B: Ball Changes Content (Right)
             {
                 tag: 'ballchangesContent',
                 text: 
@@ -439,29 +255,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 4A: Affectations title (Down - Left)
-            /* {
-                tag: 'affectationsTitle',
-                text: "--------------------[ AFECTACIONES ]--------------------",
-                x: 120,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 4B: Affectations content (Down - Left)
             {
                 tag: 'affectationsContent',
                 text: 
@@ -485,29 +278,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 5A: Wall shapes (Down - center/right)
-            /* {
-                tag: 'wallShapesTitle',
-                text: "------------------------------------------------[ FIGURAS DE LOS MUROS ]------------------------------------------------",
-                x: 650,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1000,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 5B: Wall shapes (Down - center/right)
             {
                 tag: 'wallShapesContent',
                 text: 
@@ -535,29 +305,7 @@ export class GlossaryTexts extends Entity {
 
     private getColumnDataFR() {
         return [
-            // Column 1A: Powerups Title (Left)
-            /* {
-                tag: 'powerupsTitle',
-                text: "----------------------[ POWERUPS ]----------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
 
-            // Column 1B: Powerups Content (Left)
             {
                 tag: 'powerupsContent',
                 text: 
@@ -583,29 +331,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 2A: Powerdowns Title (Center)
-            /* {
-                tag: 'powerdownsTitle',
-                text: "---------------------[ POWERDOWNS ]---------------------" ,
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Powerdowns Content (Center)
             {
                 tag: 'powerdownsContent',
                 text: 
@@ -631,29 +356,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 3A: Ball Changes Title (Right)
-            /* {
-                tag: 'ballchangesTitle',
-                text: "----------------[ CHANGEMENTS DE BALLE ]----------------",
-                x: 1200,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 3B: Ball Changes Content (Right)
             {
                 tag: 'ballchangesContent',
                 text: 
@@ -679,29 +381,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 4A: Affectations title (Down - Left)
-            /* {
-                tag: 'affectationsTitle',
-                text: "--------------------[ AFFECTATIONS ]--------------------",
-                x: 120,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 4B: Affectations content (Down - Left)
             {
                 tag: 'affectationsContent',
                 text: 
@@ -725,29 +404,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 5A: Wall shapes (Down - center/right)
-            /* {
-                tag: 'wallShapesTitle',
-                text: "--------------------------------------------------[ FIGURES MURALES ]---------------------------------------------------",
-                x: 650,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1000,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 5B: Wall shapes (Down - center/right)
             {
                 tag: 'wallShapesContent',
                 text: 
@@ -775,29 +431,6 @@ export class GlossaryTexts extends Entity {
 
     private getColumnDataCAT() {
         return [
-            // Column 1A: Powerups Title (Left)
-            /* {
-                tag: 'powerupsTitle',
-                text: "----------------------[ POWERUPS ]----------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Powerups Content (Left)
             {
                 tag: 'powerupsContent',
                 text: 
@@ -823,29 +456,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 2A: Powerdowns Title (Center)
-            /* {
-                tag: 'powerdownsTitle',
-                text: "---------------------[ POWERDOWNS ]---------------------" ,
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Powerdowns Content (Center)
             {
                 tag: 'powerdownsContent',
                 text: 
@@ -871,29 +481,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 3A: Ball Changes Title (Right)
-            /* {
-                tag: 'ballchangesTitle',
-                text: "-------------------[ CANVIS DE BOLA ]-------------------",
-                x: 1200,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 3B: Ball Changes Content (Right)
             {
                 tag: 'ballchangesContent',
                 text: 
@@ -919,29 +506,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 4A: Affectations title (Down - Left)
-            /* {
-                tag: 'affectationsTitle',
-                text: "---------------------[ AFECTACIONS ]--------------------",
-                x: 120,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 4B: Affectations content (Down - Left)
             {
                 tag: 'affectationsContent',
                 text: 
@@ -965,29 +529,6 @@ export class GlossaryTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 5A: Wall shapes (Down - center/right)
-            /* {
-                tag: 'wallShapesTitle',
-                text: "-----------------------------------------------[ FIGURES DE LAS PARETS ]------------------------------------------------",
-                x: 650,
-                y: 470,
-                style: {
-                    fill: GAME_COLORS.red,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1000,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 5B: Wall shapes (Down - center/right)
             {
                 tag: 'wallShapesContent',
                 text: 

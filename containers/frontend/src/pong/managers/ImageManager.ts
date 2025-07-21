@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:06:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:06:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:36:18 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,8 +144,6 @@ export class ImageManager {
         });
         this.headerImages = [];
         
-        this.assets.clear();
-        
-        console.log('ImageManager cleanup completed');
+        this.assets.clear();       
     }
 }

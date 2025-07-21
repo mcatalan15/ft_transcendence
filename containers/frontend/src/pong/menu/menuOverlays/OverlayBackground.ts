@@ -1,6 +1,17 @@
-// Update OverlayBackground.ts to support animation
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   OverlayBackground.ts                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 21:03:27 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 21:03:41 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 import { Graphics } from "pixi.js";
-import { Menu } from "../Menu";
 import { Entity } from "../../engine/Entity";
 import { RenderComponent } from "../../components/RenderComponent";
 import { AnimationComponent } from "../../components/AnimationComponent";
@@ -36,13 +47,11 @@ export class OverlayBackground extends Entity {
     }
 
     public fadeIn(): void {
-        // Force reset before starting animation
         this.targetAlpha = 1;
         this.animationProgress = 0;
-        this.currentAlpha = 0; // Ensure we start from 0
+        this.currentAlpha = 0;
         this.isAnimating = true;
-        
-        // Ensure graphic starts from 0
+
         const render = this.getComponent('render') as RenderComponent;
         if (render && render.graphic) {
             render.graphic.alpha = 0;
@@ -56,19 +65,15 @@ export class OverlayBackground extends Entity {
     }
 
     public resetAnimationState(): void {
-        // Reset all animation properties to initial state
         this.targetAlpha = 0;
         this.currentAlpha = 0;
         this.animationProgress = 0;
         this.isAnimating = false;
         
-        // Ensure graphic alpha is also reset
         const render = this.getComponent('render') as RenderComponent;
         if (render && render.graphic) {
             render.graphic.alpha = 0;
         }
-        
-        console.log("OverlayBackground animation state reset");
     }
 
     public updateAnimation(deltaTime: number): void {

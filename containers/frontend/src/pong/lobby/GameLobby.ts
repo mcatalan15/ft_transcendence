@@ -18,14 +18,12 @@ export class GameLobby {
 
   async createGame(): Promise<void> {
     try {
-      // Create background
       const bg = new Graphics();
       bg.beginFill(0x000000, 0.8);
       bg.drawRect(0, 0, 1800, 750);
       bg.endFill();
       this.container.addChild(bg);
 
-      // Show "Creating game..." message
       const creatingText = new Text('Creating game...', {
         fontFamily: 'Arial',
         fontSize: 48,
@@ -36,18 +34,14 @@ export class GameLobby {
       creatingText.position.set(900, 300);
       this.container.addChild(creatingText);
 
-      // Set up handlers
       this.setupLobbyHandlers();
 
-      // Create game on server
       const response = await this.wsManager.createGame();
       this.gameId = response.gameId;
       this.isHost = true;
 
-      // Update UI with game ID
       creatingText.text = `Game Created!\nGame ID: ${this.gameId}\nWaiting for opponent...`;
 
-      // Add copy button
       const copyButton = this.createButton('Copy Game ID', 900, 400, () => {
         navigator.clipboard.writeText(this.gameId);
       });
@@ -61,14 +55,12 @@ export class GameLobby {
 
   async joinGame(gameId: string): Promise<void> {
     try {
-      // Create background
       const bg = new Graphics();
       bg.beginFill(0x000000, 0.8);
       bg.drawRect(0, 0, 1800, 750);
       bg.endFill();
       this.container.addChild(bg);
 
-      // Show "Joining game..." message
       const joiningText = new Text('Joining game...', {
         fontFamily: 'Arial',
         fontSize: 48,
@@ -79,10 +71,8 @@ export class GameLobby {
       joiningText.position.set(900, 375);
       this.container.addChild(joiningText);
 
-      // Set up handlers
       this.setupLobbyHandlers();
 
-      // Join game on server
       await this.wsManager.joinGame(gameId);
       this.gameId = gameId;
       this.isHost = false;
@@ -95,17 +85,13 @@ export class GameLobby {
 
   private setupLobbyHandlers(): void {
     this.wsManager.registerHandler('GAME_CREATED', (message) => {
-      console.log('Game created successfully');
     });
 
     this.wsManager.registerHandler('PLAYER_JOINED', (message) => {
-      console.log('Player joined the game');
-      // Update UI to show both players ready
       this.showBothPlayersReady();
     });
 
     this.wsManager.registerHandler('GAME_START', () => {
-      console.log('Game starting!');
       this.container.removeChildren();
       this.onGameStart(this.gameId);
     });

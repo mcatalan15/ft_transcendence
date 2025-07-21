@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:37:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:58:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:37:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,5 @@ export class WorldManager {
 		];
 		
 		this.worldNames = this.createWorldNames();
-		
-		console.log('WorldManager cleanup completed');
 	}
 }

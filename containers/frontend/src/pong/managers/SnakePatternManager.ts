@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:08:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/27 17:42:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:37:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,14 @@ export class SnakePatternManager {
 		const heightOffset = game.height / 6.5;
 		const maxHorizontalDistance = game.width / 4;
 		const PATH_BREAK = { x: NaN, y: NaN }; 
-	
-		// Top rectangle starts at leftmost position
+
 		const topMovementPhase = position * Math.PI / 25 - Math.PI / 2;
 		const topHorizontalOffset = Math.sin(topMovementPhase) * maxHorizontalDistance;
-		
-		// Bottom rectangle starts at rightmost position (opposite phase)
+
 		const bottomMovementPhase = position * Math.PI / 25 + Math.PI / 2;
 		const bottomHorizontalOffset = Math.sin(bottomMovementPhase) * maxHorizontalDistance;
 		
 		const lanePositions = [
-			// Top rectangle
 			{ x: -longSide + topHorizontalOffset, y: -shortSide / 2 - heightOffset},
 			{ x: -longSide + topHorizontalOffset, y: shortSide / 2 - heightOffset},
 			{ x: longSide + topHorizontalOffset, y: shortSide / 2  - heightOffset},
@@ -38,7 +35,6 @@ export class SnakePatternManager {
 	
 			PATH_BREAK,
 	
-			// Bottom rectangle
 			{ x: -longSide + bottomHorizontalOffset, y: -shortSide / 2 + heightOffset},
 			{ x: -longSide + bottomHorizontalOffset, y: shortSide / 2 + heightOffset},
 			{ x: bottomHorizontalOffset, y: (2 * shortSide) + heightOffset},
@@ -48,8 +44,7 @@ export class SnakePatternManager {
 		
 		return lanePositions;
 	}
-	
-	// Version 4: Top rectangle starts right, bottom rectangle starts left
+
 	static createViperPattern(game: PongGame, position: number) {
 		const longSide = 300;
 		const shortSide = 50;
@@ -57,16 +52,13 @@ export class SnakePatternManager {
 		const maxHorizontalDistance = game.width / 4;
 		const PATH_BREAK = { x: NaN, y: NaN }; 
 	
-		// Top rectangle starts at rightmost position
 		const topMovementPhase = position * Math.PI / 25 + Math.PI / 2;
 		const topHorizontalOffset = Math.sin(topMovementPhase) * maxHorizontalDistance;
 		
-		// Bottom rectangle starts at leftmost position (opposite phase)
 		const bottomMovementPhase = position * Math.PI / 25 - Math.PI / 2;
 		const bottomHorizontalOffset = Math.sin(bottomMovementPhase) * maxHorizontalDistance;
 		
 		const lanePositions = [
-			// Top rectangle
 			{ x: -longSide + topHorizontalOffset, y: -shortSide / 2 - heightOffset},
 			{ x: -longSide + topHorizontalOffset, y: shortSide / 2 - heightOffset},
 			{ x: topHorizontalOffset, y: (2 * shortSide) - heightOffset},
@@ -75,7 +67,6 @@ export class SnakePatternManager {
 	
 			PATH_BREAK,
 	
-			// Bottom rectangle
 			{ x: -longSide + bottomHorizontalOffset, y: -shortSide / 2 + heightOffset},
 			{ x: -longSide + bottomHorizontalOffset, y: shortSide / 2 + heightOffset},
 			{ x: longSide + bottomHorizontalOffset, y: shortSide / 2  + heightOffset},

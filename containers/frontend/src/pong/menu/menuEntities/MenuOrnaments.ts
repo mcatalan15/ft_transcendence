@@ -6,20 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 14:18:30 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:41:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Container, Text, FederatedPointerEvent } from 'pixi.js';
+import { Graphics, Container } from 'pixi.js';
 import { Entity } from '../../engine/Entity';
 import { RenderComponent } from '../../components/RenderComponent';
-import { AnimationComponent } from '../../components/AnimationComponent';
-import { GAME_COLORS} from '../../utils/Types';
 import { Menu } from '../Menu';
-import { getButtonPoints, MenuButtonConfig } from '../../utils/MenuUtils';
 import { getThemeColors } from '../../utils/Utils';
-import { isMenuButton } from '../../utils/Guards';
-import { MenuButton } from '../menuButtons/MenuButton';
 
 interface OrnamentConfig {
 	layer: string;
@@ -249,7 +244,6 @@ export class MenuOrnament extends Entity {
         return this.config.color;
     }
 
-	// Getter methods for accessing ornament properties
 	public getLayer(): string {
 		return this.config.layer;
 	}
@@ -266,7 +260,6 @@ export class MenuOrnament extends Entity {
 		return this.config.position;
 	}
 
-	// Method to update ornament configuration
 	public updateConfig(newConfig: Partial<OrnamentConfig>): void {
 		this.config = { ...this.config, ...newConfig };
 		this.ornamentGraphic = this.createOrnament();

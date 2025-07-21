@@ -6,12 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:47:20 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/20 09:25:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:42:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Container, Point } from 'pixi.js'
-import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, MotionBlurFilter, GlitchFilter, DropShadowFilter } from 'pixi-filters'
+import { AdvancedBloomFilter, CRTFilter, BulgePinchFilter, RGBSplitFilter, GlowFilter, GlitchFilter, DropShadowFilter } from 'pixi-filters'
 import { Menu } from '../Menu';
 import { Entity } from "../../engine/Entity";
 import { RenderComponent } from "../../components/RenderComponent";
@@ -25,7 +25,6 @@ export class MenuPostProcessingLayer extends Entity {
         const container = new Container();
         this.addComponent(new RenderComponent(container));
 
-        // Bloom effect
         const advancedBloom = new AdvancedBloomFilter({
             threshold: 0.7,
             bloomScale: 0.2,
@@ -35,7 +34,6 @@ export class MenuPostProcessingLayer extends Entity {
             pixelSize: 0.5,
         });
 
-        // CRT base
         const crtFilter = new CRTFilter({
             curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
             lineWidth: 0.05,
@@ -50,7 +48,6 @@ export class MenuPostProcessingLayer extends Entity {
             time: 0
         });
 
-         // Overlay CRT
          const crtOverlay = new CRTFilter({
             curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
             lineWidth: 0.05,
@@ -65,14 +62,12 @@ export class MenuPostProcessingLayer extends Entity {
             time: 0
         });
 
-        // Lens distortion
         const bulgePinch = new BulgePinchFilter({
             center: new Point(0.5, 0.5),
             radius: Math.min(menu.width, menu.height) * 1.6,
             strength: (1 / menu.width / menu.height) * 70000,
         });
 
-        // Chromatic aberration
         const rgbSplit = new RGBSplitFilter({
             red:   new Point(-0.5, 0),
             green: new Point(0, 0.5),
@@ -89,7 +84,6 @@ export class MenuPostProcessingLayer extends Entity {
             quality: 0.1,
         });
 
-        // Power-up effects
         const powerupCRT = new CRTFilter({
             curvature: (menu.width * 0.0005 + menu.height * 0.0005) / 2,
             lineWidth: 0.1,

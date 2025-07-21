@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:33:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/09 09:33:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:39:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,8 +150,7 @@ export class MenuHalfButton extends MenuButton {
         
         this.buttonGraphic.fill(getThemeColors(this.menu.config.classicMode).black);
         this.buttonGraphic.stroke(strokeColor);
-        
-        // Reset text color
+
         if (this.buttonText) {
             let textColor: number;
             let textAlpha: number;
