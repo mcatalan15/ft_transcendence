@@ -38,9 +38,9 @@ class GameManager {
         clearInterval(session.interval);
       }
       this.gameSessions.delete(gameId);
-      return true;  // Session removed
+      return true;
     }
-    return false;  // Session still has players
+    return false;
   }
 
   startGameLoop(gameId) {
@@ -53,7 +53,7 @@ class GameManager {
           console.error('No session object found!');
           return;
         }
-        
+
         const state = entry.session.tick();
 
         entry.sockets.forEach((clientWs) => {
@@ -77,6 +77,7 @@ class GameManager {
     }
 
     const entry = this.gameSessions.get(gameId);
+
     entry.sockets.forEach((clientWs) => {
       if (clientWs.readyState === WebSocket.OPEN) {
         console.log('Sending GAME_START to a client');

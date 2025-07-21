@@ -327,7 +327,17 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 	function handlePlayerDisconnect(playerId, gameId, activeGames, playerConnections = null) {
 		if (!playerId) return;
 
-		console.log(`Handling disconnect for player ${playerId}`);
+		if (gameId) {
+			console.log(`Player ${playerId} disconnected from game ${gameId}`);
+			const game = activeGames.get(gameId);
+			if (game && game.players && game.players.has(playerId)) {
+				game.players.delete(playerId);
+				broadcastToGame(gameId, {
+					type: 'PLAYER_DISCONNECTED',
+					playerId: playerId
+				}, activeGames);
+			}
+		}
 
 		if (playerConnections) {
 			playerConnections.delete(playerId);

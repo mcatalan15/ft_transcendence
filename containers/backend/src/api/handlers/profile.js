@@ -191,7 +191,6 @@ async function fetchUserAvatar(request, reply) {
     const defaultPath = path.join('/usr/src/app/public/avatars/square/square1.png');
 
     try {
-        // Get the requested userId from URL params, not from session!
         const requestedUserId = request.params.userId;
         
         if (!requestedUserId) {
@@ -200,10 +199,9 @@ async function fetchUserAvatar(request, reply) {
             });
         }
         
-        const user = await getUserById(requestedUserId); // Use requested user ID
+        const user = await getUserById(requestedUserId);
         
         if (!user) {
-            // Return default avatar if user not found
             if (fs.existsSync(defaultPath)) {
                 return reply.type('image/png').send(fs.createReadStream(defaultPath));
             } else {
@@ -215,7 +213,6 @@ async function fetchUserAvatar(request, reply) {
         }
         
         if (!user.avatar_filename) {
-            // Serve default fallback
             return reply.type('image/png').send(fs.createReadStream(defaultPath));
         }
 
