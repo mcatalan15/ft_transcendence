@@ -135,7 +135,7 @@ services:
       FASTIFY_ADDRESS: "127.0.0.1"
     volumes:
       - ./blockchain:/usr/src/app
-      - /usr/src/app/node_modules
+      # - /usr/src/app/node_modules
     restart: always 
     networks:
       - transcendence
@@ -164,9 +164,10 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
-      - GF_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - UID=1000
-      - GID=1000
+    - GF_SECURITY_ADMIN_USER=admin
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    env_file:
+      - .env
     networks:
       - transcendence
 

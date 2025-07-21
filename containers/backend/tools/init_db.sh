@@ -39,7 +39,7 @@ if [ ! -f "$DB_PATH" ]; then
 		id_game INTEGER PRIMARY KEY AUTOINCREMENT,
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		ended_at TIMESTAMP,
-		is_tournament BOOLEAN DEFAULT 1,
+		is_tournament BOOLEAN DEFAULT 0,
 		player1_id INTEGER,
 		player2_id INTEGER,
 		winner_id INTEGER,
@@ -104,23 +104,6 @@ if [ ! -f "$DB_PATH" ]; then
 		FOREIGN KEY (user_id) REFERENCES users(id_user),
 		FOREIGN KEY (friend_id) REFERENCES users(id_user),
 		UNIQUE(user_id, friend_id)
-	);
-
-	CREATE TABLE IF NOT EXISTS tournaments (
-		id_tournament INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		status TEXT CHECK(status IN ('pending', 'active', 'finished'))
-	);
-
-	CREATE TABLE IF NOT EXISTS tournament_participants (
-		id_tournament INTEGER,
-		id_user INTEGER,
-		is_ai BOOLEAN,
-		final_position INTEGER,
-		PRIMARY KEY (id_tournament, id_user),
-		FOREIGN KEY (id_tournament) REFERENCES tournaments(id_tournament),
-		FOREIGN KEY (id_user) REFERENCES users(id_user)
 	);
 
 	CREATE TABLE IF NOT EXISTS user_stats (

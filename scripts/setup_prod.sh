@@ -9,8 +9,6 @@ if ! [[ "$PASSWORD" =~ [A-Z] ]] || ! [[ "$PASSWORD" =~ [a-z] ]] || ! [[ "$PASSWO
   PASSWORD=$(echo "${PASSWORD:0:17}A1z")
 fi
 
-export GRAFANA_ADMIN_PASSWORD=${PASSWORD}
-
 cat > containers/.env << EOF
 JWT_SECRET='${JWT_SECRET}'
 JWT_REFRESH_SECRET='${JWT_REFRESH_SECRET}'
@@ -33,7 +31,7 @@ REDIS_URL=redis://redis:6379
 
 SESSION_SECRET='${SESSION_SECRET}'
 
-GRAFANA_ADMIN_PASSWORD='${GRAFANA_ADMIN_PASSWORD}'
+GRAFANA_ADMIN_PASSWORD='${PASSWORD}'
 EOF
 
-echo ".env file created with secure defaults"
+echo "Generated Grafana admin password: ${PASSWORD}"
