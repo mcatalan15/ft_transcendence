@@ -9,9 +9,9 @@ async function main() {
             console.error("Failed to parse game data:", e.message);
             process.exit(1);
         }
-        
-        if (!gameData.teamA || !gameData.teamB) {
-            console.error("Missing required game data. Expected format: {\"teamA\":\"Name\",\"scoreA\":0,\"teamB\":\"Name\",\"scoreB\":0}");
+
+        if (!gameData.player1Name || !gameData.player2Name) {
+            console.error("Missing required game data. Expected format: {\"player1Name\":\"Name\",\"player1Score\":0,\"player2Name\":\"Name\",\"player2Score\":0}");
             process.exit(1);
         }
         
@@ -23,23 +23,23 @@ async function main() {
         console.log("Account balance:", (await deployer.getBalance()).toString());
         
         // Set default scores if not provided
-        const scoreA = gameData.scoreA || 0;
-        const scoreB = gameData.scoreB || 0;
-        
+        const player1Score = gameData.player1Score || 0;
+        const player2Score = gameData.player2Score || 0;
+
         console.log("Deploying with parameters:", {
-            teamA: gameData.teamA,
-            scoreA: scoreA,
-            teamB: gameData.teamB,
-            scoreB: scoreB
+            player1Name: gameData.player1Name,
+            player1Score: player1Score,
+            player2Name: gameData.player2Name,
+            player2Score: player2Score
         });
         
         // Deploy contract
         const GameContract = await hre.ethers.getContractFactory("GameContract");
         const gameContract = await GameContract.deploy(
-            gameData.teamA,
-            scoreA,
-            gameData.teamB,
-            scoreB
+            gameData.player1Name,
+            player1Score,
+            gameData.player2Name,
+            player2Score
         );
         
         await gameContract.deployed();
@@ -52,10 +52,10 @@ async function main() {
             await hre.run("verify:verify", {
                 address: contractAddress,
                 constructorArguments: [
-                    gameData.teamA,
-                    scoreA,
-                    gameData.teamB,
-                    scoreB
+                    gameData.player1Name,
+                    player1Score,
+                    gameData.player2Name,
+                    player2Score
                 ],
             });
             console.log("Verification successful!");

@@ -67,7 +67,7 @@ export class FriendsRenderer {
     friendsContentContainer.id = 'friends-content-container';
     friendsContentContainer.className = 'w-full h-full';
     
-    const contentRenderer = new FriendsContentRenderer(friendsContentContainer);
+    const contentRenderer = new FriendsContentRenderer();
     const friendsContent = contentRenderer.render();
 
     const pongBox = new PongBoxComponent({

@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Game.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
 /*   Updated: 2025/07/20 20:12:49 by hmunoz-g         ###   ########.fr       */
@@ -837,6 +837,7 @@ export class PongGame {
 				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
 			};
 			console.log('Making API call to /api/games');
+			// Saving game first
 			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
 				headers: {
@@ -853,9 +854,34 @@ export class PongGame {
 			console.log('Response ok:', response.ok);
 	
 			if (response.ok) {
-				const result = await response.json();
-				console.log('Game results saved successfully:', result);
+				const gameResult = await response.json();
+				console.log('Game results saved successfully:', gameResult);
 				this.hasSavedResults = true;
+
+				// Deploy contract
+				// const deployResponse = await fetch(getApiUrl('/deploy'), {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		'Content-Type': 'application/json',
+				// 		'Authorization': `Bearer ${token}`
+				// 	},
+				// 	body: JSON.stringify({
+				// 		gameId: gameResult.gameId,
+				// 		player1Name: this.data.leftPlayer.name,
+				// 		player2Name: this.data.rightPlayer.name,
+				// 		player1Score: this.data.finalScore.leftPlayer,
+				// 		player2Score: this.data.finalScore.rightPlayer
+				// 	}),
+				// 	credentials: 'include'
+				// });
+
+				// const deployData = await deployResponse.json();
+
+				// if (deployResponse.ok) {
+				// 	console.log('Deployment initiated successfully:', deployData);
+				// } else {
+				// 	console.log('Deployment failed:', deployData);
+				// }
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);

@@ -70,8 +70,8 @@ class ClassicGameSession {
 			this.players.player2.socket = player.socket;
 			this.players.player2.ready = false;
 		} else {
-			console.log(`🎮 ERROR: Player ${player.id} not expected in this game!`);
-			console.log(`🎮 Expected players:`, {
+			console.log(`ERROR: Player ${player.id} not expected in this game!`);
+			console.log(`Expected players:`, {
 				player1: this.players.player1.id,
 				player2: this.players.player2.id
 			});
@@ -84,7 +84,7 @@ class ClassicGameSession {
 		});
 		
 		if (this.players.player1.socket && this.players.player2.socket) {
-			console.log(`🎮 Both players connected: ${this.players.player1.id} (LEFT) vs ${this.players.player2.id} (RIGHT)`);
+			console.log(`Both players connected: ${this.players.player1.id} (LEFT) vs ${this.players.player2.id} (RIGHT)`);
 			
 			this.broadcastToAll('bothPlayersConnected', {
 				player1: this.players.player1.id,
@@ -224,7 +224,7 @@ class ClassicGameSession {
 		
 		const oldInput = playerNumber === 1 ? this.paddleInputs.p1 : this.paddleInputs.p2;
 		if (oldInput !== direction) {
-			console.log(`🎮 Input changed: p${playerNumber} = ${direction}`);
+			console.log(`Input changed: p${playerNumber} = ${direction}`);
 		}
 		
 		if (playerNumber === 1) {
@@ -282,7 +282,6 @@ class ClassicGameSession {
 	
 		const physicsGameData = this.physicsEngine.getGameData();
 		
-		console.log('=== GAME DATA COLLECTION ===');
 		console.log('Raw physics engine data:', JSON.stringify(physicsGameData, null, 2));
 		console.log('Game scores:', {
 			player1: this.gameState.score1,
@@ -336,16 +335,12 @@ class ClassicGameSession {
 			}
 		};
 		
-		console.log('=== FINAL GAME RESULTS ===');
 		console.log('Complete gameResults object:', JSON.stringify(gameResults, null, 2));
 		
 		if (this.externalBroadcast) {
 			this.externalBroadcast(gameResults);
-		} else {
-			console.log('❌ No externalBroadcast function available');
 		}
-		
-		
+
 		this.saveGameResults(gameResults);
 		this.stopGameLoop();
 	}
@@ -374,7 +369,6 @@ class ClassicGameSession {
 		if (this.gameLoop) {
 			clearInterval(this.gameLoop);
 			this.gameLoop = null;
-			console.log(`🔴 Game loop stopped for session ${this.sessionId}`);
 		}
 		
 		this.gameEnded = true;
@@ -409,20 +403,6 @@ class ClassicGameSession {
 		} else if (this.gameEnded) {
 			console.log(`Player ${playerId} disconnected after game ended, no action needed`);
 		}
-	}
-
-	handleGameEnd(gameEndData) {
-		if (this.gameEnded) {
-			console.log(`Game ${this.sessionId} already ended`);
-			return;
-		}
-		
-		this.gameState.score1 = gameEndData.finalScore.leftScore;
-		this.gameState.score2 = gameEndData.finalScore.rightScore;
-		
-		console.log(`Game ${this.sessionId} ended via client notification: ${this.gameState.score1}-${this.gameState.score2}`);
-		
-		this.endGame();
 	}
 	
 	cleanup() {

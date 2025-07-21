@@ -110,36 +110,25 @@ export class PongNetworkManager {
 			});
 
 		this.wsManager.registerHandler('GAME_JOINED', (message) => {
-			console.log('🎮 === GAME_JOINED RECEIVED ===');
-			console.log('🎮 Message:', message);
 			
 			this.playerNumber = message.playerNumber;
 			this.isHost = message.playerNumber === 1;
 			
 			if (this.game) {
 				this.game.localPlayerNumber = message.playerNumber;
-				console.log('🎮 Set game.localPlayerNumber to:', this.game.localPlayerNumber);
+				console.log('Set game.localPlayerNumber to:', this.game.localPlayerNumber);
 			} else {
-				console.warn('⚠️ No game instance when GAME_JOINED received');
+				console.warn('No game instance when GAME_JOINED received');
 			}
-			
-			console.log('🎮 Player assignment:', {
-				playerId: sessionStorage.getItem('username'),
-				playerNumber: this.playerNumber,
-				isHost: this.isHost,
-				expectedPaddle: this.isHost ? 'LEFT (paddleL)' : 'RIGHT (paddleR)',
-			});
 			
 			this.showPlayerAssignment();
 			this.setupInputHandlers();
 			
-			console.log('🎮 Sending PLAYER_READY signal...');
 			this.wsManager.send({
 				type: 'PLAYER_READY',
 				gameId: this.gameId,
 				playerId: sessionStorage.getItem('username')
 			});
-			console.log('🎮 === GAME_JOINED HANDLER END ===');
 			});
 		
 		this.wsManager.registerHandler('GAME_READY', (message) => {
@@ -151,19 +140,15 @@ export class PongNetworkManager {
 			});
 
 		this.wsManager.registerHandler('GAME_START', (message) => {
-			console.log('🚀 === GAME_START RECEIVED ===');
-			console.log('🚀 Message:', message);
 			if (this.game) {
-				console.log('🚀 Calling game.start()...');
 				this.game.start();
 				if (message.gameState) {
 					this.game.updateFromServer(message.gameState);
 				}
 				this.showConnectionStatus('Game in progress');
 			} else {
-				console.error('❌ No game instance when GAME_START received');
+				console.error('No game instance when GAME_START received');
 			}
-			console.log('🚀 === GAME_START HANDLER END ===');
 		});
 		
 		this.wsManager.registerHandler('GAME_STATE_UPDATE', (message) => {
@@ -188,9 +173,9 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('GAME_END', (message) => {
-			console.log('🏁 GAME_END received from server');
-			console.log('🏁 Winner:', message.winner);
-			console.log('🏁 Final scores:', message.finalScore);
+			console.log('GAME_END received from server');
+			console.log('Winner:', message.winner);
+			console.log('Final scores:', message.finalScore);
 			
 			this.handleGameEndMessage(message);
 		});
@@ -214,7 +199,6 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('MATCHMAKING_WAITING', (message) => {
-			console.log('🎮 Waiting for opponent...', message);
 			this.gameId = message.gameId;
 			this.showConnectionStatus('Searching for opponent...');
 		});
@@ -242,8 +226,7 @@ export class PongNetworkManager {
 			this.game.rightPlayer.isDisconnected = true;
 			console.log(`Player ${rightPlayerId} has disconnected in handlePlayerDisconnection`);
 		}
-	
-		// Immediately trigger game end
+
 		this.game.hasEnded = true;
 		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem) {
@@ -255,7 +238,6 @@ export class PongNetworkManager {
 		try {
 		console.log('Connecting to game session:', gameId);
 		
-		// Connect to WebSocket - the backend will send CONNECTION_SUCCESS
 		await this.wsManager.connect(gameId);
 		
 		console.log('WebSocket connection established, waiting for join confirmation...');
@@ -317,12 +299,10 @@ export class PongNetworkManager {
 	}
 
 	private handleGameEndMessage(message: any): void {
-		console.log('🏁 Processing game end...');
 		
 		// Update UI scores
 		const uiEntity = this.game.entities.find(e => e.id === 'UI') as any;
 		if (uiEntity && message.finalScore) {
-			console.log(`🏁 Updating UI scores: ${message.finalScore.player1} - ${message.finalScore.player2}`);
 			uiEntity.leftScore = message.finalScore.player1;
 			uiEntity.rightScore = message.finalScore.player2;
 		}
@@ -342,10 +322,8 @@ export class PongNetworkManager {
 		// Trigger ending system
 		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem && !this.game.hasEnded) {
-			console.log('🏁 Triggering EndingSystem...');
 			(endingSystem as any).ended = true;
 			this.game.hasEnded = true;
-			console.log('🏁 EndingSystem triggered successfully');
 		}
 	}
 
@@ -443,10 +421,8 @@ export class PongNetworkManager {
 		}
 	
 		if (shouldStop) {
-			// Send stop input immediately
 			this.sendPaddleInput(0);
 			this.lastInputSent = 0;
-			console.log(`🎮 Key released: ${e.key}, stopping input`);
 		}
 	};
 
@@ -458,7 +434,6 @@ export class PongNetworkManager {
 			input: input
 		};
 		
-		console.log('🎮 Sending paddle input to server:', message);
 		this.wsManager.send(message);
 	}
 
@@ -467,38 +442,10 @@ export class PongNetworkManager {
 	}
 
 	disconnect() {
-		// Clean up event listeners
 		this.cleanupInputHandlers();
 		
-		// Close WebSocket connection
 		if (this.wsManager) {
-		this.wsManager.disconnect();
-		}
-	}
-
-	private handleServerGameEnd(message: any): void {
-		console.log('Processing server game end:', message);
-		
-		// Update final scores first
-		if (message.gameData) {
-			const leftScore = message.gameData.leftPlayer.score;
-			const rightScore = message.gameData.rightPlayer.score;
-			
-			// Update UI scores immediately
-			const uiEntity = this.game.entities.find(e => e.id === 'UI') as UI;
-			if (uiEntity) {
-				uiEntity.leftScore = leftScore;
-				uiEntity.rightScore = rightScore;
-				console.log(`Updated UI scores: ${leftScore} - ${rightScore}`);
-			}
-		}
-		
-		// Force the ending system to trigger
-		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
-		if (endingSystem && !this.game.hasEnded) {
-			console.log('Forcing EndingSystem to trigger...');
-			(endingSystem as any).ended = true;
-			this.game.hasEnded = true;
+		this.wsManager.close();
 		}
 	}
 
@@ -506,7 +453,7 @@ export class PongNetworkManager {
 		try {
 			console.log('Starting matchmaking...');
 			
-			if (!this.wsManager.socket || this.wsManager.socket.readyState !== WebSocket.OPEN) {
+			if (!this.wsManager.isSocket() || !this.wsManager.isConnected()) {
 				await this.wsManager.connect(null);
 			}
 			
@@ -527,6 +474,16 @@ export class PongNetworkManager {
 			type: 'CANCEL_MATCHMAKING',
 			playerId: sessionStorage.getItem('username')
 		});
+		this.disconnect();
+	}
+
+	public async playerDisconnected() {
+		const playerId = sessionStorage.getItem('username') || null;
+		this.wsManager.send({
+			type: 'PLAYER_DISCONNECTED',
+			playerId: playerId
+		});
+		this.handlePlayerDisconnection(playerId || '');
 		this.disconnect();
 	}
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 15:00:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:23:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,6 @@ export class MenuButtonSystem implements System {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
 				this.handleMatchFound();
-			} else if (event.type === '1V1_READY_CLICK') {
-				this.handle1v1ReadyClick();
-			} else if (event.type === 'BOTH_READY') {
-				this.handleBothReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
@@ -183,7 +179,6 @@ export class MenuButtonSystem implements System {
 					}
 					await sleep(500);
 				}
-				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -208,12 +203,6 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.setClickable(true);
 		this.menu.readyButton.setClicked(false);
 	}
-
-	private handle1v1ReadyClick() {
-		// TODO
-	}
-
-	private handleBothReadyClick() { }
 
 	private startLocalGame(): void {
 		console.log('Starting local game...');
@@ -366,7 +355,7 @@ export class MenuButtonSystem implements System {
 		} else if (event.type.includes('PLAY')) {
 			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
 				gameManager.destroyGame(this.menu.app.view.id);
-				window.location.href = '/pong';
+				navigate('/pong');
 			}
 			this.menu.readyButton.resetButton();
 			this.menu.readyButton.setClicked(false);
@@ -672,6 +661,15 @@ export class MenuButtonSystem implements System {
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
 			await sleep(1000);
+			//TODO: if user disconnects, stop the process for both players
+			if (this.menu.playQuitButton.getIsClicked()) {
+				this.menu.readyButton.resetButton();
+				this.menu.readyButton.updateText('READY');
+				this.menu.playQuitButton.resetButton();
+				this.networkManager?.abortMatchmaking();
+				this.networkManager = null;
+				return;
+			}
 		}
 		
 		const params = new URLSearchParams({

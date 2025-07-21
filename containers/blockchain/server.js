@@ -2,7 +2,6 @@ const http = require('http');
 const { exec } = require('child_process');
 const dotenv = require('dotenv');
 
-// Load environment variables from .env
 dotenv.config();
 
 const server = http.createServer((req, res) => {
@@ -22,11 +21,11 @@ const server = http.createServer((req, res) => {
         const { gameData } = JSON.parse(body);
         
         // Validate input
-        if (!gameData || !gameData.teamA || !gameData.teamB) {
+        if (!gameData || !gameData.player1Name || !gameData.player2Name) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
             error: "Missing game data",
-            required: ["teamA", "scoreA", "teamB", "scoreB"]
+            required: ["player1Name", "player1Score", "player2Name", "player2Score"]
           }));
           return;
         }

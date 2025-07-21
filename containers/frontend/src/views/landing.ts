@@ -37,7 +37,6 @@ export function showLanding(container: HTMLElement): void {
 
       container.appendChild(landingDiv);
 
-      // Función para configurar los botones
       const setupButtons = () => {
         const signInBtn = landingDiv.querySelector('#sign-in-btn') as HTMLButtonElement;
         const signUpBtn = landingDiv.querySelector('#sign-up-btn') as HTMLButtonElement;

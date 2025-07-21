@@ -9,6 +9,8 @@
 //             'player1_score',
 //             'player2_score',
 
+const { type } = require("os");
+
 //             'game_mode',
 //             'is_tournament',
 //             'smart_contract_link',
@@ -334,53 +336,74 @@ const retrieveLastGameSchema = {
 };
 
 const deployContractSchema = {
-    description: 'Deploy a smart contract with the latest game data to the blockchain',
-    tags: ['blockchain'],
-    response: {
-        200: {
-            description: 'Contract deployed successfully',
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                contractAddress: { type: 'string', description: 'Address of the deployed smart contract' },
+	description: 'Deploy a smart contract with specific game data to the blockchain',
+	tags: ['blockchain'],
+	body: {
+		type: 'object',
+		required: ['gameId', 'player1Name', 'player2Name', 'player1Score', 'player2Score'],
+		properties: {
+			gameId: {
+				type: 'number',
+				description: 'ID of the game to deploy contract for'
+			},
+			player1Name: {
+				type: 'string',
+				description: 'Name of player 1'
+			},
+			player2Name: {
+				type: 'string',
+				description: 'Name of player 2'
+			},
+			player1Score: {
+				type: 'number',
+				minimum: 0,
+				description: 'Score of player 1'
+			},
+			player2Score: {
+				type: 'number',
+				minimum: 0,
+				description: 'Score of player 2'
+			}
+		}
+	},
+	response: {
+		200: {
+			description: 'Contract deployed successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				contractAddress: { type: 'string', description: 'Address of the deployed smart contract' },
 				explorerLink: { type: 'string', description: 'Blockchain explorer link for the contract' },
-                gameData: {
-                    type: 'object',
-                    properties: {
-                        player1_name: { type: 'string', description: 'Name of player 1' },
-                        player1_score: { type: 'number', description: 'Score of player 1' },
-                        player2_name: { type: 'string', description: 'Name of player 2' },
-                        player2_score: { type: 'number', description: 'Score of player 2' }
-                    }
-                }
-            },
-            example: {
-                success: true,
-                contractAddress: '0x1234567890abcdef1234567890abcdef12345678',
-                explorerLink: 'https://etherscan.io/address/0x1234567890abcdef1234567890abcdef12345678',
 				gameData: {
-                    player1_name: 'Eva',
-                    player1_score: 5,
-                    player2_name: 'Marc',
-                    player2_score: 3
-                }
-            }
-        },
-        500: {
-            description: 'Deployment failed',
-            type: 'object',
-            properties: {
-                success: { type: 'boolean' },
-                error: { type: 'string', description: 'Error message' },
-                details: { type: 'string', description: 'Additional error details' }
-            },
-            example: {
-                success: false,
-                error: 'No game data found in database',
-                details: 'Check if database contains game data with player1_name, player1_score, player2_name, player2_score'
-            }
-        }
-    }
+					type: 'object',
+					properties: {
+						player1_name: { type: 'string', description: 'Name of player 1' },
+						player1_score: { type: 'number', description: 'Score of player 1' },
+						player2_name: { type: 'string', description: 'Name of player 2' },
+						player2_score: { type: 'number', description: 'Score of player 2' }
+					}
+				}
+			}
+		},
+		400: {
+			description: 'Bad request - missing required data',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				error: { type: 'string' },
+				details: { type: 'string' }
+			}
+		},
+		500: {
+			description: 'Deployment failed',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				error: { type: 'string' },
+				details: { type: 'string' }
+			}
+		}
+	}
 };
 
 const getGamesHistorySchema = {
@@ -599,6 +622,99 @@ const saveResultsSchema = {
     }
 };
 
+const saveTournamentResultsSchema = {
+	description: 'Save tournament results and update participant statistics',
+	tags: ['tournaments'],
+	body: {
+		type: 'object',
+		required: ['tournamentConfig'],
+		properties: {
+			tournamentConfig: {
+				type: 'object',
+				required: ['isFinished', 'registeredPlayerData', 'tournamentWinner'],
+				properties: {
+					tournamentId: {
+						type: ['string', 'number', 'null'],
+						description: 'Tournament identifier'
+					},
+					isPrepared: { type: 'boolean' },
+					isFinished: {
+						type: 'boolean',
+						description: 'Must be true to process results'
+					},
+					classicMode: { type: 'boolean' },
+					currentPhase: {
+						type: 'integer',
+						minimum: 1,
+						maximum: 4
+					},
+					currentMatch: {
+						type: 'integer',
+						minimum: 1,
+						maximum: 8
+					},
+					registeredPlayerData: {
+						type: 'object',
+						properties: {
+							player1Data: { type: ['object', 'null'] },
+							player2Data: { type: ['object', 'null'] },
+							player3Data: { type: ['object', 'null'] },
+							player4Data: { type: ['object', 'null'] },
+							player5Data: { type: ['object', 'null'] },
+							player6Data: { type: ['object', 'null'] },
+							player7Data: { type: ['object', 'null'] },
+							player8Data: { type: ['object', 'null'] }
+						}
+					},
+					tournamentWinner: {
+						type: ['string', 'null'],
+						description: 'Name of the tournament winner'
+					}
+				}
+			}
+		}
+	},
+	response: {
+		200: {
+			description: 'Tournament results saved successfully',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				updatedPlayers: { type: 'number' },
+				tournamentWinner: { type: ['string', 'null'] }
+			},
+			example: {
+				success: true,
+				message: 'Tournament results saved successfully',
+				updatedPlayers: 8,
+				tournamentWinner: 'player1'
+			}
+		},
+		400: {
+			description: 'Bad request - invalid tournament data',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' }
+			},
+			example: {
+				success: false,
+				message: 'Tournament must be finished to save results'
+			}
+		},
+		500: {
+			description: 'Server error',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean' },
+				message: { type: 'string' },
+				error: { type: 'string' }
+			}
+		}
+	}
+};
+
 const getUserDataSchema = {
     description: 'Retrieve user data and statistics by user ID',
     tags: ['users'],
@@ -785,6 +901,7 @@ const getUserByUsernameSchema = {
 
 module.exports = {
     saveGameSchema,
+	saveTournamentResultsSchema,
     retrieveGamesSchema,
     retrieveLastGameSchema,
     deployContractSchema,
