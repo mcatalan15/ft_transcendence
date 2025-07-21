@@ -202,6 +202,63 @@ export class PongNetworkManager {
 			this.gameId = message.gameId;
 			this.showConnectionStatus('Searching for opponent...');
 		});
+
+		this.wsManager.registerHandler('GAME_WIN_BY_DEFAULT', (message) => {
+			console.log('Received win by default:', message);
+			
+			if (this.menu) {
+				// Handle it in the menu (during countdown phase)
+				alert(message.message || 'You win! Opponent disconnected.');
+				this.menu.readyButton.resetButton();
+				this.menu.readyButton.updateText('READY');
+				// Return to menu state
+				return;
+			}
+
+			if (this.game && !this.game.hasEnded) {
+				// Handle it in the game (if already in game)
+				const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
+				if (endingSystem) {
+					// Set the winner based on current player
+					const currentUsername = sessionStorage.getItem('username');
+					
+					if (currentUsername === this.hostName) {
+						this.game.data.leftPlayer.result = 'win';
+						this.game.data.rightPlayer.result = 'lose';
+						this.game.data.winner = this.hostName;
+					} else {
+						this.game.data.leftPlayer.result = 'lose';
+						this.game.data.rightPlayer.result = 'win';
+						this.game.data.winner = this.guestName;
+					}
+					
+					// Set scores to 0-0 since game didn't really play
+					const uiEntity = this.game.entities.find(e => e.id === 'UI') as any;
+					if (uiEntity) {
+						uiEntity.leftScore = 0;
+						uiEntity.rightScore = 0;
+						this.game.data.leftPlayer.score = 0;
+						this.game.data.rightPlayer.score = 0;
+					}
+					
+					// Force end the game
+					endingSystem.ended = true;
+					this.game.hasEnded = true;
+					
+					console.log('Forced game end due to opponent disconnect');
+				}
+			}
+		});
+	}
+
+	public addMessageListener(listener: (event: any) => void) {
+		this.wsManager.registerHandler('GAME_WIN_BY_DEFAULT', (data) => {
+			listener({ data: JSON.stringify({ type: 'GAME_WIN_BY_DEFAULT', ...data }) });
+		});
+	}
+	
+	public removeMessageListener(listener: (event: any) => void) {
+		this.wsManager.unregisterHandler('GAME_WIN_BY_DEFAULT');
 	}
 
 	private async transitionToGame() {
