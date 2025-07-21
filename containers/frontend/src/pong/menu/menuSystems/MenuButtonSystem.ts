@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 11:25:30 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 11:26:42 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@ export class MenuButtonSystem implements System {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
 				this.handleMatchFound();
-			} else if (event.type === 'BOTH_READY') {
-				this.handleBothReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
@@ -177,7 +175,6 @@ export class MenuButtonSystem implements System {
 					}
 					await sleep(500);
 				}
-				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -202,8 +199,6 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.setClickable(true);
 		this.menu.readyButton.setClicked(false);
 	}
-
-	private handleBothReadyClick() { }
 
 	private startLocalGame(): void {
 		console.log('Starting local game...');
