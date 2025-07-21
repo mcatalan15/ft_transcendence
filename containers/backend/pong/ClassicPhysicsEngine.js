@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ClassicPhysicsEngine.js                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 17:04:21 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 17:05:15 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 class ClassicPhysicsEngine {
 		constructor(gameState) {
 			this.gameState = gameState;
@@ -130,13 +142,11 @@ class ClassicPhysicsEngine {
 	}
 
 	updatePaddles(deltaTime, paddleInputs) {
-		// Time-based paddle movement (300 pixels per second)
-		const paddleMovement = this.paddleSpeed * deltaTime; // 300 * deltaTime
+		const paddleMovement = this.paddleSpeed * deltaTime;
 		
 		const originalP1Y = this.gameState.paddle1.y;
 		const originalP2Y = this.gameState.paddle2.y;
-		
-		// Apply time-based movement
+
 		if (paddleInputs.p1 === -1) {
 			this.gameState.paddle1.y -= paddleMovement;
 		} else if (paddleInputs.p1 === 1) {
@@ -148,24 +158,22 @@ class ClassicPhysicsEngine {
 		} else if (paddleInputs.p2 === 1) {
 			this.gameState.paddle2.y += paddleMovement;
 		}
-	
-		// Wall constraints (same as before)
+
 		const topWallY = 60;
 		const topWallHeight = 20;
-		const topWallBottom = topWallY + (topWallHeight / 2); // 70
+		const topWallBottom = topWallY + (topWallHeight / 2);
 	
 		const bottomWallY = 690;
 		const bottomWallHeight = 20;
-		const bottomWallTop = bottomWallY - (bottomWallHeight / 2); // 710
+		const bottomWallTop = bottomWallY - (bottomWallHeight / 2);
 		
-		const minPaddleY = topWallBottom + (this.gameState.paddleHeight / 2); // 110
-		const maxPaddleY = bottomWallTop - (this.gameState.paddleHeight / 2); // 670
+		const minPaddleY = topWallBottom + (this.gameState.paddleHeight / 2);
+		const maxPaddleY = bottomWallTop - (this.gameState.paddleHeight / 2);
 	
 		this.gameState.paddle1.y = Math.max(minPaddleY, Math.min(maxPaddleY, this.gameState.paddle1.y));
 		this.gameState.paddle2.y = Math.max(minPaddleY, Math.min(maxPaddleY, this.gameState.paddle2.y));
 	}
 	
-	// ClassicPhysicsEngine.js - Fix updateBall to use deltaTime
 	updateBall(deltaTime) {
 		if (this.gameState.ball.x < 0 || this.gameState.ball.y < 0) {
 			return;
@@ -181,10 +189,6 @@ class ClassicPhysicsEngine {
 		
 		this.gameState.ball.x += ballMovementX;
 		this.gameState.ball.y += ballMovementY;
-	
-		if (Math.random() < 0.016) { // ~1/60 chance
-			console.log(`🎮 BALL: deltaTime=${deltaTime.toFixed(4)}, moved (${ballMovementX.toFixed(2)}, ${ballMovementY.toFixed(2)})`);
-		}
 
 		const topWallY = 60;
 		const topWallHeight = 20;
@@ -299,8 +303,6 @@ class ClassicPhysicsEngine {
 	}
 
 	getGameData() {
-        console.log('🔍 getGameData() called in ClassicPhysicsEngine');
-        console.log('Current game data:', JSON.stringify(this.gameData, null, 2));
         return this.gameData;
     }
 }

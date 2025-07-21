@@ -299,7 +299,6 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		console.log(`🎮 Starting game ${gameId} with ClassicGameSession`);
 
 		game.session.setExternalBroadcast((message) => {
-			console.log('📡 Session wants to broadcast:', message.type);
 			broadcastToGame(gameId, message, activeGames);
 		});
 
@@ -401,14 +400,11 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		
 		game.players.forEach((player, playerId) => {
 			if (player.ws && player.ws.readyState === WebSocket.OPEN) {
-				console.log(`📡 Sending to player ${playerId}`);
 				player.ws.send(messageStr);
 			} else {
 				console.log(`⚠️ Player ${playerId} WebSocket not ready`);
 			}
 		});
-
-		console.log(`Broadcasted message to game ${gameId}:`, messageToSend.type);
 	}
 
 	async function handleFindMatch(data, ws, redisService, playerConnections) {

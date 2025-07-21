@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SessionManager.js                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 17:08:00 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 17:08:31 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 const ClassicGameSession = require('../gameEngine/ClassicGameSession');
 
 class SessionManager {
@@ -7,9 +19,7 @@ class SessionManager {
 	}
 	
 	addPlayerToQueue(player) {
-		console.log(`Adding player ${player.id} to queue`);
-		
-		if (this.waitingPlayers.length > 0) {
+	if (this.waitingPlayers.length > 0) {
 			const opponent = this.waitingPlayers.shift();
 			this.createGameSession(opponent, player);
 		} else {
@@ -26,8 +36,6 @@ class SessionManager {
 		
 		session.addPlayer(player1);
 		session.addPlayer(player2);
-		
-		console.log(`Created game session ${sessionId} for players:`, player1.id, player2.id);
 		
 		return session;
 	}

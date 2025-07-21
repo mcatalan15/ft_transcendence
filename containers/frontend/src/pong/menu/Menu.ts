@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 20:38:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:46:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,6 +227,7 @@ export class Menu{
 	wallHoneycomb!: Sprite;
 
 	// Player Data
+	winnerData: PlayerData | null = null;
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
 	hostData: PlayerData | null = null;
@@ -336,6 +337,40 @@ export class Menu{
 
 	async init(classic: boolean, filters: boolean): Promise<void> {
 		this.applyFirefoxOptimizations();
+
+		if (this.tournamentManager.getHasActiveTournament() && this.tournamentManager.getTournamentConfig()?.isFinished) {
+			try {
+				const token = sessionStorage.getItem('token');
+				if (!token) {
+					console.error('No auth token found for tournament results');
+					return;
+				}
+
+				const response = await fetch(getApiUrl('/games/saveTournamentResults'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						tournamentConfig: this.tournamentManager.getTournamentConfig()
+					}),
+					credentials: 'include'
+				});
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error('Failed to save tournament results:', errorText);
+				} else {
+					const result = await response.json();
+					console.log('Tournament results saved successfully:', result);
+				}
+			} catch (error) {
+				console.error('Error saving tournament results:', error);
+			}
+
+			await this.getWinnerData();
+		}
 		
 		await this.apiDataRequest();
 
@@ -381,6 +416,8 @@ export class Menu{
 			this.hasOngoingTournament = true;
 			this.tournamentConfig = this.tournamentManager.getTournamentConfig();
 		}
+
+		console.log(`Player data at THIS POINT is:`, this.playerData);
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
 
@@ -481,11 +518,7 @@ export class Menu{
 
 			this.eventQueue.push(playEvent);
 
-			//! Tournament ending stuff
-			console.log('Tournament Ending!!!!!!!!');
-			console.log('[END] Tournament Config:', this.tournamentManager.getTournamentConfig());
-
-			try {
+			/* try {
 				const token = sessionStorage.getItem('token');
 				if (!token) {
 					console.error('No auth token found for tournament results');
@@ -513,7 +546,50 @@ export class Menu{
 				}
 			} catch (error) {
 				console.error('Error saving tournament results:', error);
+			} */
+		}
+	}
+
+	async getWinnerData(){
+		const winnerName = this.tournamentManager.getTournamentConfig()?.tournamentWinner;
+
+		try {
+			const winnerResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: winnerName
+				})
+			});
+	
+			if (!winnerResponse.ok) {
+				throw new Error(`HTTP error getting host data! status: ${winnerResponse.status}`);
 			}
+	
+			const winnerResponseData = await winnerResponse.json();
+	
+			if (winnerResponseData.success) {
+				const winnerData = winnerResponseData.userData;
+				console.log('Winner data fetched successfully:', winnerData);
+				this.winnerData = winnerData;
+				console.log('Player data set for end tournament overlay:', this.winnerData);
+
+			} else {
+				console.error('Failed to get user data:', 
+					winnerResponseData.message);
+			}
+	
+		} catch (error) {
+			console.error('Error fetching player data for end tournament overlay:', error);
+			this.winnerData = {
+				id: '',
+				name: this.tournamentManager.getTournamentConfig()?.tournamentWinner || 'Unknown',
+				type: 'human',
+				side: 'left'
+			};
 		}
 	}
 

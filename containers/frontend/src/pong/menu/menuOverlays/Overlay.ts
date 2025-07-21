@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:15:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 11:50:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,9 +329,11 @@ export abstract class Overlay extends Entity {
 				}
 			});
 			
-			if (this.menu.readyButton) elements.push(this.menu.readyButton.getContainer());
-			if (this.menu.tournamentGlossaryButton) elements.push(this.menu.tournamentGlossaryButton.getContainer());
-			if (this.menu.tournamentFiltersButton) elements.push(this.menu.tournamentFiltersButton.getContainer());
+			if (!(this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished)) {
+				if (this.menu.readyButton) elements.push(this.menu.readyButton.getContainer());
+				if (this.menu.tournamentGlossaryButton) elements.push(this.menu.tournamentGlossaryButton.getContainer());
+				if (this.menu.tournamentFiltersButton) elements.push(this.menu.tournamentFiltersButton.getContainer());
+			}
 		} else if (this.overlayType === 'glossary') {
 			const wallImages = MenuImageManager.getAllWallImages();
 			wallImages.forEach((image: any) => {
