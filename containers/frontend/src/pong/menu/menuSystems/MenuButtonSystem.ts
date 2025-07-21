@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 11:24:57 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 11:25:30 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@ export class MenuButtonSystem implements System {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
 				this.handleMatchFound();
-			} else if (event.type === '1V1_READY_CLICK') {
-				this.handle1v1ReadyClick();
 			} else if (event.type === 'BOTH_READY') {
 				this.handleBothReadyClick();
 			} else {
