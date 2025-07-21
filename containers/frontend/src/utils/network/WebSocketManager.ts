@@ -344,4 +344,8 @@ export class WebSocketManager {
     getReconnectAttempts(): number {
         return this.reconnectAttempts;
     }
+
+	isSocket(): boolean {
+		return this.socket ? true : false;
+	}
 }
