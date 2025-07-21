@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 11:26:42 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 11:31:22 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,7 +351,7 @@ export class MenuButtonSystem implements System {
 		} else if (event.type.includes('PLAY')) {
 			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
 				gameManager.destroyGame(this.menu.app.view.id);
-				window.location.href = '/pong';
+				navigate('/pong');
 			}
 			this.menu.readyButton.resetButton();
 			this.menu.readyButton.setClicked(false);
@@ -658,6 +658,7 @@ export class MenuButtonSystem implements System {
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
 			await sleep(3000);
+			//TODO: if user disconnects, stop the process
 		}
 		
 		const params = new URLSearchParams({
