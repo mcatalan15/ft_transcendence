@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 22:04:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 22:40:44 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,11 @@ export class MenuButtonSystem implements System {
 			} else if (event.type === 'GLOSSARY_ESC' || event.type === 'ABOUT_ESC') {
 				this.resetLayer(event);
 			} else if (event.type.endsWith('BACK')) {
+				if (event.type === 'CANCEL_MATCHMAKING') {
+					this.handleCancelMatchmaking();
+				} else {
 				this.resetLayer(event);
+				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
