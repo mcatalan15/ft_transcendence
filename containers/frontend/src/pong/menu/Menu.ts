@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Menu.ts                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 13:48:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:46:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,6 +339,36 @@ export class Menu{
 		this.applyFirefoxOptimizations();
 
 		if (this.tournamentManager.getHasActiveTournament() && this.tournamentManager.getTournamentConfig()?.isFinished) {
+			try {
+				const token = sessionStorage.getItem('token');
+				if (!token) {
+					console.error('No auth token found for tournament results');
+					return;
+				}
+
+				const response = await fetch(getApiUrl('/games/saveTournamentResults'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						tournamentConfig: this.tournamentManager.getTournamentConfig()
+					}),
+					credentials: 'include'
+				});
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error('Failed to save tournament results:', errorText);
+				} else {
+					const result = await response.json();
+					console.log('Tournament results saved successfully:', result);
+				}
+			} catch (error) {
+				console.error('Error saving tournament results:', error);
+			}
+
 			await this.getWinnerData();
 		}
 		
@@ -488,11 +518,7 @@ export class Menu{
 
 			this.eventQueue.push(playEvent);
 
-			//! Tournament ending stuff
-			console.log('Tournament Ending!!!!!!!!');
-			console.log('[END] Tournament Config:', this.tournamentManager.getTournamentConfig());
-
-			try {
+			/* try {
 				const token = sessionStorage.getItem('token');
 				if (!token) {
 					console.error('No auth token found for tournament results');
@@ -520,7 +546,7 @@ export class Menu{
 				}
 			} catch (error) {
 				console.error('Error saving tournament results:', error);
-			}
+			} */
 		}
 	}
 
