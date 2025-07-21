@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 16:47:33 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:40:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import { Entity } from '../../engine/Entity';
 import { RenderComponent } from '../../components/RenderComponent';
 import { LifetimeComponent } from '../../components/LifetimeComponent';
 import { AnimationComponent } from '../../components/AnimationComponent';
-import { FrameData, GAME_COLORS } from '../../utils/Types';
+import { GAME_COLORS } from '../../utils/Types';
 import * as Utils from '../../utils/Utils';
 import { Menu } from '../Menu';
 

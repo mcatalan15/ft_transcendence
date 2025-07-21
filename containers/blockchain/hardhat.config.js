@@ -1,14 +1,12 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-// const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
 const FUJI_RPC_URL = process.env.AVALANCHE_RPC_URL;
 const PRIVATE_KEY = process.env.BLOCKCHAIN_PRIVATE_KEY;
 const SNOWTRACE_API_KEY = process.env.SNOWTRACE_API_KEY || "snowtrace";
 
-// hardhat.config.js
-require('@nomicfoundation/hardhat-toolbox');
-require('dotenv').config(); // Ensure this is at the top
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 module.exports = {
 	solidity: "0.8.18",
@@ -16,8 +14,7 @@ module.exports = {
 		fuji: {
 			url: FUJI_RPC_URL,
 			accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
-			chainId: 43113, // Fuji Testnet chain ID
-			// Add timeout and confirmation settings for network stability
+			chainId: 43113,
 			timeout: 60000,
 			gas: 5000000,
 			gasPrice: 225000000000,

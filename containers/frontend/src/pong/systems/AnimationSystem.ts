@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:46:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:26:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,7 @@ export class AnimationSystem implements System {
 		if (this.UI.rightAffectationFullTime > 0) {
 			this.UI.rightAffectationTime += delta.deltaTime;
 		}
-	
-		// 1. Handle paddle transformation events
+
 		const unhandledEvents = [];
 	
 		while (this.game.eventQueue.length > 0) {
@@ -104,7 +103,6 @@ export class AnimationSystem implements System {
 			this.animateDespawnCrossCut();
 		}
 
-		// 2. Update entities
 		for (const entity of entities) {
 			if (isPaddle(entity) && entity.targetHeight && entity.enlargeProgress < 1) {
 				this.animatePaddle(delta, entity);
@@ -138,10 +136,10 @@ export class AnimationSystem implements System {
 
 		if (event.type === 'ENLARGE_PADDLE') {
 			paddle.targetHeight = paddle.baseHeight * 2;
-			paddle.overshootTarget = paddle.targetHeight * 1.2; // Overshoot by growing 20% larger
+			paddle.overshootTarget = paddle.targetHeight * 1.2;
 		} else if (event.type === 'SHRINK_PADDLE') {
-			paddle.targetHeight = paddle.baseHeight * 0.5; // Final target is 50% of original
-			paddle.overshootTarget = paddle.baseHeight * 0.4; // Overshoot by shrinking to 40% first
+			paddle.targetHeight = paddle.baseHeight * 0.5;
+			paddle.overshootTarget = paddle.baseHeight * 0.4;
 		} else {
 			paddle.targetHeight = paddle.baseHeight;
 			if (paddle.wasEnlarged) {
@@ -443,7 +441,6 @@ export class AnimationSystem implements System {
 		}
 		const position: CrossCutPosition = direction === 'upwards' ? 'top' : 'bottom';
 
-		// Extract points based on entity type
 		if (isPyramidDepthLine(entity)) {
 			cutType = 'Triangle';
 			points = [...entity.points];
@@ -526,7 +523,6 @@ export class AnimationSystem implements System {
 		this.lastCutId = null;
 		this.isDespawningCrossCut = false;
 		
-		// Reset all animation states
 		for (const entity of this.game.entities) {
 			if (entity.hasComponent('animation')) {
 				const animation = entity.getComponent('animation') as AnimationComponent;
@@ -556,7 +552,5 @@ export class AnimationSystem implements System {
 			this.UI.hasLeftSideActivated = false;
 			this.UI.hasRightSideActivated = false;
 		}
-		
-		console.log('AnimationSystem cleanup completed');
 	}
 }

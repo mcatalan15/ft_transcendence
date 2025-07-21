@@ -6,37 +6,24 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:43:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:30:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:30:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import Pixi and Howler stuff
 import { Application, Container, Graphics } from 'pixi.js';
 import { Howl } from 'howler';
-
-// Import GameConfig
 import { GameConfig, GameData, PlayerData, TournamentConfig } from '../utils/GameConfig';
-
-// Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
-
-// Import defined entities
 import { Wall } from '../entities/Wall';
 import { Paddle } from '../entities/Paddle'
 import { UI } from '../entities/UI'
 import { PostProcessingLayer } from '../entities/PostProcessingLayer'
 import { EndgameOverlay } from '../entities/endGame/EndGameOverlay';
-
-// Import built components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 import { PhysicsComponent } from '../components/PhysicsComponent';
-
-// Import pertinent spawners
 import { ParticleSpawner } from '../spawners/ParticleSpawner';
-
-// Import Implemented Systems
 import { RenderSystem } from '../systems/RenderSystem';
 import { InputSystem } from '../systems/InputSystem';
 import { PhysicsSystem } from '../systems/PhysicsSystem';
@@ -51,17 +38,11 @@ import { CrossCutSystem } from '../systems/CrossCutSystem';
 import { EndingSystem } from '../systems/EndingSystem';
 import { AISystem } from '../systems/AISystem';
 import { ButtonSystem } from '../systems/ButtonSystem';
-
-// Import spawners and managers
 import { BallSpawner } from '../spawners/BallSpawner'
 import { ImageManager } from '../managers/ImageManager';
 import { SoundManager } from '../managers/SoundManager';
 import { TournamentManager } from '../../utils/TournamentManager';
-
-// Import exported types and utils
 import { FrameData, GameEvent, GameSounds, World, GAME_COLORS } from '../utils/Types'
-
-// API stuff
 import { getApiUrl } from '../../config/api';
 
 export class PongGame {
@@ -144,8 +125,6 @@ export class PongGame {
 		this.paddleWidth = 10;
 		this.paddleHeight = 80;
 
-		//! MOVIDAS DE CONFIG
-		//TODO FIIIIXXXXX
 		this.isOnline = config.mode === 'online' ? true : false;
 		this.gameId = config.gameId;
 
@@ -194,16 +173,11 @@ export class PongGame {
 		}
 
 		if (this.isFirefox) {
-            console.log('Game initialized with Firefox optimizations');
             this.applyGameFirefoxOptimizations();
         }
 	}
 
 	private applyGameFirefoxOptimizations(): void {
-        // Reduce particle density for Firefox
-        // Lower sound volumes
-        // Disable some intensive effects
-        console.log('Applied Firefox optimizations to game');
     }
 
 	async init(): Promise<void> {
@@ -262,14 +236,12 @@ export class PongGame {
 			const rightPaddle = this.entities.find(e => e.id === 'paddleR') as Paddle;
 			if (rightPaddle) {
 				rightPaddle.isAI = true;
-				console.log('Manually set right paddle as AI');
 			}
 
 			setTimeout(() => {
 				const aiSystem = new AISystem(this);
 				aiSystem.setDifficulty('easy');
 				this.systems.push(aiSystem);
-				console.log('AI System added to systems');
 			}, 100);
 		}
 
@@ -344,9 +316,6 @@ export class PongGame {
 				ballchangesPicked: 0
 			}
 		};
-
-		console.log(this.data.createdAt);
-		console.log('Game data prepared:', this.data);
 	}
 
 	initSounds(): void {
@@ -357,14 +326,12 @@ export class PongGame {
 				preload: true,
 				loop: true,
 				volume: 0.5,
-				onload: () => console.log('bgm loaded successfully'),
 				onloaderror: (error: any) => console.error('bgm failed to load:', error)
 			}),
 			pong: new Howl({
 				src: ['/assets/sfx/used/pongFiltered02.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('pong loaded successfully'),
 				onloaderror: (error: any) => console.error('pong failed to load:', error)
 			}),
 			thud: new Howl({
@@ -372,7 +339,6 @@ export class PongGame {
 				html5: true,
 				preload: true,
 				volume: 0.3,
-				onload: () => console.log('thud loaded successfully'),
 				onloaderror: (error: any) => console.error('thud failed to load:', error)
 			}),
 			shoot: new Howl({
@@ -380,7 +346,6 @@ export class PongGame {
 				html5: true,
 				preload: true,
 				volume: 0.3,
-				onload: () => console.log('shoot loaded successfully'),
 				onloaderror: (error: any) => console.error('shoot failed to load:', error)
 			}),
 			hit: new Howl({
@@ -388,7 +353,6 @@ export class PongGame {
 				html5: true,
 				preload: true,
 				volume: 0.3,
-				onload: () => console.log('hit loaded successfully'),
 				onloaderror: (error: any) => console.error('hit failed to load:', error)
 			}),
 			shieldBreak: new Howl({
@@ -396,63 +360,54 @@ export class PongGame {
 				html5: true,
 				preload: true,
 				volume: 0.3,
-				onload: () => console.log('shieldBreak loaded successfully'),
 				onloaderror: (error: any) => console.error('shieldBreak failed to load:', error)
 			}),
 			powerup: new Howl({
 				src: ['/assets/sfx/used/powerupFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('powerup loaded successfully'),
 				onloaderror: (error: any) => console.error('powerup failed to load:', error)
 			}),
 			powerdown: new Howl({
 				src: ['/assets/sfx/used/powerdownFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('powerdown loaded successfully'),
 				onloaderror: (error: any) => console.error('powerdown failed to load:', error)
 			}),
 			ballchange: new Howl({
 				src: ['/assets/sfx/used/ballchangeFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('ballchange loaded successfully'),
 				onloaderror: (error: any) => console.error('ballchange failed to load:', error)
 			}),
 			death: new Howl({
 				src: ['/assets/sfx/used/explosionFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('death loaded successfully'),
 				onloaderror: (error: any) => console.error('death failed to load:', error)
 			}),
 			paddleResetUp: new Howl({
 				src: ['/assets/sfx/used/recoverUpFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('paddleResetUp loaded successfully'),
 				onloaderror: (error: any) => console.error('paddleResetUp failed to load:', error)
 			}),
 			paddleResetDown: new Howl({
 				src: ['/assets/sfx/used/recoverDownFiltered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('paddleResetDown loaded successfully'),
 				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			endGame: new Howl({
 				src: ['/assets/sfx/used/explosion_filtered02.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('Explosion2 loaded successfully'),
 				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 			spawn: new Howl({
 				src: ['/assets/sfx/used/spawn_filtered01.mp3'],
 				html5: true,
 				preload: true,
-				onload: () => console.log('paddleResetDown loaded successfully'),
 				onloaderror: (error: any) => console.error('paddleResetDown failed to load:', error)
 			}),
 		};
@@ -488,34 +443,26 @@ export class PongGame {
 		}
 		
 		this.data.leftPlayer.name = this.leftPlayer.name;
-		this.data.leftPlayer.id = this.config.players![0].id;
     	this.data.rightPlayer.name = this.rightPlayer.name;
-		this.data.rightPlayer.id = this.config.players![1].id;
 
-		// Create Bounding Box
 		this.createBoundingBoxes();
 
-		// Create Walls
 		const wallT = new Wall('wallT', 'foreground', this.width, this.wallThickness, this.topWallOffset);
 		const wallTRender = wallT.getComponent('render') as RenderComponent;
 		this.renderLayers.foreground.addChild(wallTRender.graphic)
 		this.entities.push(wallT);
-		console.log("Top Wall created");
 
 		const wallB = new Wall('wallB', 'foreground', this.width, this.wallThickness, this.height - (this.bottomWallOffset - this.wallThickness));
 		const wallBRender = wallB.getComponent('render') as RenderComponent;
 		this.renderLayers.foreground.addChild(wallBRender.graphic);
 		this.entities.push(wallB);
-		console.log("Bottom wall created");
 
-		// Create Paddles
 		const paddleL = new Paddle('paddleL', 'foreground', this, this.paddleOffset, this.height / 2, true, this.leftPlayer.name.toUpperCase());
 		const paddleLRender = paddleL.getComponent('render') as RenderComponent;
 		const paddleLText = paddleL.getComponent('text') as TextComponent;
 		this.renderLayers.foreground.addChild(paddleLRender.graphic);
 		this.renderLayers.foreground.addChild(paddleLText.getRenderable());
 		this.entities.push(paddleL);
-		console.log("Left paddle created");
 
 		const paddleR = new Paddle('paddleR', 'foreground', this, this.width - this.paddleOffset, this.height / 2, false, this.rightPlayer.name.toUpperCase());
 		const paddleRRender = paddleR.getComponent('render') as RenderComponent;
@@ -525,12 +472,8 @@ export class PongGame {
 		this.entities.push(paddleR);
 		if (this.config.variant === '1vAI') {
 			paddleR.isAI = true;
-			console.log("Right paddle created as AI BOT");
-		} else {
-			console.log("Right paddle created");
 		}
 
-		// Create UI
 		const ui = new UI(this, 'UI', 'ui', this.width, this.height, this.topWallOffset);
 		const uiText = ui.getComponent('text') as TextComponent;
 		if (this.config.classicMode) {
@@ -548,15 +491,12 @@ export class PongGame {
 		}
 
 		this.entities.push(ui);
-		console.log("UI created")
 
-		// Create Postprocessing Layer
 		if (this.config.filters) {
 			const postProcessingLayer = new PostProcessingLayer('postProcessing', 'pp', this);
 			const ppRender = postProcessingLayer.getComponent('render') as RenderComponent;
 			this.renderLayers.pp.addChild(ppRender.graphic);
 			this.entities.push(postProcessingLayer);
-			console.log("PostProcessing Layer created")
 		}
 
 		this.alphaFade.rect(0, 0, this.width, this.height);
@@ -570,7 +510,6 @@ export class PongGame {
 		const endGameResultTextComponent = this.endGameOverlay.getComponent('text') as TextComponent;
 		this.renderLayers.hidden.addChild(endGameResultTextComponent.getRenderable());
 
-		// Spawn Ball
 		BallSpawner.spawnDefaultBall(this);
 	}
 
@@ -691,7 +630,6 @@ export class PongGame {
 
 	async loadImages() {
 		await ImageManager.loadAssets([
-			// Headers
 			{ name: 'victoryHeaderENWhite', url: '/headers/headers_victory_en_white.svg' },
 			{ name: 'victoryHeaderESWhite', url: '/headers/headers_victory_es_white.svg' },
 			{ name: 'victoryHeaderFRWhite', url: '/headers/headers_victory_fr_white.svg' },
@@ -722,7 +660,16 @@ export class PongGame {
 			{ name: 'drawHeaderFRYellow', url: '/headers/headers_draw_fr_yellow.svg' },
 			{ name: 'drawHeaderCATYellow', url: '/headers/headers_draw_cat_yellow.svg' },
 
-			// Placeholding avatars
+			{ name: 'resultsHeaderENWhite', url: '/headers/headers_results_en_white.svg' },
+			{ name: 'resultsHeaderESWhite', url: '/headers/headers_results_es_white.svg' },
+			{ name: 'resultsHeaderFRWhite', url: '/headers/headers_results_fr_white.svg' },
+			{ name: 'resultsHeaderCATWhite', url: '/headers/headers_results_cat_white.svg' },
+
+			{ name: 'resultsHeaderENYellow', url: '/headers/headers_results_en_yellow.svg' },
+			{ name: 'resultsHeaderESYellow', url: '/headers/headers_results_es_yellow.svg' },
+			{ name: 'resultsHeaderFRYellow', url: '/headers/headers_results_fr_yellow.svg' },
+			{ name: 'resultsHeaderCATYellow', url: '/headers/headers_results_cat_yellow.svg' },
+
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
 			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
 			{ name: 'avatarBotSquare', url: '/avatars/square/squareBot.png' },
@@ -756,7 +703,6 @@ export class PongGame {
 	}
 
 	private handleServerGameEnd(gameState: any): void {
-		console.log('Server declared game ended:', gameState);
 		
 		const endingSystem = this.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem && !this.hasEnded) {
@@ -768,11 +714,9 @@ export class PongGame {
 			
 			(endingSystem as any).ended = true;
 			this.hasEnded = true;
-			console.log('Forced game end from server event');
 		}
 	}
 	private disableLocalGameplayForOnline(): void {
-		console.log('Disabling local gameplay for online mode...');
 
 		let disabledCount = 0;
 
@@ -781,7 +725,6 @@ export class PongGame {
 
 			if (physics && (entity.id === 'defaultBall' || entity.id === 'paddleL' || entity.id === 'paddleR')) {
 				(physics as any).isServerControlled = true;
-				console.log(`Marked entity ${entity.id} as server-controlled`);
 				disabledCount++;
 			}
 
@@ -789,17 +732,14 @@ export class PongGame {
 				const input = entity.getComponent('input');
 				if (input) {
 					entity.removeComponent('input');
-					console.log(`Removed input component from ${entity.id}`);
 				}
 			}
 		});
 
-		console.log(`Local gameplay disabled for online mode. ${disabledCount} entities marked as server-controlled.`);
 	}
 
 	start() {
 		if (!this.isOnline) return;
-		console.log('Starting online Pong game');
 		this.disableLocalGameplayForOnline();
 	}
 
@@ -807,14 +747,9 @@ export class PongGame {
 		if (this.hasSavedResults || this.config.variant !== 'tournament') { return; }
 		
 		try {
-			console.log('Starting to save game results...');
-			console.log('Game data to send:', this.data);
-			
 			const token = sessionStorage.getItem('token');
-			console.log('Auth token found:', !!token);
 			
 			if (!token) {
-				console.error('No authentication token found');
 				return;
 			}
 	
@@ -827,7 +762,6 @@ export class PongGame {
 				createdAt: this.data.createdAt instanceof Date ? this.data.createdAt.toISOString() : this.data.createdAt,
 				endedAt: this.data.endedAt instanceof Date ? this.data.endedAt.toISOString() : this.data.endedAt
 			};
-			console.log('Making API call to /api/games');
 			const response = await fetch(getApiUrl('/games'), {
 				method: 'POST',
 				headers: {
@@ -840,13 +774,35 @@ export class PongGame {
 				credentials: 'include'
 			});
 	
-			console.log('Response status:', response.status);
-			console.log('Response ok:', response.ok);
-	
 			if (response.ok) {
-				const result = await response.json();
-				console.log('Game results saved successfully:', result);
+				const gameResult = await response.json();
 				this.hasSavedResults = true;
+
+				// Deploy contract
+				const deployResponse = await fetch(getApiUrl('/deploy'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						gameId: gameResult.gameId,
+						player1Name: this.data.leftPlayer.name,
+						player2Name: this.data.rightPlayer.name,
+						player1Score: this.data.finalScore.leftPlayer,
+						player2Score: this.data.finalScore.rightPlayer
+					}),
+					credentials: 'include'
+				});
+
+				const deployData = await deployResponse.json();
+
+				if (deployResponse.ok) {
+					console.log('Game results saved successfully:', gameResult);
+					console.log('Contract deployed successfully:', deployData);
+				} else {
+					console.error('Failed to deploy contract:', deployData);
+				}
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);
@@ -858,7 +814,6 @@ export class PongGame {
 
 	private updateScoreFromServer(score1: number, score2: number): void {
 		if (this.hasEnded) {
-			console.log('Game has ended, ignoring score updates from server');
 			return;
 		}
 		
@@ -871,24 +826,18 @@ export class PongGame {
 			if (this.config.classicMode) {
 				uiEntity.setClassicScoreText(score1.toString(), 'left');
 				uiEntity.setClassicScoreText(score2.toString(), 'right');
-				console.log(`🎮 UI: Classic score updated from server - left=${score1}, right=${score2}`);
 			} else {
 				uiEntity.setScoreText(`${score1} - ${score2}`);
-				console.log(`🎮 UI: Combined score updated from server - ${score1} - ${score2}`);
 			}
 		}
 	}
 
-	// API
 	async getUserData(userId: string, token: string): Promise<PlayerData> {
 		try {
-			console.log(`Fetching user data for user ${userId} with token ${token}`);
 			if (!userId || !token) {
 				throw new Error('User ID and token are required to fetch user data');
 			}
 			
-			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
-			console.log(getApiUrl('/games/getUserData'));
 			const response = await fetch(getApiUrl('/games/getUserData'), {
 				method: 'POST',
 				headers: {
@@ -908,7 +857,6 @@ export class PongGame {
 			}
 	
 			const data = await response.json();
-			console.log('User data fetched successfully:', data);
 			
 			return data.userData as PlayerData;
 		} catch (error) {
@@ -919,7 +867,6 @@ export class PongGame {
 
 	async getUserId(username: string, token: string): Promise<string> {
 		try {
-			console.log(`Fetching user ID for username ${username} with token ${token}`);
 			if (!username || !token) {
 				throw new Error('Username and token are required to fetch user ID');
 			}
@@ -944,10 +891,8 @@ export class PongGame {
 	
 			const data = await response.json();
 			
-			// Fix: Access the correct property path
 			console.log('User ID fetched successfully:', data.userData.id);
 	
-			// Fix: Return the correct property
 			return data.userData.id as string;
 		} catch (error) {
 			console.error('Error fetching user ID:', error);
@@ -986,8 +931,6 @@ export class PongGame {
 			const hostId = hostProfile.userId;
 			const guestId = guestProfile.userId;
 
-			console.log(`Host ID: ${hostId}, Guest ID: ${guestId}`);
-
 			this.playerData = await this.getUserData(hostId!, token!);
 			this.opponentData = await this.getUserData(guestId!, token!);
 		} catch (error) {
@@ -997,34 +940,40 @@ export class PongGame {
 
 	async cleanup(stopTicker: boolean = true): Promise<void> {
 		try {            
-			console.log('Starting game cleanup...');
 			
 			if (this.soundManager) {
-				console.log('Stopping sound manager...');
 				await this.soundManager.stopAllSounds();
 				await this.soundManager.cleanup();
 			}
 			
-			if (this.networkManager) {
-				console.log('Disconnecting network manager...');
-				this.networkManager.cancelMatchmaking();
-				this.networkManager.disconnect();
-				this.networkManager.close();
+			const windowNetworkManager = (window as any).currentNetworkManager;
+			if (windowNetworkManager && typeof windowNetworkManager.cancelMatchmaking === 'function') {
+				try {
+					await windowNetworkManager.cancelMatchmaking();
+				} catch (error) {
+					console.warn('Error during matchmaking cleanup:', error);
+				}
 			}
-
+			
+			if (this.networkManager) {
+				try {
+					this.networkManager.close();
+				} catch (error) {
+					console.warn('Error during WebSocket cleanup:', error);
+				}
+			}
+	
 			if (stopTicker && this.app?.ticker?.started) {
 				this.app.ticker.stop();
 			}
 			
-			console.log('Cleaning up systems...');
 			for (const system of this.systems) {
 				if (system && typeof (system as any).cleanup === 'function') {
 					await (system as any).cleanup();
 				}
 			}
 			this.systems = [];
-
-			console.log('Cleaning up entities...');
+	
 			for (const entity of this.entities) {
 				const render = entity.getComponent('render') as RenderComponent;
 				if (render?.graphic && render.graphic.parent) {
@@ -1039,12 +988,11 @@ export class PongGame {
 				}
 			}
 			this.entities = [];
-
+	
 			if (ParticleSpawner?.cleanup) {
 				ParticleSpawner.cleanup();
 			}
-
-			console.log('Cleaning up render layers...');
+	
 			for (const layer of Object.values(this.renderLayers)) {
 				if (layer?.parent) {
 					layer.parent.removeChild(layer);
@@ -1052,7 +1000,12 @@ export class PongGame {
 				layer?.destroy({ children: true });
 			}
 			
-			console.log('Game cleanup completed successfully');
+			if ((window as any).currentPongGame === this) {
+				(window as any).currentPongGame = null;
+			}
+			if ((window as any).currentNetworkManager === windowNetworkManager) {
+				(window as any).currentNetworkManager = null;
+			}	
 		} catch (error) {
 			console.error('Error during game cleanup:', error);
 			throw error;

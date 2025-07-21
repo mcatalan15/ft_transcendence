@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:17:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 20:30:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:36:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,16 +121,16 @@ export interface GameData {
 export interface PlayerData {
 	id: string;
 	name: string;
-	avatar: string;
-	type: 'human' | 'ai';
+	avatar?: string;
+	type?: 'human' | 'ai';
 	side: 'left' | 'right';
-	goalsScored: number;
-	goalsConceded: number;
-	tournaments: number;
-	wins: number;
-	losses: number;
-	draws: number;
-	rank: number;
+	goalsScored?: number;
+	goalsConceded?: number;
+	tournaments?: number;
+	wins?: number;
+	losses?: number;
+	draws?: number;
+	rank?: number;
 	totalPlayers?: number;
 	isBot?: boolean;
 }

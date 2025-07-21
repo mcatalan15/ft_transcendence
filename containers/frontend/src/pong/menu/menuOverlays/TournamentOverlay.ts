@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 18:03:16 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:23:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ import { Bracket } from "./Bracket";
 import { TournamentNextMatchDisplay } from "./TournamentNextMatchDisplay";
 
 import { GAME_COLORS } from "../../utils/Types";
+import { TournamentEndDisplay } from "./TournamentEndDisplay";
 
 export class TournamentOverlay extends Overlay {
 	tournamentTexts!: TournamentTexts;
@@ -31,6 +32,7 @@ export class TournamentOverlay extends Overlay {
 	nextMatchHeader!: HeaderBar;
 	dummyButton!: HeaderBar;
 	nextMatchDisplay!: TournamentNextMatchDisplay;
+	tournamentEndDisplay!: TournamentEndDisplay;
 
 	constructor(menu: Menu) {
 		super('tournamentOverlay', menu, 'tournament', 0x151515, GAME_COLORS.menuBlue);
@@ -50,10 +52,20 @@ export class TournamentOverlay extends Overlay {
 			this.addContent(this.bracket.nameCells[i], 'overlays');
 		}
 
-		this.nextMatchDisplay = new TournamentNextMatchDisplay(this.menu, 'nextMatchDisplay', 'overlays');
-		this.addContent(this.nextMatchDisplay, 'overlays');
+		
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.tournamentEndDisplay = new TournamentEndDisplay(this.menu, 'tournamentEndDisplay', 'overlays');
+			this.addContent(this.tournamentEndDisplay, 'overlays');
+		}else {
+			this.nextMatchDisplay = new TournamentNextMatchDisplay(this.menu, 'nextMatchDisplay', 'overlays');
+			this.addContent(this.nextMatchDisplay, 'overlays');
+		}
 
-		MenuImageManager.createTournamentAvatars(this.menu);
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			MenuImageManager.createTournamentWinnerAvatar(this.menu);
+		} else {
+			MenuImageManager.createTournamentAvatars(this.menu);
+		}
 
 		this.setQuitButton(this.menu.playQuitButton);
 		
@@ -91,20 +103,24 @@ export class TournamentOverlay extends Overlay {
 
 		MenuImageManager.prepareTournamentAvatarImages(this.menu);
 		
-		this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
-		this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
-		this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.menu.readyButton.setHidden(true);
+			this.menu.tournamentGlossaryButton.setHidden(true);
+			this.menu.tournamentFiltersButton.setHidden(true);
+		} else {
+			this.menu.readyButton.setHidden(false);
+			this.menu.tournamentGlossaryButton.setHidden(false);
+			this.menu.tournamentFiltersButton.setHidden(false);
+			this.menu.renderLayers.overlays.addChild(this.menu.readyButton.getContainer());
+			this.menu.renderLayers.overlays.addChild(this.menu.tournamentGlossaryButton.getContainer());
+			this.menu.renderLayers.overlays.addChild(this.menu.tournamentFiltersButton.getContainer());
+		}
 		
-		this.menu.readyButton.setHidden(false);
-		console.log('TournamenManager.getHasActiveTournament():', this.menu.tournamentManager.getHasActiveTournament());
 		if (this.menu.tournamentManager.getHasActiveTournament() && !this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
 			this.menu.readyButton.setClickable(true);
 		} else {
 			this.menu.readyButton.setClickable(false);
 		}
-
-		this.menu.tournamentGlossaryButton.setHidden(false);
-		this.menu.tournamentFiltersButton.setHidden(false);
 
 		this.quitButton!.setHidden(false);
 
@@ -113,10 +129,10 @@ export class TournamentOverlay extends Overlay {
 				this.tournamentInputButtons[i].setHidden(false);
 				this.tournamentInputButtons[i].setClickable(true);
 			}
-			
 		}
 
-		if (!this.menu.tournamentManager.getHasActiveTournament() || (this.menu.tournamentManager.getTournamentConfig() && this.menu.tournamentManager.getTournamentConfig()!.isFinished)) {
+		if (!this.menu.tournamentManager.getHasActiveTournament() || 
+			(this.menu.tournamentManager.getTournamentConfig() && this.menu.tournamentManager.getTournamentConfig()!.isFinished)) {
 			this.quitButton!.setClickable(true);
 		} else {
 			this.quitButton!.setClickable(false);

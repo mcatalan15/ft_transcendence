@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:07 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/26 12:23:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:32:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ import { ParticleBehaviorComponent } from '../components/ParticleBehaviorCompone
 
 import { GAME_COLORS } from '../utils/Types.js';
 
-// Options interface
 interface ParticleOptions {
 	velocityX?: number;
 	velocityY?: number;
@@ -34,7 +33,7 @@ interface ParticleOptions {
 	fadeOut?: boolean;
 	despawn?: 'time' | 'offscreen' | string;
 	rotationSpeed?: number;
-	growShrink?: boolean; // New option for grow/shrink lifecycle
+	growShrink?: boolean;
 }
 
 export class Particle extends Entity {
@@ -72,10 +71,9 @@ export class Particle extends Entity {
 		this.targetSize = size;
 		this.targetAlpha = alpha;
 		this.growShrink = growShrink;
-		this.currentScale = growShrink ? 0 : 1; // Start at 0 scale if using grow/shrink
+		this.currentScale = growShrink ? 0 : 1;
 		this.rotationSpeed = rotationSpeed;
 
-		// If using grow/shrink, start with 0 alpha, otherwise use target alpha
 		this.alpha = growShrink ? 0 : alpha;
 		this.fadeOut = fadeOut;
 		this.alphaDecay = alphaDecay;
@@ -84,7 +82,6 @@ export class Particle extends Entity {
 		const render = new RenderComponent(graphic);
 		this.addComponent(render);
 
-		// Set initial scale if using grow/shrink
 		if (growShrink) {
 			graphic.scale.set(0, 0);
 		}
@@ -109,7 +106,7 @@ export class Particle extends Entity {
 
 		const behaviour = new ParticleBehaviorComponent({
 			rotate: rotate,
-			shrink: !growShrink ? shrink : false, // Don't use old shrink if using growShrink
+			shrink: !growShrink ? shrink : false,
 			rotationSpeed: rotationSpeed,
 		});
 		this.addComponent(behaviour);

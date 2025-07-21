@@ -127,7 +127,7 @@ wss.on('connection', (ws) => {
 			ws.isAlive = false;
 			ws.ping();
 		});
-	}, 30000); // 30 seconds
+	}, 30000);
 
 	wss.on('close', () => {
 		clearInterval(pingInterval);

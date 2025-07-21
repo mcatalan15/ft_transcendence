@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:08:08 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/20 17:17:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:24:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ export class PachinkoPatternManager {
 		for (let xStep = -maxOffset; xStep <= maxOffset; xStep++) {
 			const x = xStep * radius * 6;
 			
-			const height = (maxOffset + 1) - Math.abs(xStep); // 7 down to 1
+			const height = (maxOffset + 1) - Math.abs(xStep);
 	
 			for (let yStep = -height + 1; yStep < height; yStep += 2) {
 				const y = yStep * radius * 3;

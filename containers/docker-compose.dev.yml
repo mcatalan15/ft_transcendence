@@ -18,14 +18,14 @@ services:
     networks:
       - transcendence
 
-  # backend:
-  #   volumes:
-  #     - ./backend:/usr/src/app:consistent
-  #     - userbase:/usr/src/app/db
-  #     - /usr/src/app/node_modules
-  #     - ./frontend/static/avatars:/usr/src/app/public/avatars
-  #   networks:
-  #     - transcendence
+  backend:
+    volumes:
+      - ./backend:/usr/src/app:consistent
+      - userbase:/usr/src/app/db
+      - /usr/src/app/node_modules
+      - ./frontend/static/avatars:/usr/src/app/public/avatars
+    networks:
+      - transcendence
 
   nginx:
     build:

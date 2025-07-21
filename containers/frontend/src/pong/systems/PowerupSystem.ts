@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:57:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:50:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:30:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ export class PowerupSystem implements System {
 			}
 		}
 
-		//handle powerup events
 		while (this.game.eventQueue.length > 0) {
 			const event = this.game.eventQueue.shift();
 			if (!event)
@@ -96,7 +95,6 @@ export class PowerupSystem implements System {
 		this.game.eventQueue.push(...unhandledEvents);
 
 		for (const entity of entities) {
-			// Manage powerup lifetime
 			if (entity.id.includes('power') || entity.id.includes('ballChange')) {
 				const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
 				if (!lifetime) continue;
@@ -110,8 +108,6 @@ export class PowerupSystem implements System {
 					}
 				}
 			}
-
-			//Manage shield lifetime
 			if (isShield(entity)) {
 				const lifetime = entity.getComponent('lifetime') as LifetimeComponent;
 				if (!lifetime) continue;
@@ -125,14 +121,12 @@ export class PowerupSystem implements System {
 				}
 			}
 
-			// Restore powerup effects
 			if (isPaddle(entity)) {
 				if (entity.isEnlarged || entity.isShrinked || entity.isInverted || entity.isSlowed || entity.isFlat || entity.isMagnetized || entity.isStunned ) {
 					entity.affectedTimer -= delta.deltaTime;
 				}
 
 				if ((entity.isEnlarged || entity.isShrinked) && entity.affectedTimer <= 0) {
-					console.log('Resetting paddle height');
 					if (entity.isEnlarged) {
 						this.game.sounds.paddleResetDown.play()
 					} else {
@@ -161,12 +155,10 @@ export class PowerupSystem implements System {
 			}
 		}
 
-		// Remove powerups that have expired
 		for (const entityId of powerupsToRemove) {
 			this.game.removeEntity(entityId);
 		}
 
-		// Handle bullet spawning
 		if (this.isSpawningBullets) {
 			this.bulletSpawnInterval -= delta.deltaTime;
 
@@ -185,7 +177,6 @@ export class PowerupSystem implements System {
 	
 
 	setBarTimers(side: string, id: string) {
-		console.log(id);
 		if (id.includes('enlarge') || id.includes('magnetize') || id.includes('shrink') || id.includes('flat') || id.includes('slow') || id.includes('invert')) {
 			this.UI.setBarTimer(side, 500);
 		} else if (id.includes ('shield')) {
@@ -514,7 +505,6 @@ export class PowerupSystem implements System {
 	}
 
 	cleanup(): void {
-		// Reset timers and flags
 		this.powerupTimer = 0;
 		this.isSpawningPowerups = false;
 		this.isSpawningBullets = false;
@@ -522,7 +512,6 @@ export class PowerupSystem implements System {
 		this.bulletQuantity = 3;
 		this.bulletEvent = undefined;
 		
-		// Remove all powerups, shields, and bullets
 		const itemsToRemove: string[] = [];
 		for (const entity of this.game.entities) {
 			if (entity.id.includes('power') || 
@@ -557,7 +546,5 @@ export class PowerupSystem implements System {
 				}
 			}
 		}
-		
-		console.log('PowerupSystem cleanup completed');
 	}
 }

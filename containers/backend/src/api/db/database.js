@@ -7,9 +7,7 @@ const db = connectToDatabase();
 function connectToDatabase(retries = 5, delay = 2000) {
 	const db = new sqlite3.Database(dbPath, (err) => {
 		if (err) {
-			console.error(`Error opening database (attempts left: ${retries}):`, err.message);
 			if (retries > 0) {
-				console.log(`Retrying in ${delay/1000} seconds...`);
 				setTimeout(() => connectToDatabase(retries - 1, delay), delay);
 			} else {
 				console.error('Failed to connect to database after multiple attempts');
@@ -93,12 +91,9 @@ async function checkUserExists(username, email) {
 			query = `SELECT * FROM users WHERE email = ?`;
 			params = [email];
 		} else {
-			// Neither username nor email provided
 			resolve({ exists: false });
 			return;
 		}
-
-		console.log(`[DB checkUserExists] Query: "${query}" with params: [${params.join(', ')}]`);
 
 		db.get(query, params, (err, row) => {
 			if (err) {
@@ -108,19 +103,13 @@ async function checkUserExists(username, email) {
 			}
 
 			if (row) {
-				console.log('[DB checkUserExists] User found:', {
-					id: row.id_user,
-					username: row.username,
-					email: row.email
-				});
 				resolve({
 					exists: true,
 					usernameExists: username ? row.username === username : false,
 					emailExists: email ? row.email === email : false,
-					user: row // Include the user data
+					user: row
 				});
 			} else {
-				console.log('[DB checkUserExists] User NOT found.');
 				resolve({ exists: false });
 			}
 		});
@@ -194,7 +183,6 @@ async function getUserById(userId) {
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
-                console.log('getUserById result for userId', userId, ':', row);
                 resolve(row);
             }
         });
@@ -215,99 +203,6 @@ async function getUserByUsername(username) {
     });
 }
 
-// async function saveGameToDatabase(
-//     // game_id,
-//     player1_id,
-//     player2_id,
-//     winner_id,
-//     // player1_name,
-//     // player2_name,
-//     player1_score,
-//     player2_score,
-//     // winner_name,
-//     // player1_is_ai,
-//     // player2_is_ai,
-//     game_mode,
-//     is_tournament,
-//     smart_contract_link,
-//     contract_address,
-//     created_at,
-//     ended_at
-// ) {
-//     return new Promise((resolve, reject) => {
-//         console.log('saveGameToDatabase called with:', {
-//             player1_id, player2_id, winner_id,
-//             player1_score, player2_score,
-//             game_mode,
-// 			is_tournament, 
-// 			smart_contract_link,
-// 			contract_address,
-//             created_at,
-// 			ended_at
-//         });
-
-//         const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-//         const query = `
-//             INSERT INTO games (
-//                 player1_id,
-//                 player2_id,
-//                 winner_id,
-//                 -- player1_name,
-//                 -- player2_name,
-//                 player1_score,
-//                 player2_score,
-//                 -- winner_name,
-//                 -- player1_is_ai,
-//                 -- player2_is_ai,
-//                 game_mode,
-//                 is_tournament,
-//                 smart_contract_link,
-//                 contract_address,
-//                 created_at,
-//                 ended_at
-//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//         `;
-
-//         const params = [
-//             // game_id,
-//             player1_id,
-//             player2_id,
-//             winner_id,
-//             // player1_name,
-//             // player2_name,
-//             player1_score || 0,
-//             player2_score || 0,
-//             // winner_name,
-//             // player1_is_ai ? 1 : 0,
-//             // player2_is_ai ? 1 : 0,
-//             game_mode,
-//             is_tournament ? 1 : 0,
-//             smart_contract_link,
-//             contract_address,
-//             created_at || new Date().toISOString(),
-//             ended_at
-//         ];
-
-//         console.log('Executing query with params:', params);
-
-//         db.run(query, params, function (err) {
-//             if (err) {
-//                 console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
-//                     message: err.message,
-//                     code: err.code,
-//                     errno: err.errno
-//                 });
-//                 reject(err);
-//             } else {
-//                 console.log('Game saved successfully with auto-increment ID:', this.lastID);
-//                 console.log('Game_id used:', game_id);
-//                 resolve(this.lastID);
-//             }
-//         });
-//     });
-// }
-
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
@@ -324,8 +219,6 @@ async function getLatestGame() {
 
 async function saveGameToDatabase(gameRecord, gameData) {
 	return new Promise((resolve, reject) => {
-		console.log('saveGameToDatabase called with gameRecord:', gameRecord);
-
 		const query = `
             INSERT INTO games (
                 player1_id,
@@ -428,8 +321,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 			gameRecord.player2_result
 		];
 
-		console.log('Executing games query with params:', params);
-
 		db.run(query, params, function (err) {
 			if (err) {
 				console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
@@ -441,9 +332,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 			}
 
 			const gameId = this.lastID;
-			console.log('Game saved successfully with ID:', gameId);
-
-			// Insert into game_results table
 			const gameResultsQuery = `
                 INSERT INTO game_results (id_game, game_data)
                 VALUES (?, ?)
@@ -459,8 +347,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 					});
 					return reject(err);
 				}
-
-				console.log('Game data saved to game_results with ID:', gameId);
 				resolve(gameId);
 			});
 		});
@@ -491,38 +377,26 @@ async function saveGameResultsToDatabase(gameId, gameData) {
         
         db.run(query, params, function (err) {
             if (err) {
-                console.error('[DB INSERT ERROR] Failed to save game results:', {
-                    message: err.message,
-                    code: err.code,
-                    errno: err.errno,
-                    stack: err.stack
-                });
                 reject(err);
             } else {
-                console.log(`[DB] Successfully saved detailed game results for game ${gameId}`);
                 resolve(this.lastID);
             }
         });
     });
 }
 
-// ! Needed???? !!!!
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        // Initially, twoFactorEnabled is FALSE until the user successfully verifies the code
         const params = [secret, false, userId];
 
         db.run(query, params, function (err) {
             if (err) {
-                console.error(`[DB ERROR] Failed to save 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error saving 2FA secret.'));
             } else if (this.changes === 0) {
-                // If no rows were updated, it means the userId probably doesn't exist
                 console.warn(`[DB WARN] No user found with ID ${userId} to save 2FA secret.`);
                 reject(new Error('User not found.'));
             } else {
-                console.log(`[DB] Saved 2FA secret for user ${userId}.`);
                 resolve(true);
             }
         });
@@ -538,10 +412,8 @@ async function getTwoFactorSecret(userId) {
                 console.error(`[DB ERROR] Failed to get 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error getting 2FA secret.'));
             } else if (row) {
-                console.log(`[DB] Fetched 2FA secret for user ${userId}.`);
                 resolve(row.twoFactorSecret);
             } else {
-                console.log(`[DB] No user found with ID ${userId} or no 2FA secret set.`);
                 resolve(null);
             }
         });
@@ -555,13 +427,10 @@ async function enableTwoFactor(userId, secret) {
 
         db.run(query, params, function (err) {
             if (err) {
-                console.error(`[DB ERROR] Failed to enable 2FA for user ${userId}:`, err.message);
                 reject(new Error('Database error enabling 2FA.'));
             } else if (this.changes === 0) {
-                console.warn(`[DB WARN] No user found with ID ${userId} to enable 2FA.`);
                 reject(new Error('User not found.'));
             } else {
-                console.log(`[DB] Enabled 2FA for user ${userId}.`);
                 resolve(true);
             }
         });
@@ -578,7 +447,6 @@ async function enableTwoFactor(userId, secret) {
 
 async function addFriend(userId, friendId) {
     return new Promise((resolve, reject) => {
-        // Prevent self-friending
         if (userId === friendId) {
             reject(new Error('Cannot add yourself as a friend'));
             return;
@@ -653,7 +521,6 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
         const query = `UPDATE games SET contract_address = ?, smart_contract_link = ? WHERE id_game = ?`;
         const params = [contractAddress, explorerLink, gameId];
         
-        console.log('Executing DB query:', { query, params });
         db.run(query, params, function (err) {
             if (err) {
                 console.error('[DB UPDATE ERROR] Failed to save smart contract data:', {
@@ -667,7 +534,6 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
                 console.warn(`[DB WARN] No game found with ID ${gameId} to update contract data.`);
                 reject(new Error('Game not found'));
             } else {
-                console.log(`[DB] Successfully saved smart contract data for game ${gameId}`);
                 resolve({
                     gameId: gameId,
                     contractAddress: contractAddress,
@@ -713,7 +579,6 @@ async function  updateNickname(userId, newNickname) {
 					console.warn(`[DB WARN] No user found with ID ${userId} to update nickname.`);
 					reject(new Error('User not found'));
 				} else {
-					console.log(`[DB] Successfully updated nickname for user ${userId}`);
 					resolve(true);
 				}
 			});
@@ -737,7 +602,6 @@ async function changePassword(userId, newHashedPassword) {
 				console.warn(`[DB WARN] No user found with ID ${userId} to update password.`);
 				reject(new Error('User not found'));
 			} else {
-				console.log(`[DB] Successfully updated password for user ${userId}`);
 				resolve(true);
 			}
 		});
@@ -765,7 +629,6 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 	return new Promise((resolve, reject) => {
 		const offset = page * limit;
 
-		// Run both queries in parallel
 		Promise.all([
 			new Promise((res, rej) => {
 				db.get(
@@ -785,7 +648,7 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 				db.all(
 					`SELECT 
 			   id_game,
-			   created_at, -- Temporarily remove datetime for testing
+			   created_at,
 			   is_tournament,
 			   player1_id,
 			   player2_id,
@@ -835,7 +698,6 @@ async function getUserStats(userId) {
                 console.error('Error getting user stats:', err);
                 reject(err);
             } else {
-                console.log('Retrieved user stats for user', userId, ':', row);
                 resolve(row);
             }
         });
@@ -866,7 +728,6 @@ async function getUserProfileStats(userId) {
 }
 
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
-	console.log(`Saving refresh token for user ${userId}: ${refreshToken}`);
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
                       ON CONFLICT(user_id) DO UPDATE SET token = ?`;
@@ -882,7 +743,6 @@ async function saveRefreshTokenInDatabase(userId, refreshToken) {
                 });
                 reject(err);
             } else {
-				console.log(`Refresh token saved successfully for user ${userId}`);
                 resolve(true);
             }
         });
@@ -903,11 +763,9 @@ async function getRefreshTokenFromDatabase(userId) {
                 reject(err);
             }
             else if (row) {
-                console.log(`[DB] Fetched refresh token for user ${userId}.`);
                 resolve(row.token);
             }
             else {
-                console.log(`[DB] No refresh token found for user ${userId}.`);
                 resolve(null);
             }
         });
@@ -932,7 +790,6 @@ async function deleteRefreshTokenFromDatabase(userId) {
                 resolve(false);
             }
             else {
-                console.log(`[DB] Successfully deleted refresh token for user ${userId}`);
                 resolve(true);
             }
         });
@@ -964,10 +821,8 @@ async function getUserProfileStats(userId) {
 
 async function updateUserStats(player1_id, player2_id, gameData) {
     try {
-        // Begin transaction to ensure atomic updates
         await db.run('BEGIN TRANSACTION');
 
-        // Update stats for left player (player1)
         await db.run(`
             INSERT INTO user_stats (
                 id_user,
@@ -1077,9 +932,9 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.snakes,
             gameData.walls.vipers,
             gameData.walls.waystones,
-            gameData.leftPlayer.score, // highest_score
+            gameData.leftPlayer.score,
             
-            // Update values (same as above for calculations)
+            // Update values
             gameData.leftPlayer.result === 'win' ? 1 : 0,
             gameData.leftPlayer.result === 'lose' ? 1 : 0,
             gameData.leftPlayer.result === 'draw' ? 1 : 0,
@@ -1111,11 +966,11 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.leftPlayer.score,
             // For calculated fields
-            gameData.leftPlayer.result === 'win' ? 1 : 0, // win_rate calculation
-            gameData.leftPlayer.goalsInFavor, // average_score calculation
-            gameData.leftPlayer.goalsInFavor, // goals_per_game calculation
-            gameData.leftPlayer.hits, // hits_per_game calculation
-            gameData.leftPlayer.powerupsPicked // powerups_per_game calculation
+            gameData.leftPlayer.result === 'win' ? 1 : 0,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.hits,
+            gameData.leftPlayer.powerupsPicked
         ]);
 
         // Update stats for right player (player2)
@@ -1228,9 +1083,9 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.snakes,
             gameData.walls.vipers,
             gameData.walls.waystones,
-            gameData.rightPlayer.score, // highest_score
+            gameData.rightPlayer.score,
             
-            // Update values (same as above for calculations)
+            // Update values
             gameData.rightPlayer.result === 'win' ? 1 : 0,
             gameData.rightPlayer.result === 'lose' ? 1 : 0,
             gameData.rightPlayer.result === 'draw' ? 1 : 0,
@@ -1262,20 +1117,143 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.rightPlayer.score,
             // For calculated fields
-            gameData.rightPlayer.result === 'win' ? 1 : 0, // win_rate calculation
-            gameData.rightPlayer.goalsInFavor, // average_score calculation
-            gameData.rightPlayer.goalsInFavor, // goals_per_game calculation
-            gameData.rightPlayer.hits, // hits_per_game calculation
-            gameData.rightPlayer.powerupsPicked // powerups_per_game calculation
+            gameData.rightPlayer.result === 'win' ? 1 : 0,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.hits,
+            gameData.rightPlayer.powerupsPicked
         ]);
 
         await db.run('COMMIT');
-        console.log('User stats updated successfully for both players');
     } catch (error) {
         console.error('Error updating user stats:', error);
         await db.run('ROLLBACK');
         throw error;
     }
+}
+
+async function updateTournamentStats(tournamentConfig) {
+    return new Promise((resolve, reject) => {
+        if (!tournamentConfig.isFinished) {
+            reject(new Error('Tournament must be finished to update stats'));
+            return;
+        }
+
+        const { registeredPlayerNames, registeredPlayerData, tournamentWinner } = tournamentConfig;
+
+        const players = [];
+        const playerDataKeys = Object.keys(registeredPlayerNames);
+
+        playerDataKeys.forEach(playerKey => {
+            const playerName = registeredPlayerNames[playerKey];
+            if (playerName) {
+                const playerDataKey = `${playerKey}Data`;
+                const playerData = registeredPlayerData[playerDataKey];
+                
+                players.push({
+                    name: playerName,
+                    isWinner: playerName === tournamentWinner,
+                    isGuest: playerData === null,
+                    actualUserId: playerData ? playerData.id : null
+                });
+            }
+        });
+
+        if (players.length === 0) {
+            reject(new Error('No valid players found in tournament'));
+            return;
+        }
+
+        let completed = 0;
+        let errors = [];
+
+        const updatePlayerStats = (playerIndex) => {
+            if (playerIndex >= players.length) {
+                if (errors.length > 0) {
+                    console.error('[DB ERROR] Some players could not be updated:', errors);
+                    reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
+                } else {
+                    resolve({
+                        updatedPlayers: players.length,
+                        tournamentWinner: tournamentWinner,
+                        players: players.map(p => ({ 
+                            name: p.name, 
+                            isWinner: p.isWinner, 
+                            isGuest: p.isGuest 
+                        }))
+                    });
+                }
+                return;
+            }
+
+            const player = players[playerIndex];
+            let targetUserId;
+            let targetUsername;
+
+            if (player.isGuest) {
+                
+                const findGuestQuery = `SELECT id_user FROM users WHERE username = 'guest' LIMIT 1`;
+                db.get(findGuestQuery, [], (guestErr, guestRow) => {
+                    if (guestErr) {
+                        console.error(`[DB ERROR] Failed to find guest user:`, guestErr);
+                        errors.push(`Failed to find guest user: ${guestErr.message}`);
+                        updatePlayerStats(playerIndex + 1);
+                        return;
+                    }
+
+                    if (guestRow) {
+                        targetUserId = guestRow.id_user;
+                        targetUsername = 'guest';
+                        updateStats();
+                    } else {
+                        console.error(`[DB ERROR] Guest user not found in database`);
+                        errors.push(`Guest user not found for ${player.name}`);
+                        updatePlayerStats(playerIndex + 1);
+                    }
+                });
+                return;
+            } else {
+                targetUserId = player.actualUserId;
+                targetUsername = player.name;
+                updateStats();
+            }
+
+            function updateStats() {
+                const query = `
+                    INSERT INTO user_stats (
+                        id_user, 
+                        total_tournaments, 
+                        tournaments_won, 
+                        tournaments_lost,
+                        last_updated
+                    ) VALUES (?, 1, ?, ?, CURRENT_TIMESTAMP)
+                    ON CONFLICT(id_user) DO UPDATE SET 
+                        total_tournaments = total_tournaments + 1,
+                        tournaments_won = tournaments_won + ?,
+                        tournaments_lost = tournaments_lost + ?,
+                        last_updated = CURRENT_TIMESTAMP
+                `;
+
+                const wonIncrement = player.isWinner ? 1 : 0;
+                const lostIncrement = player.isWinner ? 0 : 1;
+                const params = [targetUserId, wonIncrement, lostIncrement, wonIncrement, lostIncrement];
+
+                db.run(query, params, function (err) {
+                    if (err) {
+                        console.error(`[DB ERROR] Failed to update stats for player ${player.name} (target: ${targetUsername}):`, err);
+                        errors.push(`Failed to update ${player.name}: ${err.message}`);
+                    } else if (this.changes === 0) {
+                        console.warn(`[DB WARN] No stats updated for player ${player.name} (target: ${targetUsername})`);
+                        errors.push(`No stats updated for ${player.name}`);
+                    } else {
+                        console.log(`[DB] Updated tournament stats for ${player.name} -> ${targetUsername} (Winner: ${player.isWinner})`);
+                    }
+                    updatePlayerStats(playerIndex + 1);
+                });
+            }
+        };
+        updatePlayerStats(0);
+    });
 }
 
 module.exports = {
@@ -1309,5 +1287,6 @@ module.exports = {
     getRefreshTokenFromDatabase,
     deleteRefreshTokenFromDatabase,
 	getUsernameById,
-	updateUserStats
+	updateUserStats,
+	updateTournamentStats
 };

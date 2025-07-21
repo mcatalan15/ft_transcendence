@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:39:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:59:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:37:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,5 @@ export class WallFigureManager {
             this.game.data.walls.maws = 0;
             this.game.data.walls.rakes = 0;
         }
-        
-        console.log('WallFigureManager cleanup completed');
     }
 }

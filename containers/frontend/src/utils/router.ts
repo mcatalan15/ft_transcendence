@@ -9,7 +9,6 @@ export function startRouter(container: HTMLElement) {
 	app = container;
 
 	window.addEventListener('beforeunload', () => {
-		console.log('Page unloading, cleaning up games...');
 		gameManager.destroyAllGames();
 	});
 	
@@ -21,13 +20,17 @@ export function startRouter(container: HTMLElement) {
 }
 
 let lastNavigation = 0;
-const NAVIGATION_COOLDOWN = 5; // ms
+const NAVIGATION_COOLDOWN = 5;
 
 export function navigate(path: string) {
     const now = Date.now();
+
     if (now - lastNavigation < NAVIGATION_COOLDOWN) return;
+
     lastNavigation = now;
+
     history.pushState({}, '', path);
+
     renderRoute(path);
 }
 
@@ -88,10 +91,6 @@ async function renderRoute(path: string) {
 				logUserOut();
 			}
 			navigate('/');
-			return;
-
-		case '/blockchain': //Delete when blockchain working!!
-			views.showBlockchain(app);
 			return;
 
 		case '/auth':

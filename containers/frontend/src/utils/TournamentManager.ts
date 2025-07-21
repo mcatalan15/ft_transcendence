@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:47:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:06:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:43:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ export class TournamentManager {
 	private activeTournament: TournamentConfig | null = null;
 	private containerId: string | null = null;
 	private currentMatch: number = 1;
-	private totalMatches: number = 7; // 8 players = 7 matches total
+	private totalMatches: number = 7;
 
 	constructor(app: Application) {
-		this.containerId = app.view.id;
+		this.containerId = app.canvas.id;
 	}
 
 	public startTournament(containerId: string, config: TournamentConfig): void {
@@ -29,7 +29,6 @@ export class TournamentManager {
 		this.activeTournament = config;
 		this.containerId = containerId;
 		this.currentMatch = 1;
-		console.log(`Tournament started for container ${containerId}:`, config);
 	}
 
 	public getTournament(): TournamentConfig | null {
@@ -39,12 +38,10 @@ export class TournamentManager {
 	public updateTournament(config: TournamentConfig): void {
 		if (this.activeTournament) {
 			this.activeTournament = config;
-			console.log(`Tournament updated for container ${this.containerId}:`, config);
 		}
 	}
 
 	public completeTournament(): void {
-		console.log(`Tournament completed for container ${this.containerId}`);
 		this.activeTournament = null;
 		this.containerId = null;
 		this.hasActiveTournament = false;
@@ -64,7 +61,6 @@ export class TournamentManager {
 		this.activeTournament = null;
 		this.containerId = null;
 		this.currentMatch = 0;
-		console.log('Tournament state completely cleared');
 	}
 
 	public getHasActiveTournament(): boolean {
@@ -77,12 +73,10 @@ export class TournamentManager {
 
 	public startMatch(): void {
 		if (this.currentMatch >= this.totalMatches) {
-			console.error('Cannot start match - tournament already complete');
 			return;
 		}
 		
 		this.currentMatch++;
-		console.log(`Starting match ${this.currentMatch} of ${this.totalMatches}`);
 	}
 	
 	public isTournamentComplete(): boolean {
@@ -100,9 +94,7 @@ export class TournamentManager {
 	public advanceMatch(): boolean {
 		if (this.currentMatch < this.totalMatches) {
 			this.currentMatch++;
-			console.log(`Advanced to match ${this.currentMatch} of ${this.totalMatches}`);
 			
-			// Update the tournament config if it exists
 			if (this.activeTournament) {
 				this.activeTournament.nextMatch.matchOrder = this.currentMatch;
 			}
@@ -120,7 +112,6 @@ export class TournamentManager {
 		if (this.activeTournament) {
 			this.activeTournament = config;
 			this.currentMatch = config.nextMatch.matchOrder;
-			console.log(`Synchronized tournament manager with config. Current match: ${this.currentMatch}`);
 		}
 	}
 }

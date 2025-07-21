@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/03 12:00:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:03:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,10 @@ export class HeaderBar extends Entity {
 			}
 		}
 
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			color = GAME_COLORS.orange;
+		}
+
 		return (color);
 	}
 	
@@ -119,6 +123,10 @@ export class HeaderBar extends Entity {
 					case ('chat'): {
 						return ('chat');
 					}
+
+					case ('tournament winner'): {
+						return ('GANADOR DEL TORNEO');
+					}
 				}
 				break;
 			}
@@ -164,6 +172,10 @@ export class HeaderBar extends Entity {
 					case ('chat'): {
 						return ('chat');
 					}
+
+					case ('tournament winner'): {
+						return ('GAGNANT DU TOURNOI');
+					}
 				}
 				break;
 			}
@@ -208,6 +220,10 @@ export class HeaderBar extends Entity {
 
 					case ('chat'): {
 						return ('xat');
+					}
+
+					case ('tournament winner'): {
+						return ('GUANYADOR DEL TORNEIG');
 					}
 				}
 				break;

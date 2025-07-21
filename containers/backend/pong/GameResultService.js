@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   GameResultService.js                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 17:05:18 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 17:07:45 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 const db = require('../src/api/db/database.js');
 
 class GameResultsService {
 	static async saveOnlineGameResults(gameData) {
 		try {
-			console.log('🔍 Attempting to save online game results...');
 
 			const { db, getUserByUsername } = require('../src/api/db/database');
 
@@ -30,9 +41,11 @@ class GameResultsService {
 			} else if (gameData.rightPlayer.result === 'win') {
 				winner_id = player2_id;
 				generalResult = 'rightWin';
+			} else if (gameData.leftPlayer.restult === 'draw') {
+				winner_id = null;
+				generalResult = 'draw';
 			}
 
-			// Create the database insert query
 			const gameQuery = `
                 INSERT INTO games (
                     player1_id, player2_id, winner_id, player1_score, player2_score, 
@@ -57,23 +70,20 @@ class GameResultsService {
 				gameData.leftPlayer.score,
 				gameData.rightPlayer.score,
 				gameData.config.mode,
-				false, // is_tournament
-				'', // smart_contract_link
-				'', // contract_address
+				false,
+				'', 
+				'', 
 				gameData.createdAt,
 				gameData.endedAt,
 				JSON.stringify(gameData.config),
 				generalResult,
-				// Ball usage
 				gameData.balls?.defaultBalls || 0,
 				gameData.balls?.curveBalls || 0,
 				gameData.balls?.multiplyBalls || 0,
 				gameData.balls?.spinBalls || 0,
 				gameData.balls?.burstBalls || 0,
-				// Special items
 				gameData.specialItems?.bullets || 0,
 				gameData.specialItems?.shields || 0,
-				// Walls
 				gameData.walls?.pyramids || 0,
 				gameData.walls?.escalators || 0,
 				gameData.walls?.hourglasses || 0,
@@ -87,7 +97,6 @@ class GameResultsService {
 				gameData.walls?.snakes || 0,
 				gameData.walls?.vipers || 0,
 				gameData.walls?.waystones || 0,
-				// Player 1 stats
 				gameData.leftPlayer.hits || 0,
 				gameData.leftPlayer.goalsInFavor || 0,
 				gameData.leftPlayer.goalsAgainst || 0,
@@ -95,7 +104,6 @@ class GameResultsService {
 				gameData.leftPlayer.powerdownsPicked || 0,
 				gameData.leftPlayer.ballchangesPicked || 0,
 				gameData.leftPlayer.result,
-				// Player 2 stats
 				gameData.rightPlayer.hits || 0,
 				gameData.rightPlayer.goalsInFavor || 0,
 				gameData.rightPlayer.goalsAgainst || 0,
@@ -105,17 +113,12 @@ class GameResultsService {
 				gameData.rightPlayer.result
 			];
 
-			console.log('📝 Saving online game with params:', gameParams);
-
-			// Execute the database operations in a transaction
 			return new Promise((resolve, reject) => {
-				// Make sure db is defined
 				if (!db || typeof db.run !== 'function') {
 					reject(new Error('Database not properly initialized'));
 					return;
 				}
 
-				// Start transaction
 				db.serialize(() => {
 					db.run("BEGIN TRANSACTION", (err) => {
 						if (err) {
@@ -134,9 +137,7 @@ class GameResultsService {
 							}
 
 							const gameId = this.lastID;
-							console.log('✅ Online game saved successfully with ID:', gameId);
 
-							// Update user stats for both players
 							Promise.all([
 								GameResultsService.updateUserStats(db, player1_id, gameData.leftPlayer, gameData),
 								GameResultsService.updateUserStats(db, player2_id, gameData.rightPlayer, gameData)
@@ -167,7 +168,6 @@ class GameResultsService {
 
 	static async updateUserStats(db, userId, playerData, gameData) {
 		return new Promise((resolve, reject) => {
-			// First, get current user stats
 			const getStatsQuery = `
                 SELECT * FROM user_stats WHERE id_user = ?
             `;
@@ -179,7 +179,6 @@ class GameResultsService {
 					return;
 				}
 
-				// Initialize stats if user doesn't exist in user_stats table
 				if (!currentStats) {
 					currentStats = {
 						total_games: 0,
@@ -225,10 +224,8 @@ class GameResultsService {
 					};
 				}
 
-				// Calculate new stats
 				const newStats = { ...currentStats };
 
-				// Update basic game statistics
 				newStats.total_games += 1;
 
 				if (playerData.result === 'win') {
@@ -239,10 +236,8 @@ class GameResultsService {
 					newStats.draws += 1;
 				}
 
-				// Calculate win rate
 				newStats.win_rate = newStats.total_games > 0 ? (newStats.wins / newStats.total_games) * 100 : 0;
 
-				// Update detailed gameplay statistics
 				newStats.total_hits += playerData.hits || 0;
 				newStats.total_goals_scored += playerData.goalsInFavor || 0;
 				newStats.total_goals_conceded += playerData.goalsAgainst || 0;
@@ -250,18 +245,15 @@ class GameResultsService {
 				newStats.total_powerdowns_picked += playerData.powerdownsPicked || 0;
 				newStats.total_ballchanges_picked += playerData.ballchangesPicked || 0;
 
-				// Update ball usage statistics (these are game-wide, so we divide by 2 for each player)
 				newStats.total_default_balls += Math.floor((gameData.balls?.defaultBalls || 0) / 2);
 				newStats.total_curve_balls += Math.floor((gameData.balls?.curveBalls || 0) / 2);
 				newStats.total_multiply_balls += Math.floor((gameData.balls?.multiplyBalls || 0) / 2);
 				newStats.total_spin_balls += Math.floor((gameData.balls?.spinBalls || 0) / 2);
 				newStats.total_burst_balls += Math.floor((gameData.balls?.burstBalls || 0) / 2);
 
-				// Update special items usage
 				newStats.total_bullets += Math.floor((gameData.specialItems?.bullets || 0) / 2);
 				newStats.total_shields += Math.floor((gameData.specialItems?.shields || 0) / 2);
 
-				// Update wall elements usage
 				newStats.total_pyramids += Math.floor((gameData.walls?.pyramids || 0) / 2);
 				newStats.total_escalators += Math.floor((gameData.walls?.escalators || 0) / 2);
 				newStats.total_hourglasses += Math.floor((gameData.walls?.hourglasses || 0) / 2);
@@ -276,7 +268,6 @@ class GameResultsService {
 				newStats.total_vipers += Math.floor((gameData.walls?.vipers || 0) / 2);
 				newStats.total_waystones += Math.floor((gameData.walls?.waystones || 0) / 2);
 
-				// Update performance metrics
 				const currentScore = playerData.score || 0;
 				newStats.average_score = ((newStats.average_score * (newStats.total_games - 1)) + currentScore) / newStats.total_games;
 				newStats.highest_score = Math.max(newStats.highest_score, currentScore);
@@ -284,7 +275,6 @@ class GameResultsService {
 				newStats.hits_per_game = newStats.total_games > 0 ? newStats.total_hits / newStats.total_games : 0;
 				newStats.powerups_per_game = newStats.total_games > 0 ? newStats.total_powerups_picked / newStats.total_games : 0;
 
-				// Update user stats in database
 				const updateStatsQuery = `
                     INSERT OR REPLACE INTO user_stats (
                         id_user, total_games, wins, losses, draws, win_rate, vs_ai_games,

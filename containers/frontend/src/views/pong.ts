@@ -21,34 +21,20 @@ async function initDirectOnlineGame(container: HTMLElement, inviteId: string, cu
             autoDensity: !isFirefox
         };
 
-        // Get player names from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const hostName = urlParams.get('hostName') || 'Host';
         const guestName = urlParams.get('guestName') || 'Guest';
-        
-        console.log('Player names from URL:', { hostName, guestName, currentPlayer });
 
-        // Determine if current player is host or guest
+
         const isHost = hostName === currentPlayer;
         const opponentName = isHost ? guestName : hostName;
 
-        console.log('Game roles determined:', { 
-            currentPlayer, 
-            isHost, 
-            opponentName,
-            hostName,
-            guestName 
-        });
-
-        // Create game data object (no API call needed!)
         const gameData = {
             gameId: inviteId,
             hostId: hostName,
             guestId: guestName,
             status: 'waiting'
         };
-
-        console.log('🎮 Using URL-based game data:', gameData);
 
         const app = new Application();
         await app.init({
@@ -149,7 +135,6 @@ export function showPong(container: HTMLElement): void {
             container.appendChild(langSelector);
 
             if (isFromInvitation && inviteId) {
-                console.log('Direct online game via invitation detected, bypassing menu');
                 const currentPlayer = sessionStorage.getItem('username');
                 
                 if (!currentPlayer) {
@@ -161,8 +146,7 @@ export function showPong(container: HTMLElement): void {
                 await initDirectOnlineGame(container, inviteId, currentPlayer);
                 return;
             }
-
-            console.log('Normal pong initialization via menu');
+            
             const preconfiguration: Preconfiguration = {
                 mode: 'local',
                 variant: '1v1',

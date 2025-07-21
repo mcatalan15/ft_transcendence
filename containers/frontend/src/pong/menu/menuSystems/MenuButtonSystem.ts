@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 20:58:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 23:32:10 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,7 @@ import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup
 import { PongNetworkManager } from "../../network/PongNetworkManager";
 import { gameManager } from "../../../utils/GameManager";
 import { navigate } from "../../../utils/router";
-import { MenuInputSystem } from "./MenuInputSystem";
-import { MenuBigInputButton } from "../menuButtons/MenuBigInputButton";
-import { MenuSmallInputButton } from "../menuButtons/MenuSmallInputButton";
-import { Text } from "pixi.js";
+import { MenuImageManager } from "../menuManagers/MenuImageManager";
 
 export class MenuButtonSystem implements System {
 	private menu: Menu;
@@ -88,15 +85,12 @@ export class MenuButtonSystem implements System {
 				this.resetLayer(event);
 				if (event.type === 'PLAY_BACK') {
 					await this.handleCancelMatchmaking();
+					this.menu.playOverlay.hide();
 				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
 			} else if (event.type === 'MATCH_FOUND') {
 				this.handleMatchFound();
-			} else if (event.type === '1V1_READY_CLICK') {
-				this.handle1v1ReadyClick();
-			} else if (event.type === 'BOTH_READY') {
-				this.handleBothReadyClick();
 			} else {
 				unhandledEvents.push(event);
 			}
@@ -106,11 +100,9 @@ export class MenuButtonSystem implements System {
 	}
 
 	handleStartClick() {
-		//Hide Start Button
 		this.menu.startButton.setHidden(true);
 		this.menu.menuHidden.addChild(this.menu.startButton.getContainer());
 
-		// Show Play Button
 		this.menu.playButton.setClicked(false);
 		this.menu.playButton.setHidden(false);
 		this.menu.menuContainer.addChild(this.menu.playButton.getContainer());
@@ -137,7 +129,11 @@ export class MenuButtonSystem implements System {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
-		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.menu.tournamentOverlay.tournamentEndDisplay.redrawDisplay();
+		} else {
+			this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		}
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 
@@ -164,13 +160,11 @@ export class MenuButtonSystem implements System {
 		this.menu.playSound("menuConfirm");
 		if (this.menu.config.mode === 'online' && this.menu.config.variant === '1v1') {
 			try {
-				console.log('Starting online matchmaking...');
 				this.networkManager = new PongNetworkManager(null, '', this.menu);
 				await this.networkManager.startMatchmaking();
 				this.menu.readyButton.setClickable(false);
 				this.menu.readyButton.setClicked(true);
 
-				// Fake loading animation
 				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 				this.menu.readyButton.updateText('');
 				while (this.menu.readyButton.getIsClicked()) {
@@ -181,7 +175,6 @@ export class MenuButtonSystem implements System {
 					}
 					await sleep(500);
 				}
-				//this.menu.readyButton.updateText('READY');
 			} catch (error) {
 				console.error('Matchmaking failed:', error);
 				alert('Failed to start online matchmaking. Starting local game instead.');
@@ -202,25 +195,30 @@ export class MenuButtonSystem implements System {
 			}
 		}
 		this.menu.readyButton.resetButton();
-		this.menu.readyButton.updateText('READY');
 		this.menu.readyButton.setClickable(true);
 		this.menu.readyButton.setClicked(false);
+		switch (this.menu.language) {
+			case ('es'):
+				this.menu.readyButton.updateText('LISTO');
+				break;
+			case ('fr'):
+				this.menu.readyButton.updateText('PRÊT');
+				break;
+			case ('cat'):
+				this.menu.readyButton.updateText('PREPARAT');
+				break;
+			default:
+				this.menu.readyButton.updateText('READY');
+				break;
+		}
 	}
-
-	private handle1v1ReadyClick() {
-		// TODO
-	}
-
-	private handleBothReadyClick() { }
 
 	private startLocalGame(): void {
-		console.log('Starting local game...');
 
 		this.menu.cleanup();
 
 		this.setFinalConfig();
 
-		console.log('Creating new local game with config:', this.menu.config);
 		const game = new PongGame(this.menu.app, this.menu.config, this.menu.language);
 		game.tournamentManager = this.menu.tournamentManager;
 
@@ -364,11 +362,9 @@ export class MenuButtonSystem implements System {
 		} else if (event.type.includes('PLAY')) {
 			if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {	
 				gameManager.destroyGame(this.menu.app.view.id);
-				window.location.href = '/pong';
+				navigate('/pong');
 			}
-			this.menu.readyButton.resetButton();
-			this.menu.readyButton.setClicked(false);
-			this.menu.readyButton.setClickable(true);
+			
 			const playIndex = this.overlayStack.indexOf('play');
 			const tournamentIndex = this.overlayStack.indexOf('tournament');
 			if (playIndex > -1) this.overlayStack.splice(playIndex, 1);
@@ -383,7 +379,6 @@ export class MenuButtonSystem implements System {
 				this.menu.tournamentOverlay.hide();
 			} else {
 				this.menu.playOverlay.hide();
-				this.menu.readyButton.updateText('READY');
 			}
 
 			this.menu.opponentData = null;
@@ -391,6 +386,7 @@ export class MenuButtonSystem implements System {
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
+			this.handleCancelMatchmaking();
 
 			for (let button of this.menu.tournamentInputButtons) {
 				button.resetButton();
@@ -400,11 +396,7 @@ export class MenuButtonSystem implements System {
 
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
-			this.menu.tournamentManager.clearTournament();
-
-			/* for (let button of this.menu.tournamentInputButtons) {
-				button.resetButton();
-			} */
+			this.menu.tournamentManager.clearTournament()
 		}
 
 		this.menu.inputFocus = null;
@@ -589,23 +581,96 @@ export class MenuButtonSystem implements System {
 
 		this.menu.startXButton.setHidden(true);
 	}
-
+	
 	async handleMatchFound() {
-
 		this.menu.readyButton.setClicked(false);
-		// TODO para HUGO: update del PlayOverlay con datos de los dos jugadores (avatares y nombres)
+	
+		const hostName = this.networkManager?.getHostName() || 'host';
+		const guestName = this.networkManager?.getGuestName() || 'guest';
+		const currentUsername = sessionStorage.getItem('username');
+	
+		try {
+			const hostResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: hostName
+				})
+			});
+	
+			if (!hostResponse.ok) {
+				throw new Error(`HTTP error getting host data! status: ${hostResponse.status}`);
+			}
+	
+			const hostResponseData = await hostResponse.json();
+			
+			const guestResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: guestName
+				})
+			});
+	
+			if (!guestResponse.ok) {
+				throw new Error(`HTTP error getting guest data! status: ${guestResponse.status}`);
+			}
+	
+			const guestResponseData = await guestResponse.json();
+	
+			if (hostResponseData.success && guestResponseData.success) {
+				const hostData = hostResponseData.userData;
+				const guestData = guestResponseData.userData;
+				hostData.side = 'left';
+			
+				this.menu.playerData = hostData;
+				this.menu.opponentData = guestData;
 
-		// Fake loading animation (gotta reuse your old tricks eh)
+				if (currentUsername === hostName) {
+					await MenuImageManager.updateRightPlayerAvatar(this.menu);
+					this.menu.playOverlay.duel.updateOpponentData(this.menu.opponentData);
+				} else if (currentUsername === guestName) {
+					await MenuImageManager.updateLeftPlayerAvatar(this.menu); 
+					await MenuImageManager.updateRightPlayerAvatar(this.menu);
+					this.menu.playOverlay.duel.updatePlayerData(this.menu.playerData);
+					this.menu.playOverlay.duel.updateOpponentData(this.menu.opponentData);
+				}
+
+				this.menu.playOverlay.duel.updateNameTags();
+			} else {
+				console.error('Failed to get user data:', 
+					hostResponseData.success ? guestResponseData.message : hostResponseData.message);
+			}
+	
+		} catch (error) {
+			console.error('Error fetching player data for matchmaking:', error);
+		}
+	
 		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 		this.menu.readyButton.updateText('');
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
 			await sleep(1000);
+			if (this.menu.playQuitButton.getIsClicked()) {
+				this.menu.readyButton.resetButton();
+				this.menu.readyButton.updateText('READY');
+				this.menu.playQuitButton.resetButton();
+				this.networkManager?.playerDisconnected();
+				this.networkManager = null;
+				return;
+			}
 		}
+		
 		const params = new URLSearchParams({
 			gameId: this.networkManager?.getGameId() || '',
-			hostName: this.networkManager?.getHostName() || 'host',
-			guestName: this.networkManager?.getGuestName() || 'guest',
+			hostName: hostName,
+			guestName: guestName,
 			mode: 'online'
 		});
 		navigate(`/pong?${params.toString()}`);
@@ -884,7 +949,6 @@ export class MenuButtonSystem implements System {
 		}
 
 		if (this.menu.config.variant === 'tournament') {
-			console.log('Setting up tournament configuration BEFORE START...');
 			this.menu.config.hostName = this.menu.tournamentConfig?.nextMatch.leftPlayerName!;
 			this.menu.config.guestName= this.menu.tournamentConfig?.nextMatch.rightPlayerName!;
 		} else {
@@ -909,10 +973,7 @@ export class MenuButtonSystem implements System {
 			this.menu.config.variant = '1vAI';
 		}
 
-		//! Player IDS
 		this.menu.config.players![0].id = await this.menu.getUserId(this.menu.config.players![0].name, sessionStorage.getItem('token')!);
 		this.menu.config.players![1].id = await this.menu.getUserId(this.menu.config.players![1].name, sessionStorage.getItem('token')!);
-
-		console.log('Final game configuration:', this.menu.config);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 12:52:53 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 18:22:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:27:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ import { gameManager } from "../../utils/GameManager";
 import { Menu } from "../menu/Menu";
 import { TournamentManager } from "../../utils/TournamentManager";
 import { TournamentConfig } from "../utils/GameConfig";
+import { navigate } from "../../utils/router";
 
 export class ButtonSystem implements System {
 	private game: PongGame;
@@ -33,7 +34,6 @@ export class ButtonSystem implements System {
 			while (this.game.eventQueue.length > 0) {
 				const event = this.game.eventQueue.shift();
 				if (event && event.type === 'GAME_QUIT') {
-					console.log('Game quit requested - cleaning up and returning to menu');
 					this.handleGameQuit();
 				} else if (event) {
 					unhandledEvents.push(event);
@@ -45,8 +45,6 @@ export class ButtonSystem implements System {
 	}
 
 	private handleGameQuit(): void {
-		console.log('Game quit requested');
-		
 		let tournamentConfig;
 		if (this.game.config.variant === 'tournament') {
 			tournamentConfig = this.game.tournamentManager.getTournament();
@@ -55,16 +53,13 @@ export class ButtonSystem implements System {
 		if (tournamentConfig) {
 			this.returnToMenuWithTournament();
 		} else {
-			console.log('No tournament config found, returning to main menu');
 			gameManager.destroyGame(this.game.app.view.id);
-			window.location.href = '/pong';
+			navigate('/pong');
 		}
 	}
 	
 	private returnToMenuWithTournament(): void {
 		this.game.cleanup(false);
-	
-		console.log(`Returning to menu with tournament config:`, this.game.tournamentManager.getTournament());
 		
 		const menu = new Menu(
 			this.game.app,
@@ -74,10 +69,8 @@ export class ButtonSystem implements System {
 
 		gameManager.registerGame(this.game.app.view.id, menu, undefined, this.game.app);
 		
-		// Transfer tournament manager and synchronize state
 		menu.tournamentManager = this.game.tournamentManager;
 		
-		// Get the current config and synchronize
 		const config = this.game.tournamentManager.getTournamentConfig();
 		if (config) {
 			menu.tournamentManager.synchronizeWithConfig(config);

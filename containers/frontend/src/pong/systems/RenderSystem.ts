@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:51:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:30:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ export class RenderSystem implements System {
             const physicsComponent = entity.getComponent('physics') as PhysicsComponent;
 
             if (renderComponent && physicsComponent && renderComponent.graphic) {
-                // Update ALL entities regardless of server-controlled status
                 renderComponent.graphic.x = physicsComponent.x;
                 renderComponent.graphic.y = physicsComponent.y;
             }
@@ -58,7 +57,6 @@ export class RenderSystem implements System {
     }
 
     cleanup(): void {
-        // Reset all render positions to physics positions
         for (const entity of this.game.entities) {
             const renderComponent = entity.getComponent('render') as RenderComponent;
             const physicsComponent = entity.getComponent('physics') as PhysicsComponent;
@@ -70,8 +68,7 @@ export class RenderSystem implements System {
                 renderComponent.graphic.alpha = 1;
                 renderComponent.graphic.scale.set(1, 1);
             }
-            
-            // Reset text positions for paddles
+
             if ((entity.id === 'paddleL' || entity.id === 'paddleR') && entity.hasComponent('text')) {
                 const textComponent = entity.getComponent('text') as TextComponent;
                 const textObject = textComponent.getRenderable();
@@ -85,7 +82,5 @@ export class RenderSystem implements System {
                 }
             }
         }
-        
-        console.log('RenderSystem cleanup completed');
     }
 }

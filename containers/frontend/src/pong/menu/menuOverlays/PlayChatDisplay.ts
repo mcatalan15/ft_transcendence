@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/15 11:35:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:05:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ export class PlayChatDisplay extends Entity {
 		const placeHolderTexts: Text[] = [];
 
 		placeHolderTexts.push({
-			text: "0 - 0", //"Input depends on screen side!",
+			text: "0 - 0",
 			x: 1375,
 			y: 220,
 			style: {
@@ -258,8 +258,6 @@ export class PlayChatDisplay extends Entity {
 
 	createInstructionsWindow(): void {
 		this.chatWindowGraphic.rect(1099.5, 200, 551, 250);
-		//this.chatWindowGraphic.moveTo(1099.5, 450);
-		//this.chatWindowGraphic.lineTo(1650, 450);
 		this.chatWindowGraphic.stroke({color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, width: 3});
 		this.chatWindowGraphic.rect(1120, 220, 25, 25);
 		this.chatWindowGraphic.rect(1120, 405, 25, 25);

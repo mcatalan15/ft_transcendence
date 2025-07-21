@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 15:26:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:07:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:14:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ export class MenuLineSystem implements System {
     }
 
 	cleanup(): void {
-        // Remove all menu lines
         const linesToRemove: string[] = [];
         for (const entity of this.menu.entities) {
             if (isMenuLine(entity)) {
@@ -72,7 +71,6 @@ export class MenuLineSystem implements System {
             this.menu.removeEntity(entityId);
         }
         
-        // Reset timers
         this.depthLineCooldown = 15;
         this.lastLineSpawnTime = 0;
     }

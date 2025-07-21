@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 17:45:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:09:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ import { FrameData, GameEvent } from '../../utils/Types';
 import { Menu } from '../Menu';
 import { MenuBigInputButton } from '../menuButtons/MenuBigInputButton';
 import { MenuSmallInputButton } from '../menuButtons/MenuSmallInputButton';
-import { getApiUrl } from '../../../config/api';
 import { MenuImageManager } from '../menuManagers/MenuImageManager';
 
 export class MenuInputSystem implements System {
@@ -121,7 +120,6 @@ export class MenuInputSystem implements System {
 	private finishInput(): void {
 		if (!this.currentInputButton) return;
 
-		console.log('Input finished:', this.currentInput);
 		this.menu.isProcessingInput = false;
 		this.menu.inputFocus = null;
 		
@@ -175,7 +173,6 @@ export class MenuInputSystem implements System {
 				const data = await response.json();
 				
 				if (data.success) {
-					console.log('User data:', data.userData);
 					this.menu.opponentData = data.userData;
 
 					if (this.menu.playOverlay?.duel) {
@@ -183,12 +180,14 @@ export class MenuInputSystem implements System {
 						await MenuImageManager.updateRightPlayerAvatar(this.menu);
 					}
 				} else {
-					console.error('Failed to get user data:', data.message);
 				}
 			} catch (error) {
-				console.error('Error fetching user data:', error);
 			}
 		} else {
+			if (this.menu.sounds && this.menu.sounds.menuConfirm) {
+				this.menu.sounds.menuConfirm.play();
+			}
+			
 			inputButton.updateText(userName.toUpperCase());
 			
 			if (!this.menu.hasOngoingTournament) {
@@ -302,59 +301,49 @@ export class MenuInputSystem implements System {
 			switch (buttonNumber) {
 				case (0): {
 					playerData.player1Data = data.userData;
-					console.log('Player 1 data:', playerData.player1Data);
 					break;
 				}
 
 				case (1): {
 					playerData.player2Data = data.userData;
-					console.log('Player 2 data:', playerData.player2Data);
 					break;
 				}
 
 				case (2): {
 					playerData.player3Data = data.userData;
-					console.log('Player 3 data:', playerData.player3Data);
 					break;
 				}
 
 				case (3): {
 					playerData.player4Data = data.userData;
-					console.log('Player 4 data:', playerData.player4Data);
 					break;
 				}
 
 				case (4): {
 					playerData.player5Data = data.userData;
-					console.log('Player 5 data:', playerData.player5Data);
 					break;
 				}
 
 				case (5): {
 					playerData.player6Data = data.userData;
-					console.log('Player 6 data:', playerData.player6Data);
 					break;
 				}
 
 				case (6): {
 					playerData.player7Data = data.userData;
-					console.log('Player 7 data:', playerData.player7Data);
 					break;
 				}
 
 				case (7): {
 					playerData.player8Data = data.userData;
-					console.log('Player 8 data:', playerData.player8Data);
+
 					break;
 				}
 
 				default: {
 					playerData.player8Data = data.userData;
-					console.log('Player 8 data:', playerData.player8Data);
 				}
 			}
-		} else {
-			console.error('Failed to get user data:', data.message);
 		}
 	}
 
@@ -374,8 +363,6 @@ export class MenuInputSystem implements System {
         };
 
         this.menu.eventQueue.push(startTournamentEvent);
-
-		console.log('Tournament is ready to start with the following configuration:', this.menu.tournamentConfig!);
 	}
 
 	private getEmptyInputFallback(): string {

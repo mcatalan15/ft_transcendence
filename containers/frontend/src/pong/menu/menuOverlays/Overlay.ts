@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 12:15:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:53:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ export abstract class Overlay extends Entity {
 	protected isContentInitialized: boolean = false;
 	protected overlayType: string;
 	
-	// Animation properties
 	protected targetAlpha: number = 0;
 	protected currentAlpha: number = 0;
 	protected animationProgress: number = 0;
@@ -55,14 +54,13 @@ export abstract class Overlay extends Entity {
 		super(id, 'overlays');
 		this.menu = menu;
 		this.overlayType = overlayType;
-		
-		// Create background
+
 		this.background = new Graphics();
 		this.background.rect(0, 0, 1635, 600);
 		this.background.x = 75;
 		this.background.y = 75;
 		this.background.fill({ color: backgroundColor, alpha: 1 });
-		//this.background.stroke({ color: strokeColor, width: 3 });
+
 		this.background.alpha = 0;
 
 		const renderComponent = new RenderComponent(this.background);
@@ -329,9 +327,11 @@ export abstract class Overlay extends Entity {
 				}
 			});
 			
-			if (this.menu.readyButton) elements.push(this.menu.readyButton.getContainer());
-			if (this.menu.tournamentGlossaryButton) elements.push(this.menu.tournamentGlossaryButton.getContainer());
-			if (this.menu.tournamentFiltersButton) elements.push(this.menu.tournamentFiltersButton.getContainer());
+			if (!(this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished)) {
+				if (this.menu.readyButton) elements.push(this.menu.readyButton.getContainer());
+				if (this.menu.tournamentGlossaryButton) elements.push(this.menu.tournamentGlossaryButton.getContainer());
+				if (this.menu.tournamentFiltersButton) elements.push(this.menu.tournamentFiltersButton.getContainer());
+			}
 		} else if (this.overlayType === 'glossary') {
 			const wallImages = MenuImageManager.getAllWallImages();
 			wallImages.forEach((image: any) => {
@@ -460,7 +460,6 @@ export abstract class Overlay extends Entity {
 		this.background.alpha = this.currentAlpha;
 	}
 
-	// Cleanup
 	public cleanup(): void {
 		this.content.forEach(({ entity }) => {
 			const render = entity.getComponent('render') as RenderComponent;

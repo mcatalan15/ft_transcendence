@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:47:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/12 22:01:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:34:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,10 +305,8 @@ export class UI extends Entity {
 				for (let i = 0; i < render.graphic.children.length; i++) {
 					if (render.graphic.children[i].label === targetChild.label) {						
 						let caughtGraphic = render.graphic.children[i] as Graphics;
-						console.log(caughtGraphic);
 						caughtGraphic.clear();
 						caughtGraphic.rect(0, 0, 0, 7.5);
-						//caughtGraphic.fill(GAME_COLORS.white);
 					}
 				}
 			}
@@ -321,10 +319,8 @@ export class UI extends Entity {
 				for (let i = 0; i < render.graphic.children.length; i++) {
 					if (render.graphic.children[i].label === targetChild.label) {
 						let caughtGraphic = render.graphic.children[i] as Graphics;
-						console.log(caughtGraphic);
 						caughtGraphic.clear();
 						caughtGraphic.rect(0, 0, 0, 7.5);
-						//caughtGraphic.fill(GAME_COLORS.white);
 					}
 				}
 			}

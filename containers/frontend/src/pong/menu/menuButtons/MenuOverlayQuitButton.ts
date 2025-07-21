@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:34:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/19 12:44:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:39:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ export class MenuOverlayQuitButton extends MenuButton {
     }
 
     protected onButtonClick(): void {
-        console.log("Quit button clicked");
         if (this.menu.glossaryButton.getIsClicked()) {
             this.menu.eventQueue.push({
                 type: 'GLOSSARY_BACK',

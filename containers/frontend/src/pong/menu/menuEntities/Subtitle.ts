@@ -6,23 +6,21 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 17:51:04 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:42:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Graphics, Text } from "pixi.js"
+import { Text } from "pixi.js"
 import { Menu } from "../Menu"
 import { Entity } from "../../engine/Entity"
 import { RenderComponent } from "../../components/RenderComponent"
-import { PhysicsComponent } from "../../components/PhysicsComponent"
-import { AnimationComponent } from "../../components/AnimationComponent"
-import { GAME_COLORS, PhysicsData, AnimationOptions } from "../../utils/Types"
+import { GAME_COLORS } from "../../utils/Types"
 
 interface SubtitleLine {
 	text: string;
 	fontSize: number;
 	fontWeight: 'bold' | 'light' | 'normal';
-	offsetY?: number; // Optional offset from calculated position
+	offsetY?: number;
 }
 
 interface SubtitleConfig {

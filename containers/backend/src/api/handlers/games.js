@@ -10,14 +10,13 @@ const { saveGameToDatabase,
 	getUsernameById,
 	updateUserStats,
 	getUserByUsername,
-	calculateUserStats,
+	updateTournamentStats,
+	
  } = require('../db/database');
 
 async function getUserDataHandler(request, reply) {
     try {
         const { userId } = request.body;
-        
-        console.log('Received getUserData request for userId:', userId);
         
         if (!userId) {
             return reply.status(400).send({
@@ -30,14 +29,11 @@ async function getUserDataHandler(request, reply) {
             const user = await getUserById(userId);
             
             if (!user) {
-                console.log(`User ${userId} not found in users table`);
                 return reply.status(404).send({
                     success: false,
                     message: 'User not found'
                 });
             }
-
-            console.log('Found user:', user);
 
             const userStats = await getUserStats(userId);
             
@@ -53,7 +49,6 @@ async function getUserDataHandler(request, reply) {
             }
             
             if (!userStats) {
-                console.log(`No stats found for user ${userId}, returning default stats`);
                 const userData = {
                     id: userId,
                     name: user.username || user.name || 'PLAYER',
@@ -66,8 +61,6 @@ async function getUserDataHandler(request, reply) {
                     draws: 0,
                     rank: 999
                 };
-
-                console.log('Returning user with default stats:', userData);
                 
                 return reply.status(200).send({
                     success: true,
@@ -87,8 +80,6 @@ async function getUserDataHandler(request, reply) {
                 draws: userStats.draws || 0,
                 rank: calculateRank(userStats) || 999
             };
-
-            console.log('Returning real user data:', userData);
             
             reply.status(200).send({
                 success: true,
@@ -115,7 +106,6 @@ async function getUserDataHandler(request, reply) {
 
 function calculateRank(stats) {
     if (!stats) {
-        console.log('No stats available, returning lowest ELO rating');
         return 999.0;
     }
     
@@ -125,7 +115,6 @@ function calculateRank(stats) {
     }
     
     if (totalGames === 0) {
-        console.log('No games played, returning unrated ELO (999.0)');
         return 999.0;
     }
     
@@ -134,10 +123,7 @@ function calculateRank(stats) {
     
     const eloScore = (winRate * 100) + (totalGames * 0.5) + (wins * 2);
     
-    const eloRating = Math.max(1.0, Math.min(999.9, 1000 - eloScore));
-    
-    console.log(`Calculated ELO rating: winRate=${winRate.toFixed(3)}, totalGames=${totalGames}, wins=${wins}, eloScore=${eloScore.toFixed(1)}, finalELO=${eloRating.toFixed(1)}`);
-    
+    const eloRating = Math.max(1.0, Math.min(999.9, 1000 - eloScore));    
     return parseFloat(eloRating.toFixed(1));
 }
 
@@ -145,7 +131,6 @@ async function saveGameHandler(request, reply) {
 	const { gameData } = request.body;
 
 	try {
-		// Check if users exist
 		if (!gameData.leftPlayer.name) {
 			return reply.status(400).send({
 				success: false,
@@ -163,14 +148,12 @@ async function saveGameHandler(request, reply) {
 		const player1_id = gameData.leftPlayer.id;
 		const player2_id = gameData.rightPlayer.id;
 		
-		// Determine winner ID
-		let winner_id = 0; // Default for draw
+		let winner_id = 0;
 		if (gameData.generalResult === 'leftWin') {
 			winner_id = player1_id;
 		} else if (gameData.generalResult === 'rightWin') {
 			winner_id = player2_id;
 		}
-		// Map GameData to database fields
 		const gameRecord = {
 			
 			player1_id: player1_id,
@@ -178,10 +161,10 @@ async function saveGameHandler(request, reply) {
 			winner_id: winner_id,
 			player1_score: gameData.finalScore.leftPlayer,
 			player2_score: gameData.finalScore.rightPlayer,
-			game_mode: gameData.config.mode,
-			is_tournament: gameData.is_tournament || false, // Default: false
-			smart_contract_link: gameData.smart_contract_link || '', // Default: empty string
-			contract_address: gameData.contract_address || '', // Default: empty string
+			game_mode: gameData.config.mode.variant || 'tournament',
+			is_tournament: true,
+			smart_contract_link: gameData.smart_contract_link || '',
+			contract_address: gameData.contract_address || '',
 			created_at: gameData.createdAt,
 			ended_at: gameData.endedAt,
 			config_json: JSON.stringify(gameData.config),
@@ -227,12 +210,8 @@ async function saveGameHandler(request, reply) {
 			player2_result: gameData.rightPlayer.result
 		};
 
-        console.log('Saving game record:', JSON.stringify(gameRecord, null, 2));    
-
-		// Save to database
 		const gameId = await saveGameToDatabase(gameRecord, gameData);
 
-		// Update user stats
 		await updateUserStats(gameRecord.player1_id, gameRecord.player2_id, gameData);
 
 		reply.status(201).send({
@@ -241,7 +220,6 @@ async function saveGameHandler(request, reply) {
 			gameId
 		});
 	} catch (error) {
-		console.log('Error saving game:', error);
 		if (error.message.includes('SQLITE_CONSTRAINT')) {
 			reply.status(400).send({
 				success: false,
@@ -281,111 +259,78 @@ async function retrieveLastGameHandler(request, reply) {
 };
 
 async function deployContractHandler(request, reply) {
-    try {
-        console.log('Starting deployment process');
-        const latestGame = await getLatestGame();
-        console.log('Latest game:', latestGame);
-        if (!latestGame) {
-            throw new Error("No game data found in database");
-        }
+	try {
+		const { gameId, player1Name, player2Name, player1Score, player2Score } = request.body;
 
-        const gameData = {
-            teamA: String(latestGame.player1_name || "Player 1"),
-            scoreA: Number(latestGame.player1_score || 0),
-            teamB: String(latestGame.player2_name || "Player 2"),
-            scoreB: Number(latestGame.player2_score || 0)
-        };
+		if (!gameId || !player1Name || !player2Name || player1Score === undefined || player2Score === undefined) {
+			return reply.status(400).send({
+				success: false,
+				error: 'Missing required data',
+				details: 'gameId, player1Name, player2Name, player1Score, and player2Score are required'
+			});
+		}
 
-        if (!gameData.teamA || !gameData.teamB) {
-            throw new Error("Missing player names in game data");
-        }
+		const blockchainGameData = {
+			player1Name: String(player1Name),
+			player1Score: Number(player1Score),
+			player2Name: String(player2Name),
+			player2Score: Number(player2Score)
+		};
 
-        console.log('Sending request to blockchain service:', gameData);
-        const response = await fetch("http://blockchain:3002/deploy", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameData }),
-        });
+		const response = await fetch("http://blockchain:3002/deploy", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ gameData: blockchainGameData }),
+		});
 
-        console.log('Blockchain response status:', response.status);
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Blockchain container error: ${error}`);
-        }
+		if (!response.ok) {
+			const error = await response.text();
+			throw new Error(`Blockchain container error: ${error}`);
+		}
 
-        const blockchainResponse = await response.json();
-        console.log("Blockchain deployment response:", blockchainResponse);
+		const blockchainResponse = await response.json();
 
-        console.log('Saving contract to database:', {
-            id_game: latestGame.id_game,
-            address: blockchainResponse.address,
-            explorerLink: blockchainResponse.explorerLink
-        });
-        await saveSmartContractToDatabase(
-            latestGame.id_game,
-            blockchainResponse.address,
-            blockchainResponse.explorerLink
-        );
+		await saveSmartContractToDatabase(
+			gameId,
+			blockchainResponse.address,
+			blockchainResponse.explorerLink
+		);
 
-        console.log('Deployment completed successfully');
-        reply.send({
-            success: true,
-            contractAddress: blockchainResponse.address,
-            explorerLink: blockchainResponse.explorerLink,
-            gameData: {
-                player1_name: gameData.teamA,
-                player1_score: gameData.scoreA,
-                player2_name: gameData.teamB,
-                player2_score: gameData.scoreB
-            }
-        });
-    } catch (error) {
-        console.error("Deployment failed:", {
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
-            code: error.code
-        });
-        request.log.error("Deployment failed:", error);
-        reply.status(500).send({
-            success: false,
-            error: error.message,
-            details: error.message.includes("database")
-                ? "Check database connection and game data"
-                : error.message.includes("blockchain")
-                ? "Check blockchain service connectivity"
-                : "Unexpected error during deployment"
-        });
-    }
-};
+		reply.send({
+			success: true,
+			contractAddress: blockchainResponse.address,
+			explorerLink: blockchainResponse.explorerLink,
+			gameData: {
+				player1_name: blockchainGameData.player1Name,
+				player1_score: blockchainGameData.player1Score,
+				player2_name: blockchainGameData.player2Name,
+				player2_score: blockchainGameData.player2Score
+			}
+		});
+	} catch (error) {
+		reply.status(500).send({
+			success: false,
+			error: error.message,
+			details: error.message.includes("blockchain")
+				? "Check blockchain service connectivity"
+				: "Unexpected error during deployment"
+		});
+	}
+}
 
 async function getGamesHistoryHandler(request, reply) {
-    console.log('Received getGamesHistory request');
     try {
-        console.log('Entering getGamesHistoryHandler');
-        console.log('Request user:', request.user);
-
         const userId = request.query.user || request.user?.id;
-        console.log('User ID:', userId);
 
         if (!userId) {
-            console.log('No userId, returning 401');
             return reply.code(401).send({
                 success: false,
                 error: 'Authentication required',
             });
         }
 
-        console.log('Parsing query parameters...');
         const { page = 0, limit = 8 } = request.query;
-        console.log('Query params:', { page, limit });
-
-        console.log('Fetching game history from database...');
         const result = await getGamesHistory(userId, page, limit);
-        console.log('Game history result:', {
-            total: result.total,
-            gamesCount: result.games.length,
-        });
 
         const gamesWithUsernames = await Promise.all(result.games.map(async (game) => {
             const [player1_name, player2_name, winner_name] = await Promise.all([
@@ -404,15 +349,6 @@ async function getGamesHistoryHandler(request, reply) {
 
         reply.send({
             success: true,
-            games: gamesWithUsernames,
-            total: result.total,
-            page: result.page,
-            limit: result.limit,
-            totalPages: result.totalPages,
-            hasNext: result.hasNext,
-            hasPrev: result.hasPrev,
-        });
-        console.log('[DB GAMES HISTORY RESPONSE]', {
             games: gamesWithUsernames,
             total: result.total,
             page: result.page,
@@ -442,9 +378,6 @@ async function getGamesHistoryHandler(request, reply) {
 
 const saveResultsHandler = async (request, reply) => {
     try {
-        console.log('Received saveResults request');
-        console.log('Request body:', JSON.stringify(request.body, null, 2));
-        console.log('Request user:', request.user);
 
         const { gameData } = request.body;
         
@@ -466,8 +399,6 @@ const saveResultsHandler = async (request, reply) => {
             });
         }
 
-        console.log('Processing game data for user:', userId);
-
         const player1_id = userId;
         let player2_id = null;
         
@@ -488,18 +419,6 @@ const saveResultsHandler = async (request, reply) => {
             winner_id = player2_id;
         }
 
-        console.log('Saving game with data:', {
-            player1_id,
-            player2_id,
-            winner_id,
-            leftPlayerName: gameData.leftPlayer?.name,
-            rightPlayerName: gameData.rightPlayer?.name,
-            leftScore: gameData.leftPlayer?.score,
-            rightScore: gameData.rightPlayer?.score,
-            gameMode: gameData.config?.mode,
-            variant: gameData.config?.variant
-        });
-
         const gameId = await saveGameToDatabase(
             player1_id,
             player2_id,
@@ -519,10 +438,7 @@ const saveResultsHandler = async (request, reply) => {
             gameData.endedAt
         );
 
-        console.log('Game saved with ID:', gameId);
-
         await saveGameResultsToDatabase(gameId, gameData);
-        console.log('Detailed game results saved');
 
         reply.status(201).send({
             success: true,
@@ -531,8 +447,6 @@ const saveResultsHandler = async (request, reply) => {
         });
 
     } catch (error) {
-        console.error('Error in saveResultsHandler:', error);
-        console.error('Error stack:', error.stack);
         
         reply.status(500).send({
             success: false,
@@ -542,28 +456,10 @@ const saveResultsHandler = async (request, reply) => {
     }
 };
 
-async function retrieveGamesHandler(request, reply) {
-	try {
-		const games = await getAllGames();
-		reply.status(200).send({
-			success: true,
-			games
-		});
-	} catch (error) {
-		console.log('Error fetching games:', error);
-		reply.status(500).send({
-			success: false,
-			message: 'Failed to fetch games'
-		});
-	}
-};
-
 async function getUserByUsernameHandler(request, reply) {
     try {
         const { username } = request.body;
-        
-        console.log('Received getUserByUsername request for username:', username);
-        
+                
         if (!username) {
             return reply.status(400).send({
                 success: false,
@@ -575,14 +471,11 @@ async function getUserByUsernameHandler(request, reply) {
             const user = await getUserByUsername(username);
             
             if (!user) {
-                console.log(`User ${username} not found in users table`);
                 return reply.status(404).send({
                     success: false,
                     message: 'User not found'
                 });
             }
-
-            console.log('Found user:', user);
 
             const userStats = await getUserStats(user.id_user);
             
@@ -611,8 +504,6 @@ async function getUserByUsernameHandler(request, reply) {
                 draws: userStats?.draws || 0,
                 rank: userStats ? calculateRank(userStats) : 999
             };
-
-            console.log('Returning user data:', userData);
             
             reply.status(200).send({
                 success: true,
@@ -637,13 +528,61 @@ async function getUserByUsernameHandler(request, reply) {
     }
 }
 
+async function saveTournamentResultsHandler(request, reply) {
+	try {
+		const { tournamentConfig } = request.body;
+
+		if (!tournamentConfig) {
+			return reply.status(400).send({
+				success: false,
+				message: 'tournamentConfig is required in request body'
+			});
+		}
+
+		if (!tournamentConfig.isFinished) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Tournament must be finished to save results'
+			});
+		}
+
+		if (!tournamentConfig.tournamentWinner) {
+			return reply.status(400).send({
+				success: false,
+				message: 'Tournament winner is required'
+			});
+		}
+
+		const result = await updateTournamentStats(tournamentConfig);
+
+		return reply.status(200).send({
+			success: true,
+			message: 'Tournament results saved successfully',
+			updatedPlayers: result.updatedPlayers,
+			tournamentWinner: result.tournamentWinner
+		});
+
+	} catch (error) {
+		console.error('[TOURNAMENT ERROR] Failed to save tournament results:', {
+			message: error.message,
+			stack: error.stack
+		});
+
+		return reply.status(500).send({
+			success: false,
+			message: 'Failed to save tournament results',
+			error: error.message
+		});
+	}
+}
+
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
-	retrieveGamesHandler,
 	retrieveLastGameHandler,
 	deployContractHandler,
 	getGamesHistoryHandler,
     saveResultsHandler,
     getUserByUsernameHandler,
+	saveTournamentResultsHandler
 };

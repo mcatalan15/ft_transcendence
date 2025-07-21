@@ -131,6 +131,8 @@ function createChatMainContent() {
     bg-neutral-800 text-amber-50 border border-amber-50/30
     px-3 py-2 text-sm min-w-[100px]
   `.replace(/\s+/g, ' ').trim();
+  typeSelector.id = 'message-type';
+  typeSelector.name = 'messageType';
   
   Object.assign(typeSelector.style, {
     fontFamily: '"Roboto Mono", monospace',
@@ -145,6 +147,7 @@ function createChatMainContent() {
     px-4 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400
   `.replace(/\s+/g, ' ').trim();
   messageInput.id = 'message-input';
+  //messageInput.name = 'message';
   
   Object.assign(messageInput.style, {
     fontFamily: '"Roboto Mono", monospace',

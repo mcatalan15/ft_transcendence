@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ClassicGameSession.js                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 17:04:01 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 21:48:03 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 const ClassicPhysicsEngine = require('./ClassicPhysicsEngine');
 const GameResultsService = require('./GameResultService');
 
@@ -70,8 +82,8 @@ class ClassicGameSession {
 			this.players.player2.socket = player.socket;
 			this.players.player2.ready = false;
 		} else {
-			console.log(`🎮 ERROR: Player ${player.id} not expected in this game!`);
-			console.log(`🎮 Expected players:`, {
+			console.log(`ERROR: Player ${player.id} not expected in this game!`);
+			console.log(`Expected players:`, {
 				player1: this.players.player1.id,
 				player2: this.players.player2.id
 			});
@@ -84,14 +96,12 @@ class ClassicGameSession {
 		});
 		
 		if (this.players.player1.socket && this.players.player2.socket) {
-			console.log(`🎮 Both players connected: ${this.players.player1.id} (LEFT) vs ${this.players.player2.id} (RIGHT)`);
 			
 			this.broadcastToAll('bothPlayersConnected', {
 				player1: this.players.player1.id,
 				player2: this.players.player2.id
 			});
 			
-			console.log('Both players connected, auto-starting game...');
 			this.players.player1.ready = true;
 			this.players.player2.ready = true;
 			this.startGame();
@@ -99,29 +109,21 @@ class ClassicGameSession {
 	}
 	
 	setPlayerReady(playerId) {
-		console.log(`Player ${playerId} setting ready state`);
-		
 		if (this.players.player1.id === playerId) {
 			this.players.player1.ready = true;
-			console.log('Player 1 is now ready');
 		} else if (this.players.player2.id === playerId) {
 			this.players.player2.ready = true;
-			console.log('Player 2 is now ready');
 		}
 		
 		this.broadcastToAll('playerReady', { playerId });
 		
-		console.log(`Ready state: P1=${this.players.player1.ready}, P2=${this.players.player2.ready}`);
-		
 		if (this.players.player1.ready && this.players.player2.ready && !this.gameStarted) {
-			console.log('Both players ready, starting game!');
 			this.startGame();
 		}
 	}
 	
 	startGame() {
 		this.gameStarted = true;
-		console.log(`Starting classic game session ${this.sessionId}`);
 		
 		this.broadcastToAll('gameStarted', {
 			gameState: this.getState(),
@@ -187,14 +189,18 @@ class ClassicGameSession {
 				scorer: goal.scorer,    
 				score: goal.score
 			};
-
+	
 			this.broadcastToAll('goalScored', goalEvent);
-
+	
 			if (this.externalBroadcast) {
 				this.externalBroadcast(goalEvent);
 			}
 			
-			if (this.gameState.score1 >= 3 || this.gameState.score2 >= 3) {
+			const isDraw = (this.gameState.score1 === 20 && this.gameState.score2 === 20);
+			const isHighScoreWin = (this.gameState.score1 >= 11 || this.gameState.score2 >= 11) && 
+								  Math.abs(this.gameState.score1 - this.gameState.score2) >= 2;
+								  
+			if (isDraw || isHighScoreWin) {
 				this.endGame();
 			}
 		}
@@ -216,11 +222,6 @@ class ClassicGameSession {
 		if (input.up) direction = -1;
 		else if (input.down) direction = 1;
 		
-		const oldInput = playerNumber === 1 ? this.paddleInputs.p1 : this.paddleInputs.p2;
-		if (oldInput !== direction) {
-			console.log(`🎮 Input changed: p${playerNumber} = ${direction}`);
-		}
-		
 		if (playerNumber === 1) {
 			this.paddleInputs.p1 = direction;
 		} else {
@@ -230,7 +231,6 @@ class ClassicGameSession {
 	
 	broadcastGameState() {
 		if (this.gameEnded) {
-			console.log(`Game ${this.sessionId} has ended, skipping state broadcast`);
 			return;
 		}
 		
@@ -249,7 +249,6 @@ class ClassicGameSession {
 	
 	endGame() {
 		if (this.gameEnded) {
-			console.log(`Game ${this.sessionId} already ended, skipping duplicate endGame call`);
 			return;
 		}
 
@@ -260,22 +259,20 @@ class ClassicGameSession {
 		this.gameState.ballVelocity.x = 0;
 		this.gameState.ballVelocity.y = 0;
 		
-		this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
+		if (!this.players.player1.socket) {
+			this.winner = 'player2';
+		} else if (!this.players.player2.socket) {
+			this.winner = 'player1';
+		} else if (this.gameState.score1 > this.gameState.score2) {
+			this.winner = 'player1';
+		} else if (this.gameState.score2 > this.gameState.score1) {
+			this.winner = 'player2';
+		} else {
+			this.winner = 'draw';
+		}
 		
-		console.log(`Game ${this.sessionId} ended. Winner: ${this.winner}`);
 	
 		const physicsGameData = this.physicsEngine.getGameData();
-		
-		console.log('=== GAME DATA COLLECTION ===');
-		console.log('Raw physics engine data:', JSON.stringify(physicsGameData, null, 2));
-		console.log('Game scores:', {
-			player1: this.gameState.score1,
-			player2: this.gameState.score2
-		});
-		console.log('Player details:', {
-			player1: this.players.player1.id,
-			player2: this.players.player2.id
-		});
 		
 		const gameResults = {
 			type: 'GAME_END',
@@ -299,13 +296,15 @@ class ClassicGameSession {
 					...physicsGameData.leftPlayer,
 					name: this.players.player1.id,
 					score: this.gameState.score1,
-					result: this.gameState.score1 > this.gameState.score2 ? 'win' : 'lose'
+					result: this.gameState.score1 > this.gameState.score2 ? 'win' : 
+							this.gameState.score1 < this.gameState.score2 ? 'lose' : 'draw'
 				},
 				rightPlayer: {
 					...physicsGameData.rightPlayer,
 					name: this.players.player2.id,
 					score: this.gameState.score2,
-					result: this.gameState.score2 > this.gameState.score1 ? 'win' : 'lose'
+					result: this.gameState.score2 > this.gameState.score1 ? 'win' : 
+							this.gameState.score2 < this.gameState.score1 ? 'lose' : 'draw'
 				},
 				createdAt: new Date().toISOString(),
 				endedAt: new Date().toISOString(),
@@ -318,41 +317,27 @@ class ClassicGameSession {
 			}
 		};
 		
-		console.log('=== FINAL GAME RESULTS ===');
-		console.log('Complete gameResults object:', JSON.stringify(gameResults, null, 2));
 		
-		// CLEAN: Only use externalBroadcast (WebSocket)
 		if (this.externalBroadcast) {
-			console.log('📡 Broadcasting GAME_END via WebSocket');
-			this.externalBroadcast(gameResults); // Send the entire object, not wrapped
-			console.log('📡 GAME_END broadcast complete');
-		} else {
-			console.log('❌ No externalBroadcast function available');
+			this.externalBroadcast(gameResults);
 		}
-		
-		// Remove the old broadcastToAll call - we only need WebSocket
-		
+
 		this.saveGameResults(gameResults);
 		this.stopGameLoop();
 	}
 	
 	async saveGameResults(results) {
-		// Prevent duplicate saves
 		if (this.resultsSaved) {
-			console.log('Game results already saved, skipping duplicate save');
 			return;
 		}
 		
 		try {
-			console.log('Saving online game results:', results);
-			this.resultsSaved = true; // Set flag before async operation
+			this.resultsSaved = true;
 			
 			await GameResultsService.saveOnlineGameResults(results.gameData);
 			
-			console.log('Online game results saved successfully');
 		} catch (error) {
-			console.error('Error saving online game results:', error);
-			this.resultsSaved = false; // Reset flag on error so it can be retried
+			this.resultsSaved = false;
 			throw error;
 		}
 	}
@@ -361,7 +346,6 @@ class ClassicGameSession {
 		if (this.gameLoop) {
 			clearInterval(this.gameLoop);
 			this.gameLoop = null;
-			console.log(`🔴 Game loop stopped for session ${this.sessionId}`);
 		}
 		
 		this.gameEnded = true;
@@ -389,20 +373,14 @@ class ClassicGameSession {
 			this.players.player2.socket = null;
 		}
 		
-		// ✅ Better check: only end game if it's started AND not already ended
 		if (this.gameStarted && !this.gameEnded) {
-			console.log(`Player ${playerId} disconnected, ending game`);
 			this.broadcastToAll('playerDisconnected', { playerId });
-			this.endGame(); // This will now be protected by the check in endGame()
-		} else if (this.gameEnded) {
-			console.log(`Player ${playerId} disconnected after game ended, no action needed`);
-		}
+			this.endGame();
+		} 
 	}
-	
 	
 	cleanup() {
 		this.stopGameLoop();
-		console.log(`Cleaned up game session ${this.sessionId}`);
 	}
 }
 

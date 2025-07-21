@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 19:52:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:51:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,6 @@ export class Duel extends Entity {
 		const rankStat = this.menu.playerData?.rank || 0;
 		this.playerStats.push(this.formatStat(rankStat, 'rank'));
 	
-		console.log('Formatted stats:', this.playerStats);
 	}
 
 	getOpponentStats(){
@@ -148,8 +147,6 @@ export class Duel extends Entity {
 	
 		const rankStat = this.menu.opponentData?.rank || 0;
 		this.opponentStats.push(this.formatStat(rankStat, 'rank'));
-	
-		console.log('Formatted opponent stats:', this.opponentStats);
 	}
 
 	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
@@ -277,19 +274,13 @@ export class Duel extends Entity {
 		const nameTags: Text[] = [];
 
 		let leftName = this.menu.playerData?.name!.toUpperCase() || "PLAYER 1";
-		
-		// Check for both name and username fields, prioritize name
+
 		let rightName = this.menu.config.mode === 'online' ? "PLAYER 2" : "";
 
-		console.log('createNameTags - opponentData:', this.menu.opponentData);
-		console.log('createNameTags - rightName after check:', rightName);
-
-		// If no opponent data, set appropriate default based on variant
 		if (!rightName) {
 			if (this.menu.config.variant === '1vAI') {
 				rightName = "BUTIBOT";
 			} else {
-				// Set default guest name based on language
 				switch (this.menu.language) {
 					case ('es'): {
 						rightName = "";
@@ -311,11 +302,9 @@ export class Duel extends Entity {
 			}
 		}
 
-		console.log('createNameTags - final rightName:', rightName);
-
 		nameTags.push({
 			text: leftName, 
-			x: 340,
+			x: 330,
 			y: 570,
 			style: {
 				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
@@ -615,7 +604,6 @@ export class Duel extends Entity {
 	};
 
 	getStatsValuesInLanguage(who: string, known: boolean): string {
-		console.log('getStatsValuesInLanguage called with:', who, known, this.menu.opponentData);
 		if (known) {
 			if (who === "player") {
 				switch (this.menu.language) {
@@ -677,10 +665,7 @@ export class Duel extends Entity {
 
 
 	public updateOpponentData(opponentData: any): void {
-		console.log('updateOpponentData called with:', opponentData);
-		
 		this.menu.opponentData = opponentData;
-		console.log('Menu opponent data set to:', this.menu.opponentData);
 		
 		this.updateRightPlayerInfo();
 	}
@@ -706,7 +691,6 @@ export class Duel extends Entity {
 
 			const opponentStatsTextComponent = new TextComponent(this.opponentStatsTexts[this.opponentStatsTexts.length - 1]);
 			this.replaceComponent('text', opponentStatsTextComponent, `opponentStatsText${this.opponentStatsTexts.length - 1}`);
-			console.log(this.menu.renderLayers.overlays.children)
 			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
 			const child = this.menu.renderLayers.overlays.children[i];
 			
@@ -720,9 +704,106 @@ export class Duel extends Entity {
 			}
 }
 			this.menu.renderLayers.overlays.addChild(opponentStatsTextComponent.getRenderable());
+		}
+	}
 
+	public updatePlayerData(playerData: any): void {
+		this.menu.playerData = playerData;
+		
+		this.updateLeftPlayerInfo();
+	}
+	
+	private updateLeftPlayerInfo(): void {
+		if (this.menu.playerData?.name) {
+			this.getPlayerStats();
+
+			this.playerStatsTexts.pop();
+	
+			this.playerStatsTexts.push({
+				text: this.getStatsValuesInLanguage("player", this.menu.playerData ? true : false),
+				x: 340,
+				y: 600,
+				style: {
+					fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 0.5},
+					fontSize: 8,
+					fontWeight: '900' as const,
+					align: 'center' as const,
+					fontFamily: '"Roboto Mono", monospace',
+				},
+			} as Text);
+
+			const playerStatsTextComponent = new TextComponent(this.playerStatsTexts[this.playerStatsTexts.length - 1]);
+			this.replaceComponent('text', playerStatsTextComponent, `playerStatsText${this.playerStatsTexts.length - 1}`);
 			
-			console.log(this.opponentStatsTexts);
+			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
+				const child = this.menu.renderLayers.overlays.children[i];
+				
+				if ('text' in child && typeof child.text === 'string' && (child.text.startsWith('           ') || child.text.startsWith('       ') || child.text.startsWith('        '))) {
+					this.menu.renderLayers.overlays.removeChild(child);
+					break;
+				}
+			}
+
+			this.menu.renderLayers.overlays.addChild(playerStatsTextComponent.getRenderable());
+		}
+	}
+	
+	public updateNameTags(): void {
+		let leftName = this.menu.playerData?.name?.toUpperCase() || "PLAYER 1";
+		let rightName = this.menu.opponentData?.name?.toUpperCase() || "PLAYER 2";
+	
+		for (let i = 0; i < this.nameTags.length; i++) {
+			try {
+				this.removeComponent(`nameTag${i}`);
+			} catch (error) {
+				console.warn(`Could not remove nameTag${i}:`, error);
+			}
+		}
+	
+		for (let i = this.menu.renderLayers.overlays.children.length - 1; i >= 0; i--) {
+			const child = this.menu.renderLayers.overlays.children[i];
+			
+			if ('text' in child && 'x' in child && 'y' in child && 'style' in child) {
+				const isLeftNamePosition = child.x === 330 && child.y === 570;
+				const isRightNamePosition = child.x === 785 && child.y === 570;
+				
+				if ((isLeftNamePosition || isRightNamePosition)) {
+					this.menu.renderLayers.overlays.removeChild(child);
+				}
+			}
+		}
+	
+		this.nameTags[0] = {
+			text: leftName, 
+			x: 330,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text;
+	
+		this.nameTags[1] = {
+			text: rightName, 
+			x: 785,
+			y: 570,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.menuBlue, alpha: 1},
+				fontSize: 30,
+				fontWeight: 'bold' as const,
+				align: 'center' as const,
+				fontFamily: '"Roboto Mono", monospace',
+			},
+		} as Text;
+		
+	
+		for (let i = 0; i < this.nameTags.length; i++) {
+			const nameTagComponent = new TextComponent(this.nameTags[i]);
+			this.addComponent(nameTagComponent, `nameTag${i}`);
+			this.menu.renderLayers.overlays.addChild(nameTagComponent.getRenderable());
 		}
 	}
 }

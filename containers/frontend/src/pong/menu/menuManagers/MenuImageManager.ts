@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:00:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:46:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Assets, Graphics, Sprite, Texture } from "pixi.js";
+import { Assets, Sprite, Texture } from "pixi.js";
 import { Menu } from "../Menu";
 
 export class MenuImageManager {
@@ -35,9 +35,9 @@ export class MenuImageManager {
 					texture = await Assets.load({
 						src: asset.url,
 						data: {
-							resolution: 2, // Match your app's resolution
-							width: 1397 * 1.1725, // Scale up the SVG dimensions
-							height: 74 * 1.1725   // to match the resolution
+							resolution: 2,
+							width: 1397 * 1.1725,
+							height: 74 * 1.1725
 						}
 					});
 				} else {
@@ -66,7 +66,6 @@ export class MenuImageManager {
 		const sprite = new Sprite(texture);
 		
 		if (this.isFirefox && assetName.toLowerCase().includes('header')) {
-			console.log(`Applying Firefox fixes for SVG asset: ${assetName}`);
 			
 			if (texture.source) {
 				texture.source.scaleMode = 'nearest';
@@ -191,17 +190,32 @@ export class MenuImageManager {
 		this.tournamentAvatars = [];
 	
 		let squareAvatarData: { name: string, x: number, y: number }[];
-
-		if (menu.config.classicMode) {
-			squareAvatarData = [
-				{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
-				{ name: 'avatarUnknownClassic', x: 1524.5, y: 344.5 },
-			];
+	
+		const isTournamentFinished = menu.tournamentManager.getHasActiveTournament() && 
+									menu.tournamentManager.getTournamentConfig()!.isFinished;
+	
+		if (isTournamentFinished) {
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
+				];
+			}
 		} else {
-			squareAvatarData = [
-				{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
-				{ name: 'avatarUnknownSquare', x: 1524.5, y: 344.5 },
-			];
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
+					{ name: 'avatarUnknownClassic', x: 1524.5, y: 344.5 },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
+					{ name: 'avatarUnknownSquare', x: 1524.5, y: 344.5 },
+				];
+			}
 		}
 	
 		squareAvatarData.forEach(data => {
@@ -210,6 +224,70 @@ export class MenuImageManager {
 				this.tournamentAvatars.push(squareAvatar);
 			}
 		});
+	}
+	static async createTournamentWinnerAvatar(menu: Menu): Promise<void> {
+		this.tournamentAvatars.forEach(avatar => {
+			if (avatar && avatar.parent) {
+				avatar.parent.removeChild(avatar);
+			}
+			if (avatar) {
+				avatar.destroy();
+			}
+		});
+		
+		this.tournamentAvatars = [];
+	
+		const centerX = (menu.width / 2) + 198 + (350 / 2);
+		const frameSize = 350;
+	
+		const avatarX = centerX;
+		const avatarY = 220 + frameSize / 2;
+		const scale = 0.33;
+	
+		let winnerAvatar;
+		
+		if (menu.winnerData?.avatar) {
+			try {
+				winnerAvatar = await this.createPlayerAvatarFromAsset(
+					menu.winnerData.avatar,
+					menu
+				);
+				if (winnerAvatar) {
+					winnerAvatar.x = avatarX;
+					winnerAvatar.y = avatarY;
+					winnerAvatar.scale.set(scale);
+					winnerAvatar.alpha = 0;
+					menu.renderLayers.overlays.addChild(winnerAvatar);
+					this.tournamentAvatars.push(winnerAvatar);
+					
+					this.animateAvatarFadeIn(winnerAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load winner avatar, using fallback:', error);
+				winnerAvatar = null;
+			}
+		}
+		
+		if (!winnerAvatar) {
+			let squareAvatarData: { name: string, x: number, y: number, scale: number }[];
+	
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: avatarX, y: avatarY, scale: scale },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: avatarX, y: avatarY, scale: scale },
+				];
+			}
+	
+			squareAvatarData.forEach(data => {
+				const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, data.scale);
+				if (squareAvatar) {
+					this.tournamentAvatars.push(squareAvatar);
+				}
+			});
+		}
 	}
 
 	static createPlayAvatars(menu: Menu): void {
@@ -352,7 +430,11 @@ export class MenuImageManager {
 	}
 
 	static prepareTournamentAvatarImages(menu: Menu): void {
-		this.createTournamentAvatars(menu);
+		if (menu.tournamentManager.getHasActiveTournament() && menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.createTournamentWinnerAvatar(menu);
+		} else {
+			this.createTournamentAvatars(menu);
+		}
 		
 		this.tournamentAvatars.forEach(avatar => {
 			if (avatar) {
@@ -367,10 +449,8 @@ export class MenuImageManager {
 
 	static async createPlayerAvatarFromAsset(avatarKey: string, menu: Menu, tournament: boolean = false): Promise<Sprite | null> {
 		try {
-			console.log('Creating player avatar from:', avatarKey);
 
 			if (avatarKey.startsWith('http') || avatarKey.startsWith('/')) {
-				console.log('Loading custom avatar from URL:', avatarKey);
 
 				let finalUrl: string;
 				if (avatarKey.includes('?')) {
@@ -378,8 +458,6 @@ export class MenuImageManager {
 				} else {
 					finalUrl = `${avatarKey}?t=${Date.now()}`;
 				}
-
-				console.log('Loading avatar from:', finalUrl);
 				
 				try {
 					const texture = await Assets.load({
@@ -387,7 +465,6 @@ export class MenuImageManager {
 						loadParser: 'loadTextures'
 					});
 					
-					console.log('Loaded texture:', texture);
 					
 					if (!texture) {
 						console.error('Texture is null, falling back to default avatar');
@@ -448,7 +525,6 @@ export class MenuImageManager {
 	}
 
 	static async preparePlayAvatarImages(menu: Menu): Promise<void> {
-		// Clean up existing avatars
 		this.playAvatars.forEach(avatar => {
 			if (avatar && avatar.parent) {
 				avatar.parent.removeChild(avatar);
@@ -459,9 +535,7 @@ export class MenuImageManager {
 		});
 		this.playAvatars = [];
 
-		// Create player avatar (left)
 		if (menu.playerData?.avatar) {
-			console.log('Loading player avatar:', menu.playerData.avatar);
 			try {
 				const leftAvatar = await MenuImageManager.createPlayerAvatarFromAsset(
 					menu.playerData.avatar,
@@ -470,8 +544,7 @@ export class MenuImageManager {
 				if (leftAvatar) {
 					leftAvatar.x = 335;
 					leftAvatar.y = 365;
-					leftAvatar.alpha = 0; // Start with alpha 0
-					// Don't add to scene here - let the overlay system handle it
+					leftAvatar.alpha = 0;
 					this.playAvatars.push(leftAvatar);
 				}
 			} catch (error) {
@@ -502,7 +575,6 @@ export class MenuImageManager {
 			}
 		}
 
-		// Create opponent avatar (right)
 		let rightAvatar;
 		if (menu.opponentData?.avatar) {
 			try {
@@ -534,9 +606,7 @@ export class MenuImageManager {
 	}
 
 	private static createRightPlayerFallback(menu: Menu): Sprite | null {
-		console.log('Creating right player fallback');
 		const rightAvatarData = this.getRightPlayerAvatarData(menu);
-		console.log('Right avatar data:', rightAvatarData);
 
 		const avatar = this.createSimpleImage(
 			rightAvatarData.name,
@@ -546,12 +616,10 @@ export class MenuImageManager {
 			0.35
 		);
 		
-		console.log('Created fallback avatar:', avatar);
 		return avatar;
 	}
 
 	private static getRightPlayerAvatarData(menu: Menu): { name: string, x: number, y: number } {
-		console.log(`Game Config ${menu.config.variant}, Guest Name: ${menu.config.guestName}`);
 		if (menu.config.variant === '1vAI' || menu.config.guestName === 'butibot') {
 			return {
 				name: menu.config.classicMode ? 'avatarBotClassic' : 'avatarBotSquare',
@@ -876,7 +944,6 @@ export class MenuImageManager {
 		return this.classicLogoImages;
 	}
 
-	// Helpers
 	static createSimpleImage(name: string, x: number, y: number, menu: Menu, scale?: number): Sprite | null {
 		const wallImage = MenuImageManager.createSprite(name);
 		if (!wallImage) return null;
@@ -948,7 +1015,6 @@ export class MenuImageManager {
 			setTimeout(() => {
 				avatar.scale.set(originalScale);
 				window.open(url, '_blank');
-				console.log(`${name} avatar clicked - opening ${url}`);
 			}, 100);
 	
 			if (menu.sounds && menu.sounds.menuSelect) {
@@ -1098,6 +1164,53 @@ export class MenuImageManager {
 		}
 	}
 
+	static async updateLeftPlayerAvatar(menu: Menu): Promise<void> {
+		const leftAvatarIndex = this.playAvatars.findIndex(avatar => avatar && avatar.x === 335);
+		
+		if (leftAvatarIndex !== -1) {
+			const leftAvatar = this.playAvatars[leftAvatarIndex];
+			if (leftAvatar && leftAvatar.parent) {
+				leftAvatar.parent.removeChild(leftAvatar);
+			}
+			if (leftAvatar) {
+				leftAvatar.destroy();
+			}
+			this.playAvatars.splice(leftAvatarIndex, 1);
+		}
+	
+		let leftAvatar;
+		if (menu.playerData?.avatar) {
+			try {
+				leftAvatar = await this.createPlayerAvatarFromAsset(
+					menu.playerData.avatar,
+					menu
+				);
+				if (leftAvatar) {
+					leftAvatar.x = 335;
+					leftAvatar.y = 365;
+					leftAvatar.alpha = 0;
+					menu.renderLayers.overlays.addChild(leftAvatar);
+					this.playAvatars.push(leftAvatar);
+					
+					this.animateAvatarFadeIn(leftAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load opponent avatar, using fallback:', error);
+				leftAvatar = this.createRightPlayerFallback(menu);
+			}
+		} else {
+			leftAvatar = this.createRightPlayerFallback(menu);
+		}
+	
+		if (leftAvatar && !menu.renderLayers.overlays.children.includes(leftAvatar)) {
+			leftAvatar.alpha = 0;
+			menu.renderLayers.overlays.addChild(leftAvatar);
+			this.playAvatars.push(leftAvatar);
+			
+			this.animateAvatarFadeIn(leftAvatar);
+		}
+	}
+
 	private static animateAvatarFadeIn(avatar: any): void {
 		const fadeInDuration = 300;
 		const startTime = Date.now();
@@ -1116,7 +1229,6 @@ export class MenuImageManager {
 		requestAnimationFrame(animate);
 	}
 
-	// Cleanup
 	static cleanup(): void {
 		const imageArrays = [
 			this.wallImages,
@@ -1159,8 +1271,6 @@ export class MenuImageManager {
 			if (avatar && avatar.parent) {
 				avatar.parent.removeChild(avatar);
 				menu.renderLayers.overlays.addChild(avatar);
-				
-				//avatar.zIndex = 1000 + index;
 			}
 		});
 		
