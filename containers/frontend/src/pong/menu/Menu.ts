@@ -6,7 +6,7 @@
 /*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 20:07:00 by mcatalan@st      ###   ########.fr       */
+/*   Updated: 2025/07/20 20:38:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ import { MenuVFXSystem } from './menuSystems/MenuVFXSystem';
 import { MenuLineSystem } from './menuSystems/MenuLineSystem';
 import { MenuButtonSystem } from './menuSystems/MenuButtonSystem';
 
-import { FrameData, MenuSounds, GameEvent } from '../utils/Types';
+import { FrameData, MenuSounds, GameEvent, Player } from '../utils/Types';
 import * as menuUtils from '../utils/MenuUtils'
 import { getThemeColors } from '../utils/Utils';
 import { isRenderComponent } from '../utils/Guards';
@@ -229,6 +229,8 @@ export class Menu{
 	// Player Data
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
+	hostData: PlayerData | null = null;
+	guestData: PlayerData | null = null;
 	storedGuestName: string | null = null;
 
 	// Tournament Data
@@ -516,8 +518,6 @@ export class Menu{
 	}
 
 	manageOnlineInvitationGame() {
-		// Test stuff to check if things happen. THIS IS NOT ONLINE YET.
-		
 		this.eventQueue.push({
 			type: 'FILTERS_CLICK',
 			target: this.filtersButton,
@@ -1281,7 +1281,7 @@ export class Menu{
 		} as TournamentConfig;
 	}
 
-	// API CALL
+	// API CALLS
 	async getUserData(userId: string, token: string): Promise<PlayerData> {
 		try {
 			console.log(`Fetching user data for user ${userId} with token ${token}`);

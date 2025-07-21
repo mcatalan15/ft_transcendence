@@ -88,7 +88,6 @@ export class ProfileContentRenderer {
       color: '#FFFBEB',
       fontFamily: 'anatol-mn',
       fontSize: '40px',
-      fontWeight: 'bold',
       letterSpacing: '2px'
     });
     headerText.textContent = i18n.t('playerStats', { ns: 'profile' });
