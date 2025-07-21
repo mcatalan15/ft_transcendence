@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:00:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 17:45:18 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:29:19 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,6 +189,10 @@ export class MenuInputSystem implements System {
 				console.error('Error fetching user data:', error);
 			}
 		} else {
+			if (this.menu.sounds && this.menu.sounds.menuConfirm) {
+				this.menu.sounds.menuConfirm.play();
+			}
+			
 			inputButton.updateText(userName.toUpperCase());
 			
 			if (!this.menu.hasOngoingTournament) {

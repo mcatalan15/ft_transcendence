@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 20:38:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 13:48:26 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,6 +227,7 @@ export class Menu{
 	wallHoneycomb!: Sprite;
 
 	// Player Data
+	winnerData: PlayerData | null = null;
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
 	hostData: PlayerData | null = null;
@@ -336,6 +337,10 @@ export class Menu{
 
 	async init(classic: boolean, filters: boolean): Promise<void> {
 		this.applyFirefoxOptimizations();
+
+		if (this.tournamentManager.getHasActiveTournament() && this.tournamentManager.getTournamentConfig()?.isFinished) {
+			await this.getWinnerData();
+		}
 		
 		await this.apiDataRequest();
 
@@ -381,6 +386,8 @@ export class Menu{
 			this.hasOngoingTournament = true;
 			this.tournamentConfig = this.tournamentManager.getTournamentConfig();
 		}
+
+		console.log(`Player data at THIS POINT is:`, this.playerData);
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
 
@@ -436,7 +443,7 @@ export class Menu{
 			this.eventQueue.push(prepareNextMatchEvent);
 		}
 
-		if (this.hasOngoingTournament && this.tournamentConfig!.isFinished) {
+		if (this.tournamentManager.getHasActiveTournament() && this.tournamentManager.getTournamentConfig()?.isFinished) {
 			if (this.tournamentManager.getTournamentConfig()?.classicMode) {
 				const optionsEvent: GameEvent = {
 					type: 'OPTIONS_CLICK',
@@ -482,6 +489,49 @@ export class Menu{
 			this.eventQueue.push(playEvent);
 
 			//! Tournament ending stuff
+		}
+	}
+
+	async getWinnerData(){
+		const winnerName = this.tournamentManager.getTournamentConfig()?.tournamentWinner;
+
+		try {
+			const winnerResponse = await fetch('/api/games/getUserByUsername', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+				},
+				body: JSON.stringify({
+					username: winnerName
+				})
+			});
+	
+			if (!winnerResponse.ok) {
+				throw new Error(`HTTP error getting host data! status: ${winnerResponse.status}`);
+			}
+	
+			const winnerResponseData = await winnerResponse.json();
+	
+			if (winnerResponseData.success) {
+				const winnerData = winnerResponseData.userData;
+				console.log('Winner data fetched successfully:', winnerData);
+				this.winnerData = winnerData;
+				console.log('Player data set for end tournament overlay:', this.winnerData);
+
+			} else {
+				console.error('Failed to get user data:', 
+					winnerResponseData.message);
+			}
+	
+		} catch (error) {
+			console.error('Error fetching player data for end tournament overlay:', error);
+			this.winnerData = {
+				id: '',
+				name: this.tournamentManager.getTournamentConfig()?.tournamentWinner || 'Unknown',
+				type: 'human',
+				side: 'left'
+			};
 		}
 	}
 

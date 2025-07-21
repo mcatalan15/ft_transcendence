@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 10:18:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 14:41:52 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ export class EndingSystem implements System {
 		}
 	
 		
-		if ( this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+		if ( this.UI.leftScore === 1 && this.UI.rightScore === 1 ) {
 			this.setGameResults();
 			this.ended = true;
 		} else if (this.UI.leftScore >= 11 || this.UI.rightScore >= 11) {
@@ -109,16 +109,13 @@ export class EndingSystem implements System {
 				this.game.data.leftPlayer.name : 
 				this.game.data.rightPlayer.name;
 			
-			// Get the current match from the tournament config, not the manager
 			const config = this.game.tournamentManager.getTournamentConfig()!;
 			const currentMatch = config.nextMatch.matchOrder;
 			
 			console.log(`Completing match ${currentMatch} with winner: ${winnerName}`);
 			
-			// Update match winners
 			config.matchWinners[`match${currentMatch}Winner` as keyof typeof config.matchWinners] = winnerName;
 			
-			// Update tournament structure based on current match
 			if (currentMatch <= 4) {
 				const secondRoundKey = `player${currentMatch}` as keyof typeof config.secondRoundPlayers;
 				config.secondRoundPlayers[secondRoundKey] = winnerName;
@@ -135,10 +132,8 @@ export class EndingSystem implements System {
 				console.log(`Tournament finished! Winner: ${winnerName}`);
 			}
 			
-			// Update the tournament manager's state
 			this.game.tournamentManager.updateTournament(config);
 			
-			// Advance to next match if not finished
 			if (!config.isFinished) {
 				const hasNextMatch = this.game.tournamentManager.advanceMatch();
 				if (hasNextMatch) {

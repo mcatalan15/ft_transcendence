@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 20:55:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 14:38:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,17 +191,32 @@ export class MenuImageManager {
 		this.tournamentAvatars = [];
 	
 		let squareAvatarData: { name: string, x: number, y: number }[];
-
-		if (menu.config.classicMode) {
-			squareAvatarData = [
-				{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
-				{ name: 'avatarUnknownClassic', x: 1524.5, y: 344.5 },
-			];
+	
+		const isTournamentFinished = menu.tournamentManager.getHasActiveTournament() && 
+									menu.tournamentManager.getTournamentConfig()!.isFinished;
+	
+		if (isTournamentFinished) {
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
+				];
+			}
 		} else {
-			squareAvatarData = [
-				{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
-				{ name: 'avatarUnknownSquare', x: 1524.5, y: 344.5 },
-			];
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: 1225.5, y: 344.5 },
+					{ name: 'avatarUnknownClassic', x: 1524.5, y: 344.5 },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: 1225.5, y: 344.5 },
+					{ name: 'avatarUnknownSquare', x: 1524.5, y: 344.5 },
+				];
+			}
 		}
 	
 		squareAvatarData.forEach(data => {
@@ -210,6 +225,70 @@ export class MenuImageManager {
 				this.tournamentAvatars.push(squareAvatar);
 			}
 		});
+	}
+	static async createTournamentWinnerAvatar(menu: Menu): Promise<void> {
+		this.tournamentAvatars.forEach(avatar => {
+			if (avatar && avatar.parent) {
+				avatar.parent.removeChild(avatar);
+			}
+			if (avatar) {
+				avatar.destroy();
+			}
+		});
+		
+		this.tournamentAvatars = [];
+	
+		const centerX = 1098 + 554 / 2;
+		const frameSize = 350;
+	
+		const avatarX = centerX;
+		const avatarY = 220 + frameSize / 2;
+		const scale = 0.33;
+	
+		let winnerAvatar;
+		
+		if (menu.winnerData?.avatar) {
+			try {
+				winnerAvatar = await this.createPlayerAvatarFromAsset(
+					menu.winnerData.avatar,
+					menu
+				);
+				if (winnerAvatar) {
+					winnerAvatar.x = avatarX;
+					winnerAvatar.y = avatarY;
+					winnerAvatar.scale.set(scale);
+					winnerAvatar.alpha = 0;
+					menu.renderLayers.overlays.addChild(winnerAvatar);
+					this.tournamentAvatars.push(winnerAvatar);
+					
+					this.animateAvatarFadeIn(winnerAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load winner avatar, using fallback:', error);
+				winnerAvatar = null;
+			}
+		}
+		
+		if (!winnerAvatar) {
+			let squareAvatarData: { name: string, x: number, y: number, scale: number }[];
+	
+			if (menu.config.classicMode) {
+				squareAvatarData = [
+					{ name: 'avatarUnknownClassic', x: avatarX, y: avatarY, scale: scale },
+				];
+			} else {
+				squareAvatarData = [
+					{ name: 'avatarUnknownSquare', x: avatarX, y: avatarY, scale: scale },
+				];
+			}
+	
+			squareAvatarData.forEach(data => {
+				const squareAvatar = this.createSimpleImage(data.name, data.x, data.y, menu, data.scale);
+				if (squareAvatar) {
+					this.tournamentAvatars.push(squareAvatar);
+				}
+			});
+		}
 	}
 
 	static createPlayAvatars(menu: Menu): void {
@@ -352,7 +431,11 @@ export class MenuImageManager {
 	}
 
 	static prepareTournamentAvatarImages(menu: Menu): void {
-		this.createTournamentAvatars(menu);
+		if (menu.tournamentManager.getHasActiveTournament() && menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.createTournamentWinnerAvatar(menu);
+		} else {
+			this.createTournamentAvatars(menu);
+		}
 		
 		this.tournamentAvatars.forEach(avatar => {
 			if (avatar) {

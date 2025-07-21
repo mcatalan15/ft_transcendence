@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 21:53:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:16:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,11 @@ export class MenuButtonSystem implements System {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
-		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.menu.tournamentOverlay.tournamentEndDisplay.redrawDisplay();
+		} else {
+			this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		}
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 
