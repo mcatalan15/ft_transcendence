@@ -94,8 +94,6 @@ export class TournamentEndDisplay extends Entity {
 	
 		const rankStat = data?.rank || 0;
 		this.plainStats.push(this.formatStat(rankStat, 'rank'));
-	
-		console.log('Formatted stats:', this.plainStats);
 	}
 
 	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {

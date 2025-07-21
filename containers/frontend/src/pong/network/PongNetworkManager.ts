@@ -3,7 +3,6 @@ import { PongGame } from '../engine/Game';
 import { getWsUrl } from '../../config/api';
 import { PhysicsComponent } from '../components/PhysicsComponent';
 import { RenderComponent } from '../components/RenderComponent';
-import { UI } from '../entities/UI';
 import { navigate } from '../../utils/router';
 import { Menu } from '../menu/Menu';
 
@@ -21,7 +20,7 @@ export class PongNetworkManager {
 	private lastInputSent: number = 0;
 
 	constructor(game: PongGame | null, gameId: string, menu?: Menu) {
-		this.game = game;
+		this.game = game;;
 		this.menu = menu;
 		this.gameId = gameId;
 		
@@ -43,18 +42,14 @@ export class PongNetworkManager {
 
 	private setupHandlers() {
 		this.wsManager.registerHandler('CONNECTION_SUCCESS', (message) => {
-			console.log('Connected to game WebSocket:', message);
 			
 			const gameIdToUse = message.gameId || this.gameId;
 			if (gameIdToUse && gameIdToUse !== '') {
-				console.log('Identifying with gameId:', gameIdToUse);
 				this.wsManager.send({
 					type: 'IDENTIFY',
 					playerId: sessionStorage.getItem('username'),
 					gameId: gameIdToUse
 				});
-			} else {
-				console.log('Connected for matchmaking - no gameId to identify with yet');
 			}
 		});
 
@@ -63,7 +58,6 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('JOIN_SUCCESS', (message) => {
-			console.log('Successfully joined game:', message);
 			this.playerNumber = message.playerNumber;
 			this.isHost = message.playerNumber === 1;
 			this.hostName = message.hostName;
@@ -95,17 +89,10 @@ export class PongNetworkManager {
 			this.isHost = message.isHost;
 			this.game.localPlayerNumber = message.playerNumber;
 			
-			console.log('Player assignment:', {
-				playerNumber: this.playerNumber,
-				isHost: this.isHost,
-				role: this.isHost ? 'Host (Left Paddle)' : 'Guest (Right Paddle)'
-			});
-			
 			this.showPlayerAssignment();
 		});
 		
 		this.wsManager.registerHandler('PLAYER_CONNECTED', (message) => {
-			console.log('Player connected:', message);
 			this.showConnectionStatus(`Player ${message.playerId} connected (${message.playersConnected}/2)`);
 			});
 
@@ -116,7 +103,6 @@ export class PongNetworkManager {
 			
 			if (this.game) {
 				this.game.localPlayerNumber = message.playerNumber;
-				console.log('Set game.localPlayerNumber to:', this.game.localPlayerNumber);
 			} else {
 				console.warn('No game instance when GAME_JOINED received');
 			}
@@ -132,7 +118,6 @@ export class PongNetworkManager {
 			});
 		
 		this.wsManager.registerHandler('GAME_READY', (message) => {
-			console.log('Both players connected, game is ready');
 			this.hostName = message.hostName;
 			this.guestName = message.guestName;
 			this.updatePlayerNames();
@@ -159,7 +144,6 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('PLAYER_DISCONNECTED', (message) => {
-			console.log('Player disconnected:', message.playerId);
 			this.handlePlayerDisconnection(message.playerId);
 		});
 
@@ -173,10 +157,6 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('GAME_END', (message) => {
-			console.log('GAME_END received from server');
-			console.log('Winner:', message.winner);
-			console.log('Final scores:', message.finalScore);
-			
 			this.handleGameEndMessage(message);
 		});
 
@@ -191,8 +171,7 @@ export class PongNetworkManager {
 			const currentUsername = sessionStorage.getItem('username');
 			this.isHost = message.hostName === currentUsername;
 			this.playerNumber = this.isHost ? 1 : 2;
-			
-			/* this.menu?.readyButton.setClicked(true); */
+
 			this.menu?.eventQueue.push({ 
 				type: 'MATCH_FOUND',
 			});
@@ -204,22 +183,16 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('GAME_WIN_BY_DEFAULT', (message) => {
-			console.log('Received win by default:', message);
-			
 			if (this.menu) {
-				// Handle it in the menu (during countdown phase)
 				alert(message.message || 'You win! Opponent disconnected.');
 				this.menu.readyButton.resetButton();
 				this.menu.readyButton.updateText('READY');
-				// Return to menu state
 				return;
 			}
 
 			if (this.game && !this.game.hasEnded) {
-				// Handle it in the game (if already in game)
 				const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 				if (endingSystem) {
-					// Set the winner based on current player
 					const currentUsername = sessionStorage.getItem('username');
 					
 					if (currentUsername === this.hostName) {
@@ -231,8 +204,7 @@ export class PongNetworkManager {
 						this.game.data.rightPlayer.result = 'win';
 						this.game.data.winner = this.guestName;
 					}
-					
-					// Set scores to 0-0 since game didn't really play
+
 					const uiEntity = this.game.entities.find(e => e.id === 'UI') as any;
 					if (uiEntity) {
 						uiEntity.leftScore = 0;
@@ -241,11 +213,8 @@ export class PongNetworkManager {
 						this.game.data.rightPlayer.score = 0;
 					}
 					
-					// Force end the game
 					endingSystem.ended = true;
 					this.game.hasEnded = true;
-					
-					console.log('Forced game end due to opponent disconnect');
 				}
 			}
 		});
@@ -278,10 +247,8 @@ export class PongNetworkManager {
 	
 		if (id === leftPlayerId) {
 			this.game.leftPlayer.isDisconnected = true;
-			console.log(`Player ${leftPlayerId} has disconnected in handlePlayerDisconnection`);
 		} else if (id === rightPlayerId) {
 			this.game.rightPlayer.isDisconnected = true;
-			console.log(`Player ${rightPlayerId} has disconnected in handlePlayerDisconnection`);
 		}
 
 		this.game.hasEnded = true;
@@ -293,26 +260,20 @@ export class PongNetworkManager {
 
 	async connect(gameId: string) {
 		try {
-		console.log('Connecting to game session:', gameId);
-		
-		await this.wsManager.connect(gameId);
-		
-		console.log('WebSocket connection established, waiting for join confirmation...');
-		
-		} catch (error) {
-		console.error('Failed to connect to game:', error);
-		
-		const statusDiv = document.getElementById('connection-status');
-		if (statusDiv) {
-			statusDiv.className = 'text-center text-red-400 text-lg mb-4';
-		}
-		
-		throw error;
+			await this.wsManager.connect(gameId);
+			} catch (error) {
+			console.error('Failed to connect to game:', error);
+
+			const statusDiv = document.getElementById('connection-status');
+			if (statusDiv) {
+				statusDiv.className = 'text-center text-red-400 text-lg mb-4';
+			}
+			
+			throw error;
 		}
 	}
 
 	private updatePlayerNames() {
-		// Update the game UI to show player names
 		const playerNamesDiv = document.getElementById('player-names');
 		if (playerNamesDiv) {
 			playerNamesDiv.innerHTML = `
@@ -328,12 +289,10 @@ export class PongNetworkManager {
 	private showConnectionStatus(message: string) {
 		const statusDiv = document.getElementById('connection-status');
 		if (statusDiv) {
-		statusDiv.textContent = message;
-		// Only change to green if it's a success message
-		if (message.includes('connected') || message.includes('ready') || message.includes('progress')) {
-			statusDiv.className = 'text-center text-green-400 text-lg mb-4';
-		}
-		// Red class is set by individual handlers for errors
+			statusDiv.textContent = message;
+			if (message.includes('connected') || message.includes('ready') || message.includes('progress')) {
+				statusDiv.className = 'text-center text-green-400 text-lg mb-4';
+			}
 		}
 	}
 
@@ -356,15 +315,12 @@ export class PongNetworkManager {
 	}
 
 	private handleGameEndMessage(message: any): void {
-		
-		// Update UI scores
 		const uiEntity = this.game.entities.find(e => e.id === 'UI') as any;
 		if (uiEntity && message.finalScore) {
 			uiEntity.leftScore = message.finalScore.player1;
 			uiEntity.rightScore = message.finalScore.player2;
 		}
-		
-		// Update game data
+
 		if (message.gameData) {
 			this.game.data.leftPlayer = { ...this.game.data.leftPlayer, ...message.gameData.leftPlayer };
 			this.game.data.rightPlayer = { ...this.game.data.rightPlayer, ...message.gameData.rightPlayer };
@@ -376,7 +332,6 @@ export class PongNetworkManager {
 				message.gameData.leftPlayer.name : message.gameData.rightPlayer.name;
 		}
 		
-		// Trigger ending system
 		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem && !this.game.hasEnded) {
 			(endingSystem as any).ended = true;
@@ -385,14 +340,10 @@ export class PongNetworkManager {
 	}
 
 	private setupInputHandlers() {
-		// Remove any existing listeners first
 		this.cleanupInputHandlers();
-		
-		// Add new listeners
+
 		document.addEventListener('keydown', this.handleKeyDown);
 		document.addEventListener('keyup', this.handleKeyUp);
-		
-		console.log('Input handlers set up for player', this.playerNumber, this.isHost ? '(Host)' : '(Guest)');
 	}
 
 	private cleanupInputHandlers() {
@@ -412,23 +363,18 @@ export class PongNetworkManager {
 			if (e.key === 'ArrowUp') input = -1;
 			if (e.key === 'ArrowDown') input = 1;
 		}
-	
-		// Remove the input change check - send input every keydown event
+
 		if (input !== 0) {
-			// Apply input locally immediately (client-side prediction)
 			this.applyLocalInput(input);
-			
-			// Send to server every time (not just on change)
+
 			this.sendPaddleInput(input);
 			this.lastInputSent = input;
-			
-			// Buffer for potential rollback
+
 			this.inputBuffer.push({
 				input: input,
 				timestamp: Date.now()
 			});
 			
-			// Keep buffer small
 			if (this.inputBuffer.length > 10) {
 				this.inputBuffer.shift();
 			}
@@ -444,17 +390,16 @@ export class PongNetworkManager {
 			const render = localPaddle.getComponent('render') as RenderComponent;
 			
 			if (physics && render) {
-				const speed = 10; // Match server paddle speed
+				const speed = 10;
 				
 				if (input === -1) {
 					physics.y -= speed;
 				} else if (input === 1) {
 					physics.y += speed;
 				}
-				
-				// Apply same constraints as server
-				const minY = 110; // topWallBottom + paddleHeight/2
-				const maxY = 670; // bottomWallTop - paddleHeight/2
+
+				const minY = 110;
+				const maxY = 670;
 				physics.y = Math.max(minY, Math.min(maxY, physics.y));
 				
 				render.graphic.y = physics.y;
@@ -508,8 +453,6 @@ export class PongNetworkManager {
 
 	public async startMatchmaking() {
 		try {
-			console.log('Starting matchmaking...');
-			
 			if (!this.wsManager.isSocket() || !this.wsManager.isConnected()) {
 				await this.wsManager.connect(null);
 			}

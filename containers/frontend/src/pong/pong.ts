@@ -1,4 +1,16 @@
-// pong.ts
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pong.ts                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 21:33:33 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/07/21 21:37:08 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 import { Application } from "pixi.js";
 import { Menu } from './menu/Menu';
 import { Preconfiguration } from "./utils/GameConfig";
@@ -45,8 +57,6 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
     const guestName = urlParams.get('guestName');
 
 	if (mode === 'online' && gameId) {
-		console.log('Direct online game detected, initializing game directly');
-		
 		const browserSettings = BrowserOptimizer.getOptimalSettings();
 		const app = new Application();
 		await app.init({
@@ -93,9 +103,6 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
 	}
 
     const browserSettings = BrowserOptimizer.getOptimalSettings();
-    
-    console.log(`Browser detected: ${BrowserOptimizer.isFirefox ? 'Firefox' : 'Chrome'}`);
-    console.log('Using settings:', browserSettings);
 
     const app = new Application();
     await app.init({
@@ -123,8 +130,6 @@ export async function initGame(container: HTMLElement, preconfiguration?: Precon
         hasInvitationContext: false,
         invitationData: null
     };
-
-    console.log('🎮 initGame received preconfiguration:', finalPreconfiguration);
 	
 	const menu = new Menu(app, language, BrowserOptimizer.isFirefox, true, finalPreconfiguration);
 

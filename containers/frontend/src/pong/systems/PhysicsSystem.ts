@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:55:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 21:57:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:29:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ export class PhysicsSystem implements System {
 	ballResetTime: number = 0;
 	private ballCollisionHistory: Map<string, Array<{ time: number, normal: { x: number, y: number } }>> = new Map();
 
-	// Online stuff
 	private serverState: any = null;
 	lastServerUpdate: number = 0;
 
@@ -115,7 +114,6 @@ export class PhysicsSystem implements System {
 			ballPhysics.x = serverBall.x;
 			ballPhysics.y = serverBall.y;
 			(ballPhysics as any).hasServerTarget = true;
-			console.log(`Ball ${isSpawning ? 'spawned' : isTeleport ? 'teleported' : 'initialized'} at (${serverBall.x}, ${serverBall.y})`);
 		} else {
 			const lerpFactor = 0.75;
 			ballPhysics.x += (serverBall.x - ballPhysics.x) * lerpFactor;
@@ -162,8 +160,6 @@ export class PhysicsSystem implements System {
 		if (isLocalPaddle) {
 			const tolerance = 15;
 			if (Math.abs(physics.y - serverPaddle.y) > tolerance) {
-				// Server correction needed
-				console.log(`Local paddle corrected: client=${physics.y.toFixed(1)}, server=${serverPaddle.y.toFixed(1)}`);
 				physics.y = serverPaddle.y;
 			}
 		} else {
@@ -400,7 +396,6 @@ export class PhysicsSystem implements System {
 		let collided = false;
 		let collisionNormal = { x: 0, y: 0 };
 
-		// Store previous position for stuck detection
 		const prevPos = { x: physics.x - physics.velocityX, y: physics.y - physics.velocityY };
 
 		for (const entity of entitiesMap.values()) {
@@ -565,7 +560,6 @@ export class PhysicsSystem implements System {
 
 			if (oscillationCheck.isOscillating || historyOscillation) {
 				physicsUtils.breakOscillation(physics, collisionNormal, ball);
-				console.log(`Broke ${oscillationCheck.type} oscillation for ball ${ball.id}`);
 			}
 
 			if (speed < 3 || distanceFromPrev < 1) {
@@ -805,8 +799,6 @@ export class PhysicsSystem implements System {
 			if (isPowerup(entity)) {
 				const powerupBox = physicsUtils.getBoundingBox(entity.getComponent('physics') as PhysicsComponent);
 				if (ball.lastHit && physicsUtils.isAABBOverlap(ballBox, powerupBox)) {
-					console.log(`Triggered powerup: ${entity.id}`);
-
 					if (entity.id.includes('Down')) {
 						if (!this.game.config.classicMode) {
 							ParticleSpawner.spawnBasicExplosion(this.game, ballPhysics.x + ballPhysics.width / 4, ballPhysics.y, GAME_COLORS.red, 1);
@@ -892,7 +884,6 @@ export class PhysicsSystem implements System {
 			}
 		}
 
-		// Ball exits left side
 		if (ballRight < 0) {
 			if (ball.isGoodBall) {
 				if (!this.game.config.classicMode) {
@@ -992,8 +983,6 @@ export class PhysicsSystem implements System {
 					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
 					this.game.sounds.hit.play();
 				}
-
-				console.log('Bullet hit!');
 			}
 		} else if (bullet.direction === 'left') {
 			if (physicsUtils.isAABBOverlap(bulletBox, paddleLBox)) {
@@ -1019,8 +1008,6 @@ export class PhysicsSystem implements System {
 					this.game.sounds.hit.rate(Math.random() * 0.2 + 1.1);
 					this.game.sounds.hit.play();
 				}
-
-				console.log('Bullet hit!');
 			}
 		}
 	}
@@ -1177,7 +1164,5 @@ export class PhysicsSystem implements System {
 				}
 			}
 		}
-		
-		console.log('PhysicsSystem cleanup completed');
 	}
 }

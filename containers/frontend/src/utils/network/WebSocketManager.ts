@@ -15,12 +15,11 @@ export class WebSocketManager {
     private hostName: string | null = null;
     private guestName: string | null = null;
     
-    // Heartbeat properties
     private heartbeatInterval: NodeJS.Timeout | null = null;
     private heartbeatTimeout: NodeJS.Timeout | null = null;
     private isAlive: boolean = true;
-    private heartbeatIntervalMs = 30000; // 30 seconds
-    private heartbeatTimeoutMs = 5000; // 5 seconds to wait for pong
+    private heartbeatIntervalMs = 30000;
+    private heartbeatTimeoutMs = 5000;
     
     private static instance: WebSocketManager | null = null;
 
@@ -32,8 +31,6 @@ export class WebSocketManager {
         this.hostName = hostName;
         this.guestName = guestName;
         this.playerRole = isHost ? 'host' : 'guest';
-        
-        console.log('Game info set:', { hostName, guestName, isHost });
     }
     
     getHostName(): string | null { return this.hostName; }
@@ -41,7 +38,6 @@ export class WebSocketManager {
 
     setPlayerRole(role: 'host' | 'guest') {
         this.playerRole = role;
-        console.log('Player role set to:', this.playerRole);
     }
 
     getPlayerNumber(): number | null {
@@ -71,7 +67,6 @@ export class WebSocketManager {
 
     connect(gameId: string | null): Promise<void> {
         if (this.isConnecting) {
-            console.log('Connection attempt already in progress');
             return Promise.reject(new Error('Connection in progress'));
         }
           
@@ -79,7 +74,7 @@ export class WebSocketManager {
 
         return new Promise((resolve, reject) => {
             if (this.socket) {
-                console.log(`Closing existing connection before connecting with gameId: ${gameId}`);
+
                 this.cleanupConnection();
             }
 
@@ -92,12 +87,10 @@ export class WebSocketManager {
             } else {
                 wsUrl = this.gameWebSocketUrl;
             }
-            
-            console.log('Connecting to WebSocket URL:', wsUrl);
+
             this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = () => {
-                console.log('WebSocket connection OPENED successfully to:', wsUrl);
                 this.isConnecting = false;
                 this.isAlive = true;
 
@@ -115,7 +108,6 @@ export class WebSocketManager {
             };
             
             this.socket.onclose = (event) => {
-                console.log('WebSocket connection CLOSED', event);
                 this.isConnecting = false;
                 this.stopHeartbeat();
                 
@@ -141,12 +133,10 @@ export class WebSocketManager {
         
         this.heartbeatInterval = setInterval(() => {
             if (this.socket?.readyState === WebSocket.OPEN) {
-                // Send ping
                 this.isAlive = false;
                 this.socket.send(JSON.stringify({ type: 'PING' }));
                 this.heartbeatTimeout = setTimeout(() => {
                     if (!this.isAlive) {
-                        console.log('Heartbeat timeout - closing connection');
                         this.socket?.close();
                     }
                 }, this.heartbeatTimeoutMs);
@@ -175,11 +165,8 @@ export class WebSocketManager {
     }
     
     private handleDisconnect(event: CloseEvent) {
-        console.log('WebSocket connection closed unexpectedly:', event.code, event.reason);
-        
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-            console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`);
             
             setTimeout(() => {
                 this.reconnectAttempts++;
@@ -245,7 +232,6 @@ export class WebSocketManager {
 
     registerPlayerAssignmentHandler() {
         this.registerHandler('PLAYER_ASSIGNED', (message) => {
-            console.log('Server assigned player number:', message.playerNumber);
             this.setPlayerNumber(message.playerNumber);
         });
     }

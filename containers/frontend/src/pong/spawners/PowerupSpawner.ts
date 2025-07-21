@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PowerupSpawner.ts                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:44:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/13 21:25:27 by mcatalan@st      ###   ########.fr       */
+/*   Updated: 2025/07/21 21:27:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ export class PowerupSpawner {
 
 	static getSpawningPointsInWorld(world: string, width: number, height: number): Point[] {
 		let points: Point [] = [];
-		console.log(world);
 		if (world.includes('pyramid')) {
 			points.push(new Point(width / 2, height / 2 + 50));
 			points.push(new Point(width / 2, height / 2 - 50));
@@ -244,12 +243,10 @@ export class PowerupSpawner {
 		game.renderLayers.powerup.addChild(render.graphic);
 		
 		game.data.specialItems.shields++;
-		console.log(`spawned shield:${shield.x}`);
 	}
 
 	static despawnShield(game: PongGame, shieldId: string) {
 		game.removeEntity(shieldId);
-		console.log(`Shield ${shieldId} despawned`)
 	}
 
 	static spawnBullet(game: PongGame, side: string, paddle: Paddle) {
@@ -273,12 +270,10 @@ export class PowerupSpawner {
 		game.renderLayers.powerup.addChild(bulletRender.graphic);
 
 		game.data.specialItems.bullets++;
-		console.log(`spawned bullet going:${bullet.direction}`);
 	}
 
 	static despawnBullet(game: PongGame, bulletId: string) {
 		game.removeEntity(bulletId);
-		console.log(`Bullet ${bulletId} despawned`)
 	}
 
 	static manageOnePointSpawn(game: PongGame, points: Point[]) {
@@ -422,7 +417,6 @@ export class PowerupSpawner {
 			render.graphic.x = physics.x;
 			render.graphic.y = physics.y;
 		
-			//console.log(powerup.layer);
 			if (powerup.layer === 'powerup') {
 				game.renderLayers.powerup.addChild(render.graphic);
 			} else if (powerup.layer === 'powerdown') {

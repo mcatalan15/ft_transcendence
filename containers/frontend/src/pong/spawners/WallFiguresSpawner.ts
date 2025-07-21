@@ -100,7 +100,6 @@ export class WallFiguresSpawner {
     this.buildWallFigure(worldSystem, depth, 'rake', { maxHeightDivisor: 2 });
   }
 
-  // Utils
   private static generateDepthLineBehavior(
     movement: string,
     direction: string,

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:17:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:01:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:31:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,5 @@ export class WorldSystem implements System {
         for (const entityId of entitiesToRemove) {
             this.game.removeEntity(entityId);
         }
-        
-        console.log('WorldSystem cleanup completed');
     }
 }

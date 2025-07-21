@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:06:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 15:24:52 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:05:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,6 @@ export class OverlayHeader extends Entity {
 	}
 
 	createHeaderText(type: string) {
-		// Only God can judge me
 		let x = 100 + (type.length - 4) * 5;
 
 		switch (type.length) {
@@ -179,8 +178,7 @@ export class OverlayHeader extends Entity {
 
 	redrawOverlayElements(): void {
         const color = this.menu.config.classicMode ? GAME_COLORS.white : this.getColor(this.overlayType);
-    
-        // Recreate header sprite with correct color
+		
         if (this.headerSprite) {
             if (this.headerSprite.parent) {
                 this.headerSprite.parent.removeChild(this.headerSprite);

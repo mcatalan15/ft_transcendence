@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 12:49:41 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 09:46:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:31:54 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ export function createBallButton(width: number, height: number, color: number): 
 	const button = new Container() as Container & { onClick: () => void };
 	button.eventMode = 'static';
 	button.cursor = 'pointer';
-  
-	// Create the ball graphics
+
 	const ball = new Graphics();
 	ball.circle(0, 0, 75);
 	ball.x = width - 470;
@@ -42,24 +41,22 @@ export function createBallButton(width: number, height: number, color: number): 
 
 	button.addChild(ball);
 
-	// Add the onClick method to the button
 	button.onClick = () => {};
 
-	// Hover effects
 	button.on('pointerenter', () => {
 		ball.clear();
-		ball.circle(0, 0, 80); // Slightly larger on hover
+		ball.circle(0, 0, 80);
 		ball.x = width - 470;
 		ball.y = height / 8 - 25;
-		ball.fill(GAME_COLORS.white); // Change color on hover
+		ball.fill(GAME_COLORS.white);
 	});
   
 	button.on('pointerleave', () => {
 		ball.clear();
-		ball.circle(0, 0, 75); // Back to original size
+		ball.circle(0, 0, 75);
 		ball.x = width - 470;
 		ball.y = height / 8 - 25;
-		ball.fill(color); // Back to original color
+		ball.fill(color);
 	});
   
 	return button;
@@ -203,24 +200,19 @@ export function getTournamentOverlayButtonPoints(menu: Menu, button: MenuTournam
 export function createAdaptiveDuotoneFilter(menu: Menu): ColorMatrixFilter {
     const filter = new ColorMatrixFilter();
     
-    // Convert to grayscale first
     filter.desaturate();
     
     let darkColor: number;
     let lightColor: number;
     
     if (menu.config.classicMode) {
-        // In classic mode, use your game's black and white
-        darkColor = GAME_COLORS.black;   // 0x171717
-        lightColor = GAME_COLORS.white;  // 0xfff8e3
+        darkColor = GAME_COLORS.black;
+        lightColor = GAME_COLORS.white;
     } else {
-        // In modern mode, you could use a different color scheme
-        // or still use your game's colors
-        darkColor = GAME_COLORS.black;   // 0x171717
-        lightColor = GAME_COLORS.white;  // 0xfff8e3
+        darkColor = GAME_COLORS.black;
+        lightColor = GAME_COLORS.white;
     }
-    
-    // Extract RGB components
+
     const darkR = (darkColor >> 16) & 0xFF;
     const darkG = (darkColor >> 8) & 0xFF;
     const darkB = darkColor & 0xFF;
@@ -229,7 +221,6 @@ export function createAdaptiveDuotoneFilter(menu: Menu): ColorMatrixFilter {
     const lightG = (lightColor >> 8) & 0xFF;
     const lightB = lightColor & 0xFF;
     
-    // Create the gradient mapping matrix
     filter.matrix = [
         (lightR - darkR) / 255, 0, 0, 0, darkR / 255,
         0, (lightG - darkG) / 255, 0, 0, darkG / 255,

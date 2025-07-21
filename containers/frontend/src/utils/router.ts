@@ -9,7 +9,6 @@ export function startRouter(container: HTMLElement) {
 	app = container;
 
 	window.addEventListener('beforeunload', () => {
-		console.log('Page unloading, cleaning up games...');
 		gameManager.destroyAllGames();
 	});
 	
@@ -21,7 +20,7 @@ export function startRouter(container: HTMLElement) {
 }
 
 let lastNavigation = 0;
-const NAVIGATION_COOLDOWN = 5; // ms
+const NAVIGATION_COOLDOWN = 5;
 
 export function navigate(path: string) {
     const now = Date.now();

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:37:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:52:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:31:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ export class VFXSystem implements System {
 				if (vfx) {
 					vfx.isFlashing = false;
 					vfx.flashTimeLeft = 0;
-					
-					// Reset tint to original
 					const render = entity.getComponent('render') as RenderComponent;
 					if (render?.graphic) {
 						render.graphic.tint = vfx.originalTint;
@@ -72,7 +70,5 @@ export class VFXSystem implements System {
 				}
 			}
 		}
-		
-		console.log('VFXSystem cleanup completed');
 	}
 }

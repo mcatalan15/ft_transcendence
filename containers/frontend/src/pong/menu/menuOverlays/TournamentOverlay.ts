@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 19:20:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 18:46:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:23:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,6 @@ export class TournamentOverlay extends Overlay {
 		MenuImageManager.prepareTournamentAvatarImages(this.menu);
 		
 		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
-			console.log('Tournament is finished, hiding ready button and glossary/filters buttons');
 			this.menu.readyButton.setHidden(true);
 			this.menu.tournamentGlossaryButton.setHidden(true);
 			this.menu.tournamentFiltersButton.setHidden(true);
