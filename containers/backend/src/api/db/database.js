@@ -215,99 +215,6 @@ async function getUserByUsername(username) {
     });
 }
 
-// async function saveGameToDatabase(
-//     // game_id,
-//     player1_id,
-//     player2_id,
-//     winner_id,
-//     // player1_name,
-//     // player2_name,
-//     player1_score,
-//     player2_score,
-//     // winner_name,
-//     // player1_is_ai,
-//     // player2_is_ai,
-//     game_mode,
-//     is_tournament,
-//     smart_contract_link,
-//     contract_address,
-//     created_at,
-//     ended_at
-// ) {
-//     return new Promise((resolve, reject) => {
-//         console.log('saveGameToDatabase called with:', {
-//             player1_id, player2_id, winner_id,
-//             player1_score, player2_score,
-//             game_mode,
-// 			is_tournament, 
-// 			smart_contract_link,
-// 			contract_address,
-//             created_at,
-// 			ended_at
-//         });
-
-//         const game_id = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-//         const query = `
-//             INSERT INTO games (
-//                 player1_id,
-//                 player2_id,
-//                 winner_id,
-//                 -- player1_name,
-//                 -- player2_name,
-//                 player1_score,
-//                 player2_score,
-//                 -- winner_name,
-//                 -- player1_is_ai,
-//                 -- player2_is_ai,
-//                 game_mode,
-//                 is_tournament,
-//                 smart_contract_link,
-//                 contract_address,
-//                 created_at,
-//                 ended_at
-//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//         `;
-
-//         const params = [
-//             // game_id,
-//             player1_id,
-//             player2_id,
-//             winner_id,
-//             // player1_name,
-//             // player2_name,
-//             player1_score || 0,
-//             player2_score || 0,
-//             // winner_name,
-//             // player1_is_ai ? 1 : 0,
-//             // player2_is_ai ? 1 : 0,
-//             game_mode,
-//             is_tournament ? 1 : 0,
-//             smart_contract_link,
-//             contract_address,
-//             created_at || new Date().toISOString(),
-//             ended_at
-//         ];
-
-//         console.log('Executing query with params:', params);
-
-//         db.run(query, params, function (err) {
-//             if (err) {
-//                 console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
-//                     message: err.message,
-//                     code: err.code,
-//                     errno: err.errno
-//                 });
-//                 reject(err);
-//             } else {
-//                 console.log('Game saved successfully with auto-increment ID:', this.lastID);
-//                 console.log('Game_id used:', game_id);
-//                 resolve(this.lastID);
-//             }
-//         });
-//     });
-// }
-
 async function getLatestGame() {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM games ORDER BY id_game DESC LIMIT 1`;
@@ -1278,6 +1185,153 @@ async function updateUserStats(player1_id, player2_id, gameData) {
     }
 }
 
+async function updateTournamentStats(tournamentConfig) {
+    return new Promise((resolve, reject) => {
+        // Check Tournament is finished
+        if (!tournamentConfig.isFinished) {
+            reject(new Error('Tournament must be finished to update stats'));
+            return;
+        }
+
+        const { registeredPlayerNames, registeredPlayerData, tournamentWinner } = tournamentConfig;
+
+        // Extract all the players and determine if they should use guest stats
+        const players = [];
+        const playerDataKeys = Object.keys(registeredPlayerNames);
+
+        playerDataKeys.forEach(playerKey => {
+            const playerName = registeredPlayerNames[playerKey];
+            if (playerName) {
+                // Check if corresponding player data exists
+                const playerDataKey = `${playerKey}Data`;
+                const playerData = registeredPlayerData[playerDataKey];
+                
+                players.push({
+                    name: playerName,
+                    isWinner: playerName === tournamentWinner,
+                    isGuest: playerData === null, // If playerData is null, treat as guest
+                    actualUserId: playerData ? playerData.id : null
+                });
+            }
+        });
+
+        if (players.length === 0) {
+            reject(new Error('No valid players found in tournament'));
+            return;
+        }
+
+        console.log(`[DB] Updating tournament stats for ${players.length} players. Winner: ${tournamentWinner}`);
+        console.log('[DB] Player mapping:', players.map(p => ({ 
+            name: p.name, 
+            isWinner: p.isWinner, 
+            isGuest: p.isGuest,
+            userId: p.actualUserId 
+        })));
+
+        let completed = 0;
+        let errors = [];
+
+        // Use serialized approach to process each player
+        const updatePlayerStats = (playerIndex) => {
+            if (playerIndex >= players.length) {
+                // All players processed
+                if (errors.length > 0) {
+                    console.error('[DB ERROR] Some players could not be updated:', errors);
+                    reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
+                } else {
+                    console.log(`[DB] Successfully updated tournament stats for all ${players.length} players`);
+                    resolve({
+                        updatedPlayers: players.length,
+                        tournamentWinner: tournamentWinner,
+                        players: players.map(p => ({ 
+                            name: p.name, 
+                            isWinner: p.isWinner, 
+                            isGuest: p.isGuest 
+                        }))
+                    });
+                }
+                return;
+            }
+
+            const player = players[playerIndex];
+            let targetUserId;
+            let targetUsername;
+
+            if (player.isGuest) {
+                // Player data is null, find guest user
+                console.log(`[DB] Player ${player.name} has no data, looking for guest user`);
+                
+                const findGuestQuery = `SELECT id_user FROM users WHERE username = 'guest' LIMIT 1`;
+                db.get(findGuestQuery, [], (guestErr, guestRow) => {
+                    if (guestErr) {
+                        console.error(`[DB ERROR] Failed to find guest user:`, guestErr);
+                        errors.push(`Failed to find guest user: ${guestErr.message}`);
+                        updatePlayerStats(playerIndex + 1);
+                        return;
+                    }
+
+                    if (guestRow) {
+                        targetUserId = guestRow.id_user;
+                        targetUsername = 'guest';
+                        console.log(`[DB] Using guest user with ID ${targetUserId} for player ${player.name}`);
+                        updateStats();
+                    } else {
+                        console.error(`[DB ERROR] Guest user not found in database`);
+                        errors.push(`Guest user not found for ${player.name}`);
+                        updatePlayerStats(playerIndex + 1);
+                    }
+                });
+                return; // Don't continue here, wait for guest user query
+            } else {
+                // Player has data, use their actual user ID
+                targetUserId = player.actualUserId;
+                targetUsername = player.name;
+                console.log(`[DB] Using real user ${player.name} with ID ${targetUserId}`);
+                updateStats();
+            }
+
+            function updateStats() {
+                const query = `
+                    INSERT INTO user_stats (
+                        id_user, 
+                        total_tournaments, 
+                        tournaments_won, 
+                        tournaments_lost,
+                        last_updated
+                    ) VALUES (?, 1, ?, ?, CURRENT_TIMESTAMP)
+                    ON CONFLICT(id_user) DO UPDATE SET 
+                        total_tournaments = total_tournaments + 1,
+                        tournaments_won = tournaments_won + ?,
+                        tournaments_lost = tournaments_lost + ?,
+                        last_updated = CURRENT_TIMESTAMP
+                `;
+
+                const wonIncrement = player.isWinner ? 1 : 0;
+                const lostIncrement = player.isWinner ? 0 : 1;
+                const params = [targetUserId, wonIncrement, lostIncrement, wonIncrement, lostIncrement];
+
+                db.run(query, params, function (err) {
+                    if (err) {
+                        console.error(`[DB ERROR] Failed to update stats for player ${player.name} (target: ${targetUsername}):`, err);
+                        errors.push(`Failed to update ${player.name}: ${err.message}`);
+                    } else if (this.changes === 0) {
+                        console.warn(`[DB WARN] No stats updated for player ${player.name} (target: ${targetUsername})`);
+                        errors.push(`No stats updated for ${player.name}`);
+                    } else {
+                        console.log(`[DB] Updated tournament stats for ${player.name} -> ${targetUsername} (Winner: ${player.isWinner})`);
+                    }
+
+                    // Process next player
+                    updatePlayerStats(playerIndex + 1);
+                });
+            }
+        };
+
+        // Start processing players
+        updatePlayerStats(0);
+    });
+}
+
 module.exports = {
 	db,
 	checkUserExists,
@@ -1309,5 +1363,6 @@ module.exports = {
     getRefreshTokenFromDatabase,
     deleteRefreshTokenFromDatabase,
 	getUsernameById,
-	updateUserStats
+	updateUserStats,
+	updateTournamentStats
 };

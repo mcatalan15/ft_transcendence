@@ -3,31 +3,31 @@ pragma solidity ^0.8.0;
 
 contract GameContract {
     struct Game {
-        string teamA;
-        uint scoreA;
-        string teamB;
-        uint scoreB;
+        string player1Name;
+        uint player1Score;
+        string player2Name;
+        uint player2Score;
     }
     
     Game public currentGame;
     
     constructor(
-        string memory _teamA,
-        uint _scoreA,
-        string memory _teamB,
-        uint _scoreB
+        string memory player1Name,
+        uint player1Score,
+        string memory player2Name,
+        uint player2Score
     ) {
-        currentGame = Game(_teamA, _scoreA, _teamB, _scoreB);
+        currentGame = Game(player1Name, player1Score, player2Name, player2Score);
     }
     
     function getGameData() public view returns (
         string memory, uint, string memory, uint
     ) {
         return (
-            currentGame.teamA,
-            currentGame.scoreA,
-            currentGame.teamB,
-            currentGame.scoreB
+            currentGame.player1Name,
+            currentGame.player1Score,
+            currentGame.player2Name,
+            currentGame.player2Score
         );
     }
 }
