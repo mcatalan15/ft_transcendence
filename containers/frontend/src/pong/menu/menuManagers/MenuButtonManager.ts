@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 09:46:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:44:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'start'),
 				onClick: async () => {
-					console.log("Start clicked");
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -45,7 +44,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'play'),
 				onClick: async () => {
-					console.log("Play clicked");
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -55,7 +53,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'options'),
 				onClick: () => {
-					console.log('Options clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
@@ -65,7 +62,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'glossary'),
 				onClick: () => {
-					console.log('Glossary clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuOrange,
@@ -75,7 +71,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'info'),
 				onClick: () => {
-					console.log('About clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuPink,
@@ -164,7 +159,6 @@ export class ButtonManager {
 				isClicked: true,
 				text: this.getButtonTexts(menu, 'practice'),
 				onClick: () => {
-					console.log('PRACTICE clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -174,7 +168,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'ranked'),
 				onClick: () => {
-					console.log('RANKED clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -184,7 +177,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, '1vsIA'),
 				onClick: () => {
-					console.log('1 VS IA clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -194,7 +186,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'tournament'),
 				onClick: () => {
-					console.log('TOURNAMENT clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -204,7 +195,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: '1 VS 1',
 				onClick: () => {
-					console.log('1 VS 1 clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -277,7 +267,6 @@ export class ButtonManager {
 				isClicked: true,
 				text: menu.config.filters ? this.getButtonTexts(menu, 'CRTON') : this.getButtonTexts(menu, 'CRTOFF'),
 				onClick: () => {
-					console.log('filter toggler clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
@@ -287,7 +276,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: menu.config.classicMode ? this.getButtonTexts(menu, 'CLASSICON') : this.getButtonTexts(menu, 'CLASSICOFF'),
 				onClick: () => {
-					console.log('classic toggler clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
@@ -331,7 +319,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'X',
 				onClick: () => {
-					console.log(`return at start clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -341,7 +328,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'X',
 				onClick: () => {
-					console.log(`return at options clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuGreen,
@@ -401,7 +387,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'X',
 				onClick: () => {
-					console.log(`return at glossary window clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuOrange,
@@ -411,7 +396,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'X',
 				onClick: () => {
-					console.log(`return at about window clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuPink,
@@ -421,7 +405,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'X',
 				onClick: () => {
-					console.log(`return at play window clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -509,7 +492,6 @@ export class ButtonManager {
 			isClicked: false,
 			text: this.getButtonTexts(menu, 'ready'),
 			onClick: () => {
-				console.log('Ready button clicked');
 				menu.playSound("menuSelect");
 			},
 			color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -541,7 +523,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'glossary'),
 				onClick: () => {
-					console.log('Tournament Glossary button clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -551,7 +532,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: this.getButtonTexts(menu, 'CRTON'),
 				onClick: () => {
-					console.log('Tournament Filters button clicked');
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -595,7 +575,6 @@ export class ButtonManager {
 			isClicked: false,
 			text: "GUEST?",
 			onClick: () => {
-				console.log('InputButton clicked');
 				menu.playSound("menuSelect");
 			},
 			color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -628,7 +607,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-1',
 				onClick: () => {
-					console.log(`Tournament Player-1 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -638,7 +616,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-2',
 				onClick: () => {
-					console.log(`Tournament Player-2 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -648,7 +625,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-3',
 				onClick: () => {
-					console.log(`Tournament Player-3 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -658,7 +634,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-4',
 				onClick: () => {
-					console.log(`Tournament Player-4 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -668,7 +643,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-5',
 				onClick: () => {
-					console.log(`Tournament Player-5 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -678,7 +652,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-6',
 				onClick: () => {
-					console.log(`Tournament Player-6 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -688,7 +661,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-7',
 				onClick: () => {
-					console.log(`Tournament Player-7 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,
@@ -698,7 +670,6 @@ export class ButtonManager {
 				isClicked: false,
 				text: 'Player-8',
 				onClick: () => {
-					console.log(`Tournament Player-8 button clicked`);
 					menu.playSound("menuSelect");
 				},
 				color: getThemeColors(menu.config.classicMode).menuBlue,

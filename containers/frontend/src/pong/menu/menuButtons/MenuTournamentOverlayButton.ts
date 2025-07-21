@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 19:36:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 17:15:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:39:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ export class MenuTournamentOverlayButton extends MenuButton {
     }
 
 	protected onButtonClick(): void {
-        console.log("Tournament overlay button clicked");
-        console.log(`Button ID: ${this.id}`);
         if (this.id.includes('glossary') || this.id.includes('glosario') || this.id.includes('glossaire') || this.id.includes('glossari')) {
             this.menu.eventQueue.push({
                 type: 'GLOSSARY_CLICK',

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:47:11 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/02 17:12:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:46:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ import { BurstBallPowerup } from "../../entities/powerups/BurstBallPowerup";
 import { MultiplyBallPowerup } from "../../entities/powerups/MultiplyBallPowerup";
 
 export class MenuPowerupManager {
-    // Store all powerups for easy access
     public static powerupEntities: any[] = [];
 	private static isAnimating: boolean = false;
 
@@ -40,8 +39,8 @@ export class MenuPowerupManager {
         const enlargePowerup = new EnlargePowerup('enlarge', 'overlays', menu, 170, 215);
         const renderComponent = enlargePowerup.getComponent('render') as RenderComponent;
         if (renderComponent) {
-            renderComponent.graphic.alpha = 0; // Start invisible
-            menu.menuHidden.addChild(renderComponent.graphic); // Start hidden
+            renderComponent.graphic.alpha = 0;
+            menu.menuHidden.addChild(renderComponent.graphic);
         }
         menu.entities.push(enlargePowerup);
         menu.enlargePowerup = enlargePowerup;
@@ -162,7 +161,6 @@ export class MenuPowerupManager {
         this.powerupEntities.push(multiplyBallPowerup);
     }
 
-    // Animation methods
     static fadeInAllPowerups(menu: Menu): void {
 		this.animatePowerupsAlpha(1, 0.2);
 	}

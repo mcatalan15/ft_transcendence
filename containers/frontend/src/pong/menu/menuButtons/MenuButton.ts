@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:25:58 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/26 10:33:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:39:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,6 @@ export class MenuButton extends BaseButton {
 
     protected onButtonClick(): void {
         const eventType = this.getEventType();
-        console.log(`type: ${eventType}`);
         if (eventType) {
             this.menu.eventQueue.push({
                 type: eventType,
@@ -167,7 +166,6 @@ export class MenuButton extends BaseButton {
     }
 
     protected getEventType(): string | null {
-        console.log(`text: ${this.config.text}`);
         switch (this.buttonId) {
             case 'START': return 'START_CLICK';
             case 'OPTIONS': return 'OPTIONS_CLICK';
