@@ -9,29 +9,26 @@ function setupWebSocketServers() {
 
 function handleUpgrade(wss, gameWss, server) {
   server.on('upgrade', (request, socket, head) => {
-    const host = request.headers.host || 'localhost';
-    const protocol = request.headers['x-forwarded-proto'] || 'http';
-    const fullUrl = `${protocol}://${host}${request.url}`;
-    
     console.log(`WebSocket upgrade request URL: ${request.url}`);
-    console.log(`Full URL constructed: ${fullUrl}`);
     
-    const { pathname } = new URL(fullUrl);
+    // Simpler pathname extraction
+    const pathname = request.url.split('?')[0]; // Remove query params
     console.log(`WebSocket upgrade request for: ${pathname}`);
 
     if (pathname === '/ws') {
+      console.log('Handling /ws WebSocket connection');
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
       });
     }
-    else if (pathname.startsWith('/ws/socket/game')) {
+    else if (pathname.startsWith('/socket/game')) { // Note: no /ws prefix here
+      console.log('Handling game WebSocket connection');
       gameWss.handleUpgrade(request, socket, head, (ws) => {
         const segments = pathname.split('/');
-        const gameId = segments.length >= 5 ? segments[4] : undefined;
+        const gameId = segments.length >= 3 ? segments[2] : undefined;
         console.log(`Game websocket connection with ID: ${gameId}`);
         
         ws.gameId = gameId;
-        
         gameWss.emit('connection', ws, request, { gameId });
       });
     }
