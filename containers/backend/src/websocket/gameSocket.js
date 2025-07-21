@@ -80,6 +80,10 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						handleCancelMatchmaking(data, redisService, activeGames, playerConnections);
 						break;
 
+					case 'PLAYER_DISCONNECTED':
+						handlePlayerDisconnect(data.playerId, data.gameId, activeGames, playerConnections);
+						break;
+
 					default:
 						console.log('Unknown game message type:', data.type);
 				}

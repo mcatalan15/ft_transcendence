@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 11:31:22 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:48:54 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -657,8 +657,16 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.updateText('');
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
-			await sleep(3000);
-			//TODO: if user disconnects, stop the process
+			await sleep(1000);
+			//TODO: if user disconnects, stop the process for both players
+			if (this.menu.playQuitButton.getIsClicked()) {
+				this.menu.readyButton.resetButton();
+				this.menu.readyButton.updateText('READY');
+				this.menu.playQuitButton.resetButton();
+				this.networkManager?.playerDisconnected();
+				this.networkManager = null;
+				return;
+			}
 		}
 		
 		const params = new URLSearchParams({
