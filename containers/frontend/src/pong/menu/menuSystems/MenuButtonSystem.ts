@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 12:16:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:00:37 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -644,7 +644,6 @@ export class MenuButtonSystem implements System {
 			
 				console.log('Host Data:', hostData, 'Guest Data:', guestData);
 			
-				// Always set the same layout for both players
 				this.menu.playerData = hostData;
 				this.menu.opponentData = guestData;
 
@@ -672,7 +671,7 @@ export class MenuButtonSystem implements System {
 		this.menu.readyButton.updateText('');
 		while (this.menu.readyButton.getText().length < 3) {
 			this.menu.readyButton.updateText(this.menu.readyButton.getText() + '∙');
-			await sleep(3000);
+			await sleep(1000);
 		}
 		
 		const params = new URLSearchParams({
