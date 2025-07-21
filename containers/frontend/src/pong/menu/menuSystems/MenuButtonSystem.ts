@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 12:48:54 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 13:54:35 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -663,7 +663,7 @@ export class MenuButtonSystem implements System {
 				this.menu.readyButton.resetButton();
 				this.menu.readyButton.updateText('READY');
 				this.menu.playQuitButton.resetButton();
-				this.networkManager?.playerDisconnected();
+				this.networkManager?.abortMatchmaking();
 				this.networkManager = null;
 				return;
 			}

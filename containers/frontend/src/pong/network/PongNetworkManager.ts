@@ -226,8 +226,7 @@ export class PongNetworkManager {
 			this.game.rightPlayer.isDisconnected = true;
 			console.log(`Player ${rightPlayerId} has disconnected in handlePlayerDisconnection`);
 		}
-	
-		// Immediately trigger game end
+
 		this.game.hasEnded = true;
 		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
 		if (endingSystem) {
@@ -450,32 +449,6 @@ export class PongNetworkManager {
 		}
 	}
 
-	private handleServerGameEnd(message: any): void {
-		console.log('Processing server game end:', message);
-		
-		// Update final scores first
-		if (message.gameData) {
-			const leftScore = message.gameData.leftPlayer.score;
-			const rightScore = message.gameData.rightPlayer.score;
-			
-			// Update UI scores immediately
-			const uiEntity = this.game.entities.find(e => e.id === 'UI') as UI;
-			if (uiEntity) {
-				uiEntity.leftScore = leftScore;
-				uiEntity.rightScore = rightScore;
-				console.log(`Updated UI scores: ${leftScore} - ${rightScore}`);
-			}
-		}
-		
-		// Force the ending system to trigger
-		const endingSystem = this.game.systems.find(s => s.constructor.name === 'EndingSystem') as any;
-		if (endingSystem && !this.game.hasEnded) {
-			console.log('Forcing EndingSystem to trigger...');
-			(endingSystem as any).ended = true;
-			this.game.hasEnded = true;
-		}
-	}
-
 	public async startMatchmaking() {
 		try {
 			console.log('Starting matchmaking...');
@@ -505,10 +478,12 @@ export class PongNetworkManager {
 	}
 
 	public async playerDisconnected() {
+		const playerId = sessionStorage.getItem('username') || null;
 		this.wsManager.send({
 			type: 'PLAYER_DISCONNECTED',
-			playerId: sessionStorage.getItem('username')
+			playerId: playerId
 		});
+		this.handlePlayerDisconnection(playerId || '');
 		this.disconnect();
 	}
 
