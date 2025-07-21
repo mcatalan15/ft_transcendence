@@ -106,23 +106,6 @@ if [ ! -f "$DB_PATH" ]; then
 		UNIQUE(user_id, friend_id)
 	);
 
-	CREATE TABLE IF NOT EXISTS tournaments (
-		id_tournament INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		status TEXT CHECK(status IN ('pending', 'active', 'finished'))
-	);
-
-	CREATE TABLE IF NOT EXISTS tournament_participants (
-		id_tournament INTEGER,
-		id_user INTEGER,
-		is_ai BOOLEAN,
-		final_position INTEGER,
-		PRIMARY KEY (id_tournament, id_user),
-		FOREIGN KEY (id_tournament) REFERENCES tournaments(id_tournament),
-		FOREIGN KEY (id_user) REFERENCES users(id_user)
-	);
-
 	CREATE TABLE IF NOT EXISTS user_stats (
 		id_user INTEGER PRIMARY KEY,
 		-- Basic game statistics
