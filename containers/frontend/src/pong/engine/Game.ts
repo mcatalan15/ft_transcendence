@@ -779,23 +779,30 @@ export class PongGame {
 				this.hasSavedResults = true;
 
 				// Deploy contract
-				// const deployResponse = await fetch(getApiUrl('/deploy'), {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 		'Authorization': `Bearer ${token}`
-				// 	},
-				// 	body: JSON.stringify({
-				// 		gameId: gameResult.gameId,
-				// 		player1Name: this.data.leftPlayer.name,
-				// 		player2Name: this.data.rightPlayer.name,
-				// 		player1Score: this.data.finalScore.leftPlayer,
-				// 		player2Score: this.data.finalScore.rightPlayer
-				// 	}),
-				// 	credentials: 'include'
-				// });
+				const deployResponse = await fetch(getApiUrl('/deploy'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						gameId: gameResult.gameId,
+						player1Name: this.data.leftPlayer.name,
+						player2Name: this.data.rightPlayer.name,
+						player1Score: this.data.finalScore.leftPlayer,
+						player2Score: this.data.finalScore.rightPlayer
+					}),
+					credentials: 'include'
+				});
 
-				// const deployData = await deployResponse.json();
+				const deployData = await deployResponse.json();
+
+				if (deployResponse.ok) {
+					console.log('Game results saved successfully:', gameResult);
+					console.log('Contract deployed successfully:', deployData);
+				} else {
+					console.error('Failed to deploy contract:', deployData);
+				}
 			} else {
 				const error = await response.text();
 				console.error('Failed to save game results:', error);

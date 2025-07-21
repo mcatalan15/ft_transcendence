@@ -147,7 +147,7 @@ function createChatMainContent() {
     px-4 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400
   `.replace(/\s+/g, ' ').trim();
   messageInput.id = 'message-input';
-  messageInput.name = 'message';
+  //messageInput.name = 'message';
   
   Object.assign(messageInput.style, {
     fontFamily: '"Roboto Mono", monospace',
