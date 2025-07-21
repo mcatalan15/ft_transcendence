@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:00:17 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:55:55 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1098,6 +1098,53 @@ export class MenuImageManager {
 		}
 	}
 
+	static async updateLeftPlayerAvatar(menu: Menu): Promise<void> {
+		const leftAvatarIndex = this.playAvatars.findIndex(avatar => avatar && avatar.x === 335); // Assuming left avatar x position
+		
+		if (leftAvatarIndex !== -1) {
+			const leftAvatar = this.playAvatars[leftAvatarIndex];
+			if (leftAvatar && leftAvatar.parent) {
+				leftAvatar.parent.removeChild(leftAvatar);
+			}
+			if (leftAvatar) {
+				leftAvatar.destroy();
+			}
+			this.playAvatars.splice(leftAvatarIndex, 1);
+		}
+	
+		let leftAvatar;
+		if (menu.playerData?.avatar) {
+			try {
+				leftAvatar = await this.createPlayerAvatarFromAsset(
+					menu.playerData.avatar,
+					menu
+				);
+				if (leftAvatar) {
+					leftAvatar.x = 335;
+					leftAvatar.y = 365;
+					leftAvatar.alpha = 0;
+					menu.renderLayers.overlays.addChild(leftAvatar);
+					this.playAvatars.push(leftAvatar);
+					
+					this.animateAvatarFadeIn(leftAvatar);
+				}
+			} catch (error) {
+				console.error('Failed to load opponent avatar, using fallback:', error);
+				leftAvatar = this.createRightPlayerFallback(menu);
+			}
+		} else {
+			leftAvatar = this.createRightPlayerFallback(menu);
+		}
+	
+		if (leftAvatar && !menu.renderLayers.overlays.children.includes(leftAvatar)) {
+			leftAvatar.alpha = 0;
+			menu.renderLayers.overlays.addChild(leftAvatar);
+			this.playAvatars.push(leftAvatar);
+			
+			this.animateAvatarFadeIn(leftAvatar);
+		}
+	}
+
 	private static animateAvatarFadeIn(avatar: any): void {
 		const fadeInDuration = 300;
 		const startTime = Date.now();
@@ -1159,8 +1206,6 @@ export class MenuImageManager {
 			if (avatar && avatar.parent) {
 				avatar.parent.removeChild(avatar);
 				menu.renderLayers.overlays.addChild(avatar);
-				
-				//avatar.zIndex = 1000 + index;
 			}
 		});
 		
