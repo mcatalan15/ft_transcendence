@@ -93,7 +93,6 @@ async function checkUserExists(username, email) {
 			query = `SELECT * FROM users WHERE email = ?`;
 			params = [email];
 		} else {
-			// Neither username nor email provided
 			resolve({ exists: false });
 			return;
 		}
@@ -117,7 +116,7 @@ async function checkUserExists(username, email) {
 					exists: true,
 					usernameExists: username ? row.username === username : false,
 					emailExists: email ? row.email === email : false,
-					user: row // Include the user data
+					user: row
 				});
 			} else {
 				console.log('[DB checkUserExists] User NOT found.');
@@ -485,7 +484,6 @@ async function enableTwoFactor(userId, secret) {
 
 async function addFriend(userId, friendId) {
     return new Promise((resolve, reject) => {
-        // Prevent self-friending
         if (userId === friendId) {
             reject(new Error('Cannot add yourself as a friend'));
             return;
@@ -672,7 +670,6 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 	return new Promise((resolve, reject) => {
 		const offset = page * limit;
 
-		// Run both queries in parallel
 		Promise.all([
 			new Promise((res, rej) => {
 				db.get(
@@ -692,7 +689,7 @@ async function getGamesHistory(userId, page = 0, limit = 10) {
 				db.all(
 					`SELECT 
 			   id_game,
-			   created_at, -- Temporarily remove datetime for testing
+			   created_at,
 			   is_tournament,
 			   player1_id,
 			   player2_id,
@@ -871,10 +868,8 @@ async function getUserProfileStats(userId) {
 
 async function updateUserStats(player1_id, player2_id, gameData) {
     try {
-        // Begin transaction to ensure atomic updates
         await db.run('BEGIN TRANSACTION');
 
-        // Update stats for left player (player1)
         await db.run(`
             INSERT INTO user_stats (
                 id_user,
@@ -984,7 +979,7 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.snakes,
             gameData.walls.vipers,
             gameData.walls.waystones,
-            gameData.leftPlayer.score, // highest_score
+            gameData.leftPlayer.score,
             
             // Update values (same as above for calculations)
             gameData.leftPlayer.result === 'win' ? 1 : 0,
@@ -1018,11 +1013,11 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.leftPlayer.score,
             // For calculated fields
-            gameData.leftPlayer.result === 'win' ? 1 : 0, // win_rate calculation
-            gameData.leftPlayer.goalsInFavor, // average_score calculation
-            gameData.leftPlayer.goalsInFavor, // goals_per_game calculation
-            gameData.leftPlayer.hits, // hits_per_game calculation
-            gameData.leftPlayer.powerupsPicked // powerups_per_game calculation
+            gameData.leftPlayer.result === 'win' ? 1 : 0,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.goalsInFavor,
+            gameData.leftPlayer.hits,
+            gameData.leftPlayer.powerupsPicked
         ]);
 
         // Update stats for right player (player2)
@@ -1135,7 +1130,7 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.snakes,
             gameData.walls.vipers,
             gameData.walls.waystones,
-            gameData.rightPlayer.score, // highest_score
+            gameData.rightPlayer.score,
             
             // Update values (same as above for calculations)
             gameData.rightPlayer.result === 'win' ? 1 : 0,
@@ -1169,11 +1164,11 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.rightPlayer.score,
             // For calculated fields
-            gameData.rightPlayer.result === 'win' ? 1 : 0, // win_rate calculation
-            gameData.rightPlayer.goalsInFavor, // average_score calculation
-            gameData.rightPlayer.goalsInFavor, // goals_per_game calculation
-            gameData.rightPlayer.hits, // hits_per_game calculation
-            gameData.rightPlayer.powerupsPicked // powerups_per_game calculation
+            gameData.rightPlayer.result === 'win' ? 1 : 0,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.goalsInFavor,
+            gameData.rightPlayer.hits,
+            gameData.rightPlayer.powerupsPicked
         ]);
 
         await db.run('COMMIT');
@@ -1187,7 +1182,6 @@ async function updateUserStats(player1_id, player2_id, gameData) {
 
 async function updateTournamentStats(tournamentConfig) {
     return new Promise((resolve, reject) => {
-        // Check Tournament is finished
         if (!tournamentConfig.isFinished) {
             reject(new Error('Tournament must be finished to update stats'));
             return;
@@ -1195,21 +1189,19 @@ async function updateTournamentStats(tournamentConfig) {
 
         const { registeredPlayerNames, registeredPlayerData, tournamentWinner } = tournamentConfig;
 
-        // Extract all the players and determine if they should use guest stats
         const players = [];
         const playerDataKeys = Object.keys(registeredPlayerNames);
 
         playerDataKeys.forEach(playerKey => {
             const playerName = registeredPlayerNames[playerKey];
             if (playerName) {
-                // Check if corresponding player data exists
                 const playerDataKey = `${playerKey}Data`;
                 const playerData = registeredPlayerData[playerDataKey];
                 
                 players.push({
                     name: playerName,
                     isWinner: playerName === tournamentWinner,
-                    isGuest: playerData === null, // If playerData is null, treat as guest
+                    isGuest: playerData === null,
                     actualUserId: playerData ? playerData.id : null
                 });
             }
@@ -1231,10 +1223,8 @@ async function updateTournamentStats(tournamentConfig) {
         let completed = 0;
         let errors = [];
 
-        // Use serialized approach to process each player
         const updatePlayerStats = (playerIndex) => {
             if (playerIndex >= players.length) {
-                // All players processed
                 if (errors.length > 0) {
                     console.error('[DB ERROR] Some players could not be updated:', errors);
                     reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
@@ -1258,7 +1248,6 @@ async function updateTournamentStats(tournamentConfig) {
             let targetUsername;
 
             if (player.isGuest) {
-                // Player data is null, find guest user
                 console.log(`[DB] Player ${player.name} has no data, looking for guest user`);
                 
                 const findGuestQuery = `SELECT id_user FROM users WHERE username = 'guest' LIMIT 1`;
@@ -1281,9 +1270,8 @@ async function updateTournamentStats(tournamentConfig) {
                         updatePlayerStats(playerIndex + 1);
                     }
                 });
-                return; // Don't continue here, wait for guest user query
+                return;
             } else {
-                // Player has data, use their actual user ID
                 targetUserId = player.actualUserId;
                 targetUsername = player.name;
                 console.log(`[DB] Using real user ${player.name} with ID ${targetUserId}`);
@@ -1320,14 +1308,10 @@ async function updateTournamentStats(tournamentConfig) {
                     } else {
                         console.log(`[DB] Updated tournament stats for ${player.name} -> ${targetUsername} (Winner: ${player.isWinner})`);
                     }
-
-                    // Process next player
                     updatePlayerStats(playerIndex + 1);
                 });
             }
         };
-
-        // Start processing players
         updatePlayerStats(0);
     });
 }
