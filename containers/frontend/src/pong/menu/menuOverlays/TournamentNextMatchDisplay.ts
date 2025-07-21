@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:23:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:12:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:06:41 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,6 @@ export class TournamentNextMatchDisplay extends Entity {
 	
 		const rankStat = data?.rank || 0;
 		this.plainStats.push(this.formatStat(rankStat, 'rank'));
-	
-		console.log('Formatted stats:', this.plainStats);
 	}
 
 	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
@@ -436,7 +434,7 @@ export class TournamentNextMatchDisplay extends Entity {
 			
 			if ('text' in child && typeof child.text === 'string' && 
 				(child.text.includes('???') || child.text === 'WAITING') &&
-				child.x >= 1400 && child.x <= 1650) { // Right side bounds
+				child.x >= 1400 && child.x <= 1650) {
 				this.menu.renderLayers.overlays.removeChild(child);
 			}
 		}
@@ -447,7 +445,6 @@ export class TournamentNextMatchDisplay extends Entity {
 
 	public updateMatchDisplay(): void {
 		if (!this.menu.tournamentConfig || !this.menu.tournamentManager.getHasActiveTournament()) {
-			// Show default/waiting state
 			this.showDefaultState();
 			return;
 		}
@@ -455,21 +452,15 @@ export class TournamentNextMatchDisplay extends Entity {
 		const leftPlayerName = this.menu.tournamentConfig.nextMatch.leftPlayerName;
 		const rightPlayerName = this.menu.tournamentConfig.nextMatch.rightPlayerName;
 	
-		console.log(`Updating match display: ${leftPlayerName} vs ${rightPlayerName}`);
-	
-		// Clear previous info
 		this.eraseTournamentPlayerInfo();
 	
 		if (leftPlayerName && rightPlayerName) {
-			// Get player data
 			const leftPlayerData = this.getPlayerDataByName(leftPlayerName);
 			const rightPlayerData = this.getPlayerDataByName(rightPlayerName);
 	
-			// Update display
 			this.updateLeftPlayerInfo(leftPlayerData, leftPlayerName);
 			this.updateRightPlayerInfo(rightPlayerData, rightPlayerName);
 		} else {
-			// Show waiting state
 			this.showDefaultState();
 		}
 	}

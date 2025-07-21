@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 17:42:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:39:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,10 @@ export class EndgameOverlay extends Entity {
 		this.game = game;
 		this.isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
-		console.log(`Creating EndGameOverlay for ${game.isOnline ? 'ONLINE' : 'LOCAL'} game`);
-
 		this.originalX = 400;
 		this.originalY = 200;
 		this.originalWidth = 1000;
 		this.originalHeight = 400;
-
-		console.log(`Overlay will be positioned at: (${this.originalX}, ${this.originalY}) for ${game.isOnline ? 'online' : 'local'} mode`);
 
 		this.createOverlayGraphics(game, this.originalX, this.originalY, this.originalWidth, this.originalHeight, 20);
 		const headerRenderComponent = new RenderComponent(this.overlayGraphics);
@@ -234,8 +230,6 @@ export class EndgameOverlay extends Entity {
 			(headerSprite as any).isFixedPosition = true;
 			
 			if (this.isFirefox) {
-				console.log('Applying Firefox SVG scaling fixes');
-				
 				headerSprite.scale.set(1.0715);
 				headerSprite.x -= 1;
 				headerSprite.y -= 2;
@@ -250,8 +244,6 @@ export class EndgameOverlay extends Entity {
 			} else {
 				headerSprite.scale.set(1.0);
 			}
-			
-			console.log(`Header sprite positioned at FIXED coordinates: (${headerSprite.x}, ${headerSprite.y}) for ${this.game.isOnline ? 'online' : 'local'} mode`);
 			
 			return headerSprite;
 		}
@@ -472,8 +464,6 @@ export class EndgameOverlay extends Entity {
 			text = "Player 1";
 		}
 
-		console.log('Player name text:', text.toUpperCase());
-		
 		return {
 			text: text.toUpperCase(),
 			x: side === 'left' ? 580 : 1220,
@@ -734,8 +724,6 @@ export class EndgameOverlay extends Entity {
 
 	}
 
-	// Updated methods for EndGameOverlay.ts
-
 	private async createAvatarSprites(): Promise<void> {
 		const { leftSprite, rightSprite } = await this.getAvatarSprites();
 		
@@ -804,8 +792,6 @@ export class EndgameOverlay extends Entity {
 			let sprite: Sprite | null = null;
 
 			if (avatarKey && (avatarKey.startsWith('http') || avatarKey.startsWith('/'))) {
-				console.log('Loading custom avatar from URL:', avatarKey);
-
 				let finalUrl: string;
 				if (avatarKey.includes('?')) {
 					finalUrl = `${avatarKey}&t=${Date.now()}`;
@@ -850,20 +836,17 @@ export class EndgameOverlay extends Entity {
 				}
 			}
 
-			// Configure sprite properties
 			if (sprite) {
 				sprite.x = x;
 				sprite.y = y;
 				sprite.alpha = 0;
 				(sprite as any).isFixedPosition = true;
-				console.log(`Avatar positioned at: (${sprite.x}, ${sprite.y})`);
 			}
 
 			return sprite;
 		} catch (error) {
 			console.error('Failed to create player avatar sprite:', error);
 
-			// Return fallback sprite as last resort
 			const fallbackSprite = ImageManager.createSprite(fallbackAssetName);
 			if (fallbackSprite) {
 				fallbackSprite.anchor.set(0.5);
@@ -904,7 +887,6 @@ export class EndgameOverlay extends Entity {
 			}
 		}
 
-		// Top section
 		for (let group = 0; group < numGroups + 1; group++) {
 			const groupX = baseX + group * (linesPerGroup * groupWidth);
 
@@ -932,7 +914,6 @@ export class EndgameOverlay extends Entity {
 			});
 		}
 
-		// Bottom section
 		for (let group = 0; group < numGroups + 1; group++) {
 			const groupX = baseX + group * (linesPerGroup * groupWidth);
 		

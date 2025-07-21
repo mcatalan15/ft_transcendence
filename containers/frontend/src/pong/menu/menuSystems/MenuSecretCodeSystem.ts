@@ -6,11 +6,10 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:18:15 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 11:43:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:21:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// SecretCodeSystem.ts
 import { Entity } from '../../engine/Entity';
 import { System } from '../../engine/System';
 import { FrameData, GAME_COLORS } from '../../utils/Types';
@@ -70,7 +69,6 @@ export class SecretCodeSystem implements System {
     private checkForMatches(): void {
         for (const code of this.codes) {
             if (this.matchesSequence(code.sequence)) {
-                console.log(`Secret code "${code.name}" activated!`);
                 code.effect();
                 this.inputBuffer = [];
                 break;
@@ -108,21 +106,18 @@ export class SecretCodeSystem implements System {
             timeout: 2000,
             effect: () => {
                 if (this.menu.glossaryButton.getIsClicked()) {
-                    console.log("ESC: Closing glossary");
                     this.menu.eventQueue.push({
                         type: 'GLOSSARY_BACK',
                         target: this.menu.glossaryButton,
                         buttonName: 'GLOSSARY'
                     });
                 } else if (this.menu.aboutButton.getIsClicked()) {
-                    console.log("ESC: Closing about");
                     this.menu.eventQueue.push({
                         type: 'ABOUT_BACK',
                         target: this.menu.aboutButton,
                         buttonName: 'ABOUT'
                     });
                 } else if (this.menu.playButton.getIsClicked() && !this.menu.tournamentManager.getHasActiveTournament()) {
-                    console.log("ESC: Closing play overlay");
                     this.menu.eventQueue.push({
                         type: 'PLAY_BACK',
                         target: this.menu.playButton,

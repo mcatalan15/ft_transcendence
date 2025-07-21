@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:51:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 15:58:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:24:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ import { FrameData } from '../../utils/Types';
 import { isRenderComponent, isMenuLine, isPowerup } from '../../utils/Guards'
 import { MenuLine } from '../menuEntities/MenuLine';
 import { OverlayBackground } from '../menuOverlays/OverlayBackground';
-import { GlossaryTexts } from '../menuOverlays/GlossaryTexts';
 import { Powerup } from '../../entities/powerups/Powerup';
 import { PhysicsComponent } from '../../components/PhysicsComponent';
 
@@ -42,7 +41,6 @@ export class MenuAnimationSystem implements System {
 update(entities: Entity[], delta: FrameData): void {
 	const entitiesToRemove: string[] = [];
 
-	// 2. Update entities
 	for (const entity of entities) {
 		if (entity.id === 'ballButton') {
 			this.animateBallButton(delta, entity as BallButton);
@@ -55,7 +53,6 @@ update(entities: Entity[], delta: FrameData): void {
 		}
 	}
 	
-	// 3. Cleanup
 	for (const id of entitiesToRemove) {
 		this.menu.removeEntity(id);
 	}
@@ -77,14 +74,12 @@ update(entities: Entity[], delta: FrameData): void {
 		const animation = entity.getComponent('animation') as AnimationComponent;
 
 		if (!titleBackdrop || !titleText || !titleBall || !titleBlock || !animation) {
-			console.log("Missing components:", { titleBackdrop: !!titleBackdrop, titleText: !!titleText, titleBlock: !!titleBlock, animation: !!animation });
 			return
 		};
 
 		if (animation.options) {
 			const animationOptions = animation.options;
 			
-			// Set initial positions if not already set
 			if (!animationOptions.initialized) {
 				animationOptions.backdropInitialX = titleBackdrop.graphic.x;
 				animationOptions.backdropInitialY = titleBackdrop.graphic.y;
@@ -99,7 +94,6 @@ update(entities: Entity[], delta: FrameData): void {
 	
 			const floatOffset = Math.sin((Date.now() / 800 * (animationOptions.floatSpeed as number)) + (animationOptions.floatOffset as number)) * (animationOptions.floatAmplitude as number);
 	
-			// Apply animation to each component using their individual initial positions
 			titleBackdrop.graphic.position.set(
 				animationOptions.backdropInitialX as number, 
 				(animationOptions.backdropInitialY as number)
@@ -123,10 +117,8 @@ update(entities: Entity[], delta: FrameData): void {
 	}
 
 	animateMenuLine(delta: FrameData, entitiesToRemove: string[], entity: MenuLine) {
-		// Update the animation progress
 		entity.updateAnimation(delta.deltaTime);
 	
-		// Check if the line has reached its target and should be despawned
 		if (entity.isAnimationComplete()) {
 			entitiesToRemove.push(entity.id);
 		}
@@ -145,17 +137,14 @@ update(entities: Entity[], delta: FrameData): void {
 		if (animation.options) {
 			const animationOptions = animation.options;
 			
-			// Set initial position if not already set
 			if (!animationOptions.initialized) {
 				animationOptions.initialX = render.graphic.x;
 				animationOptions.initialY = render.graphic.y;
 				animationOptions.initialized = true;
 			}
 	
-			// Calculate floating animation
 			const floatOffset = Math.sin((Date.now() / 800 * (animationOptions.floatSpeed as number)) + (animationOptions.floatOffset as number)) * (animationOptions.floatAmplitude as number);
 	
-			// Apply animation - more pronounced when hovered
 			const amplitudeMultiplier = entity.getIsHovered() ? 1.5 : 1.0;
 			
 			render.graphic.position.set(
@@ -183,7 +172,6 @@ update(entities: Entity[], delta: FrameData): void {
 		if (animation.options) {
 			const animationOptions = animation.options;
 			
-			// Remove the floatOffset to sync all powerups
 			const floatY = animationOptions.initialY as number + 
 			Math.sin(Date.now() / 800 * (animationOptions.floatSpeed as number)) * 
 			(animationOptions.floatAmplitude as number);

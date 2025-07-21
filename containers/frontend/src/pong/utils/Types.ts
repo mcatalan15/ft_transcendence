@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:55:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 14:15:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:37:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,16 @@ import { Entity } from '../engine/Entity';
 import { Paddle } from '../entities/Paddle'
 import { CrossCut } from '../entities/crossCuts/CrossCut';
 import { MenuButton } from '../menu/menuButtons/MenuButton';
-import { BigInputButton } from '../menu/menuButtons/BigInputButton';
 
 export interface DepthLineBehavior {
     movement?: 'vertical' | 'horizontal' | string;
     direction?: 'upwards' | 'downwards' | 'left' | 'right' | string;
     fade?: 'in' | 'out' | 'none' | string;
-    
-	// Pyramid specific properties
     pyramidBaseHeight?: number;
     pyramidBaseWidth?: number;
     linePekHeight?: number;
     pyramidPeakOffset?: number;
 
-	// Ruin specicif properties
 	ruinHSegments?: number;
 	ruinTSegments?: number;
 	maxHeight?: number;
@@ -60,7 +56,6 @@ export type PhysicsData = {
 	mass: number;
 	speed: number;
 
-	// Crosscut related attributes
 	isPolygonal?: boolean;
 	nPolygons?: number;
 	physicsPoints?: Point[][];

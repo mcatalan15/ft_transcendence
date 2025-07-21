@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UISystem.ts                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:03:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/17 11:51:44 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:45:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ export class UISystem implements System {
 
 	private updateScore(entities: Entity[], event: GameEvent): void {
 		if (this.game.isOnline && this.game.config.classicMode || this.game.hasEnded) {
-			console.log('UI: Skipping local score event in online mode, server manages scoring');
 			return;
 		}
 
@@ -141,20 +140,16 @@ export class UISystem implements System {
 				entity.rightScore = 0;
 				entity.elapsedTime = 0;
 				
-				// Reset all text components
 				const textComponents = entity.getComponentsByType('text') as TextComponent[];
 				textComponents.forEach(textComponent => {
 					const textObject = textComponent.getRenderable();
 					textObject.visible = false;
 					
-					// Remove from UI layer
 					if (textObject.parent === this.uiLayer) {
 						this.uiLayer.removeChild(textObject);
 					}
 				});
 			}
 		}
-		
-		console.log('UISystem cleanup completed');
 	}
 }

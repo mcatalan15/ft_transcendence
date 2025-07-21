@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/18 12:58:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:05:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ export class PlayTexts extends Entity {
 
     private getColumnDataEN() {
         return [
-            // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
                 text: '----------------------[ PLAY ]----------------------',
@@ -89,7 +88,6 @@ export class PlayTexts extends Entity {
 
     private getColumnDataES() {
         return [
-            // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
                 text: "----------------------[ HOLA ]----------------------",
@@ -115,7 +113,6 @@ export class PlayTexts extends Entity {
 
     private getColumnDataFR() {
         return [
-            // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
                 text: "----------------------[ SALUT ]----------------------",
@@ -141,7 +138,6 @@ export class PlayTexts extends Entity {
 
     private getColumnDataCAT() {
         return [
-            // Column 1A: Team Title (Left)
             {
                 tag: 'teamTitle',
                 text: "----------------------[ BONDIA ]----------------------",

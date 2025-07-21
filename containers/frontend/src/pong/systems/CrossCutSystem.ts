@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 09:55:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:47:21 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:27:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ export class CrossCutSystem implements System {
             console.warn('Cross-cut event missing points:', event);
             return;
         }
-        
-        // Parse the event type to determine the action
+
         if (event.type.startsWith('spawn')) {
             this.handleSpawnEvent(event);
         } else if (event.type.startsWith('transform')) {
@@ -134,7 +133,5 @@ export class CrossCutSystem implements System {
 
     cleanup(): void {
         CrossCutFactory.despawnAllCrossCuts(this.game);
-        
-        console.log('CrossCutSystem cleanup completed');
     }
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 10:52:06 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 19:22:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:28:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ import { InputComponent } from '../components/InputComponent'
 import { isPaddle } from '../utils/Guards';
 import { Paddle } from '../entities/Paddle';
 
-// InputSystem.ts - Update to handle online mode
 export class InputSystem implements System {
     private game: PongGame;
     private keysDown: Set<string> = new Set();
@@ -69,8 +68,7 @@ export class InputSystem implements System {
         
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
-        
-        // Reset all input states
+
         for (const entity of this.game.entities) {
             if (isPaddle(entity)) {
                 const input = entity.getComponent('input') as InputComponent;
@@ -80,7 +78,5 @@ export class InputSystem implements System {
                 }
             }
         }
-        
-        console.log('InputSystem cleanup completed');
     }
 }

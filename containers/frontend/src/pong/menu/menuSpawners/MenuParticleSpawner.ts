@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/01 11:13:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:07:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,6 @@ export class MenuParticleSpawner {
 		menu.renderLayers.background.addChild(particleRender.graphic);
 	}
 
-	// Configuration methods for tweaking dust behavior
 	static setAmbientDustDensity(maxParticles: number, spawnRate: number): void {
 		this.ambientDustConfig.maxParticles = maxParticles;
 		this.ambientDustConfig.spawnRate = spawnRate;
@@ -171,8 +170,6 @@ export class MenuParticleSpawner {
 		this.ambientDustConfig.maxRotationSpeed = maxRotationSpeed;
 	}
 
-	// Secret code stuff
-
 	static spawnFireworksExplosion(menu: Menu, x: number, y: number, color: number, intensity: number = 1.0): void {
 		const particleCount = Math.floor(15 * intensity);
 		const burstRadius = 80 * intensity;
@@ -187,8 +184,7 @@ export class MenuParticleSpawner {
 			
 			const startX = x + Math.cos(angle) * (distance * 0.1);
 			const startY = y + Math.sin(angle) * (distance * 0.1);
-			
-			// Main burst particles
+
 			const mainParticle = new Particle(`firework-main-${Date.now()}-${i}`, 'foreground', startX, startY, {
 				type: Math.random() > 0.5 ? 'circle' : 'square',
 				velocityX: velocityX,

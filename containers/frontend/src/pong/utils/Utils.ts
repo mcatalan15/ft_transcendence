@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:06:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/16 18:05:22 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:33:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,12 +352,10 @@ export function removePaddleFromLayer(system: PowerupSystem, paddle: Paddle) {
         const powerupLayer = system.game.renderLayers.powerup;
         const powerupGlitchedLayer = system.game.renderLayers.powerupGlitched;
         
-        // Check powerup layer first
         let targetChild = powerupLayer.children.find(child => child.label === "paddle");
         let targetLeftName = powerupLayer.children.find(child => child.label === ("playerName" + system.game.leftPlayer.name));
         let targetRightName = powerupLayer.children.find(child => child.label === ("playerName" + system.game.rightPlayer.name));
         
-        // If not found in powerup, check powerupGlitched layer
         if (!targetChild) {
             targetChild = powerupGlitchedLayer.children.find(child => child.label === "paddle");
         }

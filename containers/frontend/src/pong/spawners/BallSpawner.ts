@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:15:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/08 09:35:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:23:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,11 @@ export class BallSpawner {
         game.data.balls.defaultBalls++;
         if (!game.config.classicMode)
             game.sounds.spawn.play();
-		console.log("DefaultBall spawned")
     }
 
     static spawnCurveBallAt(game: PongGame, physics: PhysicsComponent, lastHit: string): CurveBall {
         const ball = new CurveBall('curveBall', 'foreground', physics.x, physics.y, true);
     
-        // Override default physics with the passed data
         const physicsComponent = ball.getComponent('physics') as PhysicsComponent;
         physicsComponent.x = physics.x;
         physicsComponent.y = physics.y;
@@ -75,14 +73,12 @@ export class BallSpawner {
         game.entities.push(ball);
     
         game.data.balls.curveBalls++;
-        console.log("CurveBall spawned at", physics.x, physics.y);
         return ball;
     }
 
     static spawnMultiplyBallsAt(game: PongGame, physics: PhysicsComponent, lastHit: string): MultiplyBall[] {
         const clones: MultiplyBall[] = [];
-    
-        // Decide randomly which index is the real ball (0, 1, or 2)
+
         const realIndex = Math.floor(Math.random() * 3);
     
         for (let i = 0; i < 3; i++) {
@@ -91,7 +87,6 @@ export class BallSpawner {
             const offsetX = (i - 1) * 50; 
             const clone = new MultiplyBall(`multiplyBall_${i}`, 'foreground', physics.x, physics.y + offsetY, isGoodBall);
     
-            // Copy physics values from the original ball
             const clonePhysics = clone.getComponent('physics') as PhysicsComponent;
             clonePhysics.x = physics.x + offsetX;
             clonePhysics.y = physics.y + offsetY;
@@ -100,7 +95,6 @@ export class BallSpawner {
             clonePhysics.restitution = physics.restitution;
             clonePhysics.mass = physics.mass;
     
-            // Add to scene and entity list
             const cloneRender = clone.getComponent('render') as RenderComponent;
 
             cloneRender.graphic.x = clonePhysics.x;
@@ -119,8 +113,6 @@ export class BallSpawner {
                 vfx.startFlash(GAME_COLORS.rose, 50);
                 ParticleSpawner.spawnBasicExplosion(game, clonePhysics.x + clonePhysics.width / 4, clonePhysics.y, GAME_COLORS.rose, 1);
             }
-    
-            console.log(`${isGoodBall ? "REAL" : "FAKE"} MultiplyBall spawned at (${clonePhysics.x}, ${clonePhysics.y})`);
         }
     
         game.data.balls.multiplyBalls++;
@@ -152,7 +144,6 @@ export class BallSpawner {
         game.entities.push(ball);
     
         game.data.balls.burstBalls++;
-        console.log("BurstBall spawned at", physics.x, physics.y);
         return ball;
     }
 
@@ -181,7 +172,6 @@ export class BallSpawner {
         game.entities.push(ball);
     
         game.data.balls.spinBalls++;
-        console.log("CurveBall spawned at", physics.x, physics.y);
         return ball;
     }
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 10:04:40 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 17:55:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:24:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ import { VFXComponent } from '../../components/VFXComponent';
 import { Menu } from '../Menu';
 import { MenuButtonConfig } from '../../utils/MenuUtils';
 import { getThemeColors } from '../../utils/Utils';
-import { isOverlayButton } from '../../utils/Guards';
 
 export interface ButtonStyle {
     fontSize: number;
@@ -48,7 +47,6 @@ export abstract class BaseButton extends Entity {
     protected config: MenuButtonConfig;
     protected originalPolygonPoints: number[] = [];
     
-    // State management flags
     public isAnimating: boolean = false;
     public isStateChanging: boolean = false;
     public isUpdating: boolean = false;

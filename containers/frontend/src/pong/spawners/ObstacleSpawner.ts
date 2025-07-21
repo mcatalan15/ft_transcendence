@@ -54,7 +54,6 @@ export class ObstacleSpawner {
 		
 	}
 
-	// Utils
 	private static generateObstacleBehavior(
 		animation: string,
 		fade: string,

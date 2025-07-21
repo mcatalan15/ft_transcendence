@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 17:04:01 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 17:25:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:48:03 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,8 @@ class ClassicGameSession {
 			const isDraw = (this.gameState.score1 === 20 && this.gameState.score2 === 20);
 			const isHighScoreWin = (this.gameState.score1 >= 11 || this.gameState.score2 >= 11) && 
 								  Math.abs(this.gameState.score1 - this.gameState.score2) >= 2;
-			const isOldRuleWin = (this.gameState.score1 >= 11 || this.gameState.score2 >= 11);
-			
-			if (isDraw || isHighScoreWin || isOldRuleWin) {
+								  
+			if (isDraw || isHighScoreWin) {
 				this.endGame();
 			}
 		}

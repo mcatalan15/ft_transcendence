@@ -6,18 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 18:04:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 15:46:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:16:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Import Pixi and Howler stuff
 import { Application, Container, Graphics, Assets, Sprite } from 'pixi.js';
 import { Howl, Howler } from 'howler';
 
-// Import G A M E
 import { GameConfig, Preconfiguration, PlayerData, TournamentConfig } from '../utils/GameConfig';
 
-// Import Engine elements (ECS)
 import { Entity } from '../engine/Entity';
 import { System } from '../engine/System';
 import { Paddle } from '../entities/Paddle';
@@ -40,16 +37,13 @@ import { OverlayBackground } from './menuOverlays/OverlayBackground';
 import { GlossaryTexts } from './menuOverlays/GlossaryTexts';
 import { AboutTexts } from './menuOverlays/AboutTexts';
 
-// Import components
 import { RenderComponent } from '../components/RenderComponent';
 import { TextComponent } from '../components/TextComponent';
 
-// Import spawners and Managers
 import { MenuParticleSpawner } from './menuSpawners/MenuParticleSpawner';
 import { ButtonManager } from './menuManagers/MenuButtonManager';
 import { MenuPowerupManager } from './menuManagers/MenuPowerupManager';
 
-// Import Implemented Systems
 import { MenuRenderSystem } from './menuSystems/MenuRenderSystem';
 import { MenuAnimationSystem } from './menuSystems/MenuAnimationSystem';
 import { MenuParticleSystem } from './menuSystems/MenuParticleSystem';
@@ -97,7 +91,6 @@ export class Menu{
 	title!: Title;
 	titleO!: ClassicO;
 
-	// Visual layers
 	menuContainer: Container;
 	menuHidden: Container;
 	renderLayers: {
@@ -124,12 +117,10 @@ export class Menu{
 	powerupClassicFilters: any[] = [];
 	overlayQuitsFilters: any[] = [];
 
-	// Sound stuff
 	sounds!: MenuSounds;
 	private audioInitialized: boolean = false;
 	private pendingAudio: (() => void)[] = [];
 
-	// Button related values
 	buttonWidth: number = 200;
 	buttonHeight:number = 60;
 	buttonVerticalOffset: number = 20;
@@ -150,7 +141,6 @@ export class Menu{
 	smallInputButtonWidth: number = 145;
 	smallInputButtonHeight: number = 25;
 
-	// Button Containers
 	startButton!: MenuButton;
 	optionsButton!: MenuButton;
 	glossaryButton!: MenuButton;
@@ -174,7 +164,6 @@ export class Menu{
 	tournamentFiltersButton!: MenuButton;
 	playInputButton!: MenuBigInputButton;
 
-	// Ornaments
 	frame!: Graphics;
 	subframe!: Graphics;
 	startOrnament!: MenuOrnament;
@@ -186,7 +175,6 @@ export class Menu{
 	aboutOrnament!: MenuOrnament;
 	aboutClickedOrnament!: MenuOrnament;
 
-	// Overlay items
 	glossaryOverlay!: GlossaryOverlay;
 	aboutOverlay!: AboutOverlay;
 	playOverlay!: PlayOverlay;
@@ -212,7 +200,6 @@ export class Menu{
 	paddleWidth: number = 10;
 	paddleHeight: number = 80;
 
-	// Images
 	wallPyramids!: Sprite;
 	wallSteps!: Sprite;
 	wallTrenches!: Sprite;
@@ -226,7 +213,6 @@ export class Menu{
 	wallBowtie!: Sprite;
 	wallHoneycomb!: Sprite;
 
-	// Player Data
 	winnerData: PlayerData | null = null;
 	playerData: PlayerData | null = null;
 	opponentData: PlayerData | null = null;
@@ -234,16 +220,13 @@ export class Menu{
 	guestData: PlayerData | null = null;
 	storedGuestName: string | null = null;
 
-	// Tournament Data
 	tournamentManager!: TournamentManager;
 	hasOngoingTournament: boolean = false;
 	tournamentConfig!: TournamentConfig | null;
 	tournamentInputButtons: MenuSmallInputButton[] = [];
 
-	//Browser data
 	isFirefox: boolean = false;
 
-	// Input stuff
 	inputFocus: string | null = null;
 	isProcessingInput: boolean = false;
 
@@ -263,11 +246,6 @@ export class Menu{
 		};
 		
 		if (this.preconfiguration.hasInvitationContext && this.preconfiguration.invitationData) {
-			console.log('📧 Invitation Data:');
-			console.log('  - Invite ID:', this.preconfiguration.invitationData.inviteId);
-			console.log('  - Current Player:', this.preconfiguration.invitationData.currentPlayer);
-			console.log('  - Timestamp:', this.preconfiguration.invitationData.timestamp);
-			console.log('  - Mode will be set to:', this.preconfiguration.mode);
 			this.hasPreconfig = true;
 		} else {
 			this.hasPreconfig = false;
@@ -363,7 +341,6 @@ export class Menu{
 					console.error('Failed to save tournament results:', errorText);
 				} else {
 					const result = await response.json();
-					console.log('Tournament results saved successfully:', result);
 				}
 			} catch (error) {
 				console.error('Error saving tournament results:', error);
@@ -416,8 +393,6 @@ export class Menu{
 			this.hasOngoingTournament = true;
 			this.tournamentConfig = this.tournamentManager.getTournamentConfig();
 		}
-
-		console.log(`Player data at THIS POINT is:`, this.playerData);
 
 		if (this.hasOngoingTournament && !this.tournamentConfig!.isFinished) {
 
@@ -517,36 +492,6 @@ export class Menu{
 			};
 
 			this.eventQueue.push(playEvent);
-
-			/* try {
-				const token = sessionStorage.getItem('token');
-				if (!token) {
-					console.error('No auth token found for tournament results');
-					return;
-				}
-
-				const response = await fetch(getApiUrl('/games/saveTournamentResults'), {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${token}`
-					},
-					body: JSON.stringify({
-						tournamentConfig: this.tournamentManager.getTournamentConfig()
-					}),
-					credentials: 'include'
-				});
-
-				if (!response.ok) {
-					const errorText = await response.text();
-					console.error('Failed to save tournament results:', errorText);
-				} else {
-					const result = await response.json();
-					console.log('Tournament results saved successfully:', result);
-				}
-			} catch (error) {
-				console.error('Error saving tournament results:', error);
-			} */
 		}
 	}
 
@@ -573,9 +518,7 @@ export class Menu{
 	
 			if (winnerResponseData.success) {
 				const winnerData = winnerResponseData.userData;
-				console.log('Winner data fetched successfully:', winnerData);
 				this.winnerData = winnerData;
-				console.log('Player data set for end tournament overlay:', this.winnerData);
 
 			} else {
 				console.error('Failed to get user data:', 
@@ -613,51 +556,36 @@ export class Menu{
 		});
 	}
 
-	private applyInitialConfiguration(classic: boolean, filters: boolean): void {
-		console.log('Applying initial configuration...');
-		console.log('Current config:', this.config);
-		
+	private applyInitialConfiguration(classic: boolean, filters: boolean): void {		
 		if (classic) {
 			if (!this.classicButton.getIsClicked()) {
-				console.log('Classic mode should be ON, simulating click to turn it ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
 				if (buttonSystem) {
 					buttonSystem.handleClassicClicked();
 				}
-			} else {
-				console.log('Classic mode already correctly set to ON');
-			}
+			} 
 		} else {
 			if (this.classicButton.getIsClicked()) {
-				console.log('Classic mode should be OFF, simulating click to turn it OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
 				if (buttonSystem) {
 					buttonSystem.handleClassicClicked();
 				}
-			} else {
-				console.log('Classic mode already correctly set to OFF');
 			}
 		}
 		
 		if (filters) {
 			if (!this.filtersButton.getIsClicked()) {
-				console.log('Filters should be OFF, simulating click to turn them OFF');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
 				if (buttonSystem) {
 					buttonSystem.handleFiltersClicked();
 				}
-			} else {
-				console.log('Filters already correctly set to OFF');
 			}
 		} else {
 			if (this.filtersButton.getIsClicked()) {
-				console.log('Filters should be ON, simulating click to turn them ON');
 				const buttonSystem = this.systems.find(s => s instanceof MenuButtonSystem) as MenuButtonSystem;
 				if (buttonSystem) {
 					buttonSystem.handleFiltersClicked();
 				}
-			} else {
-				console.log('Filters already correctly set to ON');
 			}
 		}
 	}
@@ -694,7 +622,6 @@ export class Menu{
 	async createEntities(): Promise<void>  {
 		this.createBoundingBoxes();
 
-		// Create subtitle
 		const subtitle = new Subtitle("subtitle", "menuContainer", this);
 		let line1;
 		let line2;
@@ -714,11 +641,8 @@ export class Menu{
 		this.renderLayers.subtitle.addChild(line4!.graphic);
 		this.entities.push(subtitle);
 
-
-		// Create Postprocessing Layer
 		this.createPostProcessingLayer();
 
-		// Create frame
 		this.createFrame();
 	}
 
@@ -756,7 +680,6 @@ export class Menu{
 
 		if (buttonSystem) {
             buttonSystem.updatePlayButtonState();
-			// Deactivate filters by default
 			buttonSystem.handleFiltersClicked();
         }
 	}
@@ -765,7 +688,7 @@ export class Menu{
 		this.entities.push(entity);
 		let targetLayer = this.renderLayers.midground;
 	
-		if (entity.layer) { //!OJO
+		if (entity.layer) {
 			switch(entity.layer) {
 				case 'background': targetLayer = this.renderLayers.background; break;
 				case 'foreground': targetLayer = this.renderLayers.foreground; break;
@@ -1010,7 +933,6 @@ export class Menu{
 
 	async loadImages() {
 		await MenuImageManager.loadAssets([
-            // Glossary wall figures
 			{ name: 'wallPyramids', url: '/wallFigures/wallPyramids.png' },
 			{ name: 'wallSteps', url: '/wallFigures/wallSteps.png' },
 			{ name: 'wallTrenches', url: '/wallFigures/wallTrenches.png' },
@@ -1024,19 +946,16 @@ export class Menu{
 			{ name: 'wallBowtie', url: '/wallFigures/wallBowtie.png' },
 			{ name: 'wallHoneycomb', url: '/wallFigures/wallHoneycomb.png' },
 
-		    // About avatars
 			{ name: 'avatarEva', url: '/avatars/square/square1.png' },
 			{ name: 'avatarMarc', url: '/avatars/square/square2.png' },
     		{ name: 'avatarNico', url: '/avatars/square/square3.png' },
 		    { name: 'avatarHugo', url: '/avatars/square/square4.png' },
 
-			// About classic avatars
 			{ name: 'avatarEvaClassic', url: '/avatars/squareClassic/squareClassic1.png' },
 			{ name: 'avatarMarcClassic', url: '/avatars/squareClassic/squareClassic2.png' },
     		{ name: 'avatarNicoClassic', url: '/avatars/squareClassic/squareClassic3.png' },
 		    { name: 'avatarHugoClassic', url: '/avatars/squareClassic/squareClassic4.png' },
 
-			// Tournament Avatars
 			{ name: 'avatarEvaSquare', url: '/avatars/square/square1.png' },
 			{ name: 'avatarMarcSquare', url: '/avatars/square/square2.png' },
 			{ name: 'avatarNicoSquare', url: '/avatars/square/square3.png' },
@@ -1046,7 +965,6 @@ export class Menu{
 			{ name: 'avatarUnknownSquare', url: '/avatars/square/squareUnknown.png' },
 			{ name: 'avatarUnknownClassic', url: '/avatars/squareClassic/squareUnknownClassic.png' },
 			
-			// About pink logos
 			{ name: 'typescriptPink', url: '/logos/pink/logo_typescript.png' },
 			{ name: 'pixiPink', url: '/logos/pink/logo_pixi.png' },
 			{ name: 'tailwindPink', url: '/logos/pink/logo_tailwind.png' },
@@ -1059,7 +977,6 @@ export class Menu{
 			{ name: 'avalanchePink', url: '/logos/pink/logo_avalanche.png' },
 			{ name: 'solidityPink', url: '/logos/pink/logo_solidity.png' },
 
-			// About classic logos
 			{ name: 'typescriptClassic', url: '/logos/classic/logo_typescript_classic.png' },
 			{ name: 'pixiClassic', url: '/logos/classic/logo_pixi_classic.png' },
 			{ name: 'tailwindClassic', url: '/logos/classic/logo_tailwind_classic.png' },
@@ -1072,7 +989,6 @@ export class Menu{
 			{ name: 'avalancheClassic', url: '/logos/classic/logo_avalanche_classic.png' },
 			{ name: 'solidityClassic', url: '/logos/classic/logo_solidity_classic.png' },
 
-			// Menu headers
 			{ name: 'pongHeaderWhite', url: '/headers/headers_pong_white.svg' },
 			{ name: 'pongHeaderBlue', url: '/headers/headers_pong_blue.svg' },
 			{ name: 'pongHeaderOrange', url: '/headers/headers_pong_orange.svg' },
@@ -1081,28 +997,18 @@ export class Menu{
 	}
 
 	cleanup(): void {
-		console.log("Cleaning up menu...");
-		
-		// Stop and cleanup sounds FIRST - Complete implementation
 		if (this.sounds) {
-			console.log('Stopping menu sounds...');
 			Object.entries(this.sounds).forEach(([key, sound]) => {
 				if (sound && typeof sound.stop === 'function') {
-					console.log(`Stopping menu sound: ${key}`);
 					sound.stop();
 				}
 				if (sound && typeof sound.unload === 'function') {
-					console.log(`Unloading menu sound: ${key}`);
 					sound.unload();
 				}
 			});
 			
-			// Clear the sounds object
 			this.sounds = {} as MenuSounds;
-			console.log('All menu sounds stopped and unloaded');
 		}
-		
-		//this.app.ticker.stop();
 		
 		this.systems.forEach(system => {
 			if (system.cleanup) {
@@ -1150,8 +1056,6 @@ export class Menu{
 		MenuPowerupManager.cleanup();
 		
 		this.app.stage.removeChildren();
-		
-		console.log("Menu cleanup complete");
 	}
 
 	initSounds(): void {
@@ -1169,7 +1073,6 @@ export class Menu{
 					preload: true,
 					loop: true,
 					volume: 1.0,
-					onload: () => console.log('menuBGM loaded successfully'),
 					onloaderror: (id: number, error: any) => console.error('menuBGM failed to load:', error)
 				}),
 				menuMove: new Howl({
@@ -1177,7 +1080,6 @@ export class Menu{
 					html5: true,
 					preload: true,
 					volume: 1.0,
-					onload: () => console.log('menuMove loaded successfully'),
 					onloaderror: (id: number, error: any) => console.error('menuMove failed to load:', error)
 				}),
 				menuSelect: new Howl({ 
@@ -1185,7 +1087,6 @@ export class Menu{
 					html5: true,
 					preload: true,
 					volume: 0.5,
-					onload: () => console.log('menuSelect loaded successfully'),
 					onloaderror: (id: number, error: any) => console.error('menuSelect failed to load:', error)
 				}),
 				menuConfirm: new Howl({ 
@@ -1193,7 +1094,6 @@ export class Menu{
 					html5: true,
 					preload: true,
 					volume: 0.5,
-					onload: () => console.log('menuConfirm loaded successfully'),
 					onloaderror: (id: number, error: any) => console.error('menuConfirm failed to load:', error)
 				}),
 				ballClick: new Howl({ 
@@ -1201,7 +1101,6 @@ export class Menu{
 					html5: true,
 					preload: true,
 					volume: 0.5,
-					onload: () => console.log('ballClick loaded successfully'),
 					onloaderror: (id: number, error: any) => console.error('ballClick failed to load:', error)
 				}),
 			};
@@ -1220,14 +1119,10 @@ export class Menu{
 	
 	public playSound(soundKey: keyof MenuSounds): void {
 		if (this.audioInitialized && this.sounds && this.sounds[soundKey]) {
-			console.log(`Playing ${soundKey}...`);
 			const soundId = this.sounds[soundKey].play();
-			console.log(`${soundKey} play returned ID:`, soundId);
 		} else {
-			console.log(`Queueing ${soundKey} for later playback`);
 			this.pendingAudio.push(() => {
 				if (this.sounds && this.sounds[soundKey]) {
-					console.log(`Playing queued ${soundKey}...`);
 					this.sounds[soundKey].play();
 				}
 			});
@@ -1238,7 +1133,6 @@ export class Menu{
 		const conflictingAssets = [
 			'avatarUnknownSquare',
 			'avatarUnknownClassic',
-			// ... other shared assets
 		];
 		
 		for (const assetName of conflictingAssets) {
@@ -1254,8 +1148,6 @@ export class Menu{
 
 	private applyFirefoxOptimizations(): void {
 		if (!this.isFirefox) return;
-		
-		console.log('Applying Firefox-specific optimizations...');
 		
 		this.maxBalls = Math.floor(this.maxBalls * 0.7);
 		
@@ -1281,8 +1173,6 @@ export class Menu{
 	}
 
 	public initTournamentConfiguration() {
-		console.log('Initializing tournament configuration...');
-
 		this.tournamentConfig =  {
 			isPrepared: false,
 			isFinished: false,
@@ -1357,16 +1247,12 @@ export class Menu{
 		} as TournamentConfig;
 	}
 
-	// API CALLS
 	async getUserData(userId: string, token: string): Promise<PlayerData> {
 		try {
-			console.log(`Fetching user data for user ${userId} with token ${token}`);
 			if (!userId || !token) {
 				throw new Error('User ID and token are required to fetch user data');
 			}
-			
-			console.log(`Making API call to /api/games/getUserData for user ${userId}`);
-			console.log(getApiUrl('/games/getUserData'));
+
 			const response = await fetch(getApiUrl('/games/getUserData'), {
 				method: 'POST',
 				headers: {
@@ -1386,7 +1272,6 @@ export class Menu{
 			}
 	
 			const data = await response.json();
-			console.log('User data fetched successfully:', data);
 			
 			return data.userData as PlayerData;
 		} catch (error) {
@@ -1397,7 +1282,6 @@ export class Menu{
 
 	async getUserId(username: string, token: string): Promise<string>{
 		try {
-			console.log(`Fetching user ID for username ${username} with token ${token}`);
 			if (!username || !token) {
 				throw new Error('Username and token are required to fetch user ID');
 			}
@@ -1421,7 +1305,6 @@ export class Menu{
 			}
 
 			const data = await response.json();
-			console.log('User ID fetched successfully:', data.userId);
 
 			return data.id as string;
 		} catch (error) {

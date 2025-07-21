@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:40:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 20:23:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:38:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,6 @@ export class Entity {
             if (typeComponent && typeComponent.instanceId === instanceId) {
                 this.components.delete(type);
             }
-        } else {
-            console.log('Component not found for key:', key, 'Available keys:', Array.from(this.components.keys()));
         }
 
         this.components.set(key, newComponent);
@@ -187,7 +185,5 @@ export class Entity {
         }
     
         this.components.clear();
-        
-        console.log(`Entity ${this.id} cleanup completed`);
     }
 }
