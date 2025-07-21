@@ -25,9 +25,13 @@ const NAVIGATION_COOLDOWN = 5; // ms
 
 export function navigate(path: string) {
     const now = Date.now();
+
     if (now - lastNavigation < NAVIGATION_COOLDOWN) return;
+
     lastNavigation = now;
+
     history.pushState({}, '', path);
+
     renderRoute(path);
 }
 
@@ -90,7 +94,7 @@ async function renderRoute(path: string) {
 			navigate('/');
 			return;
 
-		case '/blockchain': //Delete when blockchain working!!
+		case '/blockchain':
 			views.showBlockchain(app);
 			return;
 

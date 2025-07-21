@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:36:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 10:18:56 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,31 +68,31 @@ export class EndingSystem implements System {
 	//! SET CORRECT ENDING CONDITIONS BEFORE TURNING IN
 
 	private checkOnlineGameEnd(): void {
-		if (this.UI.leftScore >= 3 || this.UI.rightScore >= 3) {
+		if (this.game.leftPlayer.isDisconnected || this.game.rightPlayer.isDisconnected) {
+			this.setGameResults();
+			this.ended = true;
+			return;
+		}
+	
+		
+		if ( this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+			this.setGameResults();
+			this.ended = true;
+		} else if (this.UI.leftScore >= 11 || this.UI.rightScore >= 11) {
 			const scoreDiff = Math.abs(this.UI.leftScore - this.UI.rightScore);
 			if (scoreDiff >= 2) {
 				this.setGameResults();
 				this.ended = true;
 			}
 		}
-
-		if (this.UI.leftScore === 2 && this.UI.rightScore === 2) {
-			this.setGameResults();
-				this.ended = true;
-		}
-		
-		if (this.UI.leftScore >= 21 || this.UI.rightScore >= 21) {
-			this.setGameResults();
-			this.ended = true;
-		}
 	}
 
 	private checkLocalGameEnd(): void {
-		if (this.UI.leftScore >= 1 && this.UI.rightScore < 2) {
+		if (this.UI.leftScore >= 2 && this.UI.rightScore < 2) {
 			this.game.data.leftPlayer.result = 'win';
 			this.game.data.rightPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.rightScore >= 1 && this.UI.leftScore < 2) {
+		} else if (this.UI.rightScore >= 2 && this.UI.leftScore < 2) {
 			this.game.data.rightPlayer.result = 'win';
 			this.game.data.leftPlayer.result = 'lose';
 			this.ended = true;
@@ -234,14 +234,14 @@ export class EndingSystem implements System {
 	}
 
 	private triggerFireworks(): void {
-		for (let i = 0; i < 75; i++) {
+		for (let i = 0; i < 25; i++) {
 			setTimeout(() => {
 				const x = Math.random() * this.game.width;
 				const y = Math.random() * (this.game.height * 0.6) + this.game.height * 0.2;
 				const color = GAME_COLORS.orange;
 				
 				ParticleSpawner.spawnFireworksExplosion(this.game, x, y, color, 1.5);
-			}, i * 300);
+			}, i * 75);
 		}
 	}
 

@@ -119,7 +119,7 @@ export class WebSocketManager {
                 this.isConnecting = false;
                 this.stopHeartbeat();
                 
-                if (event.code !== 1000 && event.code !== 1001) { // Not normal closure or going away
+                if (event.code !== 1000 && event.code !== 1001) {
                     this.handleDisconnect(event);
                 }
                 reject(new Error('WebSocket connection closed'));
@@ -168,7 +168,7 @@ export class WebSocketManager {
     private cleanupConnection(): void {
         this.stopHeartbeat();
         if (this.socket) {
-            this.socket.onclose = null; // Prevent reconnect attempts during intentional close
+            this.socket.onclose = null;
             this.socket.close();
             this.socket = null;
         }
@@ -178,7 +178,7 @@ export class WebSocketManager {
         console.log('WebSocket connection closed unexpectedly:', event.code, event.reason);
         
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
-            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000); // Exponential backoff, max 30s
+            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
             console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`);
             
             setTimeout(() => {

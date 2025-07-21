@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 22:38:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:42:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,21 +215,12 @@ export class EndgameOverlay extends Entity {
 
 	private getHeaderSprite(): Sprite | null {
 		let assetName: string;
+		const language = this.game.language || 'en';
 		
-		if (this.game.data.generalResult !== 'draw') {
-			const language = this.game.language || 'en';
-			
-			if (this.game.config.classicMode) {
-				assetName = `victoryHeader${language.toUpperCase()}White`;
-			} else {
-					assetName = `victoryHeader${language.toUpperCase()}Green`;
-				}
+		if (this.game.config.classicMode) {
+				assetName = `resultsHeader${language.toUpperCase()}White`;
 		} else {
-			if (this.game.config.classicMode) {
-				assetName = `drawHeader${this.game.language.toUpperCase()}White`;
-			} else {
-				assetName = `drawHeader${this.game.language.toUpperCase()}Yellow`;
-			}
+				assetName = `resultsHeader${language.toUpperCase()}Yellow`;
 		}
 		
 		const headerSprite = ImageManager.createSprite(assetName);
@@ -346,22 +337,22 @@ export class EndgameOverlay extends Entity {
 
 		switch (this.game.language) {
 			case ('en'): {
-				text = "MATCH RESULTS";
+				text = "GAME OVER";
 				break;
 			}
 
 			case ('es'): {
-				text = "RESULTADOS DE LA PARTIDA";
+				text = "FIN DEL JUEGO";
 				break;
 			}
 
 			case ('fr'): {
-				text = "RÉSULTATS DU MATCH";
+				text = "FIN DE LA PARTIE";
 				break;
 			}
 
 			default: {
-				text = "RESULTATS DE LA PARTIDA";
+				text = "FI DE LA PARTIDA";
 				break;
 			}
 		}
@@ -382,7 +373,7 @@ export class EndgameOverlay extends Entity {
 	}
 
 	getResultText(): any {
-		const isWinner = isPlayerWinner(this.game);
+		const winner = this.game.data.winner;
 		const isDraw = this.game.data.generalResult === 'draw';
 		
 		let text: string;
@@ -397,7 +388,7 @@ export class EndgameOverlay extends Entity {
 				}
 
 				case ('es'): {
-					text = "¡Has empatado!";
+					text = "¡Empate!";
 					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
@@ -409,61 +400,35 @@ export class EndgameOverlay extends Entity {
 				}
 
 				default: {
-					text = "Has empatat!";
+					text = "Empat!";
 					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
 			}
 
-		} else if (isWinner) {
-			switch (this.game.language) {
-				case ('en'): {
-					text = "⇢ You won! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.green;
-					break;
-				}
-
-				case ('es'): {
-					text = "⇢ ¡Has ganado! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.green;
-					break;
-				}
-
-				case ('fr'): {
-					text = "⇢ Vous avez gagné! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.green;
-					break;
-				}
-
-				default: {
-					text = "⇢ Has guanyat! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.green;
-					break;
-				}
-			}
 		} else {
 			switch (this.game.language) {
 				case ('en'): {
-					text = "⇢ You lost! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.red;
+					text = `⇢ ${winner} won! ⇠`;
+					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
 
 				case ('es'): {
-					text = "⇢ ¡Has perdido! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.red;
+					text = `⇢ ${winner} ha ganado! ⇠`;
+					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
 
 				case ('fr'): {
-					text = "⇢ Vous avez perdu! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.red;
+					text = `⇢ ${winner} a gagné ! ⇠`;
+					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
 
 				default: {
-					text = "⇢ Has perdut! ⇠";
-					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.red;
+					text = `⇢ ${winner} ha guanyat! ⇠`;
+					color = this.game.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
 					break;
 				}
 			}
@@ -525,7 +490,6 @@ export class EndgameOverlay extends Entity {
 	}
 
 	private getBackgroundPoints(x: number, y: number, width: number, height: number): { x: number, y: number }[] {
-		const isWinner = isPlayerWinner(this.game);
 		const language = this.game.language || 'en';
 		const lowerOffset = 20;
 		
@@ -676,8 +640,65 @@ export class EndgameOverlay extends Entity {
 			{ x: x + width + 2.2 - 73, y: y - 15 },
 			{ x: x + width + 2.2 - 73, y: y - 6 }
 		];
+
+		const resultsENPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 78.3, y: y - 6 },
+			{ x: x + width + 2.2 - 78.3, y: y - 15 },
+			{ x: x + width + 2.2 - 102, y: y - 15 },
+			{ x: x + width + 2.2 - 102, y: y - 6 }
+		];
+
+		const resultsESPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 101, y: y - 6 },
+			{ x: x + width + 2.2 - 101, y: y - 15 },
+			{ x: x + width + 2.2 - 111, y: y - 15 },
+			{ x: x + width + 2.2 - 111, y: y - 6 },
+			{ x: x + width + 2.2 - 167, y: y - 6 },
+			{ x: x + width + 2.2 - 167, y: y - 15 },
+			{ x: x + width + 2.2 - 190, y: y - 15 },
+			{ x: x + width + 2.2 - 190, y: y - 6 }
+		];
+
+
+		const resultsFRPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 80, y: y - 6 },
+			{ x: x + width + 2.2 - 80, y: y - 15 },
+			{ x: x + width + 2.2 - 88, y: y - 15 },
+			{ x: x + width + 2.2 - 88, y: y - 6 },
+			{ x: x + width + 2.2 - 128, y: y - 6 },
+			{ x: x + width + 2.2 - 128, y: y - 15 },
+			{ x: x + width + 2.2 - 150, y: y - 15 },
+			{ x: x + width + 2.2 - 150, y: y - 6 }
+		];
+
+		const resultsCATPoints = [
+			{ x: x - 2.2, y: y - 6 },
+			{ x: x - 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y + height + lowerOffset },
+			{ x: x + width + 2.2, y: y - 6 },
+			{ x: x + width + 2.2 - 80, y: y - 6 },
+			{ x: x + width + 2.2 - 80, y: y - 15 },
+			{ x: x + width + 2.2 - 88, y: y - 15 },
+			{ x: x + width + 2.2 - 88, y: y - 6 },
+			{ x: x + width + 2.2 - 128, y: y - 6 },
+			{ x: x + width + 2.2 - 128, y: y - 15 },
+			{ x: x + width + 2.2 - 150, y: y - 15 },
+			{ x: x + width + 2.2 - 150, y: y - 6 }
+		];
 	
-		if (this.game.data.generalResult === 'draw') {
+		/* if (this.game.data.generalResult === 'draw') {
 			switch (language) {
 				case 'en':
 					return drawENPoints;
@@ -699,18 +720,18 @@ export class EndgameOverlay extends Entity {
 				default:
 					return victoryCATPoints;
 			}
-		} else {
-			switch (language) {
-				case 'en':
-					return defeatENPoints;
-				case 'es':
-					return defeatESPoints;
-				case 'fr':
-					return defeatFRPoints;
-				default:
-					return defeatCATPoints;
-			}
+		} else { */
+		switch (language) {
+			case 'en':
+				return resultsENPoints;
+			case 'es':
+				return resultsESPoints;
+			case 'fr':
+				return resultsFRPoints;
+			default:
+				return resultsCATPoints;
 		}
+
 	}
 
 	// Updated methods for EndGameOverlay.ts
