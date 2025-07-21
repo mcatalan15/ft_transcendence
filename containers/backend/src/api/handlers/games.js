@@ -323,7 +323,6 @@ async function getGamesHistoryHandler(request, reply) {
         const userId = request.query.user || request.user?.id;
 
         if (!userId) {
-            console.log('No userId, returning 401');
             return reply.code(401).send({
                 success: false,
                 error: 'Authentication required',

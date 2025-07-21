@@ -1,5 +1,3 @@
-// const { type } = require("os");
-
 const saveGameSchema = {
     body: {
         type: 'object',
@@ -690,10 +688,10 @@ const getUserByUsernameSchema = {
                     type: 'object',
                     properties: {
                         id: { type: 'string', description: 'User ID' },
-                        name: { type: 'string', description: 'User display name' }, // Changed from 'username'
+                        name: { type: 'string', description: 'User display name' },
                         avatar: { type: 'string', description: 'User avatar URL' },
-                        type: { type: 'string', enum: ['human', 'ai'], description: 'Player type' }, // Added
-                        side: { type: 'string', enum: ['left', 'right'], description: 'Player side' }, // Added
+                        type: { type: 'string', enum: ['human', 'ai'], description: 'Player type' },
+                        side: { type: 'string', enum: ['left', 'right'], description: 'Player side' },
                         goalsScored: { type: 'number', description: 'Total goals scored by the user' },
                         goalsConceded: { type: 'number', description: 'Total goals conceded by the user' },
                         tournaments: { type: 'number', description: 'Number of tournaments won' },
@@ -701,19 +699,19 @@ const getUserByUsernameSchema = {
                         losses: { type: 'number', description: 'Number of matches lost' },
                         draws: { type: 'number', description: 'Number of matches drawn' },
                         rank: { type: 'number', description: 'User rank' },
-                        totalPlayers: { type: 'number', description: 'Total number of players (optional)' } // Added optional field
+                        totalPlayers: { type: 'number', description: 'Total number of players (optional)' }
                     },
-                    required: ['id', 'name', 'avatar', 'type', 'side', 'goalsScored', 'goalsConceded', 'tournaments', 'wins', 'losses', 'draws', 'rank'] // Updated required fields
+                    required: ['id', 'name', 'avatar', 'type', 'side', 'goalsScored', 'goalsConceded', 'tournaments', 'wins', 'losses', 'draws', 'rank']
                 }
             },
             example: {
                 success: true,
                 userData: {
                     id: '12345',
-                    name: 'player123', // Changed from 'username'
+                    name: 'player123',
                     avatar: '/api/profile/avatar/12345?t=1234567890',
-                    type: 'human', // Added
-                    side: 'right', // Added
+                    type: 'human',
+                    side: 'right',
                     goalsScored: 10,
                     goalsConceded: 5,
                     tournaments: 2,

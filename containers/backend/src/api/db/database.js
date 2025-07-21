@@ -7,9 +7,7 @@ const db = connectToDatabase();
 function connectToDatabase(retries = 5, delay = 2000) {
 	const db = new sqlite3.Database(dbPath, (err) => {
 		if (err) {
-			console.error(`Error opening database (attempts left: ${retries}):`, err.message);
 			if (retries > 0) {
-				console.log(`Retrying in ${delay/1000} seconds...`);
 				setTimeout(() => connectToDatabase(retries - 1, delay), delay);
 			} else {
 				console.error('Failed to connect to database after multiple attempts');
@@ -97,8 +95,6 @@ async function checkUserExists(username, email) {
 			return;
 		}
 
-		console.log(`[DB checkUserExists] Query: "${query}" with params: [${params.join(', ')}]`);
-
 		db.get(query, params, (err, row) => {
 			if (err) {
 				console.error('[DB ERROR]', err);
@@ -107,11 +103,6 @@ async function checkUserExists(username, email) {
 			}
 
 			if (row) {
-				console.log('[DB checkUserExists] User found:', {
-					id: row.id_user,
-					username: row.username,
-					email: row.email
-				});
 				resolve({
 					exists: true,
 					usernameExists: username ? row.username === username : false,
@@ -119,7 +110,6 @@ async function checkUserExists(username, email) {
 					user: row
 				});
 			} else {
-				console.log('[DB checkUserExists] User NOT found.');
 				resolve({ exists: false });
 			}
 		});
@@ -193,7 +183,6 @@ async function getUserById(userId) {
                 console.error('Database error in getUserById:', err);
                 reject(err);
             } else {
-                console.log('getUserById result for userId', userId, ':', row);
                 resolve(row);
             }
         });
@@ -230,8 +219,6 @@ async function getLatestGame() {
 
 async function saveGameToDatabase(gameRecord, gameData) {
 	return new Promise((resolve, reject) => {
-		console.log('saveGameToDatabase called with gameRecord:', gameRecord);
-
 		const query = `
             INSERT INTO games (
                 player1_id,
@@ -334,8 +321,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 			gameRecord.player2_result
 		];
 
-		console.log('Executing games query with params:', params);
-
 		db.run(query, params, function (err) {
 			if (err) {
 				console.error('[DB INSERT ERROR] saveGameToDatabase failed:', {
@@ -347,9 +332,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 			}
 
 			const gameId = this.lastID;
-			console.log('Game saved successfully with ID:', gameId);
-
-			// Insert into game_results table
 			const gameResultsQuery = `
                 INSERT INTO game_results (id_game, game_data)
                 VALUES (?, ?)
@@ -365,8 +347,6 @@ async function saveGameToDatabase(gameRecord, gameData) {
 					});
 					return reject(err);
 				}
-
-				console.log('Game data saved to game_results with ID:', gameId);
 				resolve(gameId);
 			});
 		});
@@ -397,38 +377,26 @@ async function saveGameResultsToDatabase(gameId, gameData) {
         
         db.run(query, params, function (err) {
             if (err) {
-                console.error('[DB INSERT ERROR] Failed to save game results:', {
-                    message: err.message,
-                    code: err.code,
-                    errno: err.errno,
-                    stack: err.stack
-                });
                 reject(err);
             } else {
-                console.log(`[DB] Successfully saved detailed game results for game ${gameId}`);
                 resolve(this.lastID);
             }
         });
     });
 }
 
-// ! Needed???? !!!!
 async function saveTwoFactorSecret(userId, secret) {
     return new Promise((resolve, reject) => {
         const query = `UPDATE users SET twoFactorSecret = ?, twoFactorEnabled = ? WHERE id_user = ?`;
-        // Initially, twoFactorEnabled is FALSE until the user successfully verifies the code
         const params = [secret, false, userId];
 
         db.run(query, params, function (err) {
             if (err) {
-                console.error(`[DB ERROR] Failed to save 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error saving 2FA secret.'));
             } else if (this.changes === 0) {
-                // If no rows were updated, it means the userId probably doesn't exist
                 console.warn(`[DB WARN] No user found with ID ${userId} to save 2FA secret.`);
                 reject(new Error('User not found.'));
             } else {
-                console.log(`[DB] Saved 2FA secret for user ${userId}.`);
                 resolve(true);
             }
         });
@@ -444,10 +412,8 @@ async function getTwoFactorSecret(userId) {
                 console.error(`[DB ERROR] Failed to get 2FA secret for user ${userId}:`, err.message);
                 reject(new Error('Database error getting 2FA secret.'));
             } else if (row) {
-                console.log(`[DB] Fetched 2FA secret for user ${userId}.`);
                 resolve(row.twoFactorSecret);
             } else {
-                console.log(`[DB] No user found with ID ${userId} or no 2FA secret set.`);
                 resolve(null);
             }
         });
@@ -461,13 +427,10 @@ async function enableTwoFactor(userId, secret) {
 
         db.run(query, params, function (err) {
             if (err) {
-                console.error(`[DB ERROR] Failed to enable 2FA for user ${userId}:`, err.message);
                 reject(new Error('Database error enabling 2FA.'));
             } else if (this.changes === 0) {
-                console.warn(`[DB WARN] No user found with ID ${userId} to enable 2FA.`);
                 reject(new Error('User not found.'));
             } else {
-                console.log(`[DB] Enabled 2FA for user ${userId}.`);
                 resolve(true);
             }
         });
@@ -558,7 +521,6 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
         const query = `UPDATE games SET contract_address = ?, smart_contract_link = ? WHERE id_game = ?`;
         const params = [contractAddress, explorerLink, gameId];
         
-        console.log('Executing DB query:', { query, params });
         db.run(query, params, function (err) {
             if (err) {
                 console.error('[DB UPDATE ERROR] Failed to save smart contract data:', {
@@ -572,7 +534,6 @@ async function saveSmartContractToDatabase(gameId, contractAddress, explorerLink
                 console.warn(`[DB WARN] No game found with ID ${gameId} to update contract data.`);
                 reject(new Error('Game not found'));
             } else {
-                console.log(`[DB] Successfully saved smart contract data for game ${gameId}`);
                 resolve({
                     gameId: gameId,
                     contractAddress: contractAddress,
@@ -618,7 +579,6 @@ async function  updateNickname(userId, newNickname) {
 					console.warn(`[DB WARN] No user found with ID ${userId} to update nickname.`);
 					reject(new Error('User not found'));
 				} else {
-					console.log(`[DB] Successfully updated nickname for user ${userId}`);
 					resolve(true);
 				}
 			});
@@ -642,7 +602,6 @@ async function changePassword(userId, newHashedPassword) {
 				console.warn(`[DB WARN] No user found with ID ${userId} to update password.`);
 				reject(new Error('User not found'));
 			} else {
-				console.log(`[DB] Successfully updated password for user ${userId}`);
 				resolve(true);
 			}
 		});
@@ -739,7 +698,6 @@ async function getUserStats(userId) {
                 console.error('Error getting user stats:', err);
                 reject(err);
             } else {
-                console.log('Retrieved user stats for user', userId, ':', row);
                 resolve(row);
             }
         });
@@ -770,7 +728,6 @@ async function getUserProfileStats(userId) {
 }
 
 async function saveRefreshTokenInDatabase(userId, refreshToken) {
-	console.log(`Saving refresh token for user ${userId}: ${refreshToken}`);
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)
                       ON CONFLICT(user_id) DO UPDATE SET token = ?`;
@@ -786,7 +743,6 @@ async function saveRefreshTokenInDatabase(userId, refreshToken) {
                 });
                 reject(err);
             } else {
-				console.log(`Refresh token saved successfully for user ${userId}`);
                 resolve(true);
             }
         });
@@ -807,11 +763,9 @@ async function getRefreshTokenFromDatabase(userId) {
                 reject(err);
             }
             else if (row) {
-                console.log(`[DB] Fetched refresh token for user ${userId}.`);
                 resolve(row.token);
             }
             else {
-                console.log(`[DB] No refresh token found for user ${userId}.`);
                 resolve(null);
             }
         });
@@ -836,7 +790,6 @@ async function deleteRefreshTokenFromDatabase(userId) {
                 resolve(false);
             }
             else {
-                console.log(`[DB] Successfully deleted refresh token for user ${userId}`);
                 resolve(true);
             }
         });
@@ -981,7 +934,7 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.leftPlayer.score,
             
-            // Update values (same as above for calculations)
+            // Update values
             gameData.leftPlayer.result === 'win' ? 1 : 0,
             gameData.leftPlayer.result === 'lose' ? 1 : 0,
             gameData.leftPlayer.result === 'draw' ? 1 : 0,
@@ -1132,7 +1085,7 @@ async function updateUserStats(player1_id, player2_id, gameData) {
             gameData.walls.waystones,
             gameData.rightPlayer.score,
             
-            // Update values (same as above for calculations)
+            // Update values
             gameData.rightPlayer.result === 'win' ? 1 : 0,
             gameData.rightPlayer.result === 'lose' ? 1 : 0,
             gameData.rightPlayer.result === 'draw' ? 1 : 0,
@@ -1172,7 +1125,6 @@ async function updateUserStats(player1_id, player2_id, gameData) {
         ]);
 
         await db.run('COMMIT');
-        console.log('User stats updated successfully for both players');
     } catch (error) {
         console.error('Error updating user stats:', error);
         await db.run('ROLLBACK');
@@ -1212,14 +1164,6 @@ async function updateTournamentStats(tournamentConfig) {
             return;
         }
 
-        console.log(`[DB] Updating tournament stats for ${players.length} players. Winner: ${tournamentWinner}`);
-        console.log('[DB] Player mapping:', players.map(p => ({ 
-            name: p.name, 
-            isWinner: p.isWinner, 
-            isGuest: p.isGuest,
-            userId: p.actualUserId 
-        })));
-
         let completed = 0;
         let errors = [];
 
@@ -1229,7 +1173,6 @@ async function updateTournamentStats(tournamentConfig) {
                     console.error('[DB ERROR] Some players could not be updated:', errors);
                     reject(new Error(`Failed to update some players: ${errors.join(', ')}`));
                 } else {
-                    console.log(`[DB] Successfully updated tournament stats for all ${players.length} players`);
                     resolve({
                         updatedPlayers: players.length,
                         tournamentWinner: tournamentWinner,
@@ -1248,7 +1191,6 @@ async function updateTournamentStats(tournamentConfig) {
             let targetUsername;
 
             if (player.isGuest) {
-                console.log(`[DB] Player ${player.name} has no data, looking for guest user`);
                 
                 const findGuestQuery = `SELECT id_user FROM users WHERE username = 'guest' LIMIT 1`;
                 db.get(findGuestQuery, [], (guestErr, guestRow) => {
@@ -1262,7 +1204,6 @@ async function updateTournamentStats(tournamentConfig) {
                     if (guestRow) {
                         targetUserId = guestRow.id_user;
                         targetUsername = 'guest';
-                        console.log(`[DB] Using guest user with ID ${targetUserId} for player ${player.name}`);
                         updateStats();
                     } else {
                         console.error(`[DB ERROR] Guest user not found in database`);
@@ -1274,7 +1215,6 @@ async function updateTournamentStats(tournamentConfig) {
             } else {
                 targetUserId = player.actualUserId;
                 targetUsername = player.name;
-                console.log(`[DB] Using real user ${player.name} with ID ${targetUserId}`);
                 updateStats();
             }
 
