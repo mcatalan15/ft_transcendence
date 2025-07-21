@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:09:48 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 21:39:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 22:27:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ export class EndgameOverlay extends Entity {
 		this.rightPlayerName = updatedRightPlayerName;
 
 		this.overlayGraphics.removeChildren();
-		this.createOverlayGraphics(this.game, this.originalX, this.originalY, this.originalWidth, this.originalHeight, 20);
+		this.createOverlayGraphics(this.game, this.originalX, this.originalY, this.originalWidth, this.originalHeight, 15);
 
 		this.ornamentGraphic.removeChildren();
 		this.createOrnamentGraphic();
@@ -230,9 +230,9 @@ export class EndgameOverlay extends Entity {
 			(headerSprite as any).isFixedPosition = true;
 			
 			if (this.isFirefox) {
-				headerSprite.scale.set(1.0715);
+				headerSprite.scale.set(0.99999999);
 				headerSprite.x -= 1;
-				headerSprite.y -= 2;
+				headerSprite.y += 1;
 				
 				if (headerSprite.texture && headerSprite.texture.source) {
 					headerSprite.texture.source.scaleMode = 'nearest';
@@ -688,29 +688,6 @@ export class EndgameOverlay extends Entity {
 			{ x: x + width + 2.2 - 150, y: y - 6 }
 		];
 	
-		/* if (this.game.data.generalResult === 'draw') {
-			switch (language) {
-				case 'en':
-					return drawENPoints;
-				case 'es':
-					return drawESPoints;
-				case 'fr':
-					return drawFRPoints;
-				default:
-					return drawCATPoints;
-			}
-		} else if (isWinner) {
-			switch (language) {
-				case 'en':
-					return victoryENPoints;
-				case 'es':
-					return victoryESPoints;
-				case 'fr':
-					return victoryFRPoints;
-				default:
-					return victoryCATPoints;
-			}
-		} else { */
 		switch (language) {
 			case 'en':
 				return resultsENPoints;
