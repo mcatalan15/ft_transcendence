@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 14:25:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/05/28 11:04:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:32:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,15 +242,9 @@ export function breakOscillation(physics: PhysicsComponent, collisionNormal: {x:
     if (isHorizontalOscillation) {
         const verticalDirection = Math.random() > 0.5 ? 1 : -1;
         physics.velocityY += verticalDirection * boostMagnitude;
-        
-        console.log("Breaking horizontal oscillation - adding vertical push");
-        
     } else if (isVerticalOscillation) {
         const horizontalDirection = physics.velocityX >= 0 ? 1 : -1;
         physics.velocityX += horizontalDirection * boostMagnitude;
-        
-        console.log("Breaking vertical oscillation - adding horizontal push");
-        
     } else {
         if (Math.abs(physics.velocityX) < Math.abs(physics.velocityY)) {
             const horizontalDirection = physics.velocityX >= 0 ? 1 : -1;
@@ -259,8 +253,6 @@ export function breakOscillation(physics: PhysicsComponent, collisionNormal: {x:
             const verticalDirection = physics.velocityY >= 0 ? 1 : -1;
             physics.velocityY += verticalDirection * boostMagnitude;
         }
-        
-        console.log("Breaking mixed oscillation");
     }
     
     const newSpeed = Math.hypot(physics.velocityX, physics.velocityY);

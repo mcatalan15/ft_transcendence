@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/19 13:38:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:49:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ import { RenderComponent } from "../../components/RenderComponent";
 import { TextComponent } from "../../components/TextComponent";
 
 import { GAME_COLORS } from "../../utils/Types";
-import { PlayerKey } from "../../utils/GameConfig";
 
 export class Bracket extends Entity {
 	menu: Menu;
@@ -165,28 +164,6 @@ export class Bracket extends Entity {
 		this.createTierCells(1, this.BASE_X + (this.TIER_SPACING * 3), bracketCenterY, 0);
 	}
 
-	/* private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
-		const totalHeight = (playerCount - 1) * verticalSpacing;
-		const startY = centerY - (totalHeight / 2);
-		
-		for (let i = 0; i < playerCount; i++) {
-			const x = baseX;
-			const y = startY + (i * verticalSpacing);
-			
-			this.nameCells.push(new NameCell(
-				`nameCell_${this.nameCells.length}`,
-				'bracket',
-				this.menu,
-				'',
-				x,
-				y,
-				this.CELL_WIDTH,
-				this.CELL_HEIGHT,
-				i,
-			));
-		}
-	} */
-
 	private createTierCells(playerCount: number, baseX: number, centerY: number, verticalSpacing: number) {
 		const totalHeight = (playerCount - 1) * verticalSpacing;
 		const startY = centerY - (totalHeight / 2);
@@ -199,22 +176,22 @@ export class Bracket extends Entity {
 			const config = this.menu.tournamentManager.getTournamentConfig();
 	
 			if (config) {
-				if (playerCount === 8) { // First round
+				if (playerCount === 8) {
 					const key = `player${i + 1}` as keyof typeof config.firstRoundPlayers;
 					playerName = config.firstRoundPlayers[key]?.toUpperCase() || '';
-				} else if (playerCount === 4) { // Second round
+				} else if (playerCount === 4) {
 					const winner1 = config.matchWinners.match1Winner?.toUpperCase();
 					const winner2 = config.matchWinners.match2Winner?.toUpperCase();
 					const winner3 = config.matchWinners.match3Winner?.toUpperCase();
 					const winner4 = config.matchWinners.match4Winner?.toUpperCase();
 					
 					playerName = [winner1, winner2, winner3, winner4][i] || '';
-				} else if (playerCount === 2) { // Third round (semifinals)
+				} else if (playerCount === 2) {
 					const winner5 = config.matchWinners.match5Winner?.toUpperCase();
 					const winner6 = config.matchWinners.match6Winner?.toUpperCase();
 					
 					playerName = [winner5, winner6][i] || '';
-				} else if (playerCount === 1) { // Final
+				} else if (playerCount === 1) {
 					const winner7 = config.matchWinners.match7Winner?.toUpperCase();
 					playerName = winner7 || '';
 				}
@@ -262,12 +239,12 @@ export class Bracket extends Entity {
 			const nameCell = this.nameCells[cellIndex];
 			const lineY = nameCell.y + (this.CELL_HEIGHT / 2);
 			const lineStartX = nameCell.x + nameCell.width + this.LINE_GAP;
-			const lineEndX = lineStartX + this.LINE_LENGTH + this.HORIZONTAL_LINE_EXTENSION; // Use the constant
+			const lineEndX = lineStartX + this.LINE_LENGTH + this.HORIZONTAL_LINE_EXTENSION;
 			
 			this.bracketGraphic.moveTo(lineStartX, lineY);
 			this.bracketGraphic.lineTo(lineEndX, lineY);
 			
-			horizontalLines.push({ x: lineEndX - this.HORIZONTAL_LINE_EXTENSION, y: lineY }); // Use the constant here too
+			horizontalLines.push({ x: lineEndX - this.HORIZONTAL_LINE_EXTENSION, y: lineY });
 		}
 	
 		for (let i = 0; i < horizontalLines.length - 1; i += 2) {
@@ -325,7 +302,6 @@ export class Bracket extends Entity {
 		const linesPerGroup = 14;
 		const lineLength = 10;
 
-		// Top section
 		for (let group = 0; group < numGroups + 1; group++) {
 			const groupX = baseX + group * (linesPerGroup * groupWidth);
 
@@ -353,7 +329,6 @@ export class Bracket extends Entity {
 			});
 		}
 
-		// Bottom section
 		for (let group = 0; group < numGroups + 1; group++) {
 			const groupX = baseX + group * (linesPerGroup * groupWidth);
 		

@@ -30,7 +30,6 @@ export class ProfileContentRenderer {
 
     try {
       const data = await this.fetchProfileData();
-	  console.log(data);
       const statsColumn = this.createStatsColumn(data);
       const buttonsColumn = this.createButtonsColumn(data);
 

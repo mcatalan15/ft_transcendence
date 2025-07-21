@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:24:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 17:59:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:35:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,9 @@ class GameManager {
 	public async destroyGame(containerId: string): Promise<void> {
 		const gameData = this.activeGames.get(containerId);
 		if (!gameData) return;
-	
-		console.log(`Destroying game for container ${containerId}...`);
 		
 		try {
 			if (gameData.networkManager?.disconnect) {
-				console.log('Disconnecting network manager...');
 				try {
 					gameData.networkManager.disconnect();
 				} catch (error) {
@@ -47,7 +44,6 @@ class GameManager {
 			}
 	
 			if (gameData.game?.cleanup) {
-				console.log('Cleaning up game/menu...');
 				try {
 					await gameData.game.cleanup();
 				} catch (error) {
@@ -56,7 +52,6 @@ class GameManager {
 			}
 	
 			if (gameData.app && !gameData.app.destroyed) {
-				console.log('Destroying PIXI Application...');
 				try {
 					if (gameData.app.ticker?.started) {
 						gameData.app.ticker.stop();
@@ -85,7 +80,6 @@ class GameManager {
 			}
 	
 			this.activeGames.delete(containerId);
-			console.log(`Game for container ${containerId} destroyed successfully`);
 		} catch (error) {
 			console.error('Error during game destruction:', error);
 			this.activeGames.delete(containerId);
@@ -94,7 +88,6 @@ class GameManager {
 
 	public async destroyAllGames(): Promise<void> {
 		if (this.isDestroying) {
-			console.log('Already destroying games, waiting...');
 			while (this.isDestroying) {
 				await new Promise(resolve => setTimeout(resolve, 10));
 			}
@@ -105,13 +98,10 @@ class GameManager {
 		
 		try {
 			const containerIds = Array.from(this.activeGames.keys());
-			console.log(`Destroying ${containerIds.length} active games...`);
 			
 			for (const containerId of containerIds) {
 				await this.destroyGame(containerId);
 			}
-			
-			console.log('All games destroyed successfully');
 		} finally {
 			this.isDestroying = false;
 		}

@@ -6,19 +6,16 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:39:09 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/06/17 12:06:54 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:40:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//! Only God can judge me
-
-import { Graphics, Text } from "pixi.js"
+import {  Text } from "pixi.js"
 import { Menu } from "../Menu"
 import { Entity } from "../../engine/Entity"
 import { RenderComponent } from "../../components/RenderComponent"
-import { PhysicsComponent } from "../../components/PhysicsComponent"
 import { AnimationComponent } from "../../components/AnimationComponent"
-import { GAME_COLORS, PhysicsData, AnimationOptions } from "../../utils/Types"
+import { GAME_COLORS, AnimationOptions } from "../../utils/Types"
 
 export class ClassicO extends Entity {
 	menu: Menu;
@@ -55,7 +52,6 @@ export class ClassicO extends Entity {
 			}
 		});
 		
-		// Set anchor and position immediately
 		titleText.anchor.set(0.5);
 		titleText.position.set(
 			1330,
@@ -68,7 +64,7 @@ export class ClassicO extends Entity {
 	private defineAnimationOptions(): AnimationOptions {
 		return {
 			initialY: 0,
-			initialX: 0,  // Add this
+			initialX: 0,
 			floatAmplitude: 5,
 			floatSpeed: 2,
 			floatOffset: Math.random() * Math.PI * 2,

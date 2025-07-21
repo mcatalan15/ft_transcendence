@@ -17,12 +17,10 @@ async function main() {
         
         console.log("Starting deployment with game data:", gameData);
         
-        // Get signer
         const [deployer] = await hre.ethers.getSigners();
         console.log("Deploying with account:", deployer.address);
         console.log("Account balance:", (await deployer.getBalance()).toString());
         
-        // Set default scores if not provided
         const player1Score = gameData.player1Score || 0;
         const player2Score = gameData.player2Score || 0;
 
@@ -33,7 +31,6 @@ async function main() {
             player2Score: player2Score
         });
         
-        // Deploy contract
         const GameContract = await hre.ethers.getContractFactory("GameContract");
         const gameContract = await GameContract.deploy(
             gameData.player1Name,
@@ -46,7 +43,6 @@ async function main() {
         const contractAddress = gameContract.address;
         console.log("GameContract deployed to:", contractAddress);
         
-        // Try to verify contract (don't exit if verification fails)
         console.log("Attempting to verify contract at:", contractAddress);
         try {
             await hre.run("verify:verify", {

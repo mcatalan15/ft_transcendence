@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 15:33:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:48:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:28:53 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,5 @@ export class ParticleSystem implements System {
 		if (ParticleSpawner && typeof (ParticleSpawner as any).cleanup === 'function') {
 			(ParticleSpawner as any).cleanup();
 		}
-		
-		console.log('ParticleSystem cleanup completed');
 	}
 }

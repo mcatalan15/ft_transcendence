@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 17:24:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 22:15:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,7 @@ export class EndingSystem implements System {
 	update(entities: Entity[]) {
 		if (!this.endingProcessed) {
 			if (this.isOnlineGame && this.game.config.classicMode) {
-				// For online games, check if server has declared the game ended OR if forced
 				if ((this as any).ended || this.game.hasEnded) {
-					console.log('Online game ended by server or forced trigger');
-					console.log('Current UI scores:', this.UI.leftScore, 'vs', this.UI.rightScore);
 					this.setGameResults();
 					this.ended = true;
 				} else {
@@ -65,15 +62,12 @@ export class EndingSystem implements System {
 		}
 	}
 
-	//! SET CORRECT ENDING CONDITIONS BEFORE TURNING IN
-
 	private checkOnlineGameEnd(): void {
 		if (this.game.leftPlayer.isDisconnected || this.game.rightPlayer.isDisconnected) {
 			this.setGameResults();
 			this.ended = true;
 			return;
 		}
-	
 		
 		if ( this.UI.leftScore === 20 && this.UI.rightScore === 20 ) {
 			this.setGameResults();
@@ -88,18 +82,22 @@ export class EndingSystem implements System {
 	}
 
 	private checkLocalGameEnd(): void {
-		if (this.UI.leftScore >= 11 && this.UI.rightScore < 10) {
-			this.game.data.leftPlayer.result = 'win';
-			this.game.data.rightPlayer.result = 'lose';
-			this.ended = true;
-		} else if (this.UI.rightScore >= 11 && this.UI.leftScore < 10) {
-			this.game.data.rightPlayer.result = 'win';
-			this.game.data.leftPlayer.result = 'lose';
-			this.ended = true;
-		} else if (this.UI.leftScore === 20 && this.UI.rightScore === 20) {
+		if (this.UI.leftScore === 20 && this.UI.rightScore === 20) {
 			this.game.data.leftPlayer.result = 'draw';
 			this.game.data.rightPlayer.result = 'draw';
 			this.ended = true;
+		} else if (this.UI.leftScore >= 1 || this.UI.rightScore >= 1) {
+			const scoreDiff = Math.abs(this.UI.leftScore - this.UI.rightScore);
+			if (scoreDiff >= 2) {
+				if (this.UI.leftScore > this.UI.rightScore) {
+					this.game.data.leftPlayer.result = 'win';
+					this.game.data.rightPlayer.result = 'lose';
+				} else {
+					this.game.data.rightPlayer.result = 'win';
+					this.game.data.leftPlayer.result = 'lose';
+				}
+				this.ended = true;
+			}
 		}
 	
 		if (this.game.config.variant === 'tournament' && this.game.tournamentManager.getHasActiveTournament() && 
@@ -112,8 +110,6 @@ export class EndingSystem implements System {
 			const config = this.game.tournamentManager.getTournamentConfig()!;
 			const currentMatch = config.nextMatch.matchOrder;
 			
-			console.log(`Completing match ${currentMatch} with winner: ${winnerName}`);
-			
 			config.matchWinners[`match${currentMatch}Winner` as keyof typeof config.matchWinners] = winnerName;
 			
 			if (currentMatch <= 4) {
@@ -124,12 +120,10 @@ export class EndingSystem implements System {
 				const roundPosition = currentMatch - 4;
 				const finalRoundKey = `player${roundPosition}` as keyof typeof config.thirdRoundPlayers;
 				config.thirdRoundPlayers[finalRoundKey] = winnerName;
-				console.log(`Updated third round ${finalRoundKey}: ${winnerName}`);
 			}
 			else if (currentMatch === 7) {
 				config.tournamentWinner = winnerName;
 				config.isFinished = true;
-				console.log(`Tournament finished! Winner: ${winnerName}`);
 			}
 			
 			this.game.tournamentManager.updateTournament(config);
@@ -138,7 +132,6 @@ export class EndingSystem implements System {
 				const hasNextMatch = this.game.tournamentManager.advanceMatch();
 				if (hasNextMatch) {
 					config.nextMatch.matchOrder = currentMatch + 1;
-					console.log(`Advanced to match ${config.nextMatch.matchOrder}`);
 				}
 			}
 		}
@@ -159,7 +152,6 @@ export class EndingSystem implements System {
 
 	private processGameEnd(): void {
 		if (this.endingProcessed) {
-			console.log('Game end already processed, skipping duplicate processing');
 			return;
 		}
 
@@ -199,8 +191,6 @@ export class EndingSystem implements System {
 		
 		if (this.game.config.variant === 'tournament') {
 			this.handleTournamentGameResultSaving();
-		} else {
-			console.log('Local game ended, no backend save needed');
 		}
 		
 		this.game.hasEnded = true;
@@ -208,7 +198,6 @@ export class EndingSystem implements System {
 	}
 
 	private async handleTournamentGameResultSaving(): Promise<void> {
-		console.log('Tournament game ended, checking if should save results...');
 		
 		await this.getUserIds();
 		
@@ -298,10 +287,6 @@ export class EndingSystem implements System {
 		this.game.renderLayers.alphaFade.addChild(this.game.alphaFade);
 
 		const headerComponent = this.game.endGameOverlay.getComponent('render', 'headerSprite') as RenderComponent;
-			
-		if (headerComponent?.graphic) {
-			console.log(`Header sprite actual position after creation: (${headerComponent.graphic.x}, ${headerComponent.graphic.y})`);
-		}
 	
 		const endgameRenderComponent = this.game.endGameOverlay.getComponent('render', 'headerGraphic') as RenderComponent;
 		this.game.renderLayers.overlays.addChild(endgameRenderComponent.graphic);
@@ -587,7 +572,5 @@ export class EndingSystem implements System {
 			this.UI.leftScore = 0;
 			this.UI.rightScore = 0;
 		}
-		
-		console.log('EndingSystem cleanup completed');
 	}
 }

@@ -58,8 +58,6 @@ export class SoundManager {
 			this.music.stop();
 			this.musicPlaying = false;
 		}
-		
-		console.log('All sounds stopped');
 	}
 
 	cleanup(): void {
@@ -79,7 +77,6 @@ export class SoundManager {
 		
 		this.musicPlaying = false;
 		this.sounds = {};
-		
-		console.log('SoundManager cleanup completed');
+
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 15:13:31 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/20 21:54:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:51:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,6 @@ export class Duel extends Entity {
 		const rankStat = this.menu.playerData?.rank || 0;
 		this.playerStats.push(this.formatStat(rankStat, 'rank'));
 	
-		console.log('Formatted stats:', this.playerStats);
 	}
 
 	getOpponentStats(){
@@ -148,8 +147,6 @@ export class Duel extends Entity {
 	
 		const rankStat = this.menu.opponentData?.rank || 0;
 		this.opponentStats.push(this.formatStat(rankStat, 'rank'));
-	
-		console.log('Formatted opponent stats:', this.opponentStats);
 	}
 
 	formatStat(stat: number | string, type: 'number' | 'ratio' | 'rank' = 'number'): string {
@@ -277,19 +274,13 @@ export class Duel extends Entity {
 		const nameTags: Text[] = [];
 
 		let leftName = this.menu.playerData?.name!.toUpperCase() || "PLAYER 1";
-		
-		// Check for both name and username fields, prioritize name
+
 		let rightName = this.menu.config.mode === 'online' ? "PLAYER 2" : "";
 
-		console.log('createNameTags - opponentData:', this.menu.opponentData);
-		console.log('createNameTags - rightName after check:', rightName);
-
-		// If no opponent data, set appropriate default based on variant
 		if (!rightName) {
 			if (this.menu.config.variant === '1vAI') {
 				rightName = "BUTIBOT";
 			} else {
-				// Set default guest name based on language
 				switch (this.menu.language) {
 					case ('es'): {
 						rightName = "";
@@ -310,8 +301,6 @@ export class Duel extends Entity {
 				}
 			}
 		}
-
-		console.log('createNameTags - final rightName:', rightName);
 
 		nameTags.push({
 			text: leftName, 
@@ -615,7 +604,6 @@ export class Duel extends Entity {
 	};
 
 	getStatsValuesInLanguage(who: string, known: boolean): string {
-		console.log('getStatsValuesInLanguage called with:', who, known, this.menu.opponentData);
 		if (known) {
 			if (who === "player") {
 				switch (this.menu.language) {
@@ -677,10 +665,7 @@ export class Duel extends Entity {
 
 
 	public updateOpponentData(opponentData: any): void {
-		console.log('updateOpponentData called with:', opponentData);
-		
 		this.menu.opponentData = opponentData;
-		console.log('Menu opponent data set to:', this.menu.opponentData);
 		
 		this.updateRightPlayerInfo();
 	}
@@ -706,7 +691,6 @@ export class Duel extends Entity {
 
 			const opponentStatsTextComponent = new TextComponent(this.opponentStatsTexts[this.opponentStatsTexts.length - 1]);
 			this.replaceComponent('text', opponentStatsTextComponent, `opponentStatsText${this.opponentStatsTexts.length - 1}`);
-			console.log(this.menu.renderLayers.overlays.children)
 			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
 			const child = this.menu.renderLayers.overlays.children[i];
 			
@@ -720,17 +704,11 @@ export class Duel extends Entity {
 			}
 }
 			this.menu.renderLayers.overlays.addChild(opponentStatsTextComponent.getRenderable());
-
-			
-			console.log(this.opponentStatsTexts);
 		}
 	}
 
 	public updatePlayerData(playerData: any): void {
-		console.log('updatePlayerData called with:', playerData);
-		
 		this.menu.playerData = playerData;
-		console.log('Menu player data set to:', this.menu.playerData);
 		
 		this.updateLeftPlayerInfo();
 	}
@@ -757,8 +735,6 @@ export class Duel extends Entity {
 			const playerStatsTextComponent = new TextComponent(this.playerStatsTexts[this.playerStatsTexts.length - 1]);
 			this.replaceComponent('text', playerStatsTextComponent, `playerStatsText${this.playerStatsTexts.length - 1}`);
 			
-			console.log(this.menu.renderLayers.overlays.children);
-			
 			for (let i = 0; i < this.menu.renderLayers.overlays.children.length; i++) {
 				const child = this.menu.renderLayers.overlays.children[i];
 				
@@ -769,8 +745,6 @@ export class Duel extends Entity {
 			}
 
 			this.menu.renderLayers.overlays.addChild(playerStatsTextComponent.getRenderable());
-	
-			console.log(this.playerStatsTexts);
 		}
 	}
 	
@@ -794,7 +768,6 @@ export class Duel extends Entity {
 				const isRightNamePosition = child.x === 785 && child.y === 570;
 				
 				if ((isLeftNamePosition || isRightNamePosition)) {
-					console.log('Removing name tag at position:', child.x, child.y, 'with text:', child.text);
 					this.menu.renderLayers.overlays.removeChild(child);
 				}
 			}
@@ -832,7 +805,5 @@ export class Duel extends Entity {
 			this.addComponent(nameTagComponent, `nameTag${i}`);
 			this.menu.renderLayers.overlays.addChild(nameTagComponent.getRenderable());
 		}
-		
-		console.log('Updated name tags:', this.nameTags);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:27:04 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:46:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:27:00 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ export class AISystem implements System {
     private accuracy: number = 0.85;
     private reactionDeadZone: number = 50;
     
-    // AI decision state
     private targetPosition: number = 0;
     private currentDecision: 'up' | 'down' | 'stop' = 'stop';
 
@@ -154,7 +153,6 @@ export class AISystem implements System {
                 currentY = topWall + overshoot;
                 currentVelY = -currentVelY;
             } else if (currentY > bottomWall) {
-                // Hit bottom wall
                 const overshoot = currentY - bottomWall;
                 currentY = bottomWall - overshoot;
                 currentVelY = -currentVelY;
@@ -178,17 +176,14 @@ export class AISystem implements System {
 		if (inputComponent) {
 		
 			if (distance < this.reactionDeadZone) {
-				// Stop
 				inputComponent.upPressed = false;
 				inputComponent.downPressed = false;
 				this.currentDecision = 'stop';
 			} else if (deltaY > 0) {
-				// Move down
 				inputComponent.upPressed = false;
 				inputComponent.downPressed = true;
 				this.currentDecision = 'down';
 			} else {
-				// Move up
 				inputComponent.upPressed = true;
 				inputComponent.downPressed = false;
 				this.currentDecision = 'up';
@@ -242,7 +237,5 @@ export class AISystem implements System {
                 }
             }
         }
-        
-        console.log('AISystem cleanup completed');
     }
 }

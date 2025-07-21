@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:33:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 15:35:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:48:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,29 +63,6 @@ export class AboutTexts extends Entity {
 
     private getColumnDataEN() {
         return [
-            // Column 1A: Team Title (Left)
-            /* {
-                tag: 'teamTitle',
-                text: "----------------------[ TEAM ]----------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
@@ -107,7 +84,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1C: Team names 2 (Left)
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
@@ -129,7 +105,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1D: Team logins 1 (Left)
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
@@ -151,7 +126,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 1D: Team logins 2 (Left)
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
@@ -173,29 +147,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 2A: Project Title (Left)
-            /* {
-                tag: 'projectTitle',
-                text: "------------------------------------------------------[ PROJECT ]-------------------------------------------------------",
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1500,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Project content (Left)
             {
                 tag: 'projectContent',
                 text: "This humble Pong recreation was developed as part of the ft_transcendence project at 42 Barcelona. It was created in accordance with the mandatory requirements, on top of which several optional modules were implemented. The game can be played in either classic mode —a homage to the original Atari game designed by Nolan Bushnell and released in 1972— or its default extended mode, which includes a variety of additional features. These additions include:\n" +
@@ -224,29 +175,6 @@ export class AboutTexts extends Entity {
 
     private getColumnDataES() {
         return [
-            // Column 1A: Team Title (Left)
-            /* {
-                tag: 'teamTitle',
-                text: "---------------------[ EQUIPO ]---------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
@@ -268,7 +196,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1C: Team names 2 (Left)
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
@@ -290,7 +217,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1D: Team logins 1 (Left)
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
@@ -312,7 +238,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 1D: Team logins 2 (Left)
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
@@ -334,29 +259,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 2A: Project Title (Left)
-            /* {
-                tag: 'projectTitle',
-                text: "------------------------------------------------------[ PROYECTO ]------------------------------------------------------",
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1500,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Project content (Left)
             {
                 tag: 'projectContent',
                 text: "Esta humilde recreación de Pong se desarrolló como parte del proyecto ft_transcendence en 42 Barcelona. Se creó siguiendo los requisitos obligatorios, sobre los que se implementaron varios módulos opcionales. El juego puede jugarse tanto en modo clásico -un homenaje al juego original de Atari diseñado por Nolan Bushnell y lanzado en 1972- como en su modo extendido, que incluye diversas características adicionales. Estas últimas incluyen:\n" +
@@ -385,29 +287,6 @@ export class AboutTexts extends Entity {
 
     private getColumnDataFR() {
         return [
-            // Column 1A: Team Title (Left)
-            /* {
-                tag: 'teamTitle',
-                text: "---------------------[ ÉQUIPE ]---------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
@@ -429,7 +308,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1C: Team names 2 (Left)
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
@@ -451,7 +329,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1D: Team logins 1 (Left)
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
@@ -473,7 +350,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 1D: Team logins 2 (Left)
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
@@ -495,29 +371,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 2A: Project Title (Left)
-            /* {
-                tag: 'projectTitle',
-                text: "-------------------------------------------------------[ PROJET ]-------------------------------------------------------",
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1500,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Project content (Left)
             {
                 tag: 'projectContent',
                 text: "Cette humble recréation de Pong a été développée dans le cadre du projet ft_transcendence à 42 Barcelone. Elle a été réalisée en respectant les exigences obligatoires, sur lesquelles plusieurs modules optionnels ont été ajoutés. Le jeu peut être joué aussi bien en mode classique — un hommage au jeu original d’Atari conçu par Nolan Bushnell et sorti en 1972 — qu’en mode étendu, qui propose de nombreuses fonctionnalités supplémentaires. Celles-ci incluent notamment:\n" +
@@ -546,29 +399,6 @@ export class AboutTexts extends Entity {
 
     private getColumnDataCAT() {
         return [
-            // Column 1A: Team Title (Left)
-            /* {
-                tag: 'teamTitle',
-                text: "----------------------[ EQUIP ]---------------------",
-                x: 120,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 480,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 1B: Team names 1 (Left)
             {
                 tag: 'teamNamesOne',
                 text: "Eva Ferré Mur\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Hugo Muñoz Gris",
@@ -590,7 +420,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1C: Team names 2 (Left)
             {
                 tag: 'teamNamesTwo',
                 text: "Marc Catalán Sánchez\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Nicolas Ponchon",
@@ -612,7 +441,6 @@ export class AboutTexts extends Entity {
                 rotation: 0,
             },
 
-            // Column 1D: Team logins 1 (Left)
             {
             tag: 'teamLoginsOne',
             text: "42@eferre-m\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@hmunoz-g",
@@ -634,7 +462,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 1D: Team logins 2 (Left)
             {
             tag: 'teamLoginsTwo',
             text: "42@mcatalan\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A042@nponchon",
@@ -656,29 +483,6 @@ export class AboutTexts extends Entity {
             rotation: 0,
             },
 
-            // Column 2A: Project Title (Left)
-            /* {
-                tag: 'projectTitle',
-                text: "------------------------------------------------------[ PROJECTE ]------------------------------------------------------",
-                x: 650,
-                y: 160,
-                style: {
-                    fill: GAME_COLORS.menuPink,
-                    fontSize: 13,
-                    fontWeight: 'bolder' as const,
-                    align: 'left' as const,
-                    wordWrap: true,
-                    wordWrapWidth: 1500,
-                    breakWords: true,
-                    lineHeight: 10,
-                    fontFamily: '"Roboto Mono", monospace',
-                    letterSpacing: 0.5,
-                },
-                anchor: { x: 0, y: 0 },
-                rotation: 0,
-            }, */
-
-            // Column 2B: Project content (Left)
             {
                 tag: 'projectContent',
                 text:"Aquesta humil recreació de Pong es va desenvolupar com a part del projecte ft_*transcendence en 42 Barcelona. Es va crear seguint els requisits obligatoris, sobre els que es van implementar diversos mòduls opcionals. El joc pot jugar-se tant en mode clàssic -un homenatge al joc original d'Atari dissenyat per Nolan Bushnell i llançat en 1972- com en el seu mode estès, que inclou diverses característiques addicionals. Aquestes últimes inclouen:\n" +
@@ -721,7 +525,7 @@ export class AboutTexts extends Entity {
         const titleColor = classicMode ? GAME_COLORS.white : GAME_COLORS.menuPink;
         
         this.textComponents.forEach((textComponent, index) => {
-            const columnData = this.getColumnDataEN(); //!OJO
+            const columnData = this.getColumnDataEN();
             const correspondingData = columnData[index];
             
             if (correspondingData && correspondingData.tag.includes('Title')) {

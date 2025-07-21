@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:39:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 15:04:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:23:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ import { GAME_COLORS } from '../utils/Types';
 
 interface AmbientDustConfig {
 	maxParticles: number;
-	spawnRate: number; // particles per second
+	spawnRate: number;
 	color: number;
 	minSize: number;
 	maxSize: number;
@@ -26,7 +26,7 @@ interface AmbientDustConfig {
 	maxLifetime: number;
 	minAlpha: number;
 	maxAlpha: number;
-	driftSpeed: number; // how fast they drift around
+	driftSpeed: number;
 	minRotationSpeed: number;
 	maxRotationSpeed: number;
 }
@@ -189,7 +189,6 @@ export class ParticleSpawner {
 		game.renderLayers.background.addChild(particleRender.graphic);
 	}
 
-	// Configuration methods for tweaking dust behavior
 	static setAmbientDustDensity(maxParticles: number, spawnRate: number): void {
 		this.ambientDustConfig.maxParticles = maxParticles;
 		this.ambientDustConfig.spawnRate = spawnRate;
@@ -223,7 +222,6 @@ export class ParticleSpawner {
 		this.ambientDustConfig.maxRotationSpeed = maxRotationSpeed;
 	}
 
-	// ending particles
 	static spawnFireworksExplosion(game: PongGame, x: number, y: number, color: number, intensity: number = 1.0): void {
 		const particleCount = Math.floor(15 * intensity);
 		const burstRadius = 80 * intensity;
@@ -239,7 +237,6 @@ export class ParticleSpawner {
 			const startX = x + Math.cos(angle) * (distance * 0.1);
 			const startY = y + Math.sin(angle) * (distance * 0.1);
 			
-			// Main burst particles
 			const mainParticle = new Particle(`firework-main-${Date.now()}-${i}`, 'foreground', startX, startY, {
 				type: Math.random() > 0.5 ? 'circle' : 'square',
 				velocityX: velocityX,
@@ -626,7 +623,5 @@ export class ParticleSpawner {
 				game.removeEntity(entityId);
 			}
 		}
-		
-		console.log('ParticleSpawner cleanup completed');
 	}
 }

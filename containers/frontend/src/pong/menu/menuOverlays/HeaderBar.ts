@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 14:00:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 11:27:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:03:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ export class HeaderBar extends Entity {
 		}
 
 		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
-			console.log('Tournament finished, using orange color for header bar');
 			color = GAME_COLORS.orange;
 		}
 

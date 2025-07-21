@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 18:11:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/04 14:49:37 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:29:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ export class PostProcessingSystem implements System {
             if (entity.hasComponent('postProcessing')) {
                 const postProcessing = entity.getComponent('postProcessing') as PostProcessingComponent;
                 if (postProcessing?.options) {
-                    // Reset CRT filter
+
                     if (postProcessing.options.crtFilter) {
                         postProcessing.options.crtFilter.time = 0;
                         postProcessing.options.crtFilter.seed = 0;
@@ -126,7 +126,5 @@ export class PostProcessingSystem implements System {
                 }
             }
         }
-        
-        console.log('PostProcessingSystem cleanup completed');
     }
 }
