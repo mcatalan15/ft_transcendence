@@ -16,7 +16,7 @@ const {
 const { 
 	getUserDataHandler,
 	saveGameHandler,
-	retrieveGamesHandler,
+	// retrieveGamesHandler,
 	retrieveLastGameHandler,
 	deployContractHandler,
 	getGamesHistoryHandler,

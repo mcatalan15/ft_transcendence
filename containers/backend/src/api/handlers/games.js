@@ -10,7 +10,6 @@ const { saveGameToDatabase,
 	getUsernameById,
 	updateUserStats,
 	getUserByUsername,
-	calculateUserStats,
 	updateTournamentStats,
 	
  } = require('../db/database');
@@ -458,21 +457,6 @@ const saveResultsHandler = async (request, reply) => {
     }
 };
 
-async function retrieveGamesHandler(request, reply) {
-	try {
-		const games = await getAllGames();
-		reply.status(200).send({
-			success: true,
-			games
-		});
-	} catch (error) {
-		reply.status(500).send({
-			success: false,
-			message: 'Failed to fetch games'
-		});
-	}
-};
-
 async function getUserByUsernameHandler(request, reply) {
     try {
         const { username } = request.body;
@@ -596,7 +580,6 @@ async function saveTournamentResultsHandler(request, reply) {
 module.exports = {
 	getUserDataHandler,
 	saveGameHandler,
-	retrieveGamesHandler,
 	retrieveLastGameHandler,
 	deployContractHandler,
 	getGamesHistoryHandler,
