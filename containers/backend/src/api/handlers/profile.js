@@ -34,7 +34,6 @@ async function getUserProfile(request, reply) {
                 });
             }
 
-            // Check if they are friends (only if viewing someone else's profile)
             if (targetUser.id_user !== sessionUser.userId) {
                 isFriend = await checkFriendship(sessionUser.userId, targetUser.id_user);
             }
@@ -46,7 +45,6 @@ async function getUserProfile(request, reply) {
             };
         }
 
-        // Fetch user stats
         userStats = await getUserProfileStats(targetUser.id_user);
 
         isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
@@ -73,58 +71,6 @@ async function getUserProfile(request, reply) {
         });
     }
 }
-
-// async function getUserProfile(request, reply) {
-//     try {
-//         const sessionUser = request.session.get('user');
-//         const requestedUsername = request.params.username;
-
-//         let targetUser;
-//         let isOwnProfile = false;
-//         let isFriend = false;
-
-//         if (requestedUsername) {
-//             targetUser = await getUserByUsername(requestedUsername);
-
-//             if (!targetUser) {
-//                 return reply.status(404).send({
-//                     success: false,
-//                     message: 'User not found'
-//                 });
-//             }
-
-//             // Check if they are friends (only if viewing someone else's profile)
-//             if (targetUser.id_user !== sessionUser.userId) {
-//                 isFriend = await checkFriendship(sessionUser.userId, targetUser.id_user);
-//             }
-//         } else {
-//             targetUser = {
-//                 id_user: sessionUser.userId,
-//                 username: sessionUser.username,
-//                 email: sessionUser.email,
-// 				isOwnProfile: isOwnProfile,
-//             	isFriend: isFriend
-//             };
-//         }
-
-//         isOwnProfile = !requestedUsername || requestedUsername === sessionUser.username;
-
-//         return reply.status(200).send({
-//             userId: targetUser.id_user,
-//             username: targetUser.username,
-//             email: targetUser.email,
-//             isOwnProfile: isOwnProfile,
-//             isFriend: isFriend
-//         });
-
-//     } catch (error) {
-//         console.error('Error fetching profile:', error);
-//         return reply.status(500).send({
-//             success: false,
-//             message: 'Internal server error'
-//         });
-//     }
-// }
 
 async function avatarUploadHandler(request, reply) {
 	try {
@@ -253,10 +199,7 @@ async function getUserOnlineStatus(request, reply) {
 
         const isOnline = onlineTracker.isUserOnline(requestedUserId);
         const lastActivity = onlineTracker.getUserLastActivity(requestedUserId);
-        
-        console.log(`User ${requestedUserId} online status: ${isOnline}`);
-        console.log(`Last activity: ${lastActivity ? new Date(lastActivity).toISOString() : 'Never'}`);
-        
+                
         return reply.status(200).send({
             success: true,
             userId: requestedUserId,
@@ -277,8 +220,6 @@ async function updateNicknameHandler(request, reply) {
 	try {
 		const sessionUser = request.session.get('user');
 		const newNickname = request.body.nickname;
-
-		console.log('Session user:', sessionUser);
 
 		if (!sessionUser) {
 			return reply.status(401).send({

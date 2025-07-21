@@ -135,7 +135,7 @@ services:
       FASTIFY_ADDRESS: "127.0.0.1"
     volumes:
       - ./blockchain:/usr/src/app
-      - /usr/src/app/node_modules
+      # - /usr/src/app/node_modules
     restart: always 
     networks:
       - transcendence

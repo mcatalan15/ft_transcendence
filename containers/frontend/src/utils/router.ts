@@ -94,10 +94,6 @@ async function renderRoute(path: string) {
 			navigate('/');
 			return;
 
-		case '/blockchain':
-			views.showBlockchain(app);
-			return;
-
 		case '/auth':
 			views.showAuth(app);
 			return;
