@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:47:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/18 14:06:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:39:22 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ export class TournamentManager {
 	private activeTournament: TournamentConfig | null = null;
 	private containerId: string | null = null;
 	private currentMatch: number = 1;
-	private totalMatches: number = 7; // 8 players = 7 matches total
+	private totalMatches: number = 7;
 
 	constructor(app: Application) {
 		this.containerId = app.view.id;

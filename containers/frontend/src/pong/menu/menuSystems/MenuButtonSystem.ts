@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 14:30:34 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:01:01 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,11 @@ export class MenuButtonSystem implements System {
 		this.menu.playQuitButton.resetButton();
 		this.menu.playOverlay.header.redrawOverlayElements();
 		this.menu.playOverlay.duel.redrawDuel();
-		this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		if (this.menu.tournamentManager.getHasActiveTournament() && this.menu.tournamentManager.getTournamentConfig()!.isFinished) {
+			this.menu.tournamentOverlay.tournamentEndDisplay.redrawDisplay();
+		} else {
+			this.menu.tournamentOverlay.nextMatchDisplay.redrawDisplay();
+		}
 		this.menu.tournamentOverlay.header.redrawOverlayElements();
 		this.menu.tournamentOverlay.bracket.redrawBracket();
 
@@ -629,7 +633,6 @@ export class MenuButtonSystem implements System {
 			
 				console.log('Host Data:', hostData, 'Guest Data:', guestData);
 			
-				// Always set the same layout for both players
 				this.menu.playerData = hostData;
 				this.menu.opponentData = guestData;
 

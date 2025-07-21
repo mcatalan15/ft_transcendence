@@ -187,14 +187,20 @@ class ClassicGameSession {
 				scorer: goal.scorer,    
 				score: goal.score
 			};
-
+	
 			this.broadcastToAll('goalScored', goalEvent);
-
+	
 			if (this.externalBroadcast) {
 				this.externalBroadcast(goalEvent);
 			}
 			
-			if (this.gameState.score1 >= 3 || this.gameState.score2 >= 3) {
+			const isDraw = (this.gameState.score1 === 1 && this.gameState.score2 === 1);
+			const isHighScoreWin = (this.gameState.score1 >= 11 || this.gameState.score2 >= 11) && 
+								  Math.abs(this.gameState.score1 - this.gameState.score2) >= 2;
+			const isOldRuleWin = (this.gameState.score1 >= 3 || this.gameState.score2 >= 3);
+			
+			if (isDraw || isHighScoreWin || isOldRuleWin) {
+				console.log(`🏁 Game ending - Draw: ${isDraw}, HighScore: ${isHighScoreWin}, OldRule: ${isOldRuleWin}`);
 				this.endGame();
 			}
 		}
@@ -264,8 +270,12 @@ class ClassicGameSession {
 			this.winner = 'player2';
 		} else if (!this.players.player2.socket) {
 			this.winner = 'player1';
+		} else if (this.gameState.score1 > this.gameState.score2) {
+			this.winner = 'player1';
+		} else if (this.gameState.score2 > this.gameState.score1) {
+			this.winner = 'player2';
 		} else {
-			this.winner = this.gameState.score1 > this.gameState.score2 ? 'player1' : 'player2';
+			this.winner = 'draw';
 		}
 		
 		console.log(`Game ${this.sessionId} ended. Winner: ${this.winner}`);
@@ -304,13 +314,15 @@ class ClassicGameSession {
 					...physicsGameData.leftPlayer,
 					name: this.players.player1.id,
 					score: this.gameState.score1,
-					result: this.gameState.score1 > this.gameState.score2 ? 'win' : 'lose'
+					result: this.gameState.score1 > this.gameState.score2 ? 'win' : 
+							this.gameState.score1 < this.gameState.score2 ? 'lose' : 'draw'
 				},
 				rightPlayer: {
 					...physicsGameData.rightPlayer,
 					name: this.players.player2.id,
 					score: this.gameState.score2,
-					result: this.gameState.score2 > this.gameState.score1 ? 'win' : 'lose'
+					result: this.gameState.score2 > this.gameState.score1 ? 'win' : 
+							this.gameState.score2 < this.gameState.score1 ? 'lose' : 'draw'
 				},
 				createdAt: new Date().toISOString(),
 				endedAt: new Date().toISOString(),

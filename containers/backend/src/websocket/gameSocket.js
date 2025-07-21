@@ -34,6 +34,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 						playerId = data.playerId;
 						gameId = data.gameId || gameId;
 
+						// Store the WebSocket connection for this player
 						playerConnections.set(playerId, ws);
 
 						console.log(`Player ${playerId} identified for game ${gameId}`);
@@ -44,6 +45,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 							gameId: gameId
 						}));
 
+						// Only attempt to join game if we have a valid gameId
 						if (gameId && gameId !== '' && gameId !== 'undefined' && gameId !== 'null') {
 							console.log(`Attempting to join game ${gameId} for player ${playerId}`);
 							await handleJoinGame({ playerId, gameId }, ws, activeGames, redisService);
@@ -78,10 +80,6 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 					case 'CANCEL_MATCHMAKING':
 						handleCancelMatchmaking(data, redisService, activeGames, playerConnections);
-						break;
-
-					case 'PLAYER_DISCONNECTED':
-						handlePlayerDisconnect(data.playerId, data.gameId, activeGames, playerConnections);
 						break;
 
 					default:
@@ -142,8 +140,12 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 	async function handleJoinGame(data, ws, activeGames, redisService) {
 		const { gameId, playerId } = data;
+		
+		console.log('🔍 === handleJoinGame START ===');
+		console.log('🔍 Input data:', { gameId, playerId });
 
 		if (!gameId || !playerId) {
+			console.error('❌ Invalid gameId or playerId:', { gameId, playerId });
 			ws.send(JSON.stringify({
 				type: 'ERROR',
 				message: 'Invalid game data'
@@ -155,6 +157,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			const gameData = await redisService.getGameData(gameId);
 
 			if (!gameData) {
+				console.error('❌ Game not found in Redis');
 				ws.send(JSON.stringify({
 					type: 'ERROR',
 					message: 'Game not found'
@@ -163,8 +166,10 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			}
 
 			const sessionExists = activeGames.has(gameId);
+			console.log('🔍 Session exists in activeGames:', sessionExists);
 
 			if (!sessionExists) {
+				console.log(`🔍 Creating new ClassicGameSession for ${gameId}`);
 
 				const session = new ClassicGameSession(gameId,
 					{ id: gameData.hostId, socket: null },
@@ -183,6 +188,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 					lastUpdate: Date.now()
 				});
 
+				console.log(`✅ Created new ClassicGameSession for ${gameId}`);
 			}
 
 			const game = activeGames.get(gameId);
@@ -190,8 +196,10 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			let playerNumber;
 			if (playerId === gameData.hostId) {
 				playerNumber = 1;
+				console.log('🔍 Player is HOST (1)');
 			} else if (playerId === gameData.guestId) {
 				playerNumber = 2;
+				console.log('🔍 Player is GUEST (2)');
 			} else {
 				ws.send(JSON.stringify({
 					type: 'ERROR',
@@ -222,14 +230,18 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			}));
 
 			const connectedPlayers = game.players.size;
+			console.log(`🔍 Game ${gameId} now has ${connectedPlayers}/2 players connected`);
+			console.log('🔍 Game status is:', gameData.status);
 
 			if (gameData.status === 'ready' && connectedPlayers === 2) {
 				game.players.forEach((player, pid) => {
+					console.log(`🚀 Marking player ${pid} as ready`);
 					player.ready = true;
 				});
 
 				startGame(gameId, activeGames);
 			} else {
+				console.log(`⏳ Not auto-starting: status=${gameData.status}, players=${connectedPlayers}/2`);
 			}
 		} catch (error) {
 			ws.send(JSON.stringify({
@@ -253,6 +265,8 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		const player = game.players.get(playerId);
 		player.ready = true;
 
+		console.log(`✅ Player ${playerId} is ready`);
+
 		const allReady = Array.from(game.players.values()).every(p => p.ready);
 		const playerCount = game.players.size;
 
@@ -260,9 +274,10 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 
 		// Start the game if all players are ready AND we have 2 players
 		if (allReady && playerCount === 2) {
+			console.log(`🚀 Starting game ${gameId} - all players ready!`);
 			startGame(gameId, activeGames);
 		} else {
-			console.log(`Game ${gameId} waiting for more players or ready signals`);
+			console.log(`⏳ Game ${gameId} waiting for more players or ready signals`);
 		}
 	}
 
@@ -274,19 +289,29 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 		}
 
 		if (game.session.gameStarted) {
-			console.log('Game already started');
+			console.log('⚠️ Game already started');
 			return;
 		}
+
+		console.log('🎮 Game session exists, players count:', game.players.size);
+		console.log('🎮 All players ready:', Array.from(game.players.values()).every(p => p.ready));
+
+		console.log(`🎮 Starting game ${gameId} with ClassicGameSession`);
 
 		game.session.setExternalBroadcast((message) => {
 			broadcastToGame(gameId, message, activeGames);
 		});
 
 		try {
+			console.log('🎮 Calling session.startGame()...');
 			game.session.startGame();
+			console.log('✅ Game session started successfully');
 		} catch (error) {
-			console.error('Error starting game session:', error);
+			console.error('❌ Error starting game session:', error);
 		}
+		
+		console.log(`⏰ Game started for ${gameId}`);
+		console.log('🎮 === startGame END ===');
 	}
 
 	function updateGame(gameId, activeGames) {
@@ -339,27 +364,33 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			}
 		}
 
+		// Remove from player connections if provided
 		if (playerConnections) {
 			playerConnections.delete(playerId);
 		}
 
+		// Find and clean up ALL games this player was in
 		const gamesToDelete = [];
 
 		for (const [currentGameId, game] of activeGames.entries()) {
 			if (game.players && game.players.has(playerId)) {
 				console.log(`Found player ${playerId} in game ${currentGameId}`);
 
+				// Remove player from this game
 				game.players.delete(playerId);
 
+				// Broadcast disconnect message to remaining players
 				broadcastToGame(currentGameId, {
 					type: 'PLAYER_DISCONNECTED',
 					playerId: playerId
 				}, activeGames);
 
+				// Mark game for cleanup
 				gamesToDelete.push(currentGameId);
 			}
 		}
 
+		// End all games the player was in
 		for (const gameIdToDelete of gamesToDelete) {
 			console.log(`Ending game ${gameIdToDelete} due to player ${playerId} disconnect`);
 			endGame(gameIdToDelete, activeGames);
@@ -381,7 +412,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 			if (player.ws && player.ws.readyState === WebSocket.OPEN) {
 				player.ws.send(messageStr);
 			} else {
-				console.log(`Player ${playerId} WebSocket not ready`);
+				console.log(`⚠️ Player ${playerId} WebSocket not ready`);
 			}
 		});
 	}
@@ -428,6 +459,7 @@ function setupGameWebSocket(wss, redisService, gameManager) {
 							guestName: gameData.guestId,
 							role: 'host'
 						}));
+						console.log(`✅ Notified host ${gameData.hostId} that guest ${gameData.guestId} joined`);
 					}
 					return;
 				}
