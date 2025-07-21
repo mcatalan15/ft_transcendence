@@ -26,6 +26,7 @@ import { GAME_COLORS } from "../../utils/Types";
 export class TournamentEndDisplay extends Entity {
 	menu: Menu;
 	header: HeaderBar;
+	vsText: Text[] = [];
 	nameText: Text | null = null;
 	avatarFrame: Graphics = new Graphics();
 	statsTexts: Text[] = [];
@@ -47,6 +48,12 @@ export class TournamentEndDisplay extends Entity {
 		this.createAvatarFrame();
 		const avatarFrameComponent = new RenderComponent(this.avatarFrame);
 		this.addComponent(avatarFrameComponent, 'avatarFrame');
+
+		this.vsText = this.createVsTexts();
+		for (let i = 0; i < this.vsText.length; i++) {
+			const vsTextComponent = new TextComponent(this.vsText[i]);
+			this.addComponent(vsTextComponent, `vsText${i}`);
+		}
 
 		this.nameText = this.createNameText();
 		const nameComponent = new TextComponent(this.nameText);
@@ -144,8 +151,8 @@ export class TournamentEndDisplay extends Entity {
 
 	createAvatarFrame(): void {
 		const color = this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange;
-		const centerX = 1098 + 554 / 2; // Center of header bar
-		const frameSize = 350; // Square frame
+		const centerX = (this.menu.width / 2) + 198 + (350 / 2);
+		const frameSize = 350;
 		const frameX = centerX - frameSize / 2;
 		const frameY = 220;
 
@@ -154,10 +161,10 @@ export class TournamentEndDisplay extends Entity {
 	}
 
 	createNameText(): Text {
-		const centerX = 1098 + 554 / 2;
+		const centerX = (this.menu.width / 2) + 198 + (350 / 2);
 
 		return {
-			text: this.menu.winnerData?.name?.toUpperCase() || 'GAJUU',
+			text: this.menu.winnerData?.name?.toUpperCase() || 'UNKNOWN',
 			x: centerX,
 			y: 600,
 			style: {
@@ -173,7 +180,7 @@ export class TournamentEndDisplay extends Entity {
 	createStatsTexts(): Text[] {
 		const statsTexts :Text[] = [];
 		
-		const centerX = 1098 + 554 / 2;
+		const centerX = (this.menu.width / 2) + 198 + (350 / 2);
 		
 		statsTexts.push({
 			text: this.getStatsTextInLanguage(),
@@ -255,12 +262,143 @@ export class TournamentEndDisplay extends Entity {
 		}
 	}
 
+	createVsTexts(): Text[] {
+        const vsTexts: Text[] = [];
+        
+        vsTexts.push({
+            text: "--------------------------------------------", 
+            x: 1470,
+            y: 430,
+            style: {
+                fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 0.3},
+                fontSize: 14,
+                fontWeight: 'bold' as const,
+                align: 'left' as const,
+                fontFamily: 'monospace',
+                letterSpacing: 1.2,
+            },
+        } as Text);
+
+        vsTexts[0].rotation = 1.5708;
+
+		vsTexts.push({
+			text: "★", 
+			x: 1565,
+			y: 300,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 190,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'anatol-mn',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: "+1", 
+			x: 1560,
+			y: 380,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 26,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: this.getTranslatedText("tournament victories"), 
+			x: 1570,
+			y: 405,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 13,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: "۞", 
+			x: 1560,
+			y: 480,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 100,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'anatol-mn',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: this.getTranslatedText("ELO upgrade") ,
+			x: 1560,
+			y: 535,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 13,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: "♕", 
+			x: 1560,
+			y: 585,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 85,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: "♔  ♔", 
+			x: 1560,
+			y: 600,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 45,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+		vsTexts.push({
+			text: this.getTranslatedText("history made"), 
+			x: 1560,
+			y: 630,
+			style: {
+				fill: { color: this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange, alpha: 1},
+				fontSize: 13,
+				fontWeight: 'lighter' as const,
+				align: 'center' as const,
+				fontFamily: 'monospace',
+			},
+		} as Text);
+
+        return vsTexts;
+    }
+
 	redrawDisplay(): void {
 		this.header.redrawBar(this.menu.config.classicMode ? GAME_COLORS.white : GAME_COLORS.orange);
 		
 		this.avatarFrame.clear();
 		this.createAvatarFrame();
 
+		const newVsTexts = this.createVsTexts();
+		for (let i = 0; i < this.vsText.length; i++) {
+			const vsTextComponent = new TextComponent(newVsTexts[i]);
+			this.replaceComponent(`text`, vsTextComponent, `vsText${i}`);
+		}
 
 		if (this.nameText) {
 			this.nameText.text = this.menu.winnerData!.name.toUpperCase();
@@ -273,6 +411,54 @@ export class TournamentEndDisplay extends Entity {
 		for (let i = 0; i < this.statsTexts.length; i++) {
 			const statsTextComponent = new TextComponent(newStatsTexts[i]);
 			this.replaceComponent(`text`, statsTextComponent, `statsText${i}`);
+		}
+	}
+
+	getTranslatedText(key: string): string {
+		switch (this.menu.language) {
+			case ('es'): {
+				switch (key) {
+					case ('tournament victories'): {
+						return 'victorias de torneo';
+					}
+					case ('ELO upgrade'): {
+						return 'mejora de ELO';
+					}
+					default: {
+						return 'historia escrita';
+					}
+				}
+				
+			}
+			case ('fr'): {
+				switch (key) {
+					case ('tournament victories'): {
+						return 'victoires de tournoi';
+					}
+					case ('ELO upgrade'): {
+						return 'amélioration ELO';
+					}
+					default: {
+						return 'histoire écrite';
+					}
+				}
+			}
+			case ('cat'): {
+				switch (key) {
+					case ('tournament victories'): {
+						return 'victòries de torneig';
+					}
+					case ('ELO upgrade'): {
+						return 'millora d\'ELO';
+					}
+					default: {
+						return 'història escrita';
+					}
+				}
+			}
+			default: {
+				return key;
+			}
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:38:32 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 14:38:51 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 18:29:45 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,7 @@ export class MenuImageManager {
 		
 		this.tournamentAvatars = [];
 	
-		const centerX = 1098 + 554 / 2;
+		const centerX = (menu.width / 2) + 198 + (350 / 2);
 		const frameSize = 350;
 	
 		const avatarX = centerX;

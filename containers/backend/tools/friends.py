@@ -99,7 +99,7 @@ def create_games(n):
         player1_id, player2_id = random.sample(users, 2)
 
         # Random game mode
-        game_modes = ['online', 'local', 'ai']
+        game_modes = ['online', 'tournament']
         game_mode = random.choice(game_modes)
 
         # Simulate game stats

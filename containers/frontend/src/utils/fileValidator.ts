@@ -25,10 +25,8 @@ export class FileValidator {
   private static validateFileType(file: File): boolean {
     if (!CONFIG.FILE_UPLOAD.acceptedTypes.includes(file.type)) {
       MessageManager.showError('Invalid file type. Please select a JPEG or PNG image.');
-      console.error('cucufito false');
       return false;
     }
-    console.error('cucufito true');
     return true;
   }
 }
