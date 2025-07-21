@@ -30,6 +30,9 @@ class GameResultsService {
 			} else if (gameData.rightPlayer.result === 'win') {
 				winner_id = player2_id;
 				generalResult = 'rightWin';
+			} else if (gameData.leftPlayer.restult === 'draw') {
+				winner_id = null;
+				generalResult = 'draw';
 			}
 
 			// Create the database insert query
