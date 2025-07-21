@@ -5,26 +5,19 @@ import { ApiError } from '../types/settings.types';
 import { getApiUrl } from '../config/api';
 
 export class AvatarFileHandler {
-  private userId: string;
-  private getIsUploading: () => boolean;
   private setIsUploading: (value: boolean) => void;
   private refreshAvatar: () => void;
 
   constructor(
-    userId: string,
-    getIsUploading: () => boolean,
     setIsUploading: (value: boolean) => void,
     refreshAvatar: () => void
   ) {
-    this.userId = userId;
-    this.getIsUploading = getIsUploading;
     this.setIsUploading = setIsUploading;
     this.refreshAvatar = refreshAvatar;
   }
 
   setupFileUploadHandler(
     fileInput: HTMLInputElement, 
-    avatarImg: HTMLImageElement, 
     uploadButton: HTMLButtonElement
   ): void {
     fileInput.onchange = async (e) => {
