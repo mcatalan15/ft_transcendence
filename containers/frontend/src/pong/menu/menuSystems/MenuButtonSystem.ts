@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 22:40:44 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/21 23:32:10 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,10 @@ export class MenuButtonSystem implements System {
 			} else if (event.type === 'GLOSSARY_ESC' || event.type === 'ABOUT_ESC') {
 				this.resetLayer(event);
 			} else if (event.type.endsWith('BACK')) {
-				if (event.type === 'CANCEL_MATCHMAKING') {
-					this.handleCancelMatchmaking();
-				} else {
 				this.resetLayer(event);
+				if (event.type === 'PLAY_BACK') {
+					await this.handleCancelMatchmaking();
+					this.menu.playOverlay.hide();
 				}
 			} else if (event.type === 'READY_CLICK') {
 				this.handleReadyClick();
@@ -195,6 +195,8 @@ export class MenuButtonSystem implements System {
 			}
 		}
 		this.menu.readyButton.resetButton();
+		this.menu.readyButton.setClickable(true);
+		this.menu.readyButton.setClicked(false);
 		switch (this.menu.language) {
 			case ('es'):
 				this.menu.readyButton.updateText('LISTO');
