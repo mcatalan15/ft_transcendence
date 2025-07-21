@@ -46,10 +46,10 @@ function buildApp() {
       cookieName: 'sessionId',
       secret: process.env.SESSION_SECRET || 'a-secret-key-that-should-be-in-env-file',
       cookie: {
-          secure: false,        // Allow HTTP for tunneling
+          secure: false,
           httpOnly: true,
           maxAge: 1000 * 60 * 60 * 24, // 24 hours
-          sameSite: 'lax'      // CHANGED: Was probably 'strict'
+          sameSite: 'lax'
       },
       saveUninitialized: false,
       resave: false
@@ -98,7 +98,7 @@ function buildApp() {
     }
   });
   fastify.register(cors, {
-    origin: true,  // Allow all origins for testing
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Origin', 'X-Requested-With', 'Accept']
