@@ -6,5 +6,3 @@ export function translateDOM(): void {
     if (key) el.textContent = i18n.t(key);
   });
 }
-
-(window as any).translateDOM = translateDOM;
