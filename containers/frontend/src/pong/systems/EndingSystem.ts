@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:28:36 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 15:39:48 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:24:49 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ export class EndingSystem implements System {
 		}
 	
 		
-		if ( this.UI.leftScore === 1 && this.UI.rightScore === 1 ) {
+		if ( this.UI.leftScore === 20 && this.UI.rightScore === 20 ) {
 			this.setGameResults();
 			this.ended = true;
 		} else if (this.UI.leftScore >= 11 || this.UI.rightScore >= 11) {
@@ -88,15 +88,15 @@ export class EndingSystem implements System {
 	}
 
 	private checkLocalGameEnd(): void {
-		if (this.UI.leftScore >= 1 && this.UI.rightScore < 2) {
+		if (this.UI.leftScore >= 11 && this.UI.rightScore < 10) {
 			this.game.data.leftPlayer.result = 'win';
 			this.game.data.rightPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.rightScore >= 1 && this.UI.leftScore < 2) {
+		} else if (this.UI.rightScore >= 11 && this.UI.leftScore < 10) {
 			this.game.data.rightPlayer.result = 'win';
 			this.game.data.leftPlayer.result = 'lose';
 			this.ended = true;
-		} else if (this.UI.leftScore === 1 && this.UI.rightScore === 1) {
+		} else if (this.UI.leftScore === 20 && this.UI.rightScore === 20) {
 			this.game.data.leftPlayer.result = 'draw';
 			this.game.data.rightPlayer.result = 'draw';
 			this.ended = true;
