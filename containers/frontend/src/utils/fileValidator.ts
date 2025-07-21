@@ -24,6 +24,7 @@ export class FileValidator {
 
   private static validateFileType(file: File): boolean {
     if (!CONFIG.FILE_UPLOAD.acceptedTypes.includes(file.type)) {
+      console.error(`Invalid file type: ${file.type}`);
       MessageManager.showError('Invalid file type. Please select a JPEG or PNG image.');
       return false;
     }
