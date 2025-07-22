@@ -78,6 +78,8 @@ export class PlayOverlay extends Overlay {
     public async show(): Promise<void> {
         this.changeStrokeColor(this.getStrokeColor());
         this.updateOverlayTexts();
+
+        this.menu.readyButton.setClickable(true);
         
         await MenuImageManager.preparePlayAvatarImages(this.menu);
         super.show();
@@ -117,6 +119,8 @@ export class PlayOverlay extends Overlay {
         this.menu.menuHidden.addChild(this.menu.tournamentFiltersButton.getContainer());
         
         this.menu.readyButton.setHidden(true);
+        this.menu.readyButton.setClickable(false);
+        this.menu.readyButton.setClicked(false);
         this.menu.tournamentGlossaryButton.setHidden(true);
         this.menu.tournamentFiltersButton.setHidden(true);
         
@@ -129,6 +133,7 @@ export class PlayOverlay extends Overlay {
         MenuImageManager.hidePlayAvatarImages(this.menu);
 
         this.menu.playInputButton.resetButton();
+        this.menu.readyButton.resetButton();
 
         this.menu.playInputButton.getButtonText().alpha = 1;
     }

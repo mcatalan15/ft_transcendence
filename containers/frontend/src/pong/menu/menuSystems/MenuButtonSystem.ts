@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/22 10:56:12 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/07/22 14:48:07 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,17 +195,17 @@ export class MenuButtonSystem implements System {
 			}
 		}
 		this.menu.readyButton.resetButton();
-		this.menu.readyButton.setClickable(true);
+		//this.menu.readyButton.setClickable(true)
 		this.menu.readyButton.setClicked(false);
 		switch (this.menu.language) {
 			case ('es'):
 				this.menu.readyButton.updateText('LISTO');
 				break;
 			case ('fr'):
-				this.menu.readyButton.updateText('PRÊT');
+				this.menu.readyButton.updateText('PRET');
 				break;
 			case ('cat'):
-				this.menu.readyButton.updateText('PREPARAT');
+				this.menu.readyButton.updateText('LLEST');
 				break;
 			default:
 				this.menu.readyButton.updateText('READY');
@@ -386,7 +386,7 @@ export class MenuButtonSystem implements System {
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
-			this.handleCancelMatchmaking(); //! doubled?
+			this.handleCancelMatchmaking();
 
 			for (let button of this.menu.tournamentInputButtons) {
 				button.resetButton();
