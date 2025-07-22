@@ -45,17 +45,28 @@ export class AvatarUploader {
   }
 
   private setupFileHandler(elements: any, avatarImg: HTMLImageElement): void {
-    const fileHandler = new AvatarFileHandler(
-      this.userId,
-      () => this.isUploading,
-      (value: boolean) => { this.isUploading = value; },
-      () => this.setAvatarSource(avatarImg)
-    );
-    
-    fileHandler.setupFileUploadHandler(
-      elements.fileInput, 
-      avatarImg, 
-      elements.uploadButton
-    );
+    if (!elements || !elements.fileInput || !elements.uploadButton) {
+      console.error('Invalid elements provided to setupFileHandler.');
+      return;
+    }
+
+    if (!avatarImg) {
+      console.error('Avatar image element is missing.');
+      return;
+    }
+
+    try {
+      const fileHandler = new AvatarFileHandler(
+        (value: boolean) => { this.isUploading = value; },
+        () => this.setAvatarSource(avatarImg)
+      );
+
+      fileHandler.setupFileUploadHandler(
+        elements.fileInput,
+        elements.uploadButton
+      );
+    } catch (error) {
+      console.error('Error setting up file handler:', error);
+    }
   }
 }
