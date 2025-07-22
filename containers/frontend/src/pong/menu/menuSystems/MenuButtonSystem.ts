@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MenuButtonSystem.ts                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 09:32:05 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/07/21 23:32:10 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/07/22 10:56:12 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,7 +386,7 @@ export class MenuButtonSystem implements System {
 			this.menu.hasOngoingTournament = false;
 			this.menu.tournamentConfig = null;
 			this.menu.tournamentManager.clearTournament();
-			this.handleCancelMatchmaking();
+			this.handleCancelMatchmaking(); //! doubled?
 
 			for (let button of this.menu.tournamentInputButtons) {
 				button.resetButton();
@@ -578,6 +578,11 @@ export class MenuButtonSystem implements System {
 		this.menu.IAButton.setHidden(false);
 		this.menu.duelButton.setHidden(false);
 		this.menu.tournamentButton.setHidden(true);
+
+		this.menu.playButton.setHidden(true);
+		this.menu.playButton.setClickable(false);
+		this.menu.playButton.setClicked(false);
+		this.menu.playButton.resetButton();
 
 		this.menu.startXButton.setHidden(true);
 	}
