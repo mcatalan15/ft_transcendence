@@ -16,7 +16,6 @@ export class AvatarUploader {
     const avatarImg = this.pongBoxElement.querySelector('img') as HTMLImageElement;
     if (!avatarImg) return;
 
-    console.log('avatarUpload');
     this.setAvatarSource(avatarImg);
     const elements = this.createAvatarElements(avatarImg);
     this.appendAvatarElements(elements);
@@ -60,12 +59,10 @@ export class AvatarUploader {
         (value: boolean) => { this.isUploading = value; },
         () => this.setAvatarSource(avatarImg)
       );
-      console.log('setupfileuploadhandler 1');
       fileHandler.setupFileUploadHandler(
         elements.fileInput,
         elements.uploadButton
       );
-      console.log('setupfileuploadhandler');
     } catch (error) {
       console.error('Error setting up file handler:', error);
     }
