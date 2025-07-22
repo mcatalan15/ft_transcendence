@@ -26,6 +26,7 @@ export class AvatarFileHandler {
       if (!file) return;
 
       if (!FileValidator.validateFile(file)) {
+        console.log('cucufu avatar file handler');
         fileInput.value = '';
         return;
       }

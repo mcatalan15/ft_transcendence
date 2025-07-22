@@ -9,7 +9,6 @@ export function startRouter(container: HTMLElement) {
 	app = container;
 
 	window.addEventListener('beforeunload', () => {
-		console.log('Page unloading, cleaning up games...');
 		gameManager.destroyAllGames();
 	});
 	
