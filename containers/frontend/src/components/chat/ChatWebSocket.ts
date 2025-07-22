@@ -1,24 +1,48 @@
-import { ChatMessage, MessageType } from '../../types/chat.types';
 import { navigate } from '../../utils/router';
 import { getWsUrl } from '../../config/api';
+import { ChatMessage, MessageType } from '../../utils/chat/chat';
 import i18n from '../../i18n';
 
 export class ChatWebSocket {
-    private socket: WebSocket;
+    private socket: WebSocket | null = null;
     private messageCallbacks: ((message: ChatMessage) => void)[] = [];
     private systemMessageCallbacks: ((content: string, type: MessageType) => void)[] = [];
+    private isConnecting = false;
+    private isClosed = false;
+    private reconnectTimeout: number | null = null;
 
     constructor() {
-        this.socket = new WebSocket(getWsUrl(''));
-        this.setupEventListeners();
+        this.connect();
+    }
+
+    private connect() {
+        if (this.isConnecting || (this.socket && this.socket.readyState === WebSocket.OPEN)) {
+            return;
+        }
+
+        this.isConnecting = true;
+        this.isClosed = false;
+        
+        try {
+            this.socket = new WebSocket(getWsUrl(''));
+            this.setupEventListeners();
+        } catch (error) {
+            console.error('Failed to create WebSocket connection:', error);
+            this.isConnecting = false;
+        }
     }
 
     private setupEventListeners() {
+        if (!this.socket) return;
+
         this.socket.addEventListener('open', () => {
+            console.log('ChatWebSocket connected');
+            this.isConnecting = false;
+            
             const username = sessionStorage.getItem('username') || 'Anonymous';
             const userId = sessionStorage.getItem('userId') || Date.now().toString();
             
-            this.socket.send(JSON.stringify({
+            this.socket?.send(JSON.stringify({
                 type: 'identify',
                 userId: userId,
                 username: username
@@ -34,12 +58,18 @@ export class ChatWebSocket {
             }
         });
 
-        this.socket.addEventListener('close', () => {
-            this.notifySystemMessage(i18n.t('serverDisconnection', { ns: 'chat' }), MessageType.SYSTEM);
+        this.socket.addEventListener('close', (event) => {
+            console.log('ChatWebSocket disconnected:', event.code, event.reason);
+            this.isConnecting = false;
+            
+            if (!this.isClosed) {
+                this.notifySystemMessage(i18n.t('serverDisconnection', { ns: 'chat' }), MessageType.SYSTEM);
+            }
         });
 
         this.socket.addEventListener('error', (e) => {
             console.error('WebSocket error', e);
+            this.isConnecting = false;
             this.notifySystemMessage(i18n.t('connectionError', { ns: 'chat' }), MessageType.SYSTEM);
         });
     }
@@ -55,6 +85,8 @@ export class ChatWebSocket {
                     guestName: data.guestName || 'Guest'
                 });
                 
+                // Clean up before navigating
+                this.close();
                 navigate(`/pong?${urlParams.toString()}`);
             }, 1500);
             return;
@@ -104,12 +136,12 @@ export class ChatWebSocket {
     }
 
     sendMessage(message: any): boolean {
-        if (this.socket.readyState !== WebSocket.OPEN) {
+        if (!this.isConnected()) {
             this.notifySystemMessage(i18n.t('notConnected', { ns: 'chat' }), MessageType.SYSTEM);
             return false;
         }
-        
-        this.socket.send(JSON.stringify(message));
+
+        this.socket?.send(JSON.stringify(message));
         return true;
     }
 
@@ -162,10 +194,32 @@ export class ChatWebSocket {
         };
         
         this.sendMessage(responseMessage);
-        this.notifySystemMessage(i18n.t('decliningInvitation', { ns: 'chat' }) + fromUser, MessageType.GAME);
+        this.notifySystemMessage(i18n.t('invitationDeclined', { ns: 'chat' }), MessageType.GAME);
     }
 
     isConnected(): boolean {
-        return this.socket.readyState === WebSocket.OPEN;
+        return this.socket?.readyState === WebSocket.OPEN;
+    }
+
+    close() {
+        this.isClosed = true;
+        
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
+        }
+        
+        if (this.socket) {
+            this.socket.onopen = null;
+            this.socket.onmessage = null;
+            this.socket.onclose = null;
+            this.socket.onerror = null;
+            
+            this.socket.close();
+            this.socket = null;
+        }
+        
+        this.messageCallbacks = [];
+        this.systemMessageCallbacks = [];
     }
 }
