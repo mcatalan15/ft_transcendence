@@ -9,7 +9,6 @@ export interface ApiError {
 
 export interface SettingsConfig {
   BORDER_VALUES: {
-    mobile: number;
     desktop: number;
   };
   FILE_UPLOAD: {
@@ -17,11 +16,7 @@ export interface SettingsConfig {
     acceptedTypes: string[];
     acceptedString: string;
   };
-  BREAKPOINTS: {
-    mobile: number;
-  };
   MULTIPLIERS: {
-    mobile: number;
     desktop: number;
   };
   STYLES: {

@@ -47,9 +47,8 @@ export class FriendsRenderer {
 
   private setupResponsiveMargin(svgHeader: HTMLElement): void {
     const updateSvgMargin = () => {
-      const isMobile = window.innerWidth < CONFIG.BREAKPOINTS.mobile;
-      const multiplier = isMobile ? CONFIG.MULTIPLIERS.mobile : CONFIG.MULTIPLIERS.desktop;
-      const border = isMobile ? CONFIG.BORDER_VALUES.mobile : CONFIG.BORDER_VALUES.desktop;
+      const multiplier = CONFIG.MULTIPLIERS.desktop;
+      const border = CONFIG.BORDER_VALUES.desktop;
       svgHeader.style.marginTop = `-${border * multiplier}px`;
     };
     

@@ -60,7 +60,6 @@ export const STATUS_BUTTON_STYLES = {
 
 export const CONFIG: SettingsConfig = {
   BORDER_VALUES: {
-    mobile: 8,
     desktop: 16
   },
   FILE_UPLOAD: {
@@ -68,11 +67,7 @@ export const CONFIG: SettingsConfig = {
     acceptedTypes: ['image/jpeg', 'image/png'],
     acceptedString: 'image/jpeg,image/png'
   },
-  BREAKPOINTS: {
-    mobile: 768
-  },
   MULTIPLIERS: {
-    mobile: 3.2,
     desktop: 0.5
   },
   STYLES: {
