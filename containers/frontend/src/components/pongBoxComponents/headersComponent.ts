@@ -13,7 +13,6 @@ export class HeadersComponent {
   constructor(options: HeadersComponentOptions) {
     this.element = document.createElement('img');
     this.element.src = `/headers/headers_${options.type}_${options.lang}.svg`;
-    console.log(`HeadersComponent: Loading header from ${this.element.src}`);
     this.element.alt = `${options.type} Header`;
     this.element.className = 'absolute left-1/2 -translate-x-1/2 top-0 z-30 w-full max-w-[1800px] h-auto pointer-events-none select-none block mx-auto';
     this.element.style.objectFit = 'contain';
