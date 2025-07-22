@@ -113,12 +113,9 @@ private setupEvents(onChange?: (lang: string) => void) {
 
 	menu?.querySelectorAll("li").forEach((item) => {
 		item.addEventListener("click", async () => {
-			const lang = item.getAttribute("data-lang") || "en";
-			
+			const lang = item.getAttribute("data-lang") || "en";			
 			await this.cleanupBeforeLanguageChange();
-			
-			await new Promise(resolve => setTimeout(resolve, 100));
-			
+			await new Promise(resolve => setTimeout(resolve, 100));		
 			await i18n.changeLanguage(lang);
 			langSpan!.textContent = lang.toUpperCase();
 			menu?.classList.add("hidden");
@@ -129,19 +126,14 @@ private setupEvents(onChange?: (lang: string) => void) {
 }
 
 private async cleanupBeforeLanguageChange(): Promise<void> {
-	try {
-		console.log('Starting cleanup before language change...');
-		
-		await gameManager.destroyAllGames();
-		
+	try {		
+		await gameManager.destroyAllGames();		
 		if ((window as any).currentGame) {
 			(window as any).currentGame = null;
 		}
 		if ((window as any).currentMenu) {
 			(window as any).currentMenu = null;
 		}
-		
-		console.log('Cleanup completed successfully');
 	} catch (error) {
 		console.error('Error during cleanup:', error);
 	}
