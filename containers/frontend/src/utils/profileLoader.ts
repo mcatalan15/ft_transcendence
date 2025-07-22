@@ -9,7 +9,6 @@ export class ProfileLoader {
     try {
       const response = await this.fetchUserProfile();
       const data = await this.handleProfileResponse(response);
-      
       this.updateUserInfo(pongBoxElement, data);
       new AvatarUploader(pongBoxElement, data.id).setup();
     } catch (error) {

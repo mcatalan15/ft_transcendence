@@ -24,7 +24,6 @@ async function initializeI18n(): Promise<void> {
 
 function render(container: HTMLElement): void {
   cleanup();
-
   const renderer = new SettingsRenderer(
     container, 
     () => showSettings(container)
