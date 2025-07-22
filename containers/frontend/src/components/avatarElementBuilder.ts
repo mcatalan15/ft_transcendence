@@ -13,6 +13,7 @@ export class AvatarElementBuilder {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = CONFIG.FILE_UPLOAD.acceptedString;
+    console.log(`Invalid file type: ${fileInput.type}`);
     fileInput.style.display = 'none';
     return fileInput;
   }
