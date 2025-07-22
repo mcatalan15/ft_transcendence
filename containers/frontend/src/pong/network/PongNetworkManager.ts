@@ -148,7 +148,6 @@ export class PongNetworkManager {
 		});
 
 		this.wsManager.registerHandler('ERROR', (message) => {
-			console.error('WebSocket error:', message);
 			this.showConnectionStatus(`Connection error: ${message.message || 'Unknown error'}`);
 			const statusDiv = document.getElementById('connection-status');
 			if (statusDiv) {
