@@ -210,7 +210,6 @@ export class ChatWebSocket {
         }
         
         if (this.socket) {
-            // Remove event listeners to prevent callbacks after close
             this.socket.onopen = null;
             this.socket.onmessage = null;
             this.socket.onclose = null;
@@ -220,10 +219,7 @@ export class ChatWebSocket {
             this.socket = null;
         }
         
-        // Clear callbacks to prevent memory leaks
         this.messageCallbacks = [];
         this.systemMessageCallbacks = [];
-        
-        console.log('ChatWebSocket properly closed and cleaned up');
     }
 }
