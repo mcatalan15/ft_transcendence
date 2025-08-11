@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: evafmur <evafmur@student.42.fr>            +#+  +:+       +#+         #
+#    By: mcatalan@student.42barcelona.com <mcata    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/28 13:10:42 by nponchon          #+#    #+#              #
-#    Updated: 2025/07/17 10:31:35 by nponchon         ###   ########.fr        #
+#    Updated: 2025/08/11 13:31:38 by mcatalan@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,7 +70,7 @@ tunnel:
 		fi; \
 		echo "cloudflared installed locally."; \
 	fi
-	./cloudflared tunnel --url http://localhost:1080 --http-host-header localhost
+	./cloudflared tunnel --url http://localhost:5173 --http-host-header localhost --no-tls-verify
 
 re:
 	$(MAKE) stop
