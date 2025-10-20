@@ -25,7 +25,8 @@ services:
     restart: always
     volumes:
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
+      - certs:/etc/letsencrypt
+      - public:/var/www/html
     depends_on:
       - frontend
     networks:
